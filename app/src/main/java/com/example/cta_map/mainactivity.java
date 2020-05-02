@@ -53,6 +53,19 @@ public class mainactivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         final Debugger debug = new Debugger();
         final WebScrapper webScrapper = new WebScrapper();
+        final ReadCSV csv_stations = new ReadCSV("train_stations.csv");
+
+
+        String station_cordinates = csv_stations.getStationCoord("Chicago", "red");
+        Log.d("Station Location", "Station located at: "+ csv_stations);
+
+
+
+
+
+
+
+
 
 
 
@@ -76,8 +89,10 @@ public class mainactivity extends AppCompatActivity {
         getData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                openConnection = true;
                 debug.ShowToast(context, "Extracting Content...");
-                webScrapper.Connect(url, true, tags);
+//                webScrapper.Connect(url, true, tags);
+                extract_train_content(url, debug);
             }
         });
 
@@ -155,7 +170,7 @@ public class mainactivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 openConnection = false;
-                result.setText(null);
+
 
                 debugger.ShowToast(getApplicationContext(), "Connection Closed!");
                 Log.d("Connection Status", "Connection Closed");

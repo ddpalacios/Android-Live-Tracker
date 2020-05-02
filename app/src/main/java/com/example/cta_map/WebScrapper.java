@@ -35,17 +35,13 @@ class WebScrapper {
                 while (connect){
                     try {
                         Document content = Jsoup.connect(url).get();
-                        Log.d("CONNECTED","Connected!");
-                        for (int each_tag=0; each_tag< tags.length; each_tag++){
-                            String[] full_content_of_current_tag = retrieve(tags[each_tag], content);
-                            Log.d("Content",full_content_of_current_tag[0]);
-
-
-                        }
-
-
-
-
+                        Log.d("CONNECTED",content.toString());
+//                        for (int each_tag=0; each_tag< tags.length; each_tag++){
+//                            String[] full_content_of_current_tag = retrieve(tags[each_tag], content);
+//                            Log.d("Content",full_content_of_current_tag[0]);
+//
+//                        }
+//
 
                     }
                     catch (IOException e){
