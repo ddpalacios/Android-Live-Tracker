@@ -29,6 +29,12 @@ class Debugger{
 
     }
 }
+
+
+
+
+
+
 @SuppressLint("Registered")
 public class mainactivity extends AppCompatActivity {
 
@@ -36,14 +42,19 @@ public class mainactivity extends AppCompatActivity {
     private Button getData, closeConn, toMap;
     private TextView result;
     private Boolean openConnection = true;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setContentView(R.layout.activity_main);
+
+
         final Context context = getApplicationContext();
         super.onCreate(savedInstanceState);
         final Debugger debug = new Debugger();
+        final WebScrapper webScrapper = new WebScrapper();
 
 
-        setContentView(R.layout.activity_main);
 
         result = (TextView) findViewById(R.id.result);
         result.setMovementMethod(new ScrollingMovementMethod());
@@ -61,13 +72,12 @@ public class mainactivity extends AppCompatActivity {
             }
         });
 
-
+        final String[] tags = {"lat","lon","isApp", "nextStaNm"};
         getData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 debug.ShowToast(context, "Extracting Content...");
-                openConnection = true;
-                extract_train_content(url, debug);
+                webScrapper.Connect(url, true, tags);
             }
         });
 
@@ -92,6 +102,8 @@ public class mainactivity extends AppCompatActivity {
                         String longtitude = lon.text();
                         String destination = dest.text();
                         String isApproaching = isApp.text();
+
+
                         final String[] lat_list = latitude.split(" ");
                         final String[] lon_list = longtitude.split(" ");
                         final String[] app_list = isApproaching.split(" ");
@@ -109,11 +121,9 @@ public class mainactivity extends AppCompatActivity {
                                 if (result.getText().toString().isEmpty()){
                                     for (int i=0; i< lat_list.length; i++){
 
-
                                         String isApp = app_list[i];
                                         if (isApp.equals("1")){
                                             result.append("\n\nTrain# "+i+"  "+lat_list[i]+"   "+ lon_list[i]+"\t\tApproaching: "+ destiniation_station[i]);
-
 
                                         }
                                         else{
