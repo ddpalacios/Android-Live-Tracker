@@ -47,12 +47,23 @@
         android:textSize="15sp"/>
 
     <Button
-        android:id="@+id/dataReader"
+    android:id="@+id/dataReader"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Read CSV"
+    android:layout_marginTop="50dp"
+    android:layout_below="@id/result"
+    android:layout_centerHorizontal="true"/>
+
+
+
+    <Button
+        android:id="@+id/getUserLoc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Read CSV"
+        android:text="Retrieve Current Location Coord"
         android:layout_marginTop="50dp"
-        android:layout_below="@id/result"
+        android:layout_below="@id/dataReader"
         android:layout_centerHorizontal="true"/>
 
 

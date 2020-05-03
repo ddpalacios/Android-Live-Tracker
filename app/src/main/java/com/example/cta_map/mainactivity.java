@@ -53,7 +53,7 @@ class Debugger{
 public class mainactivity extends AppCompatActivity {
 
     public final String url = "https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=red";
-    private Button getData, closeConn, toMap, csv_reader;
+    private Button getData, closeConn, toMap, csv_reader, userLoc;
     private TextView result;
     private Boolean openConnection = true;
 
@@ -77,6 +77,23 @@ public class mainactivity extends AppCompatActivity {
         closeConn = (Button) findViewById(R.id.closeData);
         toMap = (Button) findViewById(R.id.ToMaps);
         csv_reader = (Button) findViewById(R.id.dataReader);
+        userLoc = (Button) findViewById(R.id.getUserLoc);
+
+
+        userLoc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                debug.ShowToast(context, "Retrieving user coord...");
+
+
+
+
+
+
+            }
+        });
+
+
 
 
         toMap.setOnClickListener(new View.OnClickListener() {
@@ -116,8 +133,7 @@ public class mainactivity extends AppCompatActivity {
                             HashMap<String, String> train_lines = new HashMap<>();
                             HashMap<String, String> trains = GetStation(tokens, train_lines);
 
-
-                             if (station_name.equals("chicago") && Boolean.parseBoolean(trains.get("red"))){
+                             if (station_name.equals("granville") && Boolean.parseBoolean(trains.get("red"))){
                                  cnt++;
                                  String[] coord = getCord(tokens);
                                  Log.e("COORD", Arrays.toString(coord));
@@ -138,9 +154,6 @@ public class mainactivity extends AppCompatActivity {
 
                 }
                 debug.ShowToast(context, cnt+" STATION(S) FOUND.");
-
-
-
             }
         });
 
