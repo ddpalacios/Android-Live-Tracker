@@ -48,6 +48,17 @@ class Chicago_Transits {
        }
 
 
+
+       String find_nearest_train_from(String stationName, String stationType, String trainDirection){
+        // TODO: Retrieve All Correct Trains with specified direction and calculate/return nearest train from chosen station
+
+
+
+       }
+
+
+
+
         private HashMap<String, String> GetStation(String [] tokens, HashMap<String, String> train_lines){
 
         // Train lines

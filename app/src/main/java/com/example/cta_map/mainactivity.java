@@ -70,9 +70,8 @@ class Debugger{
 @SuppressLint("Registered")
 public class mainactivity extends AppCompatActivity {
 
-    public final String url = "https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=red";
     private Button getData, closeConn, toMap, csv_reader, userLoc;
-    private EditText station_name, station_type;
+    private EditText station_name, station_type, direction;
     private TextView result, latTextView, lonTextView;
     private Boolean openConnection = true;
     int PERMISSION_ID = 44;
@@ -100,6 +99,8 @@ public class mainactivity extends AppCompatActivity {
         closeConn = (Button) findViewById(R.id.closeData);
         station_name = (EditText)findViewById(R.id.station_name);
         station_type = (EditText)findViewById(R.id.station_type);
+        direction = (EditText)findViewById(R.id.dest);
+
 
 
 
@@ -114,7 +115,9 @@ public class mainactivity extends AppCompatActivity {
                 debug.ShowToast(context, "Extracting Content...");
                 String stationName = station_name.getText().toString().toLowerCase();
                 String stationType = station_type.getText().toString().toLowerCase();
+                String trainDirection = direction.getText().toString().toLowerCase();
                 String[] station_coordinates = chicago_transits.retrieve_station_coordinates(stationName, stationType);
+                String nearest_train = chicago_transits.find_nearest_train_from(stationName, stationType, trainDirection);
 
                 if (station_coordinates == null){
                     debug.ShowToast(context, "No Station Found! Check Spelling!");
