@@ -112,20 +112,21 @@ public class mainactivity extends AppCompatActivity {
                         if ((line = reader.readLine()) != null){
                             String[] tokens = line.split(",");
                              String station_name = tokens[3].toLowerCase();
-                             if (station_name.equals("granville")){
-                                 cnt++;
-                                 String coord = tokens[16] +tokens[17];
-                                 coord = coord.replace("(", "").replace(")", "");
-                                 String[] l = coord.split(" ");
-                                 Log.e("TAG", "LAT: "+l[0] + " LON: "+ l[1]);
 
-//                                 int maxLogSize = 1000;
-//                                 for(int i = 0; i <= coord.length() / maxLogSize; i++) {
-//                                     int start = i * maxLogSize;
-//                                     int end = (i+1) * maxLogSize;
-//                                     end = Math.min(end, coord.length());
-//                                     Log.v("coord", coord.substring(start, end));
-//                                 }
+
+                             if (station_name.equals("chicago")){
+                                 cnt++;
+
+                                 // coordinates parse
+                                 String station_coord = tokens[16] +tokens[17];
+                                 station_coord = station_coord.replace("(", "").replace(")", "");
+                                 String[] split_cord = station_coord.split(" ");
+                                 String lat = split_cord[0];
+                                 String lon = split_cord[1];
+                                Log.e("COORD", "LAT: "+lat+ " LON: "+ lon);
+
+
+
 
 
                              }
