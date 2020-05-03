@@ -3,7 +3,9 @@ package com.example.cta_map;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
@@ -11,16 +13,27 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.maps.SupportMapFragment;
+import com.opencsv.CSVReader;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 
 class Debugger{
     void ShowToast(Context context, String text){
@@ -39,11 +52,12 @@ class Debugger{
 public class mainactivity extends AppCompatActivity {
 
     public final String url = "https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=red";
-    private Button getData, closeConn, toMap;
+    private Button getData, closeConn, toMap, csv_reader;
     private TextView result;
     private Boolean openConnection = true;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_main);
@@ -53,19 +67,6 @@ public class mainactivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         final Debugger debug = new Debugger();
         final WebScrapper webScrapper = new WebScrapper();
-        final ReadCSV csv_stations = new ReadCSV("train_stations.csv");
-
-
-        String station_cordinates = csv_stations.getStationCoord("Chicago", "red");
-        Log.d("Station Location", "Station located at: "+ csv_stations);
-
-
-
-
-
-
-
-
 
 
 
@@ -74,6 +75,7 @@ public class mainactivity extends AppCompatActivity {
         getData = (Button) findViewById(R.id.getData);
         closeConn = (Button) findViewById(R.id.closeData);
         toMap = (Button) findViewById(R.id.ToMaps);
+        csv_reader = (Button) findViewById(R.id.dataReader);
 
 
         toMap.setOnClickListener(new View.OnClickListener() {
@@ -95,6 +97,91 @@ public class mainactivity extends AppCompatActivity {
                 extract_train_content(url, debug);
             }
         });
+
+
+        csv_reader.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                debug.ShowToast(context, "READING CSV...");
+                InputStream is = getResources().openRawResource(R.raw.train_stations);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+                String line;
+                int cnt=0;
+                while (true){
+                    try {
+                        if ((line = reader.readLine()) != null){
+                            String[] tokens = line.split(",");
+                             String station_name = tokens[3].toLowerCase();
+                             if (station_name.equals("granville")){
+                                 cnt++;
+                                 String coord = tokens[16] +tokens[17];
+                                 coord = coord.replace("(", "").replace(")", "");
+                                 String[] l = coord.split(" ");
+                                 Log.e("TAG", "LAT: "+l[0] + " LON: "+ l[1]);
+
+//                                 int maxLogSize = 1000;
+//                                 for(int i = 0; i <= coord.length() / maxLogSize; i++) {
+//                                     int start = i * maxLogSize;
+//                                     int end = (i+1) * maxLogSize;
+//                                     end = Math.min(end, coord.length());
+//                                     Log.v("coord", coord.substring(start, end));
+//                                 }
+
+
+                             }
+
+
+                        }else{
+                            debug.ShowToast(context, cnt+" STATIONS FOUND.");
+                            break;
+                        }
+
+                    }catch (IOException e){
+                        e.printStackTrace();
+
+                    }
+
+
+                }
+
+
+
+            }
+        });
+
+
+//        InputStream is = getResources().openRawResource(R.raw.train_stations);
+//        BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+//        String line;
+//        int cnt=0;
+//        while (true){
+//            try {
+//                if ((line = reader.readLine()) != null){
+//                    String[] tokens = line.split(",");
+//                    String station_name = tokens[3].toLowerCase();
+//
+//
+//                }
+//
+//
+//
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                break;
+//            }
+//
+//
+//        }
+
+
+
+
+//        final ReadCSV csv_stations = new ReadCSV("train_stations.csv");
+//        String station_cordinates = csv_stations.getStationCoord("Chicago", "red");
+//        Log.d("Station Location", "Station located at: "+ csv_stations);
+
+
+
 
 
     }
