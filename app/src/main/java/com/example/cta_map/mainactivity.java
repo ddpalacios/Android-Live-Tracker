@@ -9,6 +9,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Environment;
 import android.os.Looper;
 import android.provider.Settings;
@@ -16,6 +17,7 @@ import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,11 +66,13 @@ class Debugger{
 
 
 
+@RequiresApi(api = Build.VERSION_CODES.KITKAT)
 @SuppressLint("Registered")
 public class mainactivity extends AppCompatActivity {
 
     public final String url = "https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=red";
     private Button getData, closeConn, toMap, csv_reader, userLoc;
+    private EditText station_name, station_type;
     private TextView result, latTextView, lonTextView;
     private Boolean openConnection = true;
     int PERMISSION_ID = 44;
@@ -81,7 +85,7 @@ public class mainactivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        getLastLocation();
+
 
         final Context context = getApplicationContext();
         super.onCreate(savedInstanceState);
@@ -94,135 +98,42 @@ public class mainactivity extends AppCompatActivity {
         result.setMovementMethod(new ScrollingMovementMethod());
         getData = (Button) findViewById(R.id.getData);
         closeConn = (Button) findViewById(R.id.closeData);
-        toMap = (Button) findViewById(R.id.ToMaps);
-        csv_reader = (Button) findViewById(R.id.dataReader);
-        userLoc = (Button) findViewById(R.id.getUserLoc);
+        station_name = (EditText)findViewById(R.id.station_name);
+        station_type = (EditText)findViewById(R.id.station_type);
 
 
-        userLoc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                debug.ShowToast(context, "Retrieving user coord...");
-
-
-
-
-
-
-
-
-            }
-        });
-
-
-
-
-        toMap.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(mainactivity.this, MapsActivity.class);
-                startActivity(intent);
-
-            }
-        });
 
         final String[] tags = {"lat","lon","isApp", "nextStaNm"};
         getData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InputStream CSVfile = getResources().openRawResource(R.raw.train_stations);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(CSVfile, StandardCharsets.UTF_8));
+                final Chicago_Transits chicago_transits = new Chicago_Transits(reader);
                 openConnection = true;
                 debug.ShowToast(context, "Extracting Content...");
-//                webScrapper.Connect(url, true, tags);
-                extract_train_content(url, debug);
-            }
-        });
+                String stationName = station_name.getText().toString().toLowerCase();
+                String stationType = station_type.getText().toString().toLowerCase();
+                String[] station_coordinates = chicago_transits.retrieve_station_coordinates(stationName, stationType);
 
-
-        csv_reader.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                debug.ShowToast(context, "READING CSV...");
-                InputStream is = getResources().openRawResource(R.raw.train_stations);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-                String line;
-                int cnt=0;
-                while (true){
-                    try {
-                        if ((line = reader.readLine()) != null){
-                            String[] tokens = line.split(",");
-                             String station_name = tokens[0].toLowerCase();
-                            HashMap<String, String> train_lines = new HashMap<>();
-                            HashMap<String, String> trains = GetStation(tokens, train_lines);
-
-                             if (station_name.equals("granville") && Boolean.parseBoolean(trains.get("red"))){
-                                 cnt++;
-                                 String[] coord = getCord(tokens);
-                                 Log.e("COORD", Arrays.toString(coord));
-                                 break;
-
-                             }
-
-
-                        }else{
-                            break;
-                        }
-
-                    }catch (IOException e){
-                        e.printStackTrace();
-
-                    }
-
-
+                if (station_coordinates == null){
+                    debug.ShowToast(context, "No Station Found! Check Spelling!");
+                }else {
+                    debug.ShowToast(context, stationName+" ("+stationType+")"+" Is Located at: "+ Arrays.toString(station_coordinates));
+                    Log.e("Station Coordinates", Arrays.toString(station_coordinates));
                 }
-                debug.ShowToast(context, cnt+" STATION(S) FOUND.");
+
+
+
+
+
+//                webScrapper.Connect(url, true, tags);
+//                extract_train_content(url, debug);
             }
         });
 
 
     }
-
-
-    private HashMap<String, String> GetStation(String [] tokens, HashMap<String, String> train_lines){
-
-        // Train lines
-        String red = tokens[1];
-        String blue = tokens[2];
-        String green = tokens[3];
-        String brown = tokens[4];
-        String purple = tokens[5];
-        String yellow = tokens[6];
-        String pink = tokens[7];
-        String orange = tokens[8];
-
-        // Add to our Data Structure
-        train_lines.put("red", red);
-        train_lines.put("blue", blue);
-        train_lines.put("green", green);
-        train_lines.put("purple", purple);
-        train_lines.put("yellow", yellow);
-        train_lines.put("pink", pink);
-        train_lines.put("orange", orange);
-        train_lines.put("brown", brown);
-
-
-
-        return train_lines;
-    }
-
-
-    private String[] getCord(String [] tokens){
-
-        // coordinates parse
-        String station_coord = tokens[9] +tokens[10];
-        station_coord = station_coord.replace("(", "").replace(")", "");
-        return station_coord.split(" ");
-
-
-
-
-    }
-
-
 
     private void extract_train_content(final String url, final Debugger debugger){
         new Thread(new Runnable() {
@@ -304,117 +215,152 @@ public class mainactivity extends AppCompatActivity {
     }
 
 
-    private LocationCallback mLocationCallback = new LocationCallback() {
-        @SuppressLint("SetTextI18n")
-        @Override
-        public void onLocationResult(LocationResult locationResult) {
-            Location mLastLocation = locationResult.getLastLocation();
-            Log.e("locCallBack", mLastLocation.getLatitude()+""+mLastLocation.getLongitude()+"");
-
-           /* latTextView.setText(mLastLocation.getLatitude()+"");
-            lonTextView.setText(mLastLocation.getLongitude()+"");*/
-        }
-    };
-
-
-
-    @SuppressLint("MissingPermission")
-    private void requestNewLocationData(){
-
-        LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(0);
-        mLocationRequest.setFastestInterval(0);
-//        mLocationRequest.setNumUpdates(1);
-        mLocationRequest.setInterval(0);
-        mLocationRequest.setFastestInterval(0);
-
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        mFusedLocationClient.requestLocationUpdates(
-                mLocationRequest, mLocationCallback,
-                Looper.myLooper()
-        );
-
-    }
-
-
-
-
-    @SuppressLint("MissingPermission")
-    private void getLastLocation(){
-        if (checkPermissions()) {
-            if (isLocationEnabled()) {
-                mFusedLocationClient.getLastLocation().addOnCompleteListener(
-                        new OnCompleteListener<Location>() {
-                            @SuppressLint("SetTextI18n")
-                            @Override
-                            public void onComplete(@NonNull Task<Location> task) {
-                                Location location = task.getResult();
-                                if (location == null) {
-                                    requestNewLocationData();
-                                } else {
-                                    Log.e("lastLoc", location.getLatitude()+""+location.getLongitude()+"");
-//                                    latTextView.setText(location.getLatitude()+"");
-//                                    lonTextView.setText(location.getLongitude()+"");
-                                }
-                            }
-                        }
-                );
-            } else {
-                Toast.makeText(this, "Turn on location", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(intent);
-            }
-        } else {
-            requestPermissions();
-        }
-    }
-
-
-
-    private boolean checkPermissions() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-        return false;
-    }
-
-    private void requestPermissions() {
-        ActivityCompat.requestPermissions(
-                this,
-                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
-                PERMISSION_ID
-        );
-    }
-
-    private boolean isLocationEnabled() {
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
-                LocationManager.NETWORK_PROVIDER
-        );
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERMISSION_ID) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Granted. Start getting the location information
-            }
-        }
-    }
-
-
-    @Override
-    public void onResume(){
-        super.onResume();
-        if (checkPermissions()) {
-            getLastLocation();
-        }
-
-    }
-
-
 }
+
+
+//        toMap = (Button) findViewById(R.id.ToMaps);
+//        csv_reader = (Button) findViewById(R.id.dataReader);
+//        userLoc = (Button) findViewById(R.id.getUserLoc);
+
+
+//        userLoc.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                debug.ShowToast(context, "Retrieving user coord...");
+//                getLastLocation();
+//
+//            }
+//        });
+//
+//
+//
+//
+//        toMap.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(mainactivity.this, MapsActivity.class);
+//                startActivity(intent);
+//
+//            }
+//        });
+//
+
+
+//
+//
+//    private LocationCallback mLocationCallback = new LocationCallback() {
+//        @SuppressLint("SetTextI18n")
+//        @Override
+//        public void onLocationResult(LocationResult locationResult) {
+//            Location mLastLocation = locationResult.getLastLocation();
+//            Log.e("locCallBack", mLastLocation.getLatitude()+""+mLastLocation.getLongitude()+"");
+//
+//           /* latTextView.setText(mLastLocation.getLatitude()+"");
+//            lonTextView.setText(mLastLocation.getLongitude()+"");*/
+//        }
+//    };
+//
+//
+//
+//    @SuppressLint("MissingPermission")
+//    private void requestNewLocationData(){
+//
+//        LocationRequest mLocationRequest = new LocationRequest();
+//        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+//        mLocationRequest.setInterval(0);
+//        mLocationRequest.setFastestInterval(0);
+////        mLocationRequest.setNumUpdates(1);
+//        mLocationRequest.setInterval(0);
+//        mLocationRequest.setFastestInterval(0);
+//
+//        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+//        mFusedLocationClient.requestLocationUpdates(
+//                mLocationRequest, mLocationCallback,
+//                Looper.myLooper()
+//        );
+//
+//    }
+//
+//
+//
+//
+//    @SuppressLint("MissingPermission")
+//    private void getLastLocation(){
+//        if (checkPermissions()) {
+//            if (isLocationEnabled()) {
+//                mFusedLocationClient.getLastLocation().addOnCompleteListener(
+//                        new OnCompleteListener<Location>() {
+//                            @SuppressLint("SetTextI18n")
+//                            @Override
+//                            public void onComplete(@NonNull Task<Location> task) {
+//                                Location location = task.getResult();
+//                                if (location == null) {
+//                                    requestNewLocationData();
+//                                } else {
+//                                    double usr_lat = location.getLatitude();
+//                                    double usr_lon = location.getLongitude();
+//                                    Log.e("lastLoc", location.getLatitude()+""+location.getLongitude()+"");
+//
+////                                    latTextView.setText(location.getLatitude()+"");
+////                                    lonTextView.setText(location.getLongitude()+"");
+//                                }
+//                            }
+//                        }
+//                );
+//            } else {
+//                Toast.makeText(this, "Turn on location", Toast.LENGTH_LONG).show();
+//                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+//                startActivity(intent);
+//            }
+//        } else {
+//            requestPermissions();
+//        }
+//    }
+//
+//
+//
+//    private boolean checkPermissions() {
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+//                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+//            return true;
+//        }
+//        return false;
+//    }
+//
+//    private void requestPermissions() {
+//        ActivityCompat.requestPermissions(
+//                this,
+//                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
+//                PERMISSION_ID
+//        );
+//    }
+//
+//    private boolean isLocationEnabled() {
+//        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
+//                LocationManager.NETWORK_PROVIDER
+//        );
+//    }
+//
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        if (requestCode == PERMISSION_ID) {
+//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                // Granted. Start getting the location information
+//            }
+//        }
+//    }
+//
+//
+//    @Override
+//    public void onResume(){
+//        super.onResume();
+//        if (checkPermissions()) {
+//            getLastLocation();
+//        }
+//
+//    }
+
+
 

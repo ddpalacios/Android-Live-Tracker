@@ -1,96 +1,136 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:orientation="vertical"
+    android:id="@+id/relativeLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_alignParentTop="true"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentStart="true"
+    >
 
 
     <Button
         android:id="@+id/getData"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Connect to content"
-        android:layout_marginTop="50dp"
-        android:layout_centerHorizontal="true"/>
-
-
-    <Button
-        android:id="@+id/ToMaps"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Head To Maps"
-        android:layout_below="@id/getData"
-
-        android:layout_marginTop="50dp"
-        android:layout_centerHorizontal="true"/>
-
-
+        android:text="Connect" />
 
     <Button
         android:id="@+id/closeData"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Close Connection"
-        android:layout_marginTop="50dp"
-        android:layout_below="@id/ToMaps"
-        android:layout_centerHorizontal="true"/>
+        android:layout_below="@+id/getData"
+        android:text="Disconnect" />
 
 
+    <EditText
+        android:id="@+id/station_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:layout_below="@+id/closeData"
+
+        android:hint="Station..." />
+
+    <EditText
+        android:id="@+id/station_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:layout_below="@+id/station_name"
+
+        android:hint="train type..." />
+
+
+
+    <EditText
+        android:id="@+id/dest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:layout_below="@+id/station_type"
+        android:hint="Direction..." />
     <TextView
         android:id="@+id/result"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Result ..."
-        android:layout_centerHorizontal="true"
-        android:scrollbars="vertical"
-        android:layout_marginTop="30dp"
-        android:layout_below="@id/closeData"
-        android:textSize="15sp"/>
 
-    <Button
-    android:id="@+id/dataReader"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Read CSV"
-    android:layout_marginTop="50dp"
-    android:layout_below="@id/result"
-    android:layout_centerHorizontal="true"/>
-
-
-
-    <Button
-        android:id="@+id/getUserLoc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Retrieve Current Location Coord"
-        android:layout_marginTop="50dp"
-        android:layout_below="@id/dataReader"
-        android:layout_centerHorizontal="true"/>
-
-    <TextView
-        android:id="@+id/latTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="lat ..."
-        android:layout_centerHorizontal="true"
-        android:scrollbars="vertical"
-        android:layout_marginTop="30dp"
-        android:layout_below="@id/getUserLoc"
-        android:textSize="15sp"/>
-
-
-    <TextView
-        android:id="@+id/lonTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="73dp"
-        android:layout_marginTop="30dp"
-        android:layout_toRightOf="@id/latTextView"
-        android:layout_below="@id/getUserLoc"
-
-        android:scrollbars="vertical"
-        android:text="Lon ..."
-        android:textSize="15sp" />
+        android:layout_below="@+id/dest"
+        android:text="Result..." />
 
 
 </RelativeLayout>
+<!--    <Button-->
+<!--        android:id="@+id/getData"-->
+<!--        android:layout_width="134dp"-->
+<!--        android:layout_height="53dp"-->
+<!--        android:layout_alignParentTop="true"-->
+<!--        android:layout_alignParentRight="true"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:layout_marginTop="0dp"-->
+<!--        android:layout_marginRight="6dp"-->
+<!--        android:layout_marginBottom="550dp"-->
+<!--        android:text="Connect to content" />-->
+
+<!--        <Button-->
+<!--        android:id="@+id/ToMaps"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--            android:text="Head To Maps" />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/closeData"-->
+<!--        android:layout_width="128dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentEnd="true"-->
+<!--        android:layout_alignParentRight="true"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:layout_marginTop="50dp"-->
+<!--        android:layout_marginEnd="8dp"-->
+<!--        android:layout_marginRight="8dp"-->
+<!--        android:layout_marginBottom="478dp"-->
+<!--        android:text="Close Connection" />-->
+
+
+<!--    <TextView-->
+<!--        android:id="@+id/result"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentEnd="true"-->
+<!--        android:layout_alignParentRight="true"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:layout_marginTop="30dp"-->
+<!--        android:layout_marginEnd="172dp"-->
+<!--        android:layout_marginRight="172dp"-->
+<!--        android:layout_marginBottom="169dp"-->
+<!--        android:scrollbars="vertical"-->
+<!--        android:text="Result ..."-->
+<!--        android:textSize="15sp" />-->
+
+
+<!--    <Button-->
+<!--        android:id="@+id/dataReader"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentEnd="true"-->
+<!--        android:layout_alignParentRight="true"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:layout_marginTop="50dp"-->
+<!--        android:layout_marginEnd="26dp"-->
+<!--        android:layout_marginRight="26dp"-->
+<!--        android:layout_marginBottom="404dp"-->
+<!--        android:text="Read CSV" />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/getUserLoc"-->
+<!--        android:layout_width="193dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:layout_marginTop="144dp"-->
+<!--        android:layout_marginBottom="489dp"-->
+<!--        android:text="Retrieve Current Location Coord" />-->
+
+
