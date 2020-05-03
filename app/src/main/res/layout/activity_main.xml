@@ -66,5 +66,31 @@
         android:layout_below="@id/dataReader"
         android:layout_centerHorizontal="true"/>
 
+    <TextView
+        android:id="@+id/latTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="lat ..."
+        android:layout_centerHorizontal="true"
+        android:scrollbars="vertical"
+        android:layout_marginTop="30dp"
+        android:layout_below="@id/getUserLoc"
+        android:textSize="15sp"/>
+
+
+    <TextView
+        android:id="@+id/lonTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="73dp"
+        android:layout_marginTop="30dp"
+        android:layout_toRightOf="@id/latTextView"
+        android:layout_below="@id/getUserLoc"
+
+        android:scrollbars="vertical"
+        android:text="Lon ..."
+        android:textSize="15sp" />
+
 
 </RelativeLayout>

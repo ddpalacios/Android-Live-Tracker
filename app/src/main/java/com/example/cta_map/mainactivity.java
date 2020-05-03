@@ -5,10 +5,13 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Looper;
+import android.provider.Settings;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
@@ -16,11 +19,19 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.opencsv.CSVReader;
 
 import org.jsoup.Jsoup;
@@ -58,15 +69,17 @@ public class mainactivity extends AppCompatActivity {
 
     public final String url = "https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=red";
     private Button getData, closeConn, toMap, csv_reader, userLoc;
-    private TextView result;
+    private TextView result, latTextView, lonTextView;
     private Boolean openConnection = true;
     int PERMISSION_ID = 44;
+    FusedLocationProviderClient mFusedLocationClient;
 
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_main);
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
 
         final Context context = getApplicationContext();
@@ -89,6 +102,7 @@ public class mainactivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 debug.ShowToast(context, "Retrieving user coord...");
+                getLastLocation();
 
 
 
@@ -290,7 +304,71 @@ public class mainactivity extends AppCompatActivity {
     }
 
 
+    private LocationCallback mLocationCallback = new LocationCallback() {
+        @SuppressLint("SetTextI18n")
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            Location mLastLocation = locationResult.getLastLocation();
+            Log.e("loc", mLastLocation.getLongitude()+"");
 
+           /* latTextView.setText(mLastLocation.getLatitude()+"");
+            lonTextView.setText(mLastLocation.getLongitude()+"");*/
+        }
+    };
+
+
+
+    @SuppressLint("MissingPermission")
+    private void requestNewLocationData(){
+
+        LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setInterval(0);
+        mLocationRequest.setFastestInterval(0);
+//        mLocationRequest.setNumUpdates(1);
+        mLocationRequest.setInterval(0);
+        mLocationRequest.setFastestInterval(0);
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        mFusedLocationClient.requestLocationUpdates(
+                mLocationRequest, mLocationCallback,
+                Looper.myLooper()
+        );
+
+    }
+
+
+
+
+    @SuppressLint("MissingPermission")
+    private void getLastLocation(){
+        if (checkPermissions()) {
+            if (isLocationEnabled()) {
+                mFusedLocationClient.getLastLocation().addOnCompleteListener(
+                        new OnCompleteListener<Location>() {
+                            @SuppressLint("SetTextI18n")
+                            @Override
+                            public void onComplete(@NonNull Task<Location> task) {
+                                Location location = task.getResult();
+                                if (location == null) {
+                                    requestNewLocationData();
+                                } else {
+                                    Log.e("loc", location.getLongitude()+"");
+//                                    latTextView.setText(location.getLatitude()+"");
+//                                    lonTextView.setText(location.getLongitude()+"");
+                                }
+                            }
+                        }
+                );
+            } else {
+                Toast.makeText(this, "Turn on location", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(intent);
+            }
+        } else {
+            requestPermissions();
+        }
+    }
 
 
 
@@ -325,6 +403,16 @@ public class mainactivity extends AppCompatActivity {
                 // Granted. Start getting the location information
             }
         }
+    }
+
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if (checkPermissions()) {
+            getLastLocation();
+        }
+
     }
 
 
