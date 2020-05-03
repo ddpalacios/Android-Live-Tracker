@@ -81,6 +81,7 @@ public class mainactivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
+        getLastLocation();
 
         final Context context = getApplicationContext();
         super.onCreate(savedInstanceState);
@@ -102,7 +103,6 @@ public class mainactivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 debug.ShowToast(context, "Retrieving user coord...");
-                getLastLocation();
 
 
 
@@ -309,7 +309,7 @@ public class mainactivity extends AppCompatActivity {
         @Override
         public void onLocationResult(LocationResult locationResult) {
             Location mLastLocation = locationResult.getLastLocation();
-            Log.e("loc", mLastLocation.getLongitude()+"");
+            Log.e("locCallBack", mLastLocation.getLatitude()+""+mLastLocation.getLongitude()+"");
 
            /* latTextView.setText(mLastLocation.getLatitude()+"");
             lonTextView.setText(mLastLocation.getLongitude()+"");*/
@@ -353,7 +353,7 @@ public class mainactivity extends AppCompatActivity {
                                 if (location == null) {
                                     requestNewLocationData();
                                 } else {
-                                    Log.e("loc", location.getLongitude()+"");
+                                    Log.e("lastLoc", location.getLatitude()+""+location.getLongitude()+"");
 //                                    latTextView.setText(location.getLatitude()+"");
 //                                    lonTextView.setText(location.getLongitude()+"");
                                 }
