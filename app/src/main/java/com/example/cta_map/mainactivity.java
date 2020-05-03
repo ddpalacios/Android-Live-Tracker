@@ -117,6 +117,20 @@ public class mainactivity extends AppCompatActivity {
                              if (station_name.equals("chicago")){
                                  cnt++;
 
+                                 // Train lines
+                                 String red = tokens[7];
+                                 String blue = tokens[8];
+                                 String green = tokens[9];
+                                 String brown = tokens[10];
+                                 String purple = tokens[11];
+                                 String yellow = tokens[13];
+                                 String pink = tokens[14];
+                                 String orange = tokens[15];
+
+
+
+
+
                                  // coordinates parse
                                  String station_coord = tokens[16] +tokens[17];
                                  station_coord = station_coord.replace("(", "").replace(")", "");
@@ -124,6 +138,12 @@ public class mainactivity extends AppCompatActivity {
                                  String lat = split_cord[0];
                                  String lon = split_cord[1];
                                 Log.e("COORD", "LAT: "+lat+ " LON: "+ lon);
+
+
+
+
+
+
 
 
 
