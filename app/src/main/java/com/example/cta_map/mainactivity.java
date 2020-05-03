@@ -33,6 +33,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 class Debugger{
@@ -111,49 +112,21 @@ public class mainactivity extends AppCompatActivity {
                     try {
                         if ((line = reader.readLine()) != null){
                             String[] tokens = line.split(",");
-                             String station_name = tokens[3].toLowerCase();
+                             String station_name = tokens[0].toLowerCase();
+                            HashMap<String, String> train_lines = new HashMap<>();
+                            HashMap<String, String> trains = GetStation(tokens, train_lines);
 
 
-                             if (station_name.equals("chicago")){
+                             if (station_name.equals("chicago") && Boolean.parseBoolean(trains.get("red"))){
                                  cnt++;
-
-                                 // Train lines
-                                 String red = tokens[7];
-                                 String blue = tokens[8];
-                                 String green = tokens[9];
-                                 String brown = tokens[10];
-                                 String purple = tokens[11];
-                                 String yellow = tokens[13];
-                                 String pink = tokens[14];
-                                 String orange = tokens[15];
-
-
-
-
-
-                                 // coordinates parse
-                                 String station_coord = tokens[16] +tokens[17];
-                                 station_coord = station_coord.replace("(", "").replace(")", "");
-                                 String[] split_cord = station_coord.split(" ");
-                                 String lat = split_cord[0];
-                                 String lon = split_cord[1];
-                                Log.e("COORD", "LAT: "+lat+ " LON: "+ lon);
-
-
-
-
-
-
-
-
-
-
+                                 String[] coord = getCord(tokens);
+                                 Log.e("COORD", Arrays.toString(coord));
+                                 break;
 
                              }
 
 
                         }else{
-                            debug.ShowToast(context, cnt+" STATIONS FOUND.");
                             break;
                         }
 
@@ -164,6 +137,7 @@ public class mainactivity extends AppCompatActivity {
 
 
                 }
+                debug.ShowToast(context, cnt+" STATION(S) FOUND.");
 
 
 
@@ -171,41 +145,49 @@ public class mainactivity extends AppCompatActivity {
         });
 
 
-//        InputStream is = getResources().openRawResource(R.raw.train_stations);
-//        BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-//        String line;
-//        int cnt=0;
-//        while (true){
-//            try {
-//                if ((line = reader.readLine()) != null){
-//                    String[] tokens = line.split(",");
-//                    String station_name = tokens[3].toLowerCase();
-//
-//
-//                }
-//
-//
-//
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                break;
-//            }
-//
-//
-//        }
+    }
+
+
+    private HashMap<String, String> GetStation(String [] tokens, HashMap<String, String> train_lines){
+
+        // Train lines
+        String red = tokens[1];
+        String blue = tokens[2];
+        String green = tokens[3];
+        String brown = tokens[4];
+        String purple = tokens[5];
+        String yellow = tokens[6];
+        String pink = tokens[7];
+        String orange = tokens[8];
+
+        // Add to our Data Structure
+        train_lines.put("red", red);
+        train_lines.put("blue", blue);
+        train_lines.put("green", green);
+        train_lines.put("purple", purple);
+        train_lines.put("yellow", yellow);
+        train_lines.put("pink", pink);
+        train_lines.put("orange", orange);
+        train_lines.put("brown", brown);
 
 
 
+        return train_lines;
+    }
 
-//        final ReadCSV csv_stations = new ReadCSV("train_stations.csv");
-//        String station_cordinates = csv_stations.getStationCoord("Chicago", "red");
-//        Log.d("Station Location", "Station located at: "+ csv_stations);
 
+    private String[] getCord(String [] tokens){
+
+        // coordinates parse
+        String station_coord = tokens[9] +tokens[10];
+        station_coord = station_coord.replace("(", "").replace(")", "");
+        return station_coord.split(" ");
 
 
 
 
     }
+
 
 
     private void extract_train_content(final String url, final Debugger debugger){
