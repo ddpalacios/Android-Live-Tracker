@@ -157,34 +157,34 @@ return null;
         private String calculate_nearest_train_from(ArrayList<String> chosen_trains, String station_name, String station_type, Integer num_trains) throws ParseException {
 
             final int R = 6371; // Radious of the earth
-//            String[] station_cord = retrieve_station_coordinates(station_name, station_type);
-//            NumberFormat nf = NumberFormat.getInstance();
-//            double station_lat = Objects.requireNonNull(nf.parse(Arrays.toString(station_cord))).doubleValue();
-//            double station_lat = Double.parseDouble(station_cord[0]);
-//            double station_lon = Double.parseDouble(station_cord[1]);
-
-//            Log.e("STATION CORD", Arrays.toString(station_cord));
-
-//            for (String coord : chosen_trains){
-//                Log.e("d", String.valueOf(station_lat));
-//                String[] train_cord = coord.split(",");
-//                double train_lat = Double.parseDouble(train_cord[0]);
-//                double train_lon = Double.parseDouble(train_cord[1]);
-//                Double latDistance = toRad(train_lat-station_lat);
-//                Double lonDistance = toRad(train_lon-station_lon);
-//
-//                double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2) +
-//                    Math.cos(toRad(station_lat)) * Math.cos(toRad(train_lat)) *
-//                            Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-//
-//
-//                double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-//                double distance = R * c;
-//
-//                Log.e("CALCULATION", "The distance between two lat and long is::" + distance);
+            String[] station_cord = retrieve_station_coordinates(station_name, station_type);
+            Log.e("STATION CORD", Arrays.toString(station_cord));
+            double station_lat = Double.parseDouble(station_cord[0]);
+            double station_lon = Double.parseDouble(station_cord[1]);
 
 
-//            }
+
+
+            for (String coord : chosen_trains){
+                Log.e("d", String.valueOf(station_lat));
+                String[] train_cord = coord.split(",");
+                double train_lat = Double.parseDouble(train_cord[0]);
+                double train_lon = Double.parseDouble(train_cord[1]);
+                Double latDistance = toRad(train_lat-station_lat);
+                Double lonDistance = toRad(train_lon-station_lon);
+
+                double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2) +
+                    Math.cos(toRad(station_lat)) * Math.cos(toRad(train_lat)) *
+                            Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+
+
+                double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                double distance = R * c;
+
+                Log.e("CALCULATION", "The distance between two lat and long is::" + distance);
+
+
+            }
 
 
 
@@ -264,7 +264,6 @@ return null;
             // coordinates parse
             String station_coord = tokens[9] +" "+tokens[11];
             station_coord = station_coord.replace("(", "").replace(")", "").replace("\"", "");
-
 
             return station_coord.split(" ");
         }
