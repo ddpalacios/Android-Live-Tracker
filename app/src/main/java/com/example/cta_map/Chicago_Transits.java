@@ -1,9 +1,7 @@
 package com.example.cta_map;
 
-import android.annotation.SuppressLint;
 import android.os.Build;
 import android.util.Log;
-import android.view.View;
 
 import androidx.annotation.RequiresApi;
 
@@ -12,17 +10,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Objects;
-import java.util.Scanner;
-
+import java.util.Collections;
 class Chicago_Transits {
     private BufferedReader reader;
     Chicago_Transits(BufferedReader reader){
@@ -67,17 +60,17 @@ class Chicago_Transits {
 
 
 
-       String find_nearest_train_from(final String stationName, final String stationType, final String SpecifiedTrainDirection){
+       String find_nearest_train_from(final String[] station_coordinates,final String stationName, final String stationType, final String SpecifiedTrainDirection){
         // TODO: Retrieve All Trains with specified direction and calculate/return nearest train from chosen station
            HashMap <String, String> StationTypeKey = TrainLineKeys();
-           final ArrayList<Integer> indexies = new ArrayList<Integer>();
-           final ArrayList<String> chosenTrains = new ArrayList<String>();
            final String url = "https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt="+StationTypeKey.get(stationType.toLowerCase());
            new Thread(new Runnable() {
                @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                @Override
                public void run() {
                    while (true) {
+                       final ArrayList<Integer> indexies = new ArrayList<Integer>();
+                       final ArrayList<String> chosenTrains = new ArrayList<String>();
 
                        try {
                            Document content = Jsoup.connect(url).get();
@@ -94,9 +87,10 @@ class Chicago_Transits {
                            String[] train_direction = trDr.text().split(" ");
 
 
-                           Log.e("Latititudes", Arrays.toString(latitude));
-                           Log.e("Longtitude", Arrays.toString(longtitude));
-                           Log.e("TrDR", Arrays.toString(train_direction));
+//                           Log.e("Latititudes", Arrays.toString(latitude));
+//                           Log.e("Longtitude", Arrays.toString(longtitude));
+//                           Log.e("TrDR", Arrays.toString(train_direction));
+
                            for (int i=0; i< train_direction.length; i++){
                                String elem = train_direction[i];
                                if (elem.equals(SpecifiedTrainDirection)){
@@ -105,14 +99,16 @@ class Chicago_Transits {
                                }
 
                            }
-                           Log.e("TRAINS", String.valueOf(indexies));
+//                           Log.e("TRAINS", String.valueOf(indexies));
 
                            for (Integer index : indexies){
                                chosenTrains.add((latitude[index] + ","+ longtitude[index]));
 
                            }
-                           Log.e("Chosen Trains", String.valueOf(chosenTrains));
-                           String closest_train = calculate_nearest_train_from(chosenTrains,stationName, stationType , 1);
+//                           Log.e("Chosen Trains", String.valueOf(chosenTrains));
+                           double closest_train = calculate_nearest_train_from(chosenTrains,station_coordinates,stationName, stationType , 1);
+                           double feet = closest_train * 0.62137;
+                           Log.e("DISTANCE", String.valueOf(feet)+ " mi away!");
 
 
 
@@ -125,7 +121,6 @@ class Chicago_Transits {
 
 
 
-                           break;
 
 
 
@@ -154,19 +149,18 @@ return null;
 
 
         @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-        private String calculate_nearest_train_from(ArrayList<String> chosen_trains, String station_name, String station_type, Integer num_trains) throws ParseException {
-
+        private double calculate_nearest_train_from(ArrayList<String> chosen_trains,String[] station_coordinates ,String station_name, String station_type, Integer num_trains) throws ParseException {
+            ArrayList<Double> train_distance = new ArrayList<Double>();
             final int R = 6371; // Radious of the earth
-            String[] station_cord = retrieve_station_coordinates(station_name, station_type);
-            Log.e("STATION CORD", Arrays.toString(station_cord));
-            double station_lat = Double.parseDouble(station_cord[0]);
-            double station_lon = Double.parseDouble(station_cord[1]);
 
-
-
-
+            double station_lat = Double.parseDouble(station_coordinates[0]);
+            double station_lon = Double.parseDouble(station_coordinates[1]);
+//            Log.e("Cord", "LAT: " + station_lat+ " LON: "+ station_lon);
+//
+//
+//
+//
             for (String coord : chosen_trains){
-                Log.e("d", String.valueOf(station_lat));
                 String[] train_cord = coord.split(",");
                 double train_lat = Double.parseDouble(train_cord[0]);
                 double train_lon = Double.parseDouble(train_cord[1]);
@@ -177,18 +171,20 @@ return null;
                     Math.cos(toRad(station_lat)) * Math.cos(toRad(train_lat)) *
                             Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
 
-
+//
                 double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
                 double distance = R * c;
 
-                Log.e("CALCULATION", "The distance between two lat and long is::" + distance);
-//                break;
-
-
+                train_distance.add(distance);
             }
+//
+//
+//
+            Collections.sort(train_distance);
+//            Log.e("CALCULATION", "Nearest train distance: " + train_distance.get(0));
 
 
-        return null;
+        return train_distance.get(0);
         }
 
     private static Double toRad(Double value) {

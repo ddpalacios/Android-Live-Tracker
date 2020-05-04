@@ -113,18 +113,18 @@ public class mainactivity extends AppCompatActivity {
                 final Chicago_Transits chicago_transits = new Chicago_Transits(reader);
                 openConnection = true;
                 debug.ShowToast(context, "Extracting Content...");
-                String stationName = station_name.getText().toString().toLowerCase();
-                String stationType = station_type.getText().toString().toLowerCase();
-                String trainDirection = direction.getText().toString().toLowerCase();
+                final String stationName = station_name.getText().toString().toLowerCase();
+                final String stationType = station_type.getText().toString().toLowerCase();
+                final String trainDirection = direction.getText().toString().toLowerCase();
 
                 String[] station_coordinates = chicago_transits.retrieve_station_coordinates(stationName, stationType);
-                String nearest_train = chicago_transits.find_nearest_train_from(stationName, stationType, trainDirection);
+                String nearest_train = chicago_transits.find_nearest_train_from(station_coordinates, stationName, stationType, trainDirection);
 
                 if (station_coordinates == null){
                     debug.ShowToast(context, "No Station Found! Check Spelling!");
                 }else {
                     debug.ShowToast(context, stationName+" ("+stationType+")"+" Is Located at: "+ Arrays.toString(station_coordinates));
-                    Log.e("Station Coordinates", Arrays.toString(station_coordinates));
+//                    Log.e("Station Coordinates", Arrays.toString(station_coordinates));
                 }
 
 
