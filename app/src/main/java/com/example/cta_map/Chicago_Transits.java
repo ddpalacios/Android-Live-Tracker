@@ -87,10 +87,6 @@ class Chicago_Transits {
                            String[] train_direction = trDr.text().split(" ");
 
 
-//                           Log.e("Latititudes", Arrays.toString(latitude));
-//                           Log.e("Longtitude", Arrays.toString(longtitude));
-//                           Log.e("TrDR", Arrays.toString(train_direction));
-
                            for (int i=0; i< train_direction.length; i++){
                                String elem = train_direction[i];
                                if (elem.equals(SpecifiedTrainDirection)){
@@ -99,32 +95,19 @@ class Chicago_Transits {
                                }
 
                            }
-//                           Log.e("TRAINS", String.valueOf(indexies));
 
                            for (Integer index : indexies){
                                chosenTrains.add((latitude[index] + ","+ longtitude[index]));
 
                            }
-//                           Log.e("Chosen Trains", String.valueOf(chosenTrains));
                            double closest_train = calculate_nearest_train_from(chosenTrains,station_coordinates,stationName, stationType , 1);
-                           double feet = closest_train * 0.62137;
-                           Log.e("DISTANCE", String.valueOf(feet)+ " mi away!");
+                           double train_distance_in_miles = closest_train * 0.62137;
+                           Log.e("DISTANCE", String.valueOf(train_distance_in_miles)+ " mi away!");
+                           if (train_distance_in_miles < .15){
+                               Log.e("ARRIVED", "MADE IT TO "+ stationName + "("+stationType+")");
+                               // TODO: Get next nearest train approaching specified station
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                           }
 
                        } catch (IOException | ParseException e) {
                            Log.d("Error", "Error in extracting");
@@ -155,11 +138,7 @@ return null;
 
             double station_lat = Double.parseDouble(station_coordinates[0]);
             double station_lon = Double.parseDouble(station_coordinates[1]);
-//            Log.e("Cord", "LAT: " + station_lat+ " LON: "+ station_lon);
-//
-//
-//
-//
+
             for (String coord : chosen_trains){
                 String[] train_cord = coord.split(",");
                 double train_lat = Double.parseDouble(train_cord[0]);
@@ -171,17 +150,12 @@ return null;
                     Math.cos(toRad(station_lat)) * Math.cos(toRad(train_lat)) *
                             Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
 
-//
                 double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
                 double distance = R * c;
 
                 train_distance.add(distance);
             }
-//
-//
-//
             Collections.sort(train_distance);
-//            Log.e("CALCULATION", "Nearest train distance: " + train_distance.get(0));
 
 
         return train_distance.get(0);
@@ -190,8 +164,7 @@ return null;
     private static Double toRad(Double value) {
         return value * Math.PI / 180;
     }
-
-       private HashMap<String, String> TrainLineKeys(){
+    private HashMap<String, String> TrainLineKeys(){
         HashMap<String, String> TrainLineKeyCodes  = new HashMap<>();
            TrainLineKeyCodes.put("red", "red");
            TrainLineKeyCodes.put("green", "g");
@@ -203,10 +176,6 @@ return null;
 
            return TrainLineKeyCodes;
        }
-
-
-
-
         private HashMap<String, String> GetStation(String [] tokens, HashMap<String, String> train_lines){
 
         // Train lines

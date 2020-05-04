@@ -102,9 +102,6 @@ public class mainactivity extends AppCompatActivity {
         direction = (EditText)findViewById(R.id.dest);
 
 
-
-
-        final String[] tags = {"lat","lon","isApp", "nextStaNm"};
         getData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,15 +121,9 @@ public class mainactivity extends AppCompatActivity {
                     debug.ShowToast(context, "No Station Found! Check Spelling!");
                 }else {
                     debug.ShowToast(context, stationName+" ("+stationType+")"+" Is Located at: "+ Arrays.toString(station_coordinates));
-//                    Log.e("Station Coordinates", Arrays.toString(station_coordinates));
                 }
 
 
-
-
-
-//                webScrapper.Connect(url, true, tags);
-//                extract_train_content(url, debug);
             }
         });
 
