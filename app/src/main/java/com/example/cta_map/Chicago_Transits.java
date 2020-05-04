@@ -22,46 +22,9 @@ class Chicago_Transits {
         this.reader = reader;
 
 
-
-
-
-
     }
 
-   String[] retrieve_station_coordinates(String station_name, String station_type){
-       String line;
-       while (true){
-                    try {
-
-                        if ((line = this.reader.readLine()) != null){
-                            String[] tokens = line.split(",");
-                             String stationCanidate = tokens[0].toLowerCase();
-                            HashMap<String, String> train_lines = new HashMap<>();
-                            HashMap<String, String> train_types = GetStation(tokens, train_lines); //HashMap of All train lines
-
-                            if (stationCanidate.equals(station_name) && Boolean.parseBoolean(train_types.get(station_type))){
-                                return getCord(tokens);
-
-
-                            }
-
-                             }else {break;}
-
-
-
-                    }catch (IOException e){
-                        e.printStackTrace();
-                    }
-
-
-                }
-       return null;
-       }
-
-
-
        String find_nearest_train_from(final String[] station_coordinates,final String stationName, final String stationType, final String SpecifiedTrainDirection){
-        // TODO: Retrieve All Trains with specified direction and calculate/return nearest train from chosen station
            HashMap <String, String> StationTypeKey = TrainLineKeys();
            final String url = "https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt="+StationTypeKey.get(stationType.toLowerCase());
            new Thread(new Runnable() {
@@ -69,40 +32,21 @@ class Chicago_Transits {
                @Override
                public void run() {
                    while (true) {
-                       final ArrayList<Integer> indexies = new ArrayList<Integer>();
-                       final ArrayList<String> chosenTrains = new ArrayList<String>();
 
                        try {
                            Document content = Jsoup.connect(url).get();
-                           final Elements lat = content.select("lat");
-                           final Elements lon = content.select("lon");
-                           final Elements isApp = content.select("isApp");
-                           final Elements trDr = content.select("trDr");
-                           final Elements dest = content.select("nextStaNm");
+                           String[] isApproaching = content.select("isApp").text().split(" ");
+                           String[] next_station_stop = content.select("nextStaNm").text().split(" ");
 
-                           String[] latitude = lat.text().split(" ");
-                           String[] longtitude = lon.text().split(" ");
-                           String[] destination = dest.text().split(" ");
-                           String[] isApproaching = isApp.text().split(" ");
-                           String[] train_direction = trDr.text().split(" ");
+                           ArrayList<String> chosenTrains = get_trains_from(SpecifiedTrainDirection, content);
 
-
-                           for (int i=0; i< train_direction.length; i++){
-                               String elem = train_direction[i];
-                               if (elem.equals(SpecifiedTrainDirection)){
-                                   indexies.add(i);
-
-                               }
-
-                           }
-
-                           for (Integer index : indexies){
-                               chosenTrains.add((latitude[index] + ","+ longtitude[index]));
-
-                           }
                            double closest_train = calculate_nearest_train_from(chosenTrains,station_coordinates,stationName, stationType , 1);
+
+
                            double train_distance_in_miles = closest_train * 0.62137;
                            Log.e("DISTANCE", String.valueOf(train_distance_in_miles)+ " mi away!");
+
+
                            if (train_distance_in_miles < .15){
                                Log.e("ARRIVED", "MADE IT TO "+ stationName + "("+stationType+")");
                                // TODO: Get next nearest train approaching specified station
@@ -131,6 +75,72 @@ return null;
 
 
 
+private ArrayList<String>  get_trains_from(String dir, Document content){
+    final ArrayList<Integer> indexies = new ArrayList<Integer>();
+    final ArrayList<String> chosenTrains = new ArrayList<String>();
+    String[] latitude = content.select("lat").text().split(" ");
+    String[] longtitude = content.select("lon").text().split(" ");
+    String[] train_direction = content.select("trDr").text().split(" ");
+
+
+
+
+    for (int i=0; i< train_direction.length; i++){
+        String elem = train_direction[i];
+        if (elem.equals(dir)){
+            indexies.add(i);
+        }
+
+    }
+
+    for (Integer index : indexies){
+        chosenTrains.add((latitude[index] + ","+ longtitude[index]));
+
+    }
+
+
+
+    return chosenTrains;
+}
+
+
+
+
+
+
+
+
+
+
+        String[] retrieve_station_coordinates(String station_name, String station_type){
+        String line;
+        while (true){
+            try {
+
+                if ((line = this.reader.readLine()) != null){
+                    String[] tokens = line.split(",");
+                    String stationCanidate = tokens[0].toLowerCase();
+                    HashMap<String, String> train_lines = new HashMap<>();
+                    HashMap<String, String> train_types = GetStation(tokens, train_lines); //HashMap of All train lines
+
+                    if (stationCanidate.equals(station_name) && Boolean.parseBoolean(train_types.get(station_type))){
+                        return getCord(tokens);
+
+
+                    }
+
+                }else {break;}
+
+
+
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+
+
+        }
+        return null;
+    }
         @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         private double calculate_nearest_train_from(ArrayList<String> chosen_trains,String[] station_coordinates ,String station_name, String station_type, Integer num_trains) throws ParseException {
             ArrayList<Double> train_distance = new ArrayList<Double>();
@@ -160,11 +170,10 @@ return null;
 
         return train_distance.get(0);
         }
-
-    private static Double toRad(Double value) {
+        private static Double toRad(Double value) {
         return value * Math.PI / 180;
     }
-    private HashMap<String, String> TrainLineKeys(){
+        private HashMap<String, String> TrainLineKeys(){
         HashMap<String, String> TrainLineKeyCodes  = new HashMap<>();
            TrainLineKeyCodes.put("red", "red");
            TrainLineKeyCodes.put("green", "g");
@@ -202,8 +211,6 @@ return null;
 
         return train_lines;
     }
-
-
         private String[] getCord(String [] tokens) {
 
             // coordinates parse
