@@ -116,6 +116,7 @@ public class mainactivity extends AppCompatActivity {
                 String stationName = station_name.getText().toString().toLowerCase();
                 String stationType = station_type.getText().toString().toLowerCase();
                 String trainDirection = direction.getText().toString().toLowerCase();
+
                 String[] station_coordinates = chicago_transits.retrieve_station_coordinates(stationName, stationType);
                 String nearest_train = chicago_transits.find_nearest_train_from(stationName, stationType, trainDirection);
 

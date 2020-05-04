@@ -1,301 +1,301 @@
-STATION_NAME,RED,BLUE,G,BRN,P,Y,Pnk,O,Location
-18th,false,false,false,false,false,false,true,false,"(41.857908, -87.669147)"
-18th,false,false,false,false,false,false,true,false,"(41.857908, -87.669147)"
-35th/Archer,false,false,false,false,false,false,false,true,"(41.829353, -87.680622)"
-35th/Archer,false,false,false,false,false,false,false,true,"(41.829353, -87.680622)"
-35th-Bronzeville-IIT,false,false,true,false,false,false,false,false,"(41.831677, -87.625826)"
-35th-Bronzeville-IIT,false,false,true,false,false,false,false,false,"(41.831677, -87.625826)"
-43rd,false,false,true,false,false,false,false,false,"(41.816462, -87.619021)"
-43rd,false,false,true,false,false,false,false,false,"(41.816462, -87.619021)"
-51st,false,false,true,false,false,false,false,false,"(41.80209, -87.618487)"
-51st,false,false,true,false,false,false,false,false,"(41.80209, -87.618487)"
-54th/Cermak,false,false,false,false,false,false,true,false,"(41.85177331, -87.75669201)"
-54th/Cermak,false,false,false,false,false,false,true,false,"(41.85177331, -87.75669201)"
-69th,true,false,false,false,false,false,false,false,"(41.768367, -87.625724)"
-69th,true,false,false,false,false,false,false,false,"(41.768367, -87.625724)"
-79th,true,false,false,false,false,false,false,false,"(41.750419, -87.625112)"
-79th,true,false,false,false,false,false,false,false,"(41.750419, -87.625112)"
-95th/Dan Ryan,true,false,false,false,false,false,false,false,"(41.722377, -87.624342)"
-95th/Ran Ryan,true,false,false,false,false,false,false,false,"(41.722377, -87.624342)"
-Adams/Wabash,false,false,true,false,false,false,true,true,"(41.879507, -87.626037)"
-Adams/Wabash,false,false,true,true,false,false,false,false,"(41.879507, -87.626037)"
-Addison,false,false,false,true,false,false,false,false,"(41.947028, -87.674642)"
-Addison,false,false,false,true,false,false,false,false,"(41.947028, -87.674642)"
-Addison,true,false,false,false,false,false,false,false,"(41.947428, -87.653626)"
-Addison,true,false,false,false,false,false,false,false,"(41.947428, -87.653626)"
-Argyle,true,false,false,false,false,false,false,false,"(41.973453, -87.65853)"
-Argyle,true,false,false,false,false,false,false,false,"(41.973453, -87.65853)"
-87th,true,false,false,false,false,false,false,false,"(41.735372, -87.624717)"
-Armitage,false,false,false,true,false,false,false,false,"(41.918217, -87.652644)"
-Armitage,false,false,false,true,false,false,false,false,"(41.918217, -87.652644)"
-Ashland,false,false,false,false,false,false,false,true,"(41.839234, -87.665317)"
-Ashland,false,false,false,false,false,false,false,true,"(41.839234, -87.665317)"
-Ashland/63rd,false,false,true,false,false,false,false,false,"(41.77886, -87.663766)"
-Ashland/63rd,false,false,true,false,false,false,false,false,"(41.77886, -87.663766)"
-Austin,false,true,false,false,false,false,false,false,"(41.870851, -87.776812)"
-Austin,false,true,false,false,false,false,false,false,"(41.870851, -87.776812)"
-Austin,false,false,true,false,false,false,false,false,"(41.887293, -87.774135)"
-Austin,false,false,true,false,false,false,false,false,"(41.887293, -87.774135)"
-Belmont,false,true,false,false,false,false,false,false,"(41.938132, -87.712359)"
-Belmont,false,true,false,false,false,false,false,false,"(41.938132, -87.712359)"
-Belmont,true,false,false,false,false,false,false,false,"(41.939751, -87.65338)"
-Belmont,true,false,false,false,false,false,false,false,"(41.939751, -87.65338)"
-Belmont,false,false,false,true,false,false,false,false,"(41.939751, -87.65338)"
-Belmont,false,false,false,true,false,false,false,false,"(41.939751, -87.65338)"
-Berwyn,true,false,false,false,false,false,false,false,"(41.977984, -87.658668)"
-Berwyn,true,false,false,false,false,false,false,false,"(41.977984, -87.658668)"
-Bryn Mawr,true,false,false,false,false,false,false,false,"(41.983504, -87.65884)"
-Bryn Mawr,true,false,false,false,false,false,false,false,"(41.983504, -87.65884)"
-California,false,false,false,false,false,false,true,false,"(41.854109, -87.694774)"
-California,false,false,false,false,false,false,true,false,"(41.854109, -87.694774)"
-California,false,false,true,false,false,false,false,false,"(41.88422, -87.696234)"
-California,false,false,true,false,false,false,false,false,"(41.88422, -87.696234)"
-Central,false,false,true,false,false,false,false,false,"(41.887389, -87.76565)"
-Central,false,false,true,false,false,false,false,false,"(41.887389, -87.76565)"
-Central Park,false,false,false,false,false,false,true,false,"(41.853839, -87.714842)"
-Central Park,false,false,false,false,false,false,true,false,"(41.853839, -87.714842)"
-Cermak-Chinatown,true,false,false,false,false,false,false,false,"(41.853206, -87.630968)"
-Cermak-Chinatown,true,false,false,false,false,false,false,false,"(41.853206, -87.630968)"
-Central,false,false,false,false,true,false,false,false,"(42.063987, -87.685617)"
-Central,false,false,false,false,true,false,false,false,"(42.063987, -87.685617)"
-Cicero,false,false,false,false,false,false,true,false,"(41.85182, -87.745336)"
-Cicero,false,false,false,false,false,false,true,false,"(41.85182, -87.745336)"
-Cicero,false,true,false,false,false,false,false,false,"(41.871574, -87.745154)"
-Cicero,false,true,false,false,false,false,false,false,"(41.871574, -87.745154)"
-Cicero,false,false,true,false,false,false,false,false,"(41.886519, -87.744698)"
-Cicero,false,false,true,false,false,false,false,false,"(41.886519, -87.744698)"
-Clark/Lake,false,false,true,false,false,false,true,true,"(41.885737, -87.630886)"
-Clark/Lake,false,false,true,true,false,false,false,false,"(41.885737, -87.630886)"
-Clark/Lake,false,true,false,false,false,false,false,false,"(41.885737, -87.630886)"
-Clark/Lake,false,true,false,false,false,false,false,false,"(41.885737, -87.630886)"
-Clinton,false,true,false,false,false,false,false,false,"(41.875539, -87.640984)"
-Clinton,false,true,false,false,false,false,false,false,"(41.875539, -87.640984)"
-Clinton,false,false,true,false,false,false,true,false,"(41.885678, -87.641782)"
-Clinton,false,false,true,false,false,false,true,false,"(41.885678, -87.641782)"
-Conservatory,false,false,true,false,false,false,false,false,"(41.884904, -87.716523)"
-Conservatory,false,false,true,false,false,false,false,false,"(41.884904, -87.716523)"
-Cottage Grove,false,false,true,false,false,false,false,false,"(41.780309, -87.605857)"
-Cumberland,false,true,false,false,false,false,false,false,"(41.984246, -87.838028)"
-Cumberland,false,true,false,false,false,false,false,false,"(41.984246, -87.838028)"
-Damen,false,false,false,false,false,false,true,false,"(41.854517, -87.675975)"
-Damen,false,false,false,false,false,false,true,false,"(41.854517, -87.675975)"
-Damen,false,true,false,false,false,false,false,false,"(41.909744, -87.677437)"
-Damen,false,true,false,false,false,false,false,false,"(41.909744, -87.677437)"
-Damen,false,false,false,true,false,false,false,false,"(41.966286, -87.678639)"
-Damen,false,false,false,true,false,false,false,false,"(41.966286, -87.678639)"
-Davis,false,false,false,false,true,false,false,false,"(42.04771, -87.683543)"
-Davis,false,false,false,false,true,false,false,false,"(42.04771, -87.683543)"
-Dempster,false,false,false,false,true,false,false,false,"(42.041655, -87.681602)"
-Dempster,false,false,false,false,true,false,false,false,"(42.041655, -87.681602)"
-Diversey,false,false,false,true,false,false,false,false,"(41.932732, -87.653131)"
-Diversey,false,false,false,true,false,false,false,false,"(41.932732, -87.653131)"
-Division,false,true,false,false,false,false,false,false,"(41.903355, -87.666496)"
-Forest Park,false,true,false,false,false,false,false,false,"(41.874257, -87.817318)"
-Forest Park,false,true,false,false,false,false,false,false,"(41.874257, -87.817318)"
-Foster,false,false,false,false,true,false,false,false,"(42.05416, -87.68356)"
-Foster,false,false,false,false,true,false,false,false,"(42.05416, -87.68356)"
-Francisco,false,false,false,true,false,false,false,false,"(41.966046, -87.701644)"
-Francisco,false,false,false,true,false,false,false,false,"(41.966046, -87.701644)"
-Fullerton,true,false,false,false,false,false,false,false,"(41.925051, -87.652866)"
-Fullerton,true,false,false,false,false,false,false,false,"(41.925051, -87.652866)"
-Fullerton,false,false,false,true,false,false,false,false,"(41.925051, -87.652866)"
-Fullerton,false,false,false,true,false,false,false,false,"(41.925051, -87.652866)"
-Garfield,false,false,true,false,false,false,false,false,"(41.795172, -87.618327)"
-Garfield,false,false,true,false,false,false,false,false,"(41.795172, -87.618327)"
-Grand,false,true,false,false,false,false,false,false,"(41.891189, -87.647578)"
-Grand,false,true,false,false,false,false,false,false,"(41.891189, -87.647578)"
-Grand,true,false,false,false,false,false,false,false,"(41.891665, -87.628021)"
-Grand,true,false,false,false,false,false,false,false,"(41.891665, -87.628021)"
-Granville,true,false,false,false,false,false,false,false,"(41.993664, -87.659202)"
-Granville,true,false,false,false,false,false,false,false,"(41.993664, -87.659202)"
-Halsted,false,false,false,false,false,false,false,true,"(41.84678, -87.648088)"
-Halsted,false,false,false,false,false,false,false,true,"(41.84678, -87.648088)"
-Halsted,false,false,true,false,false,false,false,false,"(41.778943, -87.644244)"
-Halsted,false,false,true,false,false,false,false,false,"(41.778943, -87.644244)"
-Harlem,false,true,false,false,false,false,false,false,"(41.98227, -87.8089)"
-Harlem,false,true,false,false,false,false,false,false,"(41.98227, -87.8089)"
-Harlem/Lake,false,false,true,false,false,false,false,false,"(41.886848, -87.803176)"
-Harlem/Lake,false,false,true,false,false,false,false,false,"(41.886848, -87.803176)"
-Harrison,true,false,false,false,false,false,false,false,"(41.874039, -87.627479)"
-Harrison,true,false,false,false,false,false,false,false,"(41.874039, -87.627479)"
-Division,false,true,false,false,false,false,false,false,"(41.903355, -87.666496)"
-Garfield,true,false,false,false,false,false,false,false,"(41.79542, -87.631157)"
-Harlem,false,true,false,false,false,false,false,false,"(41.87349, -87.806961)"
-Harold Washington Library-State/Van Buren,false,false,false,false,false,false,true,true,"(41.876862, -87.628196)"
-Howard,false,false,false,false,true,true,false,false,"(42.019063, -87.672892)"
-Howard,true,false,false,false,false,false,false,false,"(42.019063, -87.672892)"
-Howard,true,false,false,false,false,false,false,false,"(42.019063, -87.672892)"
-Illinois Medical District,false,true,false,false,false,false,false,false,"(41.875706, -87.673932)"
-Illinois Medical District,false,true,false,false,false,false,false,false,"(41.875706, -87.673932)"
-Indiana,false,false,true,false,false,false,false,false,"(41.821732, -87.621371)"
-Indiana,false,false,true,false,false,false,false,false,"(41.821732, -87.621371)"
-Irving Park,false,true,false,false,false,false,false,false,"(41.952925, -87.729229)"
-Irving Park,false,true,false,false,false,false,false,false,"(41.952925, -87.729229)"
-Irving Park,false,false,false,true,false,false,false,false,"(41.954521, -87.674868)"
-Irving Park,false,false,false,true,false,false,false,false,"(41.954521, -87.674868)"
-Jackson,false,true,false,false,false,false,false,false,"(41.878183, -87.629296)"
-Jackson,false,true,false,false,false,false,false,false,"(41.878183, -87.629296)"
-Jackson,true,false,false,false,false,false,false,false,"(41.878153, -87.627596)"
-Jackson,true,false,false,false,false,false,false,false,"(41.878153, -87.627596)"
-Jarvis,true,false,false,false,false,false,false,false,"(42.015876, -87.669092)"
-Jarvis,true,false,false,false,false,false,false,false,"(42.015876, -87.669092)"
-Jefferson Park,false,true,false,false,false,false,false,false,"(41.970634, -87.760892)"
-Jefferson Park,false,true,false,false,false,false,false,false,"(41.970634, -87.760892)"
-Kedzie,false,false,false,false,false,false,false,true,"(41.804236, -87.704406)"
-Kedzie,false,false,false,false,false,false,false,true,"(41.804236, -87.704406)"
-Kedzie,false,false,false,false,false,false,true,false,"(41.853964, -87.705408)"
-Kedzie,false,false,false,false,false,false,true,false,"(41.853964, -87.705408)"
-Kedzie,false,false,false,true,false,false,false,false,"(41.965996, -87.708821)"
-Kedzie,false,false,false,true,false,false,false,false,"(41.965996, -87.708821)"
-Kedzie,false,false,true,false,false,false,false,false,"(41.884321, -87.706155)"
-Kedzie,false,false,true,false,false,false,false,false,"(41.884321, -87.706155)"
-Kedzie-Homan,false,true,false,false,false,false,false,false,"(41.874341, -87.70604)"
-Kedzie-Homan,false,true,false,false,false,false,false,false,"(41.874341, -87.70604)"
-Kimball,false,false,false,true,false,false,false,false,"(41.967901, -87.713065)"
-Kimball,false,false,false,true,false,false,false,false,"(41.967901, -87.713065)"
-King Drive,false,false,true,false,false,false,false,false,"(41.78013, -87.615546)"
-King Drive,false,false,true,false,false,false,false,false,"(41.78013, -87.615546)"
-Kostner,false,false,false,false,false,false,true,false,"(41.853751, -87.733258)"
-Kostner,false,false,false,false,false,false,true,false,"(41.853751, -87.733258)"
-Laramie,false,false,true,false,false,false,false,false,"(41.887163, -87.754986)"
-Laramie,false,false,true,false,false,false,false,false,"(41.887163, -87.754986)"
-LaSalle,false,true,false,false,false,false,false,false,"(41.875568, -87.631722)"
-LaSalle,false,true,false,false,false,false,false,false,"(41.875568, -87.631722)"
-LaSalle/Van Buren,false,false,false,false,false,false,true,true,"(41.8768, -87.631739)"
-LaSalle/Van Buren,false,false,false,true,false,false,false,false,"(41.8768, -87.631739)"
-Lawrence,true,false,false,false,false,false,false,false,"(41.969139, -87.658493)"
-Lawrence,true,false,false,false,false,false,false,false,"(41.969139, -87.658493)"
-Linden,false,false,false,false,true,false,false,false,"(42.073153, -87.69073)"
-Linden,false,false,false,false,true,false,false,false,"(42.073153, -87.69073)"
-Logan Square,false,true,false,false,false,false,false,false,"(41.929728, -87.708541)"
-Logan Square,false,true,false,false,false,false,false,false,"(41.929728, -87.708541)"
-Loyola,true,false,false,false,false,false,false,false,"(42.001073, -87.661061)"
-Loyola,true,false,false,false,false,false,false,false,"(42.001073, -87.661061)"
-Main,false,false,false,false,true,false,false,false,"(42.033456, -87.679538)"
-Main,false,false,false,false,true,false,false,false,"(42.033456, -87.679538)"
-Merchandise Mart,false,false,false,true,false,false,false,false,"(41.888969, -87.633924)"
-Merchandise Mart,false,false,false,true,false,false,false,false,"(41.888969, -87.633924)"
-Midway,false,false,false,false,false,false,false,true,"(41.78661, -87.737875)"
-Midway,false,false,false,false,false,false,false,true,"(41.78661, -87.737875)"
-Montrose,false,true,false,false,false,false,false,false,"(41.961539, -87.743574)"
-Montrose,false,true,false,false,false,false,false,false,"(41.961539, -87.743574)"
-Montrose,false,false,false,true,false,false,false,false,"(41.961756, -87.675047)"
-Montrose,false,false,false,true,false,false,false,false,"(41.961756, -87.675047)"
-Morgan,false,false,true,false,false,false,true,false,"(41.885586, -87.652193)"
-Morgan,false,false,true,false,false,false,true,false,"(41.885586, -87.652193)"
-Morse,true,false,false,false,false,false,false,false,"(42.008362, -87.665909)"
-Lake,true,false,false,false,false,false,false,false,"(41.884809, -87.627813)"
-Monroe,false,true,false,false,false,false,false,false,"(41.880703, -87.629378)"
-Monroe,true,false,false,false,false,false,false,false,"(41.880745, -87.627696)"
-Monroe,true,false,false,false,false,false,false,false,"(41.880745, -87.627696)"
-Monroe,false,true,false,false,false,false,false,false,"(41.880703, -87.629378)"
-Morse,true,false,false,false,false,false,false,false,"(42.008362, -87.665909)"
-North/Clybourn,true,false,false,false,false,false,false,false,"(41.910655, -87.649177)"
-North/Clybourn,true,false,false,false,false,false,false,false,"(41.910655, -87.649177)"
-Noyes,false,false,false,false,true,false,false,false,"(42.058282, -87.683337)"
-Noyes,false,false,false,false,true,false,false,false,"(42.058282, -87.683337)"
-Oak Park,false,true,false,false,false,false,false,false,"(41.872108, -87.791602)"
-Oak Park,false,true,false,false,false,false,false,false,"(41.872108, -87.791602)"
-Oak Park,false,false,true,false,false,false,false,false,"(41.886988, -87.793783)"
-Oak Park,false,false,true,false,false,false,false,false,"(41.886988, -87.793783)"
-Paulina,false,false,false,true,false,false,false,false,"(41.943623, -87.670907)"
-Paulina,false,false,false,true,false,false,false,false,"(41.943623, -87.670907)"
-Polk,false,false,false,false,false,false,true,false,"(41.871551, -87.66953)"
-Polk,false,false,false,false,false,false,true,false,"(41.871551, -87.66953)"
-Pulaski,false,false,false,false,false,false,false,true,"(41.799756, -87.724493)"
-Pulaski,false,false,false,false,false,false,false,true,"(41.799756, -87.724493)"
-Pulaski,false,false,false,false,false,false,true,false,"(41.853732, -87.724311)"
-Pulaski,false,false,false,false,false,false,true,false,"(41.853732, -87.724311)"
-Pulaski,false,true,false,false,false,false,false,false,"(41.873797, -87.725663)"
-Pulaski,false,true,false,false,false,false,false,false,"(41.873797, -87.725663)"
-Pulaski,false,false,true,false,false,false,false,false,"(41.885412, -87.725404)"
-Pulaski,false,false,true,false,false,false,false,false,"(41.885412, -87.725404)"
-Quincy/Wells,false,false,false,false,false,false,true,true,"(41.878723, -87.63374)"
-Quincy/Wells,false,false,false,true,false,false,false,false,"(41.878723, -87.63374)"
-Racine,false,true,false,false,false,false,false,false,"(41.87592, -87.659458)"
-Racine,false,true,false,false,false,false,false,false,"(41.87592, -87.659458)"
-Oakton-Skokie,false,false,false,false,false,true,false,false,"(42.02624348, -87.74722084)"
-Ridgeland,false,false,true,false,false,false,false,false,"(41.887159, -87.783661)"
-Ridgeland,false,false,true,false,false,false,false,false,"(41.887159, -87.783661)"
-Rockwell,false,false,false,true,false,false,false,false,"(41.966115, -87.6941)"
-Rockwell,false,false,false,true,false,false,false,false,"(41.966115, -87.6941)"
-O'Hare,false,true,false,false,false,false,false,false,"(41.97766526, -87.90422307)"
-Roosevelt,false,false,true,false,false,false,false,true,"(41.867405, -87.62659)"
-Rosemont,false,true,false,false,false,false,false,false,"(41.983507, -87.859388)"
-Rosemont,false,true,false,false,false,false,false,false,"(41.983507, -87.859388)"
-Sedgwick,false,false,false,true,false,false,false,false,"(41.910409, -87.639302)"
-Sedgwick,false,false,false,true,false,false,false,false,"(41.910409, -87.639302)"
-Sheridan,true,false,false,false,false,false,false,false,"(41.953775, -87.654929)"
-Sheridan,true,false,false,false,false,false,false,false,"(41.953775, -87.654929)"
-Sheridan,false,false,false,false,false,false,false,false,"(41.953775, -87.654929)"
-Sheridan,false,false,false,false,false,false,false,false,"(41.953775, -87.654929)"
-South Boulevard,false,false,false,false,true,false,false,false,"(42.027612, -87.678329)"
-South Boulevard,false,false,false,false,true,false,false,false,"(42.027612, -87.678329)"
-Southport,false,false,false,true,false,false,false,false,"(41.943744, -87.663619)"
-Southport,false,false,false,true,false,false,false,false,"(41.943744, -87.663619)"
-Sox-35th,true,false,false,false,false,false,false,false,"(41.831191, -87.630636)"
-Sox-35th,true,false,false,false,false,false,false,false,"(41.831191, -87.630636)"
-State/Lake,false,false,true,false,false,false,true,true,"(41.88574, -87.627835)"
-State/Lake,false,false,true,true,false,false,false,false,"(41.88574, -87.627835)"
-Thorndale,true,false,false,false,false,false,false,false,"(41.990259, -87.659076)"
-Thorndale,true,false,false,false,false,false,false,false,"(41.990259, -87.659076)"
-UIC-Halsted,false,true,false,false,false,false,false,false,"(41.875474, -87.649707)"
-UIC-Halsted,false,true,false,false,false,false,false,false,"(41.875474, -87.649707)"
-Dempster-Skokie,false,false,false,false,false,true,false,false,"(42.038951, -87.751919)"
-Washington/Wells,false,false,false,false,false,false,true,true,"(41.882695, -87.63378)"
-Washington/Wells,false,false,false,true,false,false,false,false,"(41.882695, -87.63378)"
-Wellington,false,false,false,true,false,false,false,false,"(41.936033, -87.653266)"
-Wellington,false,false,false,true,false,false,false,false,"(41.936033, -87.653266)"
-Western,false,false,false,false,false,false,false,true,"(41.804546, -87.684019)"
-Western,false,false,false,false,false,false,false,true,"(41.804546, -87.684019)"
-Western,false,false,false,false,false,false,true,false,"(41.854225, -87.685129)"
-Western,false,false,false,false,false,false,true,false,"(41.854225, -87.685129)"
-Roosevelt,true,false,false,false,false,false,false,false,"(41.867368, -87.627402)"
-Roosevelt,false,false,true,false,false,false,false,true,"(41.867405, -87.62659)"
-Washington,false,true,false,false,false,false,false,false,"(41.883164, -87.62944)"
-Washington,false,true,false,false,false,false,false,false,"(41.883164, -87.62944)"
-Western,false,false,false,true,false,false,false,false,"(41.966163, -87.688502)"
-Western,false,false,false,true,false,false,false,false,"(41.966163, -87.688502)"
-Cottage Grove,false,false,true,false,false,false,false,false,"(41.780309, -87.605857)"
-Clark/Division,true,false,false,false,false,false,false,false,"(41.90392, -87.631412)"
-87th,true,false,false,false,false,false,false,false,"(41.735372, -87.624717)"
-Dempster-Skokie,false,false,false,false,false,true,false,false,"(42.038951, -87.751919)"
-Oakton-Skokie,false,false,false,false,false,true,false,false,"(42.02624348, -87.74722084)"
-47th,false,false,true,false,false,false,false,false,"(41.809209, -87.618826)"
-47th,false,false,true,false,false,false,false,false,"(41.809209, -87.618826)"
-47th,true,false,false,false,false,false,false,false,"(41.810318, -87.63094)"
-47th,true,false,false,false,false,false,false,false,"(41.810318, -87.63094)"
-Howard,false,false,false,false,true,true,false,false,"(42.019063, -87.672892)"
-California,false,true,false,false,false,false,false,false,"(41.921939, -87.69689)"
-California,false,true,false,false,false,false,false,false,"(41.921939, -87.69689)"
-Chicago,false,true,false,false,false,false,false,false,"(41.896075, -87.655214)"
-Chicago,false,false,false,true,false,false,false,false,"(41.89681, -87.635924)"
-Chicago,false,false,false,true,false,false,false,false,"(41.89681, -87.635924)"
-Chicago,true,false,false,false,false,false,false,false,"(41.896671, -87.628176)"
-Chicago,true,false,false,false,false,false,false,false,"(41.896671, -87.628176)"
-Chicago,false,true,false,false,false,false,false,false,"(41.896075, -87.655214)"
-63rd,true,false,false,false,false,false,false,false,"(41.780536, -87.630952)"
-63rd,true,false,false,false,false,false,false,false,"(41.780536, -87.630952)"
-Garfield,true,false,false,false,false,false,false,false,"(41.79542, -87.631157)"
-Harlem,false,true,false,false,false,false,false,false,"(41.87349, -87.806961)"
-Harold Washington Library-State/Van Buren,false,false,false,true,false,false,false,false,"(41.876862, -87.628196)"
-Western,false,true,false,false,false,false,false,false,"(41.916157, -87.687364)"
-Lake,true,false,false,false,false,false,false,false,"(41.884809, -87.627813)"
-Roosevelt,true,false,false,false,false,false,false,false,"(41.867368, -87.627402)"
-O'Hare,false,true,false,false,false,false,false,false,"(41.97766526, -87.90422307)"
-Western,false,true,false,false,false,false,false,false,"(41.875478, -87.688436)"
-Western,false,true,false,false,false,false,false,false,"(41.875478, -87.688436)"
-Western,false,true,false,false,false,false,false,false,"(41.916157, -87.687364)"
-Cermak-McCormick Place,false,false,true,false,false,false,false,false,"(41.853115, -87.626402)"
-Cermak-McCormick Place,false,false,true,false,false,false,false,false,"(41.853115, -87.626402)"
-Wilson,false,false,false,false,false,false,false,false,"(41.964273, -87.657588)"
-Addison,false,true,false,false,false,false,false,false,"(41.94738, -87.71906)"
-Wilson,true,false,false,false,false,false,false,false,"(41.964273, -87.657588)"
-Washington/Wabash,false,false,true,false,false,false,true,true,"(41.88322, -87.626189)"
-Clark/Division,true,false,false,false,false,false,false,false,"(41.90392, -87.631412)"
-Addison,false,true,false,false,false,false,false,false,"(41.94738, -87.71906)"
-Wilson,true,false,false,false,false,false,false,false,"(41.964273, -87.657588)"
-Washington/Wabash,false,false,true,true,false,false,false,false,"(41.88322, -87.626189)"
-Wilson,false,false,false,false,false,false,false,false,"(41.964273, -87.657588)"
-Ashland,false,false,true,false,false,false,true,false,"(41.885269, -87.666969)"
-Ashland,false,false,true,false,false,false,true,false,"(41.885269, -87.666969)"
+STATION_NAME,RED,BLUE,G,BRN,P,Y,Pnk,O,Latitude,Longitude
+18th,false,false,false,false,false,false,true,false,"(41.857908,",-87.669147)
+18th,false,false,false,false,false,false,true,false,"(41.857908,",-87.669147)
+35th/Archer,false,false,false,false,false,false,false,true,"(41.829353,",-87.680622)
+35th/Archer,false,false,false,false,false,false,false,true,"(41.829353,",-87.680622)
+35th-Bronzeville-IIT,false,false,true,false,false,false,false,false,"(41.831677,",-87.625826)
+35th-Bronzeville-IIT,false,false,true,false,false,false,false,false,"(41.831677,",-87.625826)
+43rd,false,false,true,false,false,false,false,false,"(41.816462,",-87.619021)
+43rd,false,false,true,false,false,false,false,false,"(41.816462,",-87.619021)
+51st,false,false,true,false,false,false,false,false,"(41.80209,",-87.618487)
+51st,false,false,true,false,false,false,false,false,"(41.80209,",-87.618487)
+54th/Cermak,false,false,false,false,false,false,true,false,"(41.85177331,",-87.75669201)
+54th/Cermak,false,false,false,false,false,false,true,false,"(41.85177331,",-87.75669201)
+69th,true,false,false,false,false,false,false,false,"(41.768367,",-87.625724)
+69th,true,false,false,false,false,false,false,false,"(41.768367,",-87.625724)
+79th,true,false,false,false,false,false,false,false,"(41.750419,",-87.625112)
+79th,true,false,false,false,false,false,false,false,"(41.750419,",-87.625112)
+95th/Dan Ryan,true,false,false,false,false,false,false,false,"(41.722377,",-87.624342)
+95th/Ran Ryan,true,false,false,false,false,false,false,false,"(41.722377,",-87.624342)
+Adams/Wabash,false,false,true,false,false,false,true,true,"(41.879507,",-87.626037)
+Adams/Wabash,false,false,true,true,false,false,false,false,"(41.879507,",-87.626037)
+Addison,false,false,false,true,false,false,false,false,"(41.947028,",-87.674642)
+Addison,false,false,false,true,false,false,false,false,"(41.947028,",-87.674642)
+Addison,true,false,false,false,false,false,false,false,"(41.947428,",-87.653626)
+Addison,true,false,false,false,false,false,false,false,"(41.947428,",-87.653626)
+Argyle,true,false,false,false,false,false,false,false,"(41.973453,",-87.65853)
+Argyle,true,false,false,false,false,false,false,false,"(41.973453,",-87.65853)
+87th,true,false,false,false,false,false,false,false,"(41.735372,",-87.624717)
+Armitage,false,false,false,true,false,false,false,false,"(41.918217,",-87.652644)
+Armitage,false,false,false,true,false,false,false,false,"(41.918217,",-87.652644)
+Ashland,false,false,false,false,false,false,false,true,"(41.839234,",-87.665317)
+Ashland,false,false,false,false,false,false,false,true,"(41.839234,",-87.665317)
+Ashland/63rd,false,false,true,false,false,false,false,false,"(41.77886,",-87.663766)
+Ashland/63rd,false,false,true,false,false,false,false,false,"(41.77886,",-87.663766)
+Austin,false,true,false,false,false,false,false,false,"(41.870851,",-87.776812)
+Austin,false,true,false,false,false,false,false,false,"(41.870851,",-87.776812)
+Austin,false,false,true,false,false,false,false,false,"(41.887293,",-87.774135)
+Austin,false,false,true,false,false,false,false,false,"(41.887293,",-87.774135)
+Belmont,false,true,false,false,false,false,false,false,"(41.938132,",-87.712359)
+Belmont,false,true,false,false,false,false,false,false,"(41.938132,",-87.712359)
+Belmont,true,false,false,false,false,false,false,false,"(41.939751,",-87.65338)
+Belmont,true,false,false,false,false,false,false,false,"(41.939751,",-87.65338)
+Belmont,false,false,false,true,false,false,false,false,"(41.939751,",-87.65338)
+Belmont,false,false,false,true,false,false,false,false,"(41.939751,",-87.65338)
+Berwyn,true,false,false,false,false,false,false,false,"(41.977984,",-87.658668)
+Berwyn,true,false,false,false,false,false,false,false,"(41.977984,",-87.658668)
+Bryn Mawr,true,false,false,false,false,false,false,false,"(41.983504,",-87.65884)
+Bryn Mawr,true,false,false,false,false,false,false,false,"(41.983504,",-87.65884)
+California,false,false,false,false,false,false,true,false,"(41.854109,",-87.694774)
+California,false,false,false,false,false,false,true,false,"(41.854109,",-87.694774)
+California,false,false,true,false,false,false,false,false,"(41.88422,",-87.696234)
+California,false,false,true,false,false,false,false,false,"(41.88422,",-87.696234)
+Central,false,false,true,false,false,false,false,false,"(41.887389,",-87.76565)
+Central,false,false,true,false,false,false,false,false,"(41.887389,",-87.76565)
+Central Park,false,false,false,false,false,false,true,false,"(41.853839,",-87.714842)
+Central Park,false,false,false,false,false,false,true,false,"(41.853839,",-87.714842)
+Cermak-Chinatown,true,false,false,false,false,false,false,false,"(41.853206,",-87.630968)
+Cermak-Chinatown,true,false,false,false,false,false,false,false,"(41.853206,",-87.630968)
+Central,false,false,false,false,true,false,false,false,"(42.063987,",-87.685617)
+Central,false,false,false,false,true,false,false,false,"(42.063987,",-87.685617)
+Cicero,false,false,false,false,false,false,true,false,"(41.85182,",-87.745336)
+Cicero,false,false,false,false,false,false,true,false,"(41.85182,",-87.745336)
+Cicero,false,true,false,false,false,false,false,false,"(41.871574,",-87.745154)
+Cicero,false,true,false,false,false,false,false,false,"(41.871574,",-87.745154)
+Cicero,false,false,true,false,false,false,false,false,"(41.886519,",-87.744698)
+Cicero,false,false,true,false,false,false,false,false,"(41.886519,",-87.744698)
+Clark/Lake,false,false,true,false,false,false,true,true,"(41.885737,",-87.630886)
+Clark/Lake,false,false,true,true,false,false,false,false,"(41.885737,",-87.630886)
+Clark/Lake,false,true,false,false,false,false,false,false,"(41.885737,",-87.630886)
+Clark/Lake,false,true,false,false,false,false,false,false,"(41.885737,",-87.630886)
+Clinton,false,true,false,false,false,false,false,false,"(41.875539,",-87.640984)
+Clinton,false,true,false,false,false,false,false,false,"(41.875539,",-87.640984)
+Clinton,false,false,true,false,false,false,true,false,"(41.885678,",-87.641782)
+Clinton,false,false,true,false,false,false,true,false,"(41.885678,",-87.641782)
+Conservatory,false,false,true,false,false,false,false,false,"(41.884904,",-87.716523)
+Conservatory,false,false,true,false,false,false,false,false,"(41.884904,",-87.716523)
+Cottage Grove,false,false,true,false,false,false,false,false,"(41.780309,",-87.605857)
+Cumberland,false,true,false,false,false,false,false,false,"(41.984246,",-87.838028)
+Cumberland,false,true,false,false,false,false,false,false,"(41.984246,",-87.838028)
+Damen,false,false,false,false,false,false,true,false,"(41.854517,",-87.675975)
+Damen,false,false,false,false,false,false,true,false,"(41.854517,",-87.675975)
+Damen,false,true,false,false,false,false,false,false,"(41.909744,",-87.677437)
+Damen,false,true,false,false,false,false,false,false,"(41.909744,",-87.677437)
+Damen,false,false,false,true,false,false,false,false,"(41.966286,",-87.678639)
+Damen,false,false,false,true,false,false,false,false,"(41.966286,",-87.678639)
+Davis,false,false,false,false,true,false,false,false,"(42.04771,",-87.683543)
+Davis,false,false,false,false,true,false,false,false,"(42.04771,",-87.683543)
+Dempster,false,false,false,false,true,false,false,false,"(42.041655,",-87.681602)
+Dempster,false,false,false,false,true,false,false,false,"(42.041655,",-87.681602)
+Diversey,false,false,false,true,false,false,false,false,"(41.932732,",-87.653131)
+Diversey,false,false,false,true,false,false,false,false,"(41.932732,",-87.653131)
+Division,false,true,false,false,false,false,false,false,"(41.903355,",-87.666496)
+Forest Park,false,true,false,false,false,false,false,false,"(41.874257,",-87.817318)
+Forest Park,false,true,false,false,false,false,false,false,"(41.874257,",-87.817318)
+Foster,false,false,false,false,true,false,false,false,"(42.05416,",-87.68356)
+Foster,false,false,false,false,true,false,false,false,"(42.05416,",-87.68356)
+Francisco,false,false,false,true,false,false,false,false,"(41.966046,",-87.701644)
+Francisco,false,false,false,true,false,false,false,false,"(41.966046,",-87.701644)
+Fullerton,true,false,false,false,false,false,false,false,"(41.925051,",-87.652866)
+Fullerton,true,false,false,false,false,false,false,false,"(41.925051,",-87.652866)
+Fullerton,false,false,false,true,false,false,false,false,"(41.925051,",-87.652866)
+Fullerton,false,false,false,true,false,false,false,false,"(41.925051,",-87.652866)
+Garfield,false,false,true,false,false,false,false,false,"(41.795172,",-87.618327)
+Garfield,false,false,true,false,false,false,false,false,"(41.795172,",-87.618327)
+Grand,false,true,false,false,false,false,false,false,"(41.891189,",-87.647578)
+Grand,false,true,false,false,false,false,false,false,"(41.891189,",-87.647578)
+Grand,true,false,false,false,false,false,false,false,"(41.891665,",-87.628021)
+Grand,true,false,false,false,false,false,false,false,"(41.891665,",-87.628021)
+Granville,true,false,false,false,false,false,false,false,"(41.993664,",-87.659202)
+Granville,true,false,false,false,false,false,false,false,"(41.993664,",-87.659202)
+Halsted,false,false,false,false,false,false,false,true,"(41.84678,",-87.648088)
+Halsted,false,false,false,false,false,false,false,true,"(41.84678,",-87.648088)
+Halsted,false,false,true,false,false,false,false,false,"(41.778943,",-87.644244)
+Halsted,false,false,true,false,false,false,false,false,"(41.778943,",-87.644244)
+Harlem,false,true,false,false,false,false,false,false,"(41.98227,",-87.8089)
+Harlem,false,true,false,false,false,false,false,false,"(41.98227,",-87.8089)
+Harlem/Lake,false,false,true,false,false,false,false,false,"(41.886848,",-87.803176)
+Harlem/Lake,false,false,true,false,false,false,false,false,"(41.886848,",-87.803176)
+Harrison,true,false,false,false,false,false,false,false,"(41.874039,",-87.627479)
+Harrison,true,false,false,false,false,false,false,false,"(41.874039,",-87.627479)
+Division,false,true,false,false,false,false,false,false,"(41.903355,",-87.666496)
+Garfield,true,false,false,false,false,false,false,false,"(41.79542,",-87.631157)
+Harlem,false,true,false,false,false,false,false,false,"(41.87349,",-87.806961)
+Harold Washington Library-State/Van Buren,false,false,false,false,false,false,true,true,"(41.876862,",-87.628196)
+Howard,false,false,false,false,true,true,false,false,"(42.019063,",-87.672892)
+Howard,true,false,false,false,false,false,false,false,"(42.019063,",-87.672892)
+Howard,true,false,false,false,false,false,false,false,"(42.019063,",-87.672892)
+Illinois Medical District,false,true,false,false,false,false,false,false,"(41.875706,",-87.673932)
+Illinois Medical District,false,true,false,false,false,false,false,false,"(41.875706,",-87.673932)
+Indiana,false,false,true,false,false,false,false,false,"(41.821732,",-87.621371)
+Indiana,false,false,true,false,false,false,false,false,"(41.821732,",-87.621371)
+Irving Park,false,true,false,false,false,false,false,false,"(41.952925,",-87.729229)
+Irving Park,false,true,false,false,false,false,false,false,"(41.952925,",-87.729229)
+Irving Park,false,false,false,true,false,false,false,false,"(41.954521,",-87.674868)
+Irving Park,false,false,false,true,false,false,false,false,"(41.954521,",-87.674868)
+Jackson,false,true,false,false,false,false,false,false,"(41.878183,",-87.629296)
+Jackson,false,true,false,false,false,false,false,false,"(41.878183,",-87.629296)
+Jackson,true,false,false,false,false,false,false,false,"(41.878153,",-87.627596)
+Jackson,true,false,false,false,false,false,false,false,"(41.878153,",-87.627596)
+Jarvis,true,false,false,false,false,false,false,false,"(42.015876,",-87.669092)
+Jarvis,true,false,false,false,false,false,false,false,"(42.015876,",-87.669092)
+Jefferson Park,false,true,false,false,false,false,false,false,"(41.970634,",-87.760892)
+Jefferson Park,false,true,false,false,false,false,false,false,"(41.970634,",-87.760892)
+Kedzie,false,false,false,false,false,false,false,true,"(41.804236,",-87.704406)
+Kedzie,false,false,false,false,false,false,false,true,"(41.804236,",-87.704406)
+Kedzie,false,false,false,false,false,false,true,false,"(41.853964,",-87.705408)
+Kedzie,false,false,false,false,false,false,true,false,"(41.853964,",-87.705408)
+Kedzie,false,false,false,true,false,false,false,false,"(41.965996,",-87.708821)
+Kedzie,false,false,false,true,false,false,false,false,"(41.965996,",-87.708821)
+Kedzie,false,false,true,false,false,false,false,false,"(41.884321,",-87.706155)
+Kedzie,false,false,true,false,false,false,false,false,"(41.884321,",-87.706155)
+Kedzie-Homan,false,true,false,false,false,false,false,false,"(41.874341,",-87.70604)
+Kedzie-Homan,false,true,false,false,false,false,false,false,"(41.874341,",-87.70604)
+Kimball,false,false,false,true,false,false,false,false,"(41.967901,",-87.713065)
+Kimball,false,false,false,true,false,false,false,false,"(41.967901,",-87.713065)
+King Drive,false,false,true,false,false,false,false,false,"(41.78013,",-87.615546)
+King Drive,false,false,true,false,false,false,false,false,"(41.78013,",-87.615546)
+Kostner,false,false,false,false,false,false,true,false,"(41.853751,",-87.733258)
+Kostner,false,false,false,false,false,false,true,false,"(41.853751,",-87.733258)
+Laramie,false,false,true,false,false,false,false,false,"(41.887163,",-87.754986)
+Laramie,false,false,true,false,false,false,false,false,"(41.887163,",-87.754986)
+LaSalle,false,true,false,false,false,false,false,false,"(41.875568,",-87.631722)
+LaSalle,false,true,false,false,false,false,false,false,"(41.875568,",-87.631722)
+LaSalle/Van Buren,false,false,false,false,false,false,true,true,"(41.8768,",-87.631739)
+LaSalle/Van Buren,false,false,false,true,false,false,false,false,"(41.8768,",-87.631739)
+Lawrence,true,false,false,false,false,false,false,false,"(41.969139,",-87.658493)
+Lawrence,true,false,false,false,false,false,false,false,"(41.969139,",-87.658493)
+Linden,false,false,false,false,true,false,false,false,"(42.073153,",-87.69073)
+Linden,false,false,false,false,true,false,false,false,"(42.073153,",-87.69073)
+Logan Square,false,true,false,false,false,false,false,false,"(41.929728,",-87.708541)
+Logan Square,false,true,false,false,false,false,false,false,"(41.929728,",-87.708541)
+Loyola,true,false,false,false,false,false,false,false,"(42.001073,",-87.661061)
+Loyola,true,false,false,false,false,false,false,false,"(42.001073,",-87.661061)
+Main,false,false,false,false,true,false,false,false,"(42.033456,",-87.679538)
+Main,false,false,false,false,true,false,false,false,"(42.033456,",-87.679538)
+Merchandise Mart,false,false,false,true,false,false,false,false,"(41.888969,",-87.633924)
+Merchandise Mart,false,false,false,true,false,false,false,false,"(41.888969,",-87.633924)
+Midway,false,false,false,false,false,false,false,true,"(41.78661,",-87.737875)
+Midway,false,false,false,false,false,false,false,true,"(41.78661,",-87.737875)
+Montrose,false,true,false,false,false,false,false,false,"(41.961539,",-87.743574)
+Montrose,false,true,false,false,false,false,false,false,"(41.961539,",-87.743574)
+Montrose,false,false,false,true,false,false,false,false,"(41.961756,",-87.675047)
+Montrose,false,false,false,true,false,false,false,false,"(41.961756,",-87.675047)
+Morgan,false,false,true,false,false,false,true,false,"(41.885586,",-87.652193)
+Morgan,false,false,true,false,false,false,true,false,"(41.885586,",-87.652193)
+Morse,true,false,false,false,false,false,false,false,"(42.008362,",-87.665909)
+Lake,true,false,false,false,false,false,false,false,"(41.884809,",-87.627813)
+Monroe,false,true,false,false,false,false,false,false,"(41.880703,",-87.629378)
+Monroe,true,false,false,false,false,false,false,false,"(41.880745,",-87.627696)
+Monroe,true,false,false,false,false,false,false,false,"(41.880745,",-87.627696)
+Monroe,false,true,false,false,false,false,false,false,"(41.880703,",-87.629378)
+Morse,true,false,false,false,false,false,false,false,"(42.008362,",-87.665909)
+North/Clybourn,true,false,false,false,false,false,false,false,"(41.910655,",-87.649177)
+North/Clybourn,true,false,false,false,false,false,false,false,"(41.910655,",-87.649177)
+Noyes,false,false,false,false,true,false,false,false,"(42.058282,",-87.683337)
+Noyes,false,false,false,false,true,false,false,false,"(42.058282,",-87.683337)
+Oak Park,false,true,false,false,false,false,false,false,"(41.872108,",-87.791602)
+Oak Park,false,true,false,false,false,false,false,false,"(41.872108,",-87.791602)
+Oak Park,false,false,true,false,false,false,false,false,"(41.886988,",-87.793783)
+Oak Park,false,false,true,false,false,false,false,false,"(41.886988,",-87.793783)
+Paulina,false,false,false,true,false,false,false,false,"(41.943623,",-87.670907)
+Paulina,false,false,false,true,false,false,false,false,"(41.943623,",-87.670907)
+Polk,false,false,false,false,false,false,true,false,"(41.871551,",-87.66953)
+Polk,false,false,false,false,false,false,true,false,"(41.871551,",-87.66953)
+Pulaski,false,false,false,false,false,false,false,true,"(41.799756,",-87.724493)
+Pulaski,false,false,false,false,false,false,false,true,"(41.799756,",-87.724493)
+Pulaski,false,false,false,false,false,false,true,false,"(41.853732,",-87.724311)
+Pulaski,false,false,false,false,false,false,true,false,"(41.853732,",-87.724311)
+Pulaski,false,true,false,false,false,false,false,false,"(41.873797,",-87.725663)
+Pulaski,false,true,false,false,false,false,false,false,"(41.873797,",-87.725663)
+Pulaski,false,false,true,false,false,false,false,false,"(41.885412,",-87.725404)
+Pulaski,false,false,true,false,false,false,false,false,"(41.885412,",-87.725404)
+Quincy/Wells,false,false,false,false,false,false,true,true,"(41.878723,",-87.63374)
+Quincy/Wells,false,false,false,true,false,false,false,false,"(41.878723,",-87.63374)
+Racine,false,true,false,false,false,false,false,false,"(41.87592,",-87.659458)
+Racine,false,true,false,false,false,false,false,false,"(41.87592,",-87.659458)
+Oakton-Skokie,false,false,false,false,false,true,false,false,"(42.02624348,",-87.74722084)
+Ridgeland,false,false,true,false,false,false,false,false,"(41.887159,",-87.783661)
+Ridgeland,false,false,true,false,false,false,false,false,"(41.887159,",-87.783661)
+Rockwell,false,false,false,true,false,false,false,false,"(41.966115,",-87.6941)
+Rockwell,false,false,false,true,false,false,false,false,"(41.966115,",-87.6941)
+O'Hare,false,true,false,false,false,false,false,false,"(41.97766526,",-87.90422307)
+Roosevelt,false,false,true,false,false,false,false,true,"(41.867405,",-87.62659)
+Rosemont,false,true,false,false,false,false,false,false,"(41.983507,",-87.859388)
+Rosemont,false,true,false,false,false,false,false,false,"(41.983507,",-87.859388)
+Sedgwick,false,false,false,true,false,false,false,false,"(41.910409,",-87.639302)
+Sedgwick,false,false,false,true,false,false,false,false,"(41.910409,",-87.639302)
+Sheridan,true,false,false,false,false,false,false,false,"(41.953775,",-87.654929)
+Sheridan,true,false,false,false,false,false,false,false,"(41.953775,",-87.654929)
+Sheridan,false,false,false,false,false,false,false,false,"(41.953775,",-87.654929)
+Sheridan,false,false,false,false,false,false,false,false,"(41.953775,",-87.654929)
+South Boulevard,false,false,false,false,true,false,false,false,"(42.027612,",-87.678329)
+South Boulevard,false,false,false,false,true,false,false,false,"(42.027612,",-87.678329)
+Southport,false,false,false,true,false,false,false,false,"(41.943744,",-87.663619)
+Southport,false,false,false,true,false,false,false,false,"(41.943744,",-87.663619)
+Sox-35th,true,false,false,false,false,false,false,false,"(41.831191,",-87.630636)
+Sox-35th,true,false,false,false,false,false,false,false,"(41.831191,",-87.630636)
+State/Lake,false,false,true,false,false,false,true,true,"(41.88574,",-87.627835)
+State/Lake,false,false,true,true,false,false,false,false,"(41.88574,",-87.627835)
+Thorndale,true,false,false,false,false,false,false,false,"(41.990259,",-87.659076)
+Thorndale,true,false,false,false,false,false,false,false,"(41.990259,",-87.659076)
+UIC-Halsted,false,true,false,false,false,false,false,false,"(41.875474,",-87.649707)
+UIC-Halsted,false,true,false,false,false,false,false,false,"(41.875474,",-87.649707)
+Dempster-Skokie,false,false,false,false,false,true,false,false,"(42.038951,",-87.751919)
+Washington/Wells,false,false,false,false,false,false,true,true,"(41.882695,",-87.63378)
+Washington/Wells,false,false,false,true,false,false,false,false,"(41.882695,",-87.63378)
+Wellington,false,false,false,true,false,false,false,false,"(41.936033,",-87.653266)
+Wellington,false,false,false,true,false,false,false,false,"(41.936033,",-87.653266)
+Western,false,false,false,false,false,false,false,true,"(41.804546,",-87.684019)
+Western,false,false,false,false,false,false,false,true,"(41.804546,",-87.684019)
+Western,false,false,false,false,false,false,true,false,"(41.854225,",-87.685129)
+Western,false,false,false,false,false,false,true,false,"(41.854225,",-87.685129)
+Roosevelt,true,false,false,false,false,false,false,false,"(41.867368,",-87.627402)
+Roosevelt,false,false,true,false,false,false,false,true,"(41.867405,",-87.62659)
+Washington,false,true,false,false,false,false,false,false,"(41.883164,",-87.62944)
+Washington,false,true,false,false,false,false,false,false,"(41.883164,",-87.62944)
+Western,false,false,false,true,false,false,false,false,"(41.966163,",-87.688502)
+Western,false,false,false,true,false,false,false,false,"(41.966163,",-87.688502)
+Cottage Grove,false,false,true,false,false,false,false,false,"(41.780309,",-87.605857)
+Clark/Division,true,false,false,false,false,false,false,false,"(41.90392,",-87.631412)
+87th,true,false,false,false,false,false,false,false,"(41.735372,",-87.624717)
+Dempster-Skokie,false,false,false,false,false,true,false,false,"(42.038951,",-87.751919)
+Oakton-Skokie,false,false,false,false,false,true,false,false,"(42.02624348,",-87.74722084)
+47th,false,false,true,false,false,false,false,false,"(41.809209,",-87.618826)
+47th,false,false,true,false,false,false,false,false,"(41.809209,",-87.618826)
+47th,true,false,false,false,false,false,false,false,"(41.810318,",-87.63094)
+47th,true,false,false,false,false,false,false,false,"(41.810318,",-87.63094)
+Howard,false,false,false,false,true,true,false,false,"(42.019063,",-87.672892)
+California,false,true,false,false,false,false,false,false,"(41.921939,",-87.69689)
+California,false,true,false,false,false,false,false,false,"(41.921939,",-87.69689)
+Chicago,false,true,false,false,false,false,false,false,"(41.896075,",-87.655214)
+Chicago,false,false,false,true,false,false,false,false,"(41.89681,",-87.635924)
+Chicago,false,false,false,true,false,false,false,false,"(41.89681,",-87.635924)
+Chicago,true,false,false,false,false,false,false,false,"(41.896671,",-87.628176)
+Chicago,true,false,false,false,false,false,false,false,"(41.896671,",-87.628176)
+Chicago,false,true,false,false,false,false,false,false,"(41.896075,",-87.655214)
+63rd,true,false,false,false,false,false,false,false,"(41.780536,",-87.630952)
+63rd,true,false,false,false,false,false,false,false,"(41.780536,",-87.630952)
+Garfield,true,false,false,false,false,false,false,false,"(41.79542,",-87.631157)
+Harlem,false,true,false,false,false,false,false,false,"(41.87349,",-87.806961)
+Harold Washington Library-State/Van Buren,false,false,false,true,false,false,false,false,"(41.876862,",-87.628196)
+Western,false,true,false,false,false,false,false,false,"(41.916157,",-87.687364)
+Lake,true,false,false,false,false,false,false,false,"(41.884809,",-87.627813)
+Roosevelt,true,false,false,false,false,false,false,false,"(41.867368,",-87.627402)
+O'Hare,false,true,false,false,false,false,false,false,"(41.97766526,",-87.90422307)
+Western,false,true,false,false,false,false,false,false,"(41.875478,",-87.688436)
+Western,false,true,false,false,false,false,false,false,"(41.875478,",-87.688436)
+Western,false,true,false,false,false,false,false,false,"(41.916157,",-87.687364)
+Cermak-McCormick Place,false,false,true,false,false,false,false,false,"(41.853115,",-87.626402)
+Cermak-McCormick Place,false,false,true,false,false,false,false,false,"(41.853115,",-87.626402)
+Wilson,false,false,false,false,false,false,false,false,"(41.964273,",-87.657588)
+Addison,false,true,false,false,false,false,false,false,"(41.94738,",-87.71906)
+Wilson,true,false,false,false,false,false,false,false,"(41.964273,",-87.657588)
+Washington/Wabash,false,false,true,false,false,false,true,true,"(41.88322,",-87.626189)
+Clark/Division,true,false,false,false,false,false,false,false,"(41.90392,",-87.631412)
+Addison,false,true,false,false,false,false,false,false,"(41.94738,",-87.71906)
+Wilson,true,false,false,false,false,false,false,false,"(41.964273,",-87.657588)
+Washington/Wabash,false,false,true,true,false,false,false,false,"(41.88322,",-87.626189)
+Wilson,false,false,false,false,false,false,false,false,"(41.964273,",-87.657588)
+Ashland,false,false,true,false,false,false,true,false,"(41.885269,",-87.666969)
+Ashland,false,false,true,false,false,false,true,false,"(41.885269,",-87.666969)
