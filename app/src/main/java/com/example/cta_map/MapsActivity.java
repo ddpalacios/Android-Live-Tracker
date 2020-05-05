@@ -19,8 +19,13 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
+
+
+
+
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private EditText station_name, station_type, direction;
@@ -54,6 +59,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
         mMap = googleMap;
         EditText station_name = (EditText) findViewById(R.id.station_name);
         Bundle bb;

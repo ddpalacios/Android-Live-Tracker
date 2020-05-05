@@ -18,10 +18,15 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 class Chicago_Transits {
     private BufferedReader reader;
     private ArrayList<String> coord;
     private Button close_btn;
+    ArrayList<String> chosenTrainsCord;
+
     Chicago_Transits(BufferedReader reader, Button close_btn){
         this.reader = reader;
         this.close_btn = close_btn;
@@ -31,7 +36,6 @@ class Chicago_Transits {
     }
 
        void get_train_coordinates(final String[] station_coordinates, final String stationName, final String stationType, final String SpecifiedTrainDirection){
-
            HashMap <String, String> StationTypeKey = TrainLineKeys();
            final String url = "https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt="+StationTypeKey.get(stationType.toLowerCase());
            new Thread(new Runnable() {
@@ -45,17 +49,12 @@ class Chicago_Transits {
                            String[] isApproaching = content.select("isApp").text().split(" ");
                            String[] next_station_stop = content.select("nextStaNm").text().split(" ");
 
-                           ArrayList<String> chosenTrainsCord = get_trains_from(SpecifiedTrainDirection, content);
-                           Log.e("TRains", chosenTrainsCord+"");
+                           chosenTrainsCord = get_trains_from(SpecifiedTrainDirection, content);
 
+//                           Log.e("TRAINS", String.valueOf(chosenTrainsCord));
+                           Thread.sleep(10500);
 
-
-
-
-
-
-
-                       } catch (IOException e) {
+                       } catch (IOException | InterruptedException e) {
                            Log.d("Error", "Error in extracting");
                        }
 

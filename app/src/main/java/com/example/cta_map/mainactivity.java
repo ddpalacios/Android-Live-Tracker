@@ -45,6 +45,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -114,6 +115,7 @@ public class mainactivity extends AppCompatActivity {
 
 
                 String[] station_coordinates = chicago_transits.retrieve_station_coordinates(stationName, stationType);
+                Log.e("ff", String.valueOf(chicago_transits.chosenTrainsCord));
 
 
 
@@ -151,6 +153,23 @@ public class mainactivity extends AppCompatActivity {
                 final String[] station_coordinates = chicago_transits.retrieve_station_coordinates(stationName, stationType);
 
                 chicago_transits.get_train_coordinates(station_coordinates, stationName, stationType, trainDirection);
+                File file = new File(mainactivity.this.getFilesDir(),"mydir");
+                if(!file.exists()){
+                    file.mkdir();
+                }
+
+                try{
+                    File gpxfile = new File(file, "TXTFILE");
+                    FileWriter writer = new FileWriter(gpxfile);
+                    writer.append("TESTING");
+                    writer.flush();
+                    writer.close();
+
+                }catch (Exception e){
+
+                }
+
+
 
 
             }
