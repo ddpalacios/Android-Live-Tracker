@@ -43,12 +43,14 @@ import org.jsoup.select.Elements;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -61,11 +63,6 @@ class Debugger{
     }
 }
 
-
-
-
-
-
 @RequiresApi(api = Build.VERSION_CODES.KITKAT)
 @SuppressLint("Registered")
 public class mainactivity extends AppCompatActivity {
@@ -73,7 +70,6 @@ public class mainactivity extends AppCompatActivity {
     private Button getData, closeConn, toMap, csv_reader, userLoc;
     private EditText station_name, station_type, direction;
     private TextView result, latTextView, lonTextView;
-    private Boolean openConnection = true;
     int PERMISSION_ID = 44;
     FusedLocationProviderClient mFusedLocationClient;
 
@@ -85,7 +81,6 @@ public class mainactivity extends AppCompatActivity {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
 
-
         final Context context = getApplicationContext();
         super.onCreate(savedInstanceState);
         final Debugger debug = new Debugger();
@@ -93,13 +88,52 @@ public class mainactivity extends AppCompatActivity {
 
 
 
-        result = (TextView) findViewById(R.id.result);
-        result.setMovementMethod(new ScrollingMovementMethod());
+
+
+
+//        result = (TextView) findViewById(R.id.result);
+//        result.setMovementMethod(new ScrollingMovementMethod());
         getData = (Button) findViewById(R.id.getData);
         closeConn = (Button) findViewById(R.id.closeData);
-        station_name = (EditText)findViewById(R.id.station_name);
-        station_type = (EditText)findViewById(R.id.station_type);
-        direction = (EditText)findViewById(R.id.dest);
+        station_name = (EditText) findViewById(R.id.station_name);
+        station_type = (EditText) findViewById(R.id.station_type);
+        direction = (EditText) findViewById(R.id.dest);
+        toMap = (Button) findViewById(R.id.toMaps);
+
+
+        toMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                InputStream CSVfile = getResources().openRawResource(R.raw.train_stations);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(CSVfile, StandardCharsets.UTF_8));
+                final Chicago_Transits chicago_transits = new Chicago_Transits(reader, closeConn);
+                Intent intent = new Intent(mainactivity.this, MapsActivity.class);
+                final String stationName = station_name.getText().toString().toLowerCase();
+                final String stationType = station_type.getText().toString().toLowerCase();
+                final String trainDirection = direction.getText().toString().toLowerCase();
+
+
+                String[] station_coordinates = chicago_transits.retrieve_station_coordinates(stationName, stationType);
+
+
+
+
+
+                intent.putExtra("station_coordinates",station_coordinates);
+                intent.putExtra("train_direction",trainDirection);
+                Log.d("Testing", "TEST!!");
+
+
+
+
+
+                startActivity(intent);
+
+
+            }
+        });
+
+
 
 
         getData.setOnClickListener(new View.OnClickListener() {
@@ -107,110 +141,117 @@ public class mainactivity extends AppCompatActivity {
             public void onClick(View v) {
                 InputStream CSVfile = getResources().openRawResource(R.raw.train_stations);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(CSVfile, StandardCharsets.UTF_8));
-                final Chicago_Transits chicago_transits = new Chicago_Transits(reader);
-                openConnection = true;
+                final Chicago_Transits chicago_transits = new Chicago_Transits(reader, closeConn);
+
                 debug.ShowToast(context, "Extracting Content...");
+
                 final String stationName = station_name.getText().toString().toLowerCase();
                 final String stationType = station_type.getText().toString().toLowerCase();
                 final String trainDirection = direction.getText().toString().toLowerCase();
+                final String[] station_coordinates = chicago_transits.retrieve_station_coordinates(stationName, stationType);
 
-                String[] station_coordinates = chicago_transits.retrieve_station_coordinates(stationName, stationType);
-                String nearest_train = chicago_transits.find_nearest_train_from(station_coordinates, stationName, stationType, trainDirection);
-
-                if (station_coordinates == null){
-                    debug.ShowToast(context, "No Station Found! Check Spelling!");
-                }else {
-                    debug.ShowToast(context, stationName+" ("+stationType+")"+" Is Located at: "+ Arrays.toString(station_coordinates));
-                }
+                chicago_transits.get_train_coordinates(station_coordinates, stationName, stationType, trainDirection);
 
 
             }
         });
 
-
-    }
-
-    private void extract_train_content(final String url, final Debugger debugger){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (openConnection) {
-
-                    try {
-                        Document content = Jsoup.connect(url).get();
-                        final Elements lat = content.select("lat");
-                        final Elements lon = content.select("lon");
-                        final Elements isApp = content.select("isApp");
-                        final Elements dest = content.select("nextStaNm");
-
-                        String latitude = lat.text();
-                        String longtitude = lon.text();
-                        String destination = dest.text();
-                        String isApproaching = isApp.text();
-
-
-                        final String[] lat_list = latitude.split(" ");
-                        final String[] lon_list = longtitude.split(" ");
-                        final String[] app_list = isApproaching.split(" ");
-                        final String[] destiniation_station = destination.split(" ");
-
-                        Log.d("Latititudes", Arrays.toString(lat_list));
-                        Log.d("Longtitude", Arrays.toString(lon_list));
-                        Log.d("Longtitude", Arrays.toString(app_list));
-
-
-                        runOnUiThread(new Runnable() {
-                            @SuppressLint("SetTextI18n")
-                            @Override
-                            public void run() {
-                                if (result.getText().toString().isEmpty()){
-                                    for (int i=0; i< lat_list.length; i++){
-
-                                        String isApp = app_list[i];
-                                        if (isApp.equals("1")){
-                                            result.append("\n\nTrain# "+i+"  "+lat_list[i]+"   "+ lon_list[i]+"\t\tApproaching: "+ destiniation_station[i]);
-
-                                        }
-                                        else{
-                                            result.append("\n\nTrain# "+i+"  "+lat_list[i]+"   "+ lon_list[i]+"\t\tNext Stop: "+ destiniation_station[i]);
-
-                                        }
-
-                                    }
-                                }
-                                else {
-                                    result.setText(null);
-                                    run();
-
-                                }
-
-                            }
-                        });
-
-                    } catch (IOException e) {
-                        Log.d("Error", "Error in extracting");
-                    }
-
-
-                }
-            }
-        }).start();
-
-        closeConn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openConnection = false;
-
-
-                debugger.ShowToast(getApplicationContext(), "Connection Closed!");
-                Log.d("Connection Status", "Connection Closed");
-            }
-        });
 
     }
 
 
 }
+
+
+
+//                if (station_coordinates == null) {
+//                    debug.ShowToast(context, "No Station Found! Check Spelling!");
+//                } else {
+//                    debug.ShowToast(context, stationName + " (" + stationType + ")" + " Is Located at: " + Arrays.toString(station_coordinates));
+//                }
+
+
+//    private void extract_train_content(final String url, final Debugger debugger){
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                while (openConnection) {
+//
+//                    try {
+//                        Document content = Jsoup.connect(url).get();
+//                        final Elements lat = content.select("lat");
+//                        final Elements lon = content.select("lon");
+//                        final Elements isApp = content.select("isApp");
+//                        final Elements dest = content.select("nextStaNm");
+//
+//                        String latitude = lat.text();
+//                        String longtitude = lon.text();
+//                        String destination = dest.text();
+//                        String isApproaching = isApp.text();
+//
+//
+//                        final String[] lat_list = latitude.split(" ");
+//                        final String[] lon_list = longtitude.split(" ");
+//                        final String[] app_list = isApproaching.split(" ");
+//                        final String[] destiniation_station = destination.split(" ");
+//
+//                        Log.d("Latititudes", Arrays.toString(lat_list));
+//                        Log.d("Longtitude", Arrays.toString(lon_list));
+//                        Log.d("Longtitude", Arrays.toString(app_list));
+//
+//
+//                        runOnUiThread(new Runnable() {
+//                            @SuppressLint("SetTextI18n")
+//                            @Override
+//                            public void run() {
+//                                if (result.getText().toString().isEmpty()){
+//                                    for (int i=0; i< lat_list.length; i++){
+//
+//                                        String isApp = app_list[i];
+//                                        if (isApp.equals("1")){
+//                                            result.append("\n\nTrain# "+i+"  "+lat_list[i]+"   "+ lon_list[i]+"\t\tApproaching: "+ destiniation_station[i]);
+//
+//                                        }
+//                                        else{
+//                                            result.append("\n\nTrain# "+i+"  "+lat_list[i]+"   "+ lon_list[i]+"\t\tNext Stop: "+ destiniation_station[i]);
+//
+//                                        }
+//
+//                                    }
+//                                }
+//                                else {
+//                                    result.setText(null);
+//                                    run();
+//
+//                                }
+//
+//                            }
+//                        });
+//
+//                    } catch (IOException e) {
+//                        Log.d("Error", "Error in extracting");
+//                    }
+//
+//
+//                }
+//            }
+//        }).start();
+//
+//        closeConn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                openConnection = false;
+//
+//
+//                debugger.ShowToast(getApplicationContext(), "Connection Closed!");
+//                Log.d("Connection Status", "Connection Closed");
+//            }
+//        });
+//
+//    }
+//
+//
+//}
 
 
 //        toMap = (Button) findViewById(R.id.ToMaps);

@@ -1,8 +1,12 @@
 package com.example.cta_map;
 
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.FragmentActivity;
 
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.EditText;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -11,10 +15,20 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Objects;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+    private EditText station_name, station_type, direction;
+
 
     private GoogleMap mMap;
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,6 +37,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+
     }
 
 
@@ -35,17 +51,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        EditText station_name = (EditText) findViewById(R.id.station_name);
+        Bundle bb;
+        bb=getIntent().getExtras();
+        assert bb != null;
+        String [] station_coordinates = bb.getStringArray("station_coordinates");
+        String train_dir = bb.getString("train_direction");
+
+
+
+
+
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(41.9835, -87.65884);
-        LatLng sydney2 = new LatLng(42.01588, -87.66909);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        assert station_coordinates != null;
+        LatLng sydney = new LatLng(Double.parseDouble(station_coordinates[0]), Double.parseDouble(station_coordinates[1]));
+        mMap.addMarker(new MarkerOptions().position(sydney).title("GRANVILLE"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
-        mMap.addMarker(new MarkerOptions().position(sydney2).title("Marker in Sydney2"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney2));
+
     }
 }

@@ -53,13 +53,15 @@
         android:ems="10"
         android:layout_below="@+id/station_type"
         android:hint="Direction..." />
-    <TextView
-        android:id="@+id/result"
+
+
+    <Button
+        android:id="@+id/toMaps"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         android:layout_below="@+id/dest"
-        android:text="Result..." />
+
+        android:text="To Maps" />
 
 
 </RelativeLayout>

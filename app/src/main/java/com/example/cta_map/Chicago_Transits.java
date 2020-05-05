@@ -1,117 +1,114 @@
 package com.example.cta_map;
 
+import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.annotation.RequiresApi;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 
 import java.io.BufferedReader;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Collections;
 class Chicago_Transits {
     private BufferedReader reader;
-    Chicago_Transits(BufferedReader reader){
+    private ArrayList<String> coord;
+    private Button close_btn;
+    Chicago_Transits(BufferedReader reader, Button close_btn){
         this.reader = reader;
+        this.close_btn = close_btn;
+
 
 
     }
 
-       String find_nearest_train_from(final String[] station_coordinates,final String stationName, final String stationType, final String SpecifiedTrainDirection){
+       void get_train_coordinates(final String[] station_coordinates, final String stationName, final String stationType, final String SpecifiedTrainDirection){
+
            HashMap <String, String> StationTypeKey = TrainLineKeys();
            final String url = "https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt="+StationTypeKey.get(stationType.toLowerCase());
            new Thread(new Runnable() {
                @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                @Override
                public void run() {
-                   while (true) {
-
+                   final boolean[] connect = {true};
+                    while (connect[0]){
                        try {
                            Document content = Jsoup.connect(url).get();
                            String[] isApproaching = content.select("isApp").text().split(" ");
                            String[] next_station_stop = content.select("nextStaNm").text().split(" ");
 
-                           ArrayList<String> chosenTrains = get_trains_from(SpecifiedTrainDirection, content);
-
-                           double closest_train = calculate_nearest_train_from(chosenTrains,station_coordinates,stationName, stationType , 1);
-
-
-                           double train_distance_in_miles = closest_train * 0.62137;
-                           Log.e("DISTANCE", String.valueOf(train_distance_in_miles)+ " mi away!");
+                           ArrayList<String> chosenTrainsCord = get_trains_from(SpecifiedTrainDirection, content);
+                           Log.e("TRains", chosenTrainsCord+"");
 
 
-                           if (train_distance_in_miles < .15){
-                               Log.e("ARRIVED", "MADE IT TO "+ stationName + "("+stationType+")");
-                               // TODO: Get next nearest train approaching specified station
 
-                           }
 
-                       } catch (IOException | ParseException e) {
+
+
+
+
+                       } catch (IOException e) {
                            Log.d("Error", "Error in extracting");
                        }
 
 
-                   }
-               }
+                        close_btn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                connect[0] = false;
+                                Log.d("Connection Status", "Connection Closed");
 
+
+                            }
+                        });
+
+
+
+               }
+               }
 
            }).start();
 
 
 
-
-
-return null;
-
-
-}
-
-
-
-private ArrayList<String>  get_trains_from(String dir, Document content){
-    final ArrayList<Integer> indexies = new ArrayList<Integer>();
-    final ArrayList<String> chosenTrains = new ArrayList<String>();
-    String[] latitude = content.select("lat").text().split(" ");
-    String[] longtitude = content.select("lon").text().split(" ");
-    String[] train_direction = content.select("trDr").text().split(" ");
+            }
 
 
 
 
-    for (int i=0; i< train_direction.length; i++){
-        String elem = train_direction[i];
-        if (elem.equals(dir)){
-            indexies.add(i);
+        private ArrayList<String>  get_trains_from(String dir, Document content){
+            final ArrayList<Integer> indexies = new ArrayList<Integer>();
+            final ArrayList<String> chosenTrains = new ArrayList<String>();
+            String[] latitude = content.select("lat").text().split(" ");
+            String[] longtitude = content.select("lon").text().split(" ");
+            String[] train_direction = content.select("trDr").text().split(" ");
+
+
+            for (int i=0; i< train_direction.length; i++){
+                String elem = train_direction[i];
+                if (elem.equals(dir)){
+                    indexies.add(i);
+                }
+
+            }
+
+            for (Integer index : indexies){
+                chosenTrains.add((latitude[index] + ","+ longtitude[index]));
+
+            }
+
+
+
+            return chosenTrains;
         }
-
-    }
-
-    for (Integer index : indexies){
-        chosenTrains.add((latitude[index] + ","+ longtitude[index]));
-
-    }
-
-
-
-    return chosenTrains;
-}
-
-
-
-
-
-
-
-
-
-
         String[] retrieve_station_coordinates(String station_name, String station_type){
         String line;
         while (true){
@@ -142,7 +139,7 @@ private ArrayList<String>  get_trains_from(String dir, Document content){
         return null;
     }
         @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-        private double calculate_nearest_train_from(ArrayList<String> chosen_trains,String[] station_coordinates ,String station_name, String station_type, Integer num_trains) throws ParseException {
+        private ArrayList<Double>  calculate_nearest_train_from(ArrayList<String> chosen_trains,String[] station_coordinates ,String station_name, String station_type, Integer num_trains) throws ParseException {
             ArrayList<Double> train_distance = new ArrayList<Double>();
             final int R = 6371; // Radious of the earth
 
@@ -168,7 +165,8 @@ private ArrayList<String>  get_trains_from(String dir, Document content){
             Collections.sort(train_distance);
 
 
-        return train_distance.get(0);
+
+        return  train_distance;//train_distance.get(0) * 0.62137;
         }
         private static Double toRad(Double value) {
         return value * Math.PI / 180;
@@ -221,3 +219,23 @@ private ArrayList<String>  get_trains_from(String dir, Document content){
         }
 
 }
+
+
+
+//                           ArrayList<Double> train_distances = calculate_nearest_train_from(chosenTrains,station_coordinates, stationName, stationType , 1);
+//
+//                           for (Double train : train_distances){
+//                               Log.e("DISTANCE", train+"");
+//
+//                           }
+//                           Log.d("DONE", "Done\n\n");
+
+
+//                           Log.e("DISTANCE", closest_train+ " mi away!");
+
+
+//                           if (closest_train < .15){
+//                               Log.e("ARRIVED", "MADE IT TO "+ stationName + "("+stationType+")");
+//                               // TODO: Get next nearest train approaching specified station
+//
+//                           }
