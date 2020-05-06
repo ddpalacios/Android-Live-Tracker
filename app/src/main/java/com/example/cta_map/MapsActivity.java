@@ -127,7 +127,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
 
-                        ArrayList<Double> train_distance_from_station = calculate_nearest_train_from(train_coordinates, station_coordinates, station_name, station_type, 1);
+                        final ArrayList<Double> train_distance_from_station = calculate_nearest_train_from(train_coordinates, station_coordinates);
 
 
 
@@ -141,20 +141,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     String[] current_coordinates = train_coordinates.get(i).split(",");
                                     String train_approaching = approaching_trains.get(i);
                                     String train_next_stop = next_stop.get(i);
+                                    Double current_distance_from_station = train_distance_from_station.get(i);
 
-
-                                    Log.e("coord", ""+train_approaching+""+ Arrays.toString(current_coordinates)+""+train_next_stop);
+                                    Log.e("coord", "Size: "+ train_coordinates.size()+"| "+"Approaching: "+train_approaching+" | Current Coordinates: "+ Arrays.toString(current_coordinates)+" | Next Stop: "+train_next_stop+" | Distance: "+train_distance_from_station.get(i));
                                     LatLng train_marker = new LatLng(Double.parseDouble(current_coordinates[0]), Double.parseDouble(current_coordinates[1]));
                                     Marker marker = mMap.addMarker(new MarkerOptions().position(train_marker).title(Arrays.toString(current_coordinates)));
                                     LatLng train_station_marker = new LatLng(Double.parseDouble(station_coordinates[0]), Double.parseDouble(station_coordinates[1]));
                                     Marker station_marker = mMap.addMarker(new MarkerOptions().position(train_station_marker).title(station_name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
 
 
+                                    if (current_distance_from_station <= .2){
+                                        Log.e("ARRIVED", "Train arrived at: "+station_name);
+                                        train_coordinates.remove(i);
+                                        approaching_trains.remove(i);
+                                        next_stop.remove(i);
+                                        train_distance_from_station.remove(i);
+                                        Log.e("Size", train_coordinates.size()+"");
+                                        marker.remove();
+
+
+
+                                    }
+
+
+
+
+
+
+
 
 
 
                                 }
-                                Log.e("progress", "done.");
+                                Log.d("progress", "done.");
 
 
 
@@ -243,7 +262,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
 
-    private ArrayList<Double>  calculate_nearest_train_from(ArrayList<String> chosen_trains,String[] station_coordinates ,String station_name, String station_type, Integer num_trains) throws ParseException {
+    private ArrayList<Double>  calculate_nearest_train_from(ArrayList<String> chosen_trains,String[] station_coordinates) throws ParseException {
         ArrayList<Double> train_distance = new ArrayList<Double>();
         final int R = 6371; // Radious of the earth
 
