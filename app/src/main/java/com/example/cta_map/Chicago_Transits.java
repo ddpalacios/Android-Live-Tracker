@@ -35,98 +35,6 @@ class Chicago_Transits {
 
     }
 
-       void get_train_coordinates(final String[] station_coordinates, final String stationName, final String stationType, final String SpecifiedTrainDirection){
-//           final Cursor res = myDb.getAllData();
-            HashMap <String, String> StationTypeKey = TrainLineKeys();
-           final String url = "https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt="+StationTypeKey.get(stationType.toLowerCase());
-           new Thread(new Runnable() {
-               @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-               @Override
-               public void run() {
-                   int idx = 5;
-                   final boolean[] connect = {true};
-                    while (connect[0]){
-                        int dbIdx = 0;
-                       try {
-
-                           Document content = Jsoup.connect(url).get();
-                           String[] isApproaching = content.select("isApp").text().split(" ");
-                           String[] next_station_stop = content.select("nextStaNm").text().split(" ");
-
-                           chosenTrainsCord = get_trains_from(SpecifiedTrainDirection, content);
-
-//                           for (String train_cord : chosenTrainsCord){
-//                               String[] f = train_cord.split(",");
-//                               boolean in = myDb.insertData(Double.parseDouble(f[0]), Double.parseDouble(f[1]));
-//                               if (in)
-//                                   Log.e("Inserted", "success");
-//
-//                               idx++;
-//
-//                               }
-                           Thread.sleep(10000);
-//
-//                           if(res.getCount() == 0) {
-//                               // show message
-//                               Log.e("Error","Nothing found");
-//                           }
-
-
-
-
-
-
-
-
-
-
-
-
-
-                       } catch (IOException | InterruptedException e) {
-                           Log.d("Error", "Error in extracting");
-                       }
-
-
-
-
-               }
-               }
-
-           }).start();
-
-
-
-            }
-
-
-
-
-        private ArrayList<String>  get_trains_from(String dir, Document content){
-            final ArrayList<Integer> indexies = new ArrayList<Integer>();
-            final ArrayList<String> chosenTrains = new ArrayList<String>();
-            String[] latitude = content.select("lat").text().split(" ");
-            String[] longtitude = content.select("lon").text().split(" ");
-            String[] train_direction = content.select("trDr").text().split(" ");
-
-
-            for (int i=0; i< train_direction.length; i++){
-                String elem = train_direction[i];
-                if (elem.equals(dir)){
-                    indexies.add(i);
-                }
-
-            }
-
-            for (Integer index : indexies){
-                chosenTrains.add((latitude[index] + ","+ longtitude[index]));
-
-            }
-
-
-
-            return chosenTrains;
-        }
         String[] retrieve_station_coordinates(String station_name, String station_type){
         String line;
         while (true){
@@ -247,11 +155,11 @@ class Chicago_Transits {
 //
 //                           }
 //                           Log.d("DONE", "Done\n\n");
-
-
+//
+//
 //                           Log.e("DISTANCE", closest_train+ " mi away!");
-
-
+//
+//
 //                           if (closest_train < .15){
 //                               Log.e("ARRIVED", "MADE IT TO "+ stationName + "("+stationType+")");
 //                               // TODO: Get next nearest train approaching specified station
