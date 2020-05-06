@@ -74,16 +74,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Bundle bb;
         bb=getIntent().getExtras();
         assert bb != null;
-        String [] station_coordinates = bb.getStringArray("station_coordinates");
+        final String [] station_coordinates = bb.getStringArray("station_coordinates");
         final String train_dir = bb.getString("train_direction");
-        String station_name = bb.getString("station_name");
+        final String station_name = bb.getString("station_name");
         String station_type = bb.getString("station_type");
 
         // Add a marker in Sydney and move the camera
         assert station_coordinates != null;
-        LatLng sydney = new LatLng(Double.parseDouble(station_coordinates[0]), Double.parseDouble(station_coordinates[1]));
-        mMap.addMarker(new MarkerOptions().position(sydney).title(station_name));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        float zoomLevel = 13.1f; //This goes up to 21
+        LatLng chicago = new LatLng(Double.parseDouble(station_coordinates[0]), Double.parseDouble(station_coordinates[1]));
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(chicago, zoomLevel));
 
         ////////////////////////////////////////////////////
 
@@ -91,10 +92,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         assert station_type != null;
         final String url = "https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt="+StationTypeKey.get(station_type.toLowerCase());
+
+
         new Thread(new Runnable() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void run() {
+
+
                 final boolean[] connect = {true};
                 while (connect[0]){
                     try {
@@ -108,31 +113,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             public void run() {
                                 mMap.clear();
                                 for (String train_cord : chosenTrainsCord) {
-                                    String[] f = train_cord.split(",");
+                                    String[] curr_coord = train_cord.split(",");
 
-                                    LatLng sydney = new LatLng(Double.parseDouble(f[0]), Double.parseDouble(f[1]));
-                                    mMap.addMarker(new MarkerOptions().position(sydney).title(Arrays.toString(f)));
-//                                    mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+                                    LatLng train_marker = new LatLng(Double.parseDouble(curr_coord[0]), Double.parseDouble(curr_coord[1]));
+                                    mMap.addMarker(new MarkerOptions().position(train_marker).title(Arrays.toString(curr_coord)));
 
 
                         }
 
 
-
-
-
-
                             }
 
                         });
-
-
-
-
-
-
-
-//                        Thread.sleep(1500);
 
                     } catch (IOException e) {
                         Log.d("Error", "Error in extracting");
@@ -145,22 +137,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             Log.d("Connection Status", "Connection Closed");
                             connect[0] = false;
 
-
-
                         }
                     });
 
-
-
                 }
-
-
-
-
-
-
-
-
 
             }
         }).start();
