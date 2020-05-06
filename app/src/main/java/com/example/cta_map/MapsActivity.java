@@ -15,24 +15,18 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Objects;
-
-
-
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -74,6 +68,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Bundle bb;
         bb=getIntent().getExtras();
         assert bb != null;
+        final HashMap<String, Marker> hashMapMarker = new HashMap<>();
+
         final String [] station_coordinates = bb.getStringArray("station_coordinates");
         final String train_dir = bb.getString("train_direction");
         final String station_name = bb.getString("station_name");
@@ -83,8 +79,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         assert station_coordinates != null;
         float zoomLevel = 13.1f; //This goes up to 21
         LatLng chicago = new LatLng(Double.parseDouble(station_coordinates[0]), Double.parseDouble(station_coordinates[1]));
-
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(chicago, zoomLevel));
+
+
 
         ////////////////////////////////////////////////////
 
@@ -102,31 +99,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 final boolean[] connect = {true};
                 while (connect[0]){
+                    final int[] idx = {0};
                     try {
                         Document content = Jsoup.connect(url).get();
 
                         final ArrayList<String> chosenTrainsCord = get_trains_from(train_dir, content);
-                        Log.e("Trains", chosenTrainsCord+"");
                         runOnUiThread(new Runnable() {
                             @SuppressLint("SetTextI18n")
                             @Override
                             public void run() {
                                 mMap.clear();
+
                                 for (String train_cord : chosenTrainsCord) {
                                     String[] curr_coord = train_cord.split(",");
 
                                     LatLng train_marker = new LatLng(Double.parseDouble(curr_coord[0]), Double.parseDouble(curr_coord[1]));
-                                    mMap.addMarker(new MarkerOptions().position(train_marker).title(Arrays.toString(curr_coord)));
-
+                                    Marker marker = mMap.addMarker(new MarkerOptions().position(train_marker).title(Arrays.toString(curr_coord)));
 
                         }
+                                LatLng train_station_marker = new LatLng(Double.parseDouble(station_coordinates[0]), Double.parseDouble(station_coordinates[1]));
+                                Marker station_marker = mMap.addMarker(new MarkerOptions().position(train_station_marker).title(station_name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                                hashMapMarker.put("station", station_marker);
 
 
                             }
 
                         });
+                        Thread.sleep(1500);
 
-                    } catch (IOException e) {
+                    } catch (IOException | InterruptedException e) {
                         Log.d("Error", "Error in extracting");
                     }
 
@@ -148,6 +149,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     }
+//    private HashMap<Integer, Marker> store_coord(){}
+
+
 
     private ArrayList<String>  get_trains_from(String dir, Document content){
         final ArrayList<Integer> indexies = new ArrayList<Integer>();

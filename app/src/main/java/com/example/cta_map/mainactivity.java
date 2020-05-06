@@ -97,18 +97,8 @@ public class mainactivity extends AppCompatActivity {
         direction = (EditText) findViewById(R.id.dest);
         toMap = (Button) findViewById(R.id.toMaps);
 
-
-
         headToMap();
         retrieveData();
-
-
-
-
-
-
-
-
 
     }
 
