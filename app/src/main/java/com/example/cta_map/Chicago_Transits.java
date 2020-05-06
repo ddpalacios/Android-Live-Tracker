@@ -46,6 +46,8 @@ class Chicago_Transits {
                public void run() {
                    final boolean[] connect = {true};
                     while (connect[0]){
+                        int idx = 0;
+                        int dbIdx = 0;
                        try {
 
                            Document content = Jsoup.connect(url).get();
@@ -53,19 +55,32 @@ class Chicago_Transits {
                            String[] next_station_stop = content.select("nextStaNm").text().split(" ");
 
                            chosenTrainsCord = get_trains_from(SpecifiedTrainDirection, content);
-//                           Log.e("trains", chosenTrainsCord+"");
 
                            for (String train_cord : chosenTrainsCord){
                                String[] f = train_cord.split(",");
-                               myDb.insertData(Double.parseDouble(f[0]), Double.parseDouble(f[1]));
+                               boolean in = myDb.insertData(Double.parseDouble(f[0]), Double.parseDouble(f[1]));
+                               if (in)
+                                   Log.e("Inserted", "success");
+
+                               idx++;
 
                                }
-                           while (res.moveToNext()){
-                               Log.e("Retrieved", res.getString(0)+": "+ res.getString(1)+","+res.getString(2));
-                           }
-
                            Thread.sleep(10000);
 
+
+
+
+
+//
+//                           while (res.moveToNext() && idx == chosenTrainsCord.size()){
+//                                Log.e("col", res.getString(0));
+//                                myDb.updateData(res.getString(0), 1.11111,1.11111);
+//                                dbIdx++;
+//                                Log.e("idx", dbIdx+"");
+//                           }
+//
+//                           Log.e("Update", "Updating");
+//
 
 
 

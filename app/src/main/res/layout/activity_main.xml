@@ -31,7 +31,7 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:layout_below="@+id/closeData"
-
+        android:text="granville"
         android:hint="Station..." />
 
     <EditText
@@ -41,7 +41,7 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:layout_below="@+id/station_name"
-
+        android:text="red"
         android:hint="train type..." />
 
 
@@ -52,6 +52,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:layout_below="@+id/station_type"
+        android:text="1"
         android:hint="Direction..." />
 
 

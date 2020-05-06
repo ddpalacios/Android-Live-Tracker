@@ -19,7 +19,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     public DatabaseHelper(Context context) {
-        super(context,DATABASE_NAME, null, 2);
+        super(context,DATABASE_NAME, null, 4);
     }
 
     @Override
@@ -55,18 +55,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-//    public boolean updateData(Double train_coord) {
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        ContentValues contentValues = new ContentValues();
-//        contentValues.put(COL_1, train_coord);
-//
-//        db.update(TABLE_NAME, contentValues, "ID = ?", new String[]{String.valueOf(train_coord)});
-//        return true;
-//    }
-
-    public Integer deleteData(String train_coord) {
+    public boolean updateData(String id, Double lat, Double lon) {
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete(TABLE_NAME, "ID = ?", new String[]{train_coord});
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COL_1, id);
+        contentValues.put(COL_2, lat);
+        contentValues.put(COL_3, lon);
+
+
+        db.update(TABLE_NAME, contentValues, "ID = ?", new String[]{(id)});
+        return true;
+    }
+
+    public Integer deleteData(String id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete(TABLE_NAME, "ID = ?", new String[]{id});
     }
 
 

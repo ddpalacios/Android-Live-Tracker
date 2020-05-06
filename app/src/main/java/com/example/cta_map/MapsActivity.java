@@ -3,6 +3,7 @@ package com.example.cta_map;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.FragmentActivity;
 
+import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,6 +30,7 @@ import java.util.Objects;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private EditText station_name, station_type, direction;
+    DatabaseHelper myDb;
 
 
     private GoogleMap mMap;
@@ -38,10 +40,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+
+
+
+
+
+
 
 
     }
@@ -59,25 +71,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        myDb = new DatabaseHelper(this);
+        final Cursor res = myDb.getAllData();
+        while (res.moveToNext()){
+            mMap = googleMap;
+            Bundle bb;
+            bb=getIntent().getExtras();
+            assert bb != null;
+            String [] station_coordinates = bb.getStringArray("station_coordinates");
+            String train_dir = bb.getString("train_direction");
+            String station_name = bb.getString("station_name");
 
-        mMap = googleMap;
-        Bundle bb;
-        bb=getIntent().getExtras();
-        assert bb != null;
-        String [] station_coordinates = bb.getStringArray("station_coordinates");
-        String train_dir = bb.getString("train_direction");
-        String station_name = bb.getString("station_name");
+//            Log.e("retrieved", res.getString(1) +","+ res.getString(2));
+            // Add a marker in Sydney and move the camera
+            assert station_coordinates != null;
+            LatLng sydney = new LatLng(Double.parseDouble(res.getString(1)), Double.parseDouble(res.getString(2)));
+            mMap.addMarker(new MarkerOptions().position(sydney).title(station_name));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+        }
 
 
 
 
 
 
-        // Add a marker in Sydney and move the camera
-        assert station_coordinates != null;
-        LatLng sydney = new LatLng(Double.parseDouble(station_coordinates[0]), Double.parseDouble(station_coordinates[1]));
-        mMap.addMarker(new MarkerOptions().position(sydney).title(station_name));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+
+
+
 
 
     }
