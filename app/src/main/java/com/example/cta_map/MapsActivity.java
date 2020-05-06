@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -26,15 +25,12 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
-    private EditText station_name, station_type, direction;
     private Button disconnect;
     final boolean[] connect = {true};
 
@@ -50,6 +46,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+        assert mapFragment != null;
         mapFragment.getMapAsync(this);
 
 
@@ -68,13 +65,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        disconnect = (Button) findViewById(R.id.disconnect);
+        disconnect = findViewById(R.id.disconnect);
 
         mMap = googleMap;
         Bundle bb;
         bb=getIntent().getExtras();
         assert bb != null;
-        final HashMap<String, Marker> hashMapMarker = new HashMap<>();
 
         final String [] station_coordinates = bb.getStringArray("station_coordinates");
         final String train_dir = bb.getString("train_direction");
@@ -104,12 +100,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                 while (connect[0]){
-                    final int[] idx = {0};
                     try {
                         Document content = Jsoup.connect(url).get();
 
                         final ArrayList<Integer> indexies = get_trains_from(train_dir, content);
-                        final ArrayList<String> train_coordinates = new ArrayList<String>();
+                        final ArrayList<String> train_coordinates = new ArrayList<>();
                         final ArrayList<String> approaching_trains = new ArrayList<>();
                         final ArrayList<String> next_stop = new ArrayList<>();
 
@@ -163,16 +158,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                                     }
-
-
-
-
-
-
-
-
-
-
                                 }
                                 Log.d("progress", "done.");
 
@@ -184,7 +169,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         });
                         Thread.sleep(1500);
 
-                    } catch (IOException | ParseException | InterruptedException e) {
+                    } catch (IOException | InterruptedException e) {
                         Log.d("Error", "Error in extracting");
                     }
 
@@ -234,7 +219,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     private ArrayList<Integer> get_trains_from(String dir, Document content){
-        final ArrayList<Integer> indexies = new ArrayList<Integer>();
+        final ArrayList<Integer> indexies = new ArrayList<>();
         String[] train_direction = content.select("trDr").text().split(" ");
 
 
@@ -263,8 +248,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
 
-    private ArrayList<Double>  calculate_nearest_train_from(ArrayList<String> chosen_trains,String[] station_coordinates) throws ParseException {
-        ArrayList<Double> train_distance = new ArrayList<Double>();
+    private ArrayList<Double>  calculate_nearest_train_from(ArrayList<String> chosen_trains,String[] station_coordinates) {
+        ArrayList<Double> train_distance = new ArrayList<>();
         final int R = 6371; // Radious of the earth
 
         double station_lat = Double.parseDouble(station_coordinates[0]);

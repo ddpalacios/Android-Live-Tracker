@@ -1,36 +1,15 @@
 package com.example.cta_map;
 
-import android.content.Intent;
-import android.database.Cursor;
-import android.os.Build;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-
-import androidx.annotation.RequiresApi;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
 import java.io.BufferedReader;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+
 
 class Chicago_Transits {
     private BufferedReader reader;
-    private ArrayList<String> coord;
-    private Button close_btn;
-    ArrayList<String> chosenTrainsCord;
 
     Chicago_Transits(BufferedReader reader){
         this.reader = reader;
-
 
     }
 
