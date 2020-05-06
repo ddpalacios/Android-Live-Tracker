@@ -32,7 +32,6 @@ class Chicago_Transits {
         this.reader = reader;
 
 
-
     }
 
         String[] retrieve_station_coordinates(String station_name, String station_type){

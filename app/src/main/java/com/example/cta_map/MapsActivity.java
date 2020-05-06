@@ -26,8 +26,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 
 
@@ -77,7 +79,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final String [] station_coordinates = bb.getStringArray("station_coordinates");
         final String train_dir = bb.getString("train_direction");
         final String station_name = bb.getString("station_name");
-        String station_type = bb.getString("station_type");
+        final String station_type = bb.getString("station_type");
 
         // Add a marker in Sydney and move the camera
         assert station_coordinates != null;
@@ -106,24 +108,55 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     try {
                         Document content = Jsoup.connect(url).get();
 
-                        final ArrayList<String> chosenTrainsCord = get_trains_from(train_dir, content);
-                        Log.e("trains", chosenTrainsCord.get(0)+"");
+                        final ArrayList<Integer> indexies = get_trains_from(train_dir, content);
+                        final ArrayList<String> train_coordinates = new ArrayList<String>();
+                        final ArrayList<String> approaching_trains = new ArrayList<>();
+                        final ArrayList<String> next_stop = new ArrayList<>();
+
+                        final String[] isApproaching = content.select("isApp").text().split(" ");
+                        String[] latitude = content.select("lat").text().split(" ");
+                        String[] longtitude = content.select("lon").text().split(" ");
+                        String[] nextStop_tags = content.select("nextStaNm").text().split(" ");
+
+                                for (Integer index : indexies){
+                                    train_coordinates.add((latitude[index] + ","+ longtitude[index]));
+                                    approaching_trains.add(isApproaching[index]);
+                                    next_stop.add(nextStop_tags[index]);
+
+                         }
+
+
+
+                        ArrayList<Double> train_distance_from_station = calculate_nearest_train_from(train_coordinates, station_coordinates, station_name, station_type, 1);
+
+
+
                         runOnUiThread(new Runnable() {
                             @SuppressLint("SetTextI18n")
                             @Override
                             public void run() {
                                 mMap.clear();
 
-                                for (String train_cord : chosenTrainsCord) {
-                                    String[] curr_coord = train_cord.split(",");
+                                for (int i=0; i<train_coordinates.size();i++){
+                                    String[] current_coordinates = train_coordinates.get(i).split(",");
+                                    String train_approaching = approaching_trains.get(i);
+                                    String train_next_stop = next_stop.get(i);
 
-                                    LatLng train_marker = new LatLng(Double.parseDouble(curr_coord[0]), Double.parseDouble(curr_coord[1]));
-                                    Marker marker = mMap.addMarker(new MarkerOptions().position(train_marker).title(Arrays.toString(curr_coord)));
 
-                        }
-                                LatLng train_station_marker = new LatLng(Double.parseDouble(station_coordinates[0]), Double.parseDouble(station_coordinates[1]));
-                                Marker station_marker = mMap.addMarker(new MarkerOptions().position(train_station_marker).title(station_name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-                                hashMapMarker.put("station", station_marker);
+                                    Log.e("coord", ""+train_approaching+""+ Arrays.toString(current_coordinates)+""+train_next_stop);
+                                    LatLng train_marker = new LatLng(Double.parseDouble(current_coordinates[0]), Double.parseDouble(current_coordinates[1]));
+                                    Marker marker = mMap.addMarker(new MarkerOptions().position(train_marker).title(Arrays.toString(current_coordinates)));
+                                    LatLng train_station_marker = new LatLng(Double.parseDouble(station_coordinates[0]), Double.parseDouble(station_coordinates[1]));
+                                    Marker station_marker = mMap.addMarker(new MarkerOptions().position(train_station_marker).title(station_name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+
+
+
+
+
+                                }
+                                Log.e("progress", "done.");
+
+
 
 
                             }
@@ -131,9 +164,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         });
                         Thread.sleep(1500);
 
-                    } catch (IOException | InterruptedException e) {
+                    } catch (IOException | ParseException | InterruptedException e) {
                         Log.d("Error", "Error in extracting");
                     }
+
+
+
+
 
 
                     disconnect.setOnClickListener(new View.OnClickListener() {
@@ -176,11 +213,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
 
-    private ArrayList<String>  get_trains_from(String dir, Document content){
+    private ArrayList<Integer> get_trains_from(String dir, Document content){
         final ArrayList<Integer> indexies = new ArrayList<Integer>();
-        final ArrayList<String> chosenTrains = new ArrayList<String>();
-        String[] latitude = content.select("lat").text().split(" ");
-        String[] longtitude = content.select("lon").text().split(" ");
         String[] train_direction = content.select("trDr").text().split(" ");
 
 
@@ -192,14 +226,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         }
 
-        for (Integer index : indexies){
-            chosenTrains.add((latitude[index] + ","+ longtitude[index]));
-
-        }
-
-
-
-        return chosenTrains;
+        return indexies;
     }
     private HashMap<String, String> TrainLineKeys(){
         HashMap<String, String> TrainLineKeyCodes  = new HashMap<>();
@@ -213,6 +240,47 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         return TrainLineKeyCodes;
     }
+
+
+
+    private ArrayList<Double>  calculate_nearest_train_from(ArrayList<String> chosen_trains,String[] station_coordinates ,String station_name, String station_type, Integer num_trains) throws ParseException {
+        ArrayList<Double> train_distance = new ArrayList<Double>();
+        final int R = 6371; // Radious of the earth
+
+        double station_lat = Double.parseDouble(station_coordinates[0]);
+        double station_lon = Double.parseDouble(station_coordinates[1]);
+
+        for (String coord : chosen_trains){
+            String[] train_cord = coord.split(",");
+            double train_lat = Double.parseDouble(train_cord[0]);
+            double train_lon = Double.parseDouble(train_cord[1]);
+            Double latDistance = toRad(train_lat-station_lat);
+            Double lonDistance = toRad(train_lon-station_lon);
+
+            double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2) +
+                    Math.cos(toRad(station_lat)) * Math.cos(toRad(train_lat)) *
+                            Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+
+            double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            double distance = R * c;
+
+            train_distance.add(distance);
+        }
+//        Collections.sort(train_distance);
+
+
+
+        return  train_distance;//train_distance.get(0) * 0.62137;
+    }
+
+    private static Double toRad(Double value) {
+        return value * Math.PI / 180;
+    }
+
+
+
+
+
 
 
 

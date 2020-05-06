@@ -70,8 +70,6 @@ public class mainactivity extends AppCompatActivity {
                 final String stationType = station_type.getText().toString().toLowerCase();
                 final String trainDirection = direction.getText().toString().toLowerCase();
                 String[] station_coordinates = chicago_transits.retrieve_station_coordinates(stationName, stationType);
-                chicago_transits.get_train_coordinates(station_coordinates, stationName, stationType, trainDirection);
-
 
                 intent.putExtra("station_coordinates",station_coordinates);
                 intent.putExtra("train_direction",trainDirection);
