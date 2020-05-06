@@ -4,9 +4,11 @@ import androidx.annotation.RequiresApi;
 import androidx.fragment.app.FragmentActivity;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -32,6 +34,8 @@ import java.util.HashMap;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private EditText station_name, station_type, direction;
     private Button disconnect;
+    final boolean[] connect = {true};
+
 
 
     private GoogleMap mMap;
@@ -97,13 +101,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void run() {
 
 
-                final boolean[] connect = {true};
                 while (connect[0]){
                     final int[] idx = {0};
                     try {
                         Document content = Jsoup.connect(url).get();
 
                         final ArrayList<String> chosenTrainsCord = get_trains_from(train_dir, content);
+                        Log.e("trains", chosenTrainsCord.get(0)+"");
                         runOnUiThread(new Runnable() {
                             @SuppressLint("SetTextI18n")
                             @Override
@@ -135,8 +139,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     disconnect.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            mMap.clear();
                             Log.d("Connection Status", "Connection Closed");
                             connect[0] = false;
+                            Intent intent = new Intent(MapsActivity.this, mainactivity.class);
+                            startActivity(intent);
+
 
                         }
                     });
@@ -149,7 +157,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     }
-//    private HashMap<Integer, Marker> store_coord(){}
+
+
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK ) {
+            finishAndRemoveTask();
+            Thread.currentThread().interrupt();
+            connect[0] = false;
+
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+
 
 
 
@@ -190,6 +213,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         return TrainLineKeyCodes;
     }
+
+
 
 
 
