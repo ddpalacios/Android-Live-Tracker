@@ -28,9 +28,8 @@ class Chicago_Transits {
     private Button close_btn;
     ArrayList<String> chosenTrainsCord;
 
-    Chicago_Transits(BufferedReader reader, Button close_btn){
+    Chicago_Transits(BufferedReader reader){
         this.reader = reader;
-        this.close_btn = close_btn;
 
 
 
@@ -88,22 +87,6 @@ class Chicago_Transits {
                            Log.d("Error", "Error in extracting");
                        }
 
-
-                        close_btn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                connect[0] = false;
-//                                while (res.moveToNext()){
-//                                    myDb.updateData(res.getString(0), res.getDouble(1), res.getDouble(2));
-//                                    Log.e("Update", "Updating");
-//
-//                                }
-
-                                Log.d("Connection Status", "Connection Closed");
-
-
-                            }
-                        });
 
 
 

@@ -10,19 +10,6 @@
     >
 
 
-    <Button
-        android:id="@+id/getData"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Connect" />
-
-    <Button
-        android:id="@+id/closeData"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/getData"
-        android:text="Disconnect" />
-
 
     <EditText
         android:id="@+id/station_name"
@@ -30,7 +17,6 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
-        android:layout_below="@+id/closeData"
         android:text="granville"
         android:hint="Station..." />
 
