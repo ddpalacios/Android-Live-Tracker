@@ -1,6 +1,7 @@
 package com.example.cta_map;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Build;
 import android.util.Log;
 import android.view.View;
@@ -35,8 +36,9 @@ class Chicago_Transits {
 
     }
 
-       void get_train_coordinates(final String[] station_coordinates, final String stationName, final String stationType, final String SpecifiedTrainDirection){
-           HashMap <String, String> StationTypeKey = TrainLineKeys();
+       void get_train_coordinates(final DatabaseHelper myDb, final String[] station_coordinates, final String stationName, final String stationType, final String SpecifiedTrainDirection){
+           final Cursor res = myDb.getAllData();
+        HashMap <String, String> StationTypeKey = TrainLineKeys();
            final String url = "https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt="+StationTypeKey.get(stationType.toLowerCase());
            new Thread(new Runnable() {
                @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -45,14 +47,31 @@ class Chicago_Transits {
                    final boolean[] connect = {true};
                     while (connect[0]){
                        try {
+
                            Document content = Jsoup.connect(url).get();
                            String[] isApproaching = content.select("isApp").text().split(" ");
                            String[] next_station_stop = content.select("nextStaNm").text().split(" ");
 
                            chosenTrainsCord = get_trains_from(SpecifiedTrainDirection, content);
+//                           Log.e("trains", chosenTrainsCord+"");
 
-//                           Log.e("TRAINS", String.valueOf(chosenTrainsCord));
-                           Thread.sleep(10500);
+                           for (String train_cord : chosenTrainsCord){
+                               String[] f = train_cord.split(",");
+                               myDb.insertData(Double.parseDouble(f[0]), Double.parseDouble(f[1]));
+
+                               }
+                           while (res.moveToNext()){
+                               Log.e("Retrieved", res.getString(0)+": "+ res.getString(1)+","+res.getString(2));
+                           }
+
+                           Thread.sleep(10000);
+
+
+
+
+
+
+
 
                        } catch (IOException | InterruptedException e) {
                            Log.d("Error", "Error in extracting");

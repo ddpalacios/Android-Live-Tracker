@@ -9,80 +9,64 @@ import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.Nullable;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-
-    private static final int DATABASE_VERSION = 1;
-
-    private static final String DATABASE_NAME = "trainPositionsDB.db";
-
-    public static final String TABLE_NAME = "TrainCord";
-
-    public static final String COLUMN_ID = "TrainID";
-
-    public static final String COLUMN_NAME = "TrainCoordinates";
+    public static final String DATABASE_NAME = "Train_Coordinates.db";
+    public static final String TABLE_NAME = "coordinate_table";
+    public static final String COL_1 = "ID";
+    public static final String COL_2 = "LATITUDE";
+    public static final String COL_3 = "LONGITUDE";
 
 
-    public DatabaseHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, name, factory, version);
+
+
+    public DatabaseHelper(Context context) {
+        super(context,DATABASE_NAME, null, 2);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + "(" + COLUMN_ID + "INTEGER PRIMARYKEY," + COLUMN_NAME + "TEXT )";
-        db.execSQL(CREATE_TABLE);
-
+        db.execSQL("create table "+ TABLE_NAME + "("+"ID INTEGER PRIMARY KEY AUTOINCREMENT,LATITUDE REAL,LONGITUDE REAL"+")");
 
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        onCreate(db);
 
     }
 
-    public String loadHandler() {
-
-        String result = "";
-
-        String query = "Select*FROM " + TABLE_NAME;
-
+    public boolean insertData(Double lat, Double lon) {
         SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COL_2, lat);
+        contentValues.put(COL_3, lon);
 
-        Cursor cursor = db.rawQuery(query, null);
+        long result = db.insert(TABLE_NAME, null, contentValues);
+        if (result == -1)
+            return false;
+        else
+            return true;
+    }
 
-        while (cursor.moveToNext()) {
-
-            int result_0 = cursor.getInt(0);
-
-            String result_1 = cursor.getString(1);
-
-            result += String.valueOf(result_0) + " " + result_1 +
-
-                    System.getProperty("line.separator");
-
-        }
-
-        cursor.close();
-
-        db.close();
-
-        return result;
-
+    public Cursor getAllData() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select * from " + TABLE_NAME, null);
+        return res;
     }
 
 
-    public void addHandler(Double coordinates, Integer train_num) {
+//    public boolean updateData(Double train_coord) {
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        ContentValues contentValues = new ContentValues();
+//        contentValues.put(COL_1, train_coord);
+//
+//        db.update(TABLE_NAME, contentValues, "ID = ?", new String[]{String.valueOf(train_coord)});
+//        return true;
+//    }
 
-        ContentValues values = new ContentValues();
-
-        values.put(COLUMN_ID, train_num);
-
-        values.put(COLUMN_NAME, coordinates);
-
+    public Integer deleteData(String train_coord) {
         SQLiteDatabase db = this.getWritableDatabase();
-
-        db.insert(TABLE_NAME, null, values);
-
-        db.close();
-
+        return db.delete(TABLE_NAME, "ID = ?", new String[]{train_coord});
     }
 
 

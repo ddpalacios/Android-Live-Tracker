@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
@@ -55,19 +56,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 class Debugger{
     void ShowToast(Context context, String text){
         Toast toast = Toast.makeText(context, text, Toast.LENGTH_LONG);
         toast.show();
-
     }
 }
 
 @RequiresApi(api = Build.VERSION_CODES.KITKAT)
 @SuppressLint("Registered")
 public class mainactivity extends AppCompatActivity {
-
+    DatabaseHelper myDb;
     private Button getData, closeConn, toMap, csv_reader, userLoc;
     private EditText station_name, station_type, direction;
     private TextView result, latTextView, lonTextView;
@@ -86,14 +87,9 @@ public class mainactivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         final Debugger debug = new Debugger();
         final WebScrapper webScrapper = new WebScrapper();
+        myDb = new DatabaseHelper(this);
 
 
-
-
-
-
-//        result = (TextView) findViewById(R.id.result);
-//        result.setMovementMethod(new ScrollingMovementMethod());
         getData = (Button) findViewById(R.id.getData);
         closeConn = (Button) findViewById(R.id.closeData);
         station_name = (EditText) findViewById(R.id.station_name);
@@ -102,9 +98,30 @@ public class mainactivity extends AppCompatActivity {
         toMap = (Button) findViewById(R.id.toMaps);
 
 
+
+        headToMap();
+        retrieveData();
+
+
+
+
+
+
+
+
+
+    }
+
+    private void headToMap(){
+
         toMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
+
+
+
                 InputStream CSVfile = getResources().openRawResource(R.raw.train_stations);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(CSVfile, StandardCharsets.UTF_8));
                 final Chicago_Transits chicago_transits = new Chicago_Transits(reader, closeConn);
@@ -112,20 +129,11 @@ public class mainactivity extends AppCompatActivity {
                 final String stationName = station_name.getText().toString().toLowerCase();
                 final String stationType = station_type.getText().toString().toLowerCase();
                 final String trainDirection = direction.getText().toString().toLowerCase();
-
-
                 String[] station_coordinates = chicago_transits.retrieve_station_coordinates(stationName, stationType);
-                Log.e("ff", String.valueOf(chicago_transits.chosenTrainsCord));
-
-
-
-
 
                 intent.putExtra("station_coordinates",station_coordinates);
                 intent.putExtra("train_direction",trainDirection);
-                Log.d("Testing", "TEST!!");
-
-
+                intent.putExtra("station_name", stationName);
 
 
 
@@ -138,36 +146,28 @@ public class mainactivity extends AppCompatActivity {
 
 
 
+
+
+
+    }
+    private void retrieveData(){
         getData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
+
                 InputStream CSVfile = getResources().openRawResource(R.raw.train_stations);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(CSVfile, StandardCharsets.UTF_8));
                 final Chicago_Transits chicago_transits = new Chicago_Transits(reader, closeConn);
 
-                debug.ShowToast(context, "Extracting Content...");
 
                 final String stationName = station_name.getText().toString().toLowerCase();
                 final String stationType = station_type.getText().toString().toLowerCase();
                 final String trainDirection = direction.getText().toString().toLowerCase();
                 final String[] station_coordinates = chicago_transits.retrieve_station_coordinates(stationName, stationType);
 
-                chicago_transits.get_train_coordinates(station_coordinates, stationName, stationType, trainDirection);
-                File file = new File(mainactivity.this.getFilesDir(),"mydir");
-                if(!file.exists()){
-                    file.mkdir();
-                }
-
-                try{
-                    File gpxfile = new File(file, "TXTFILE");
-                    FileWriter writer = new FileWriter(gpxfile);
-                    writer.append("TESTING");
-                    writer.flush();
-                    writer.close();
-
-                }catch (Exception e){
-
-                }
+                chicago_transits.get_train_coordinates(myDb,station_coordinates, stationName, stationType, trainDirection);
 
 
 
@@ -176,7 +176,11 @@ public class mainactivity extends AppCompatActivity {
         });
 
 
+
+
     }
+
+
 
 
 }
