@@ -47,8 +47,6 @@ class Chicago_Transits {
 
                     if (stationCanidate.equals(station_name) && Boolean.parseBoolean(train_types.get(station_type))){
                         return getCord(tokens);
-
-
                     }
 
                 }else {break;}
@@ -59,55 +57,11 @@ class Chicago_Transits {
                 e.printStackTrace();
             }
 
-
         }
         return null;
     }
-        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-        private ArrayList<Double>  calculate_nearest_train_from(ArrayList<String> chosen_trains,String[] station_coordinates ,String station_name, String station_type, Integer num_trains) throws ParseException {
-            ArrayList<Double> train_distance = new ArrayList<Double>();
-            final int R = 6371; // Radious of the earth
-
-            double station_lat = Double.parseDouble(station_coordinates[0]);
-            double station_lon = Double.parseDouble(station_coordinates[1]);
-
-            for (String coord : chosen_trains){
-                String[] train_cord = coord.split(",");
-                double train_lat = Double.parseDouble(train_cord[0]);
-                double train_lon = Double.parseDouble(train_cord[1]);
-                Double latDistance = toRad(train_lat-station_lat);
-                Double lonDistance = toRad(train_lon-station_lon);
-
-                double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2) +
-                    Math.cos(toRad(station_lat)) * Math.cos(toRad(train_lat)) *
-                            Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-
-                double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-                double distance = R * c;
-
-                train_distance.add(distance);
-            }
-            Collections.sort(train_distance);
 
 
-
-        return  train_distance;//train_distance.get(0) * 0.62137;
-        }
-        private static Double toRad(Double value) {
-        return value * Math.PI / 180;
-    }
-        private HashMap<String, String> TrainLineKeys(){
-        HashMap<String, String> TrainLineKeyCodes  = new HashMap<>();
-           TrainLineKeyCodes.put("red", "red");
-           TrainLineKeyCodes.put("green", "g");
-           TrainLineKeyCodes.put("purple", "p");
-           TrainLineKeyCodes.put("orange", "org");
-           TrainLineKeyCodes.put("pink", "pink");
-           TrainLineKeyCodes.put("yellow", "y");
-           TrainLineKeyCodes.put("blue", "blue");
-
-           return TrainLineKeyCodes;
-       }
         private HashMap<String, String> GetStation(String [] tokens, HashMap<String, String> train_lines){
 
         // Train lines
@@ -146,21 +100,3 @@ class Chicago_Transits {
 }
 
 
-
-//                           ArrayList<Double> train_distances = calculate_nearest_train_from(chosenTrains,station_coordinates, stationName, stationType , 1);
-//
-//                           for (Double train : train_distances){
-//                               Log.e("DISTANCE", train+"");
-//
-//                           }
-//                           Log.d("DONE", "Done\n\n");
-//
-//
-//                           Log.e("DISTANCE", closest_train+ " mi away!");
-//
-//
-//                           if (closest_train < .15){
-//                               Log.e("ARRIVED", "MADE IT TO "+ stationName + "("+stationType+")");
-//                               // TODO: Get next nearest train approaching specified station
-//
-//                           }
