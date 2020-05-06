@@ -156,6 +156,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         approaching_trains.remove(i);
                                         next_stop.remove(i);
                                         train_distance_from_station.remove(i);
+                                        indexies.remove(i);
                                         Log.e("Size", train_coordinates.size()+"");
                                         marker.remove();
 
