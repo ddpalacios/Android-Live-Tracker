@@ -120,8 +120,6 @@ public class mainactivity extends AppCompatActivity {
 
 
 
-
-
                 InputStream CSVfile = getResources().openRawResource(R.raw.train_stations);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(CSVfile, StandardCharsets.UTF_8));
                 final Chicago_Transits chicago_transits = new Chicago_Transits(reader, closeConn);
@@ -130,10 +128,15 @@ public class mainactivity extends AppCompatActivity {
                 final String stationType = station_type.getText().toString().toLowerCase();
                 final String trainDirection = direction.getText().toString().toLowerCase();
                 String[] station_coordinates = chicago_transits.retrieve_station_coordinates(stationName, stationType);
+                chicago_transits.get_train_coordinates(station_coordinates, stationName, stationType, trainDirection);
+
 
                 intent.putExtra("station_coordinates",station_coordinates);
                 intent.putExtra("train_direction",trainDirection);
                 intent.putExtra("station_name", stationName);
+                intent.putExtra("station_type", stationType);
+
+
 
 
 
@@ -142,10 +145,6 @@ public class mainactivity extends AppCompatActivity {
 
             }
         });
-
-
-
-
 
 
 
@@ -161,13 +160,13 @@ public class mainactivity extends AppCompatActivity {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(CSVfile, StandardCharsets.UTF_8));
                 final Chicago_Transits chicago_transits = new Chicago_Transits(reader, closeConn);
 
-
-                final String stationName = station_name.getText().toString().toLowerCase();
-                final String stationType = station_type.getText().toString().toLowerCase();
-                final String trainDirection = direction.getText().toString().toLowerCase();
-                final String[] station_coordinates = chicago_transits.retrieve_station_coordinates(stationName, stationType);
-
-                chicago_transits.get_train_coordinates(myDb,station_coordinates, stationName, stationType, trainDirection);
+//
+//                final String stationName = station_name.getText().toString().toLowerCase();
+//                final String stationType = station_type.getText().toString().toLowerCase();
+//                final String trainDirection = direction.getText().toString().toLowerCase();
+//                final String[] station_coordinates = chicago_transits.retrieve_station_coordinates(stationName, stationType);
+//
+//                chicago_transits.get_train_coordinates(station_coordinates, stationName, stationType, trainDirection);
 
 
 

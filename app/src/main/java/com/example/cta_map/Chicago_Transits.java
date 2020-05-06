@@ -36,17 +36,17 @@ class Chicago_Transits {
 
     }
 
-       void get_train_coordinates(final DatabaseHelper myDb, final String[] station_coordinates, final String stationName, final String stationType, final String SpecifiedTrainDirection){
-           final Cursor res = myDb.getAllData();
-        HashMap <String, String> StationTypeKey = TrainLineKeys();
+       void get_train_coordinates(final String[] station_coordinates, final String stationName, final String stationType, final String SpecifiedTrainDirection){
+//           final Cursor res = myDb.getAllData();
+            HashMap <String, String> StationTypeKey = TrainLineKeys();
            final String url = "https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt="+StationTypeKey.get(stationType.toLowerCase());
            new Thread(new Runnable() {
                @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                @Override
                public void run() {
+                   int idx = 5;
                    final boolean[] connect = {true};
                     while (connect[0]){
-                        int idx = 0;
                         int dbIdx = 0;
                        try {
 
@@ -56,31 +56,27 @@ class Chicago_Transits {
 
                            chosenTrainsCord = get_trains_from(SpecifiedTrainDirection, content);
 
-                           for (String train_cord : chosenTrainsCord){
-                               String[] f = train_cord.split(",");
-                               boolean in = myDb.insertData(Double.parseDouble(f[0]), Double.parseDouble(f[1]));
-                               if (in)
-                                   Log.e("Inserted", "success");
-
-                               idx++;
-
-                               }
+//                           for (String train_cord : chosenTrainsCord){
+//                               String[] f = train_cord.split(",");
+//                               boolean in = myDb.insertData(Double.parseDouble(f[0]), Double.parseDouble(f[1]));
+//                               if (in)
+//                                   Log.e("Inserted", "success");
+//
+//                               idx++;
+//
+//                               }
                            Thread.sleep(10000);
-
-
-
-
-
 //
-//                           while (res.moveToNext() && idx == chosenTrainsCord.size()){
-//                                Log.e("col", res.getString(0));
-//                                myDb.updateData(res.getString(0), 1.11111,1.11111);
-//                                dbIdx++;
-//                                Log.e("idx", dbIdx+"");
+//                           if(res.getCount() == 0) {
+//                               // show message
+//                               Log.e("Error","Nothing found");
 //                           }
-//
-//                           Log.e("Update", "Updating");
-//
+
+
+
+
+
+
 
 
 
@@ -97,6 +93,12 @@ class Chicago_Transits {
                             @Override
                             public void onClick(View v) {
                                 connect[0] = false;
+//                                while (res.moveToNext()){
+//                                    myDb.updateData(res.getString(0), res.getDouble(1), res.getDouble(2));
+//                                    Log.e("Update", "Updating");
+//
+//                                }
+
                                 Log.d("Connection Status", "Connection Closed");
 
 
