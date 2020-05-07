@@ -20,7 +20,7 @@ class Chicago_Transits {
 
                 if ((line = this.reader.readLine()) != null){
                     String[] tokens = line.split(",");
-                    String stationCanidate = tokens[0].toLowerCase();
+                    String stationCanidate = tokens[0].replace(" ", "_").toLowerCase();
                     HashMap<String, String> train_lines = new HashMap<>();
                     HashMap<String, String> train_types = GetStation(tokens, train_lines); //HashMap of All train lines
 

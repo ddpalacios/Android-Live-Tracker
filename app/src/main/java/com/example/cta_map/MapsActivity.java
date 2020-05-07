@@ -24,14 +24,19 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private Button disconnect;
+
     final boolean[] connect = {true};
 
 
@@ -66,6 +71,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         disconnect = findViewById(R.id.disconnect);
+        InputStream CSVfile = getResources().openRawResource(R.raw.train_stations);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(CSVfile, StandardCharsets.UTF_8));
+        final Chicago_Transits chicago_transits = new Chicago_Transits(reader);
 
         mMap = googleMap;
         Bundle bb;
@@ -76,8 +84,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final String train_dir = bb.getString("train_direction");
         final String station_name = bb.getString("station_name");
         final String station_type = bb.getString("station_type");
-
-        // Add a marker in Sydney and move the camera
         assert station_coordinates != null;
         float zoomLevel = 13.1f; //This goes up to 21
         LatLng chicago = new LatLng(Double.parseDouble(station_coordinates[0]), Double.parseDouble(station_coordinates[1]));
@@ -102,27 +108,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 while (connect[0]){
                     try {
                         Document content = Jsoup.connect(url).get();
-
                         final ArrayList<Integer> indexies = get_trains_from(train_dir, content);
                         final ArrayList<String> train_coordinates = new ArrayList<>();
                         final ArrayList<String> approaching_trains = new ArrayList<>();
                         final ArrayList<String> next_stop = new ArrayList<>();
+                        final ArrayList<String> train_destination = new ArrayList<>();
 
+                        final String station_destination = content.select("destNm").text();
                         final String[] isApproaching = content.select("isApp").text().split(" ");
-                        String[] latitude = content.select("lat").text().split(" ");
-                        String[] longtitude = content.select("lon").text().split(" ");
-                        String[] nextStop_tags = content.select("nextStaNm").text().split(" ");
-
-                                for (Integer index : indexies){
-                                    train_coordinates.add((latitude[index] + ","+ longtitude[index]));
-                                    approaching_trains.add(isApproaching[index]);
-                                    next_stop.add(nextStop_tags[index]);
-
-                         }
-
-
-
-                        final ArrayList<Double> train_distance_from_station = calculate_nearest_train_from(train_coordinates, station_coordinates);
+                        final String[] latitude = content.select("lat").text().split(" ");
+                        final String[] longtitude = content.select("lon").text().split(" ");
+                        final String[] nextStop_tags = content.select("nextStaNm").text().split(" ");
 
 
 
@@ -130,35 +126,47 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             @SuppressLint("SetTextI18n")
                             @Override
                             public void run() {
-                                mMap.clear();
 
-                                for (int i=0; i<train_coordinates.size();i++){
-                                    String[] current_coordinates = train_coordinates.get(i).split(",");
-                                    String train_approaching = approaching_trains.get(i);
-                                    String train_next_stop = next_stop.get(i);
+                                for (Integer index : indexies){
+                                    train_coordinates.add((latitude[index] + ","+ longtitude[index]));
+                                    approaching_trains.add(isApproaching[index]);
+                                    next_stop.add(nextStop_tags[index]);
+
+
+                                }
+                                ArrayList<Double> train_distance_from_station = calculate_nearest_train_from(train_coordinates, station_coordinates);
+                                Double nearest_train = Collections.min(train_distance_from_station);
+
+
+                                mMap.clear();
+                                for (int i=0; i<indexies.size();i++){
+                                    Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
+
+                                    String currentLat = train_coordinates.get(i).split(",")[0];
+                                    String currentLon = train_coordinates.get(i).split(",")[1];
+
+                                    String isApproaching = approaching_trains.get(i);
+                                    String nextStop = next_stop.get(i);
                                     Double current_distance_from_station = train_distance_from_station.get(i);
 
-                                    Log.e("coord", "Size: "+ train_coordinates.size()+"| "+"Approaching: "+train_approaching+" | Current Coordinates: "+ Arrays.toString(current_coordinates)+" | Next Stop: "+train_next_stop+" | Distance: "+train_distance_from_station.get(i));
-                                    LatLng train_marker = new LatLng(Double.parseDouble(current_coordinates[0]), Double.parseDouble(current_coordinates[1]));
-                                    Marker marker = mMap.addMarker(new MarkerOptions().position(train_marker).title(Arrays.toString(current_coordinates)));
-                                    LatLng train_station_marker = new LatLng(Double.parseDouble(station_coordinates[0]), Double.parseDouble(station_coordinates[1]));
-                                    Marker station_marker = mMap.addMarker(new MarkerOptions().position(train_station_marker).title(station_name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                                    @SuppressLint("DefaultLocale") Marker train_marker = addMarker(currentLat, currentLon, String.format("%.2f", current_distance_from_station)+"km", station_type);
 
+
+
+
+
+//                                    Marker station_marker = mMap.addMarker(new MarkerOptions().position(train_station_marker).title(station_name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
 
                                     if (current_distance_from_station <= .2){
                                         Log.e("ARRIVED", "Train arrived at: "+station_name);
-                                        train_coordinates.remove(i);
-                                        approaching_trains.remove(i);
-                                        next_stop.remove(i);
-                                        train_distance_from_station.remove(i);
-                                        indexies.remove(i);
                                         Log.e("Size", train_coordinates.size()+"");
-                                        marker.remove();
 
 
 
                                     }
+
                                 }
+
                                 Log.d("progress", "done.");
 
 
@@ -167,6 +175,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             }
 
                         });
+
+                        disconnect.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                mMap.clear();
+                                Log.d("Connection Status", "Connection Closed");
+                                connect[0] = false;
+                                Intent intent = new Intent(MapsActivity.this, mainactivity.class);
+                                startActivity(intent);
+
+
+                            }
+                        });
+
+
                         Thread.sleep(1500);
 
                     } catch (IOException | InterruptedException e) {
@@ -178,18 +201,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
 
-                    disconnect.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            mMap.clear();
-                            Log.d("Connection Status", "Connection Closed");
-                            connect[0] = false;
-                            Intent intent = new Intent(MapsActivity.this, mainactivity.class);
-                            startActivity(intent);
-
-
-                        }
-                    });
 
                 }
 
@@ -215,6 +226,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+    @SuppressLint("DefaultLocale")
+    private Marker addMarker(String lat, String lon, String title, String color){
+        HashMap<String, Float> colors = new HashMap<>();
+        colors.put("default", BitmapDescriptorFactory.HUE_MAGENTA);
+        colors.put("blue", BitmapDescriptorFactory.HUE_BLUE );
+        colors.put("green", BitmapDescriptorFactory.HUE_GREEN );
+        colors.put("orange", BitmapDescriptorFactory.HUE_ORANGE );
+        colors.put("red", BitmapDescriptorFactory.HUE_RED);
+        colors.put("yellow", BitmapDescriptorFactory.HUE_YELLOW);
+
+
+        LatLng train_marker = new LatLng(Double.parseDouble(lat), Double.parseDouble(lon));
+        return mMap.addMarker(new MarkerOptions().position(train_marker).title(title).icon(BitmapDescriptorFactory.defaultMarker(colors.get(color))));
+
+
+    }
 
 
 
