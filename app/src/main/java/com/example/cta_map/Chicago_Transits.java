@@ -1,5 +1,7 @@
 package com.example.cta_map;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -15,6 +17,7 @@ class Chicago_Transits {
 
         String[] retrieve_station_coordinates(String station_name, String station_type){
         String line;
+
         while (true){
             try {
 
@@ -24,7 +27,10 @@ class Chicago_Transits {
                     HashMap<String, String> train_lines = new HashMap<>();
                     HashMap<String, String> train_types = GetStation(tokens, train_lines); //HashMap of All train lines
 
+
                     if (stationCanidate.equals(station_name) && Boolean.parseBoolean(train_types.get(station_type))){
+                        Log.e("Recieved", stationCanidate);
+
                         return getCord(tokens);
                     }
 

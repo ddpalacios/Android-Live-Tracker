@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 
@@ -57,29 +58,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onMapReady(GoogleMap googleMap) {
         disconnect = findViewById(R.id.disconnect);
-        InputStream CSVfile = getResources().openRawResource(R.raw.train_stations);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(CSVfile, StandardCharsets.UTF_8));
-        final Chicago_Transits chicago_transits = new Chicago_Transits(reader);
-
         mMap = googleMap;
         Bundle bb;
         bb=getIntent().getExtras();
         assert bb != null;
-
         final String [] station_coordinates = bb.getStringArray("station_coordinates");
         final String train_dir = bb.getString("train_direction");
         final String station_name = bb.getString("station_name");
@@ -88,13 +74,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         float zoomLevel = 13.1f; //This goes up to 21
         LatLng chicago = new LatLng(Double.parseDouble(station_coordinates[0]), Double.parseDouble(station_coordinates[1]));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(chicago, zoomLevel));
-
-
-
-        ////////////////////////////////////////////////////
-
         HashMap <String, String> StationTypeKey = TrainLineKeys();
-
         assert station_type != null;
         final String url = "https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt="+StationTypeKey.get(station_type.toLowerCase());
 
@@ -103,9 +83,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void run() {
-
-
                 while (connect[0]){
+                    InputStream CSVfile = getResources().openRawResource(R.raw.train_stations);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(CSVfile, StandardCharsets.UTF_8));
+                    final Chicago_Transits chicago_transits = new Chicago_Transits(reader);
+
                     try {
                         Document content = Jsoup.connect(url).get();
                         final ArrayList<Integer> indexies = get_trains_from(train_dir, content);
@@ -113,17 +95,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         final ArrayList<String> approaching_trains = new ArrayList<>();
                         final ArrayList<String> next_stop = new ArrayList<>();
                         final ArrayList<String> train_destination = new ArrayList<>();
-
-                        final String station_destination = content.select("destNm").text();
+                        final String[] station_destination = content.select("destNm").outerHtml().replace(" ", "").replace("<destNm>", "").replace(" </destNm>", "").split("</destNm>");
                         final String[] isApproaching = content.select("isApp").text().split(" ");
                         final String[] latitude = content.select("lat").text().split(" ");
                         final String[] longtitude = content.select("lon").text().split(" ");
                         final String[] nextStop_tags = content.select("nextStaNm").text().split(" ");
 
-
-
                         runOnUiThread(new Runnable() {
-                            @SuppressLint("SetTextI18n")
+                            @SuppressLint({"SetTextI18n", "LongLogTag"})
                             @Override
                             public void run() {
 
@@ -131,46 +110,48 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     train_coordinates.add((latitude[index] + ","+ longtitude[index]));
                                     approaching_trains.add(isApproaching[index]);
                                     next_stop.add(nextStop_tags[index]);
+                                    train_destination.add(station_destination[index]);
 
 
                                 }
-                                ArrayList<Double> train_distance_from_station = calculate_nearest_train_from(train_coordinates, station_coordinates);
-                                Double nearest_train = Collections.min(train_distance_from_station);
+
+
+
+                                String official_train_destination = train_destination.get(0).toLowerCase().replaceAll("\t", "").replaceAll("\n", "");
+                                String[] official_train_destination_coordinates = chicago_transits.retrieve_station_coordinates(official_train_destination, station_type);
+                                ArrayList<Double> train_distance_from_station = calculate_train_distance(train_coordinates, station_coordinates);
+
+
+                                Double main_and_target_station_distance = calculate_coordinate_distance(official_train_destination_coordinates, station_coordinates);
+                                Log.e("Distance from target and main", String.valueOf(main_and_target_station_distance));
+
+
 
 
                                 mMap.clear();
                                 for (int i=0; i<indexies.size();i++){
-                                    Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
-
+                                    Double current_distance_from_station = train_distance_from_station.get(i);
                                     String currentLat = train_coordinates.get(i).split(",")[0];
                                     String currentLon = train_coordinates.get(i).split(",")[1];
-
                                     String isApproaching = approaching_trains.get(i);
                                     String nextStop = next_stop.get(i);
-                                    Double current_distance_from_station = train_distance_from_station.get(i);
 
+
+
+                                    Marker dest_market = addMarker(official_train_destination_coordinates[0], official_train_destination_coordinates[1], official_train_destination, "yellow");
+                                    Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
                                     @SuppressLint("DefaultLocale") Marker train_marker = addMarker(currentLat, currentLon, String.format("%.2f", current_distance_from_station)+"km", station_type);
 
 
-
-
-
-//                                    Marker station_marker = mMap.addMarker(new MarkerOptions().position(train_station_marker).title(station_name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
 
                                     if (current_distance_from_station <= .2){
                                         Log.e("ARRIVED", "Train arrived at: "+station_name);
                                         Log.e("Size", train_coordinates.size()+"");
 
-
-
                                     }
 
                                 }
-
-                                Log.d("progress", "done.");
-
-
-
+                                Log.d("Progress", "done.");
 
                             }
 
@@ -196,12 +177,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         Log.d("Error", "Error in extracting");
                     }
 
-
-
-
-
-
-
                 }
 
             }
@@ -210,6 +185,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     }
+
+
+    private Double calculate_coordinate_distance(String[] coord1, String[] coord2){
+        final int R = 6371; // Radious of the earth
+        double lat1 = Double.parseDouble(coord1[0]);
+        double lon1 = Double.parseDouble(coord1[1]);
+        double lat2 = Double.parseDouble(coord2[0]);
+        double lon2 = Double.parseDouble(coord2[1]);
+
+
+        Double latDistance = toRad(lat2-lat1);
+        Double lonDistance = toRad(lon2-lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2) +
+                Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                        Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+        return R * c * 0.62137;
+
+
+
+    }
+
 
 
 
@@ -224,8 +224,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         return super.onKeyDown(keyCode, event);
     }
-
-
     @SuppressLint("DefaultLocale")
     private Marker addMarker(String lat, String lon, String title, String color){
         HashMap<String, Float> colors = new HashMap<>();
@@ -235,16 +233,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         colors.put("orange", BitmapDescriptorFactory.HUE_ORANGE );
         colors.put("red", BitmapDescriptorFactory.HUE_RED);
         colors.put("yellow", BitmapDescriptorFactory.HUE_YELLOW);
-
-
         LatLng train_marker = new LatLng(Double.parseDouble(lat), Double.parseDouble(lon));
         return mMap.addMarker(new MarkerOptions().position(train_marker).title(title).icon(BitmapDescriptorFactory.defaultMarker(colors.get(color))));
 
 
     }
-
-
-
     private ArrayList<Integer> get_trains_from(String dir, Document content){
         final ArrayList<Integer> indexies = new ArrayList<>();
         String[] train_direction = content.select("trDr").text().split(" ");
@@ -272,10 +265,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         return TrainLineKeyCodes;
     }
-
-
-
-    private ArrayList<Double>  calculate_nearest_train_from(ArrayList<String> chosen_trains,String[] station_coordinates) {
+    private ArrayList<Double>  calculate_train_distance(ArrayList<String> chosen_trains,String[] station_coordinates) {
         ArrayList<Double> train_distance = new ArrayList<>();
         final int R = 6371; // Radious of the earth
 
@@ -298,13 +288,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             train_distance.add(distance);
         }
-//        Collections.sort(train_distance);
-
-
 
         return  train_distance;//train_distance.get(0) * 0.62137;
     }
-
     private static Double toRad(Double value) {
         return value * Math.PI / 180;
     }
