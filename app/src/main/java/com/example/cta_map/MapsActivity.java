@@ -115,7 +115,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             @SuppressLint({"SetTextI18n", "LongLogTag"})
                             @Override
                             public void run() {
-                                int inbounds_trains = 0;
 
                                 if (indexies.size() <= 0 ){
                                     Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
@@ -148,15 +147,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     Toast.makeText(context, "MAIN Station Not Found!", Toast.LENGTH_LONG).show();
                                 }
                                 ArrayList<Double> train_distance_from_target_station = calculate_train_distance(train_coordinates, station_coordinates);
-                                Log.e("dist", String.valueOf(train_distance_from_target_station));
-                                Log.e("dist", String.valueOf(train_coordinates));
+
 
                                 assert main_station_coordinates != null;
                                 ArrayList<Double> train_distance_from_main_station = calculate_train_distance(train_coordinates, main_station_coordinates);
 
 
                                 Double main_and_target_station_distance = calculate_coordinate_distance(main_station_coordinates , station_coordinates);
-                                Log.e("Distance from target and main", String.valueOf(main_and_target_station_distance));
 
 
 
@@ -165,7 +162,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     Double train_to_target = train_distance_from_target_station.get(i);
 
                                     if (train_to_main >= 0 && train_to_main <= main_and_target_station_distance){ // Train threshold to determine if train has passed target station
-                                        inbounds_trains++;
+                                        continue;
 
                                     }else{
                                         list_of_distances.add(train_to_target);
@@ -177,18 +174,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 }
 
                                 Collections.sort(list_of_distances);
-                                Log.e("Sorted:", String.valueOf(list_of_distances));
                                 mMap.clear();
                                 for (int each_distance=0; each_distance<list_of_distances.size(); each_distance++){
                                     Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
                                     station_marker.showInfoWindow();
                                     Marker dest_market = addMarker(main_station_coordinates [0], main_station_coordinates [1], main_station_name, "main");
-
-
-
                                     Double train_to_target = train_distance_from_target_station.get(each_distance);
                                     Double current_distance = list_of_distances.get(each_distance);
                                     String[] current_train_coordinates = chosen_distance_and_coordinates.get(current_distance);
+
+                                    if (train_to_target <= .2) { // Check if arrived at station
+                                            Log.e("ARRIVED", "Train arrived at: " + station_name);
+
+                                        }
 
                                     assert current_train_coordinates != null;
                                     String currentLat = current_train_coordinates[0];
@@ -313,7 +311,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             }
                         });
 
-                        Thread.sleep(15000);
+                        Thread.sleep(1500);
 
                     } catch (IOException | InterruptedException e) {
                         Log.d("Error", "Error in extracting");
