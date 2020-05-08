@@ -141,7 +141,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 for (int i = 0; i < indexies.size(); i++) {
                                     Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
 
-
                                     Double train_to_main = train_distance_from_main_station.get(i);
                                     Double current_distance_from_station = train_distance_from_station.get(i);
                                     String isApproaching = approaching_trains.get(i);
@@ -151,7 +150,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                     if (train_to_main >= 0 && train_to_main <= main_and_target_station_distance){
                                         inbounds_trains++;
-//                                        @SuppressLint("DefaultLocale") Marker train_marker = addMarker(currentLat, currentLon, "To Main: "+String.format("%.2f", train_to_main) + "km", station_type);
 
 
                                     }else{
@@ -264,6 +262,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         HashMap<String, Float> colors = new HashMap<>();
         colors.put("default", BitmapDescriptorFactory.HUE_MAGENTA);
         colors.put("blue", BitmapDescriptorFactory.HUE_BLUE );
+        colors.put("purple", BitmapDescriptorFactory.HUE_CYAN );
         colors.put("pink", BitmapDescriptorFactory.HUE_BLUE );
         colors.put("green", BitmapDescriptorFactory.HUE_GREEN );
         colors.put("brown",BitmapDescriptorFactory.HUE_GREEN );

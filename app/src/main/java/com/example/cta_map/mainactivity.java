@@ -41,9 +41,7 @@ public class mainactivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        final Context context = getApplicationContext();
         super.onCreate(savedInstanceState);
-        final Debugger debug = new Debugger();
         myDb = new DatabaseHelper(this);
 
         station_name = (EditText) findViewById(R.id.station_name);
@@ -62,6 +60,8 @@ public class mainactivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                final Context context = getApplicationContext();
+                final Debugger debug = new Debugger();
 
 
                 InputStream CSVfile = getResources().openRawResource(R.raw.train_stations);
@@ -72,21 +72,25 @@ public class mainactivity extends AppCompatActivity {
                 final String stationType = station_type.getText().toString().toLowerCase();
                 final String trainDirection = direction.getText().toString().toLowerCase();
                 String[] station_coordinates = chicago_transits.retrieve_station_coordinates(stationName, stationType);
-                Log.e("Station", Arrays.toString(station_coordinates) +"");
-
-                intent.putExtra("station_coordinates",station_coordinates);
-                intent.putExtra("train_direction",trainDirection);
-                intent.putExtra("station_name", stationName);
-                intent.putExtra("station_type", stationType);
+                if (station_coordinates == null){
+                    debug.ShowToast(context, "Error! Station Not Found");
+                }
+                else {
 
 
+                    Log.e("Station", Arrays.toString(station_coordinates) + "");
+
+                    intent.putExtra("station_coordinates", station_coordinates);
+                    intent.putExtra("train_direction", trainDirection);
+                    intent.putExtra("station_name", stationName);
+                    intent.putExtra("station_type", stationType);
 
 
-
-                startActivity(intent);
-
+                    startActivity(intent);
+                }
 
             }
+
         });
 
 
