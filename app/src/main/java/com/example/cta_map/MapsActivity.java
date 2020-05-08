@@ -264,6 +264,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         HashMap<String, Float> colors = new HashMap<>();
         colors.put("default", BitmapDescriptorFactory.HUE_MAGENTA);
         colors.put("blue", BitmapDescriptorFactory.HUE_BLUE );
+        colors.put("pink", BitmapDescriptorFactory.HUE_BLUE );
         colors.put("green", BitmapDescriptorFactory.HUE_GREEN );
         colors.put("brown",BitmapDescriptorFactory.HUE_GREEN );
         colors.put("orange", BitmapDescriptorFactory.HUE_ORANGE );
