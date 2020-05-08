@@ -71,9 +71,12 @@ public class mainactivity extends AppCompatActivity {
                 final String stationName = station_name.getText().toString().toLowerCase().replaceAll(" ", "");
                 final String stationType = station_type.getText().toString().toLowerCase();
                 final String trainDirection = direction.getText().toString().toLowerCase();
+
+
+
                 String[] station_coordinates = chicago_transits.retrieve_station_coordinates(stationName, stationType);
                 if (station_coordinates == null){
-                    debug.ShowToast(context, "Error! Station Not Found");
+                    debug.ShowToast(context, "Error! Target Station Not Found");
                 }
                 else {
 

@@ -4,6 +4,7 @@ import androidx.annotation.RequiresApi;
 import androidx.fragment.app.FragmentActivity;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -63,6 +65,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        final Context context = getApplicationContext();
         disconnect = findViewById(R.id.disconnect);
         mMap = googleMap;
         Bundle bb;
@@ -92,12 +95,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     try {
                         Document content = Jsoup.connect(url).get();
                         final ArrayList<Integer> indexies = get_trains_from(train_dir, content);
+
+
+
+
                         final ArrayList<String> train_coordinates = new ArrayList<>();
                         final ArrayList<String> approaching_trains = new ArrayList<>();
                         final ArrayList<String> next_stop = new ArrayList<>();
                         final ArrayList<String> train_destination = new ArrayList<>();
-
-
 
 
                             final String[] station_destination = content.select("destNm").outerHtml().replace(" ", "").replace("<destNm>", "").replace(" </destNm>", "").split("</destNm>");
@@ -112,8 +117,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             @Override
                             public void run() {
                                 int inbounds_trains = 0;
-
-
+                                Log.e("Size", String.valueOf(indexies.size()));
+                                if (indexies.size() <= 0 ){
+                                    final Toast toast = Toast.makeText(context, "There are: "+ indexies.size()+" trains at the moment!", Toast.LENGTH_LONG);
+                                    toast.show();
+                                    return;
+                                }
+                                final Toast toast = Toast.makeText(context, "There are: "+ indexies.size()+" trains at the moment!", Toast.LENGTH_LONG);
+                                toast.show();
                                 for (Integer index : indexies) {
                                     train_coordinates.add((latitude[index] + "," + longtitude[index]));
                                     approaching_trains.add(isApproaching[index]);
@@ -128,10 +139,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                 String main_station_name = train_destination.get(0).toLowerCase().replaceAll("\t", "").replaceAll("\n", "");
                                 String[] main_station_coordinates = chicago_transits.retrieve_station_coordinates(main_station_name, station_type);
-                                Log.e("train", main_station_name+" "+ station_type);
-
+                                if (main_station_coordinates == null) {
+                                    Toast.makeText(context, "MAIN Station Not Found!", Toast.LENGTH_LONG).show();
+                                }
                                 ArrayList<Double> train_distance_from_station = calculate_train_distance(train_coordinates, station_coordinates);
+
+                                assert main_station_coordinates != null;
                                 ArrayList<Double> train_distance_from_main_station = calculate_train_distance(train_coordinates, main_station_coordinates);
+
 
                                 Double main_and_target_station_distance = calculate_coordinate_distance(main_station_coordinates , station_coordinates);
                                 Log.e("Distance from target and main", String.valueOf(main_and_target_station_distance));
@@ -142,7 +157,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
 
                                     Double train_to_main = train_distance_from_main_station.get(i);
-                                    Double current_distance_from_station = train_distance_from_station.get(i);
+                                    Double train_to_target = train_distance_from_station.get(i);
                                     String isApproaching = approaching_trains.get(i);
                                     String nextStop = next_stop.get(i);
                                     String currentLat = train_coordinates.get(i).split(",")[0];
@@ -154,12 +169,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                     }else{
 
-                                        if (current_distance_from_station <= .2) {
+                                        if (train_to_target <= .2) {
                                             Log.e("Index", String.valueOf(i));
                                             Log.e("ARRIVED", "Train arrived at: " + station_name);
                                             Log.e("Size", train_coordinates.size() + "");
-                                            current_distance_from_station = current_distance_from_station * -1;
-                                            Log.e("Distance", String.valueOf(current_distance_from_station));
+                                            train_to_target =train_to_target * -1;
+                                            Log.e("Distance", String.valueOf(train_to_target));
 
                                         }
 
@@ -167,14 +182,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                         Circle circle = mMap.addCircle(new CircleOptions()
                                                 .center(new LatLng(Double.parseDouble(station_coordinates[0]), Double.parseDouble(station_coordinates[1])))
-                                                .radius(100)
+                                                .radius(300)
                                                 .strokeColor(Color.RED));
 
 
 
 
-                                        Marker dest_market = addMarker(main_station_coordinates [0], main_station_coordinates [1], String.valueOf(main_and_target_station_distance), "yellow");
-                                        @SuppressLint("DefaultLocale") Marker train_marker = addMarker(currentLat, currentLon, "To Main: "+String.format("%.2f", train_to_main) + "km", station_type);
+                                        Marker dest_market = addMarker(main_station_coordinates [0], main_station_coordinates [1], main_station_name, "main");
+                                        @SuppressLint("DefaultLocale") Marker train_marker = addMarker(currentLat, currentLon, String.format("%.2f", train_to_target) + "km", station_type);
 
 
 
@@ -261,6 +276,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Marker addMarker(String lat, String lon, String title, String color){
         HashMap<String, Float> colors = new HashMap<>();
         colors.put("default", BitmapDescriptorFactory.HUE_MAGENTA);
+        colors.put("main", BitmapDescriptorFactory.HUE_AZURE);
         colors.put("blue", BitmapDescriptorFactory.HUE_BLUE );
         colors.put("purple", BitmapDescriptorFactory.HUE_CYAN );
         colors.put("pink", BitmapDescriptorFactory.HUE_BLUE );
@@ -276,7 +292,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
     private ArrayList<Integer> get_trains_from(String dir, Document content){
         final ArrayList<Integer> indexies = new ArrayList<>();
+        Context context = getApplicationContext();
         String[] train_direction = content.select("trDr").text().split(" ");
+        if (train_direction.length <= 0){
+            Toast.makeText(context, "No trains available", Toast.LENGTH_LONG).show();
+
+
+        }
 
 
         for (int i=0; i< train_direction.length; i++){

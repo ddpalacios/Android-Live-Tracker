@@ -1,15 +1,18 @@
 package com.example.cta_map;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
 
 
-class Chicago_Transits {
+class Chicago_Transits{
     private BufferedReader reader;
-
     Chicago_Transits(BufferedReader reader){
         this.reader = reader;
 
@@ -18,7 +21,8 @@ class Chicago_Transits {
         String[] retrieve_station_coordinates(String station_name, String station_type){
         String line;
 
-        while (true){
+
+            while (true){
             try {
                 if ((line = this.reader.readLine()) != null){
                     String[] tokens = line.split(",");
@@ -41,6 +45,8 @@ class Chicago_Transits {
             }
 
         }
+
+
         return null;
     }
 
