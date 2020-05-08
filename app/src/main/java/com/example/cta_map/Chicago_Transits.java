@@ -29,7 +29,6 @@ class Chicago_Transits {
 
 
                     if (stationCanidate.equals(station_name) && Boolean.parseBoolean(train_types.get(station_type))){
-                        Log.e("Recieved", stationCanidate);
 
                         return getCord(tokens);
                     }

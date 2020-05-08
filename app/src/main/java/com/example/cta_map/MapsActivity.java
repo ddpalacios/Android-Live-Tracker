@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +18,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -39,9 +42,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Button disconnect;
 
     final boolean[] connect = {true};
-
-
-
     private GoogleMap mMap;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -106,8 +106,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             @Override
                             public void run() {
 
-                                for (Integer index : indexies){
-                                    train_coordinates.add((latitude[index] + ","+ longtitude[index]));
+                                for (Integer index : indexies) {
+                                    train_coordinates.add((latitude[index] + "," + longtitude[index]));
                                     approaching_trains.add(isApproaching[index]);
                                     next_stop.add(nextStop_tags[index]);
                                     train_destination.add(station_destination[index]);
@@ -116,39 +116,50 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 }
 
 
-
                                 String official_train_destination = train_destination.get(0).toLowerCase().replaceAll("\t", "").replaceAll("\n", "");
                                 String[] official_train_destination_coordinates = chicago_transits.retrieve_station_coordinates(official_train_destination, station_type);
                                 ArrayList<Double> train_distance_from_station = calculate_train_distance(train_coordinates, station_coordinates);
 
-
+                                Log.e("TGT station", Arrays.toString(station_coordinates) +"");
                                 Double main_and_target_station_distance = calculate_coordinate_distance(official_train_destination_coordinates, station_coordinates);
-                                Log.e("Distance from target and main", String.valueOf(main_and_target_station_distance));
-
-
+//                                Log.e("Distance from target and main", String.valueOf(main_and_target_station_distance));
 
 
                                 mMap.clear();
-                                for (int i=0; i<indexies.size();i++){
+                                for (int i = 0; i < indexies.size(); i++) {
+
+
                                     Double current_distance_from_station = train_distance_from_station.get(i);
-                                    String currentLat = train_coordinates.get(i).split(",")[0];
-                                    String currentLon = train_coordinates.get(i).split(",")[1];
                                     String isApproaching = approaching_trains.get(i);
                                     String nextStop = next_stop.get(i);
+
+                                    if (current_distance_from_station <= .2) {
+                                        Log.e("Index", String.valueOf(i));
+                                        Log.e("ARRIVED", "Train arrived at: " + station_name);
+                                        Log.e("Size", train_coordinates.size() + "");
+                                        current_distance_from_station = current_distance_from_station * -1;
+                                        Log.e("Distance", String.valueOf(current_distance_from_station));
+
+                                    }
+
+                                    String currentLat = train_coordinates.get(i).split(",")[0];
+                                    String currentLon = train_coordinates.get(i).split(",")[1];
+                                    Log.e("Current", currentLat+" "+ currentLon);
+
+                                    Circle circle = mMap.addCircle(new CircleOptions()
+                                            .center(new LatLng(Double.parseDouble(station_coordinates[0]), Double.parseDouble(station_coordinates[1])))
+                                            .radius(100)
+                                            .strokeColor(Color.RED)
+                                            .fillColor(Color.BLUE));
+
 
 
 
                                     Marker dest_market = addMarker(official_train_destination_coordinates[0], official_train_destination_coordinates[1], official_train_destination, "yellow");
                                     Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
-                                    @SuppressLint("DefaultLocale") Marker train_marker = addMarker(currentLat, currentLon, String.format("%.2f", current_distance_from_station)+"km", station_type);
+                                    @SuppressLint("DefaultLocale") Marker train_marker = addMarker(currentLat, currentLon, String.format("%.2f", current_distance_from_station) + "km", station_type);
 
 
-
-                                    if (current_distance_from_station <= .2){
-                                        Log.e("ARRIVED", "Train arrived at: "+station_name);
-                                        Log.e("Size", train_coordinates.size()+"");
-
-                                    }
 
                                 }
                                 Log.d("Progress", "done.");
@@ -170,13 +181,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             }
                         });
 
-
                         Thread.sleep(1500);
 
                     } catch (IOException | InterruptedException e) {
                         Log.d("Error", "Error in extracting");
                     }
-
                 }
 
             }
@@ -205,8 +214,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
         return R * c * 0.62137;
-
-
 
     }
 
