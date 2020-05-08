@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="dempster-skokie"
+        android:text="granville"
         android:hint="Station..." />
 
     <EditText
@@ -27,7 +27,7 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:layout_below="@+id/station_name"
-        android:text="yellow"
+        android:text="red"
         android:hint="train type..." />
 
 

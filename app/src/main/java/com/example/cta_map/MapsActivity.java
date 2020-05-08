@@ -119,6 +119,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 int inbounds_trains = 0;
                                 Log.e("Size", String.valueOf(indexies.size()));
                                 if (indexies.size() <= 0 ){
+                                    Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
+
                                     final Toast toast = Toast.makeText(context, "There are: "+ indexies.size()+" trains at the moment!", Toast.LENGTH_LONG);
                                     toast.show();
                                     return;
@@ -190,6 +192,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                         Marker dest_market = addMarker(main_station_coordinates [0], main_station_coordinates [1], main_station_name, "main");
                                         @SuppressLint("DefaultLocale") Marker train_marker = addMarker(currentLat, currentLon, String.format("%.2f", train_to_target) + "km", station_type);
+                                        train_marker.showInfoWindow();
+//                                        dest_market.showInfoWindow();
+//                                        station_marker.showInfoWindow();
 
 
 
