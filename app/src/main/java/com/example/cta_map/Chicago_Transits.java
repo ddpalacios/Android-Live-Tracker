@@ -20,7 +20,6 @@ class Chicago_Transits {
 
         while (true){
             try {
-
                 if ((line = this.reader.readLine()) != null){
                     String[] tokens = line.split(",");
                     String stationCanidate = tokens[0].replace(" ", "_").toLowerCase();
@@ -29,7 +28,7 @@ class Chicago_Transits {
 
 
                     if (stationCanidate.equals(station_name) && Boolean.parseBoolean(train_types.get(station_type))){
-
+                        Log.e("Station candi",stationCanidate);
                         return getCord(tokens);
                     }
 

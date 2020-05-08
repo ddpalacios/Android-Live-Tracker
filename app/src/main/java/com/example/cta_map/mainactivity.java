@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 
 class Debugger{
@@ -66,10 +68,11 @@ public class mainactivity extends AppCompatActivity {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(CSVfile, StandardCharsets.UTF_8));
                 final Chicago_Transits chicago_transits = new Chicago_Transits(reader);
                 Intent intent = new Intent(mainactivity.this, MapsActivity.class);
-                final String stationName = station_name.getText().toString().toLowerCase();
+                final String stationName = station_name.getText().toString().toLowerCase().replaceAll(" ", "");
                 final String stationType = station_type.getText().toString().toLowerCase();
                 final String trainDirection = direction.getText().toString().toLowerCase();
                 String[] station_coordinates = chicago_transits.retrieve_station_coordinates(stationName, stationType);
+                Log.e("Station", Arrays.toString(station_coordinates) +"");
 
                 intent.putExtra("station_coordinates",station_coordinates);
                 intent.putExtra("train_direction",trainDirection);
