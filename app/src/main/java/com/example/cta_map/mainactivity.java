@@ -68,25 +68,23 @@ public class mainactivity extends AppCompatActivity {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(CSVfile, StandardCharsets.UTF_8));
                 final Chicago_Transits chicago_transits = new Chicago_Transits(reader);
                 Intent intent = new Intent(mainactivity.this, MapsActivity.class);
+
+
                 final String stationName = station_name.getText().toString().toLowerCase().replaceAll(" ", "");
                 final String stationType = station_type.getText().toString().toLowerCase();
                 final String trainDirection = direction.getText().toString().toLowerCase();
 
 
 
-                String[] station_coordinates = chicago_transits.retrieve_station_coordinates(stationName, stationType);
-                if (station_coordinates == null){
+                String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(stationName, stationType);
+                if (target_station_coordinates == null){
                     debug.ShowToast(context, "Error! Target Station Not Found");
                 }
                 else {
-
-
-                    Log.e("Station", Arrays.toString(station_coordinates) + "");
-
-                    intent.putExtra("station_coordinates", station_coordinates);
+                    intent.putExtra("target_station_name", stationName);
+                    intent.putExtra("target_station_type", stationType);
+                    intent.putExtra("target_station_coordinates", target_station_coordinates);
                     intent.putExtra("train_direction", trainDirection);
-                    intent.putExtra("station_name", stationName);
-                    intent.putExtra("station_type", stationType);
 
 
                     startActivity(intent);
