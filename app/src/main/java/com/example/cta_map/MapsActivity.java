@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -46,7 +47,7 @@ import java.util.HashMap;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private Button disconnect, switchDir;
-
+    private TextView target_station_view, main_station_view, arrival_time_view, nearest_train_dist_view,num_trains_view;
     final boolean[] connect = {true};
     private GoogleMap mMap;
 
@@ -71,6 +72,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         HashMap <String, String> StationTypeKey = TrainLineKeys();
         disconnect = findViewById(R.id.disconnect);
         switchDir = findViewById(R.id.switch_direction);
+        main_station_view = findViewById(R.id.main_station_view);
+        target_station_view = findViewById(R.id.target_station_view);
+        arrival_time_view = findViewById(R.id.arrival_time_view);
+        nearest_train_dist_view = findViewById(R.id.nearest_train_dist_view);
+        num_trains_view = findViewById(R.id.num_trains_view);
         mMap = googleMap;
         Bundle bb;
         bb=getIntent().getExtras();
@@ -84,7 +90,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String type  = StationTypeKey.get(station_type.toLowerCase());
         final String url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s", type);
         Log.e("url", url);
-        final String[] main_station_name = {""};
 
 
         new Thread(new Runnable() {
@@ -107,8 +112,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                             if (train_info.get("train_direction").equals(train_dir[0])){
+                                String main_station_name = train_info.get("main_station");
+                                String[] main_station_coordinates = chicago_transits.retrieve_station_coordinates(main_station_name, station_type);
 
-                                String[] main_station_coordinates = chicago_transits.retrieve_station_coordinates(train_info.get("main_station"), station_type);
+
                                 Double main_station_lat = Double.parseDouble(main_station_coordinates[0]);
                                 Double main_station_lon = Double.parseDouble(main_station_coordinates[1]);
 
@@ -121,7 +128,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 Double train_to_main = calculate_coordinate_distance(currentLat, currentLon, main_station_lat, main_station_lon);
                                 Double train_to_target = calculate_coordinate_distance(target_station_lat, target_station_lon, currentLat, currentLon);
                                 Double main_to_target_distance = calculate_coordinate_distance(target_station_lat, target_station_lon, main_station_lat, main_station_lon);
-                                main_station_name[0] = train_info.get("main_station");
+//                                Log.e("main name", main_station_name);
 
                                 if (withinBounds(train_to_main, main_to_target_distance)){// Train threshold to determine if train has passed target station
                                     continue;
@@ -133,36 +140,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     train_info.put("main_lon", String.valueOf(main_station_lon));
                                     chosen_trains.add(train_info);
                                 }
+
                             }
 
 
-                        }
-                        display_on_user_interface(chosen_trains, station_coordinates, station_name, station_type);
-                        Log.d("update", "done.");
-                        sleep(2500);
-
-
-                        }catch (IOException | InterruptedException e){
-                            e.printStackTrace();
                         }
 
                         switchDir.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
 
-                                Log.e("train", train_dir[0]);
                                 if (train_dir[0].equals("1")){
                                     train_dir[0] = "5";
-                                    Log.e("name", main_station_name[0]);
+
                                 }else {
                                     train_dir[0] = "1";
-                                    Log.e("name", main_station_name[0]);
-
-
                                 }
 
                             }
                         });
+
+                        display_on_user_interface(chosen_trains, station_coordinates, station_name, station_type);
+//                        Log.d("update", "done.");
+                        sleep(250);
+
+
+                        }catch (IOException | InterruptedException e){
+                            e.printStackTrace();
+                        }
+
+
 
 
                         disconnect.setOnClickListener(new View.OnClickListener() {
@@ -201,9 +208,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @SuppressLint({"SetTextI18n", "LongLogTag"})
             @Override
             public void run() {
-                Log.e("Size", String.valueOf(chosen_trains.size()));
+//                Log.e("Size", String.valueOf(chosen_trains.size()));
                 mMap.clear();
                 for (HashMap<String, String>current_train : chosen_trains) {
+                    target_station_view.setText("TRACKING: "+station_name);
+                    main_station_view.setText("TOWARDS: "+current_train.get("main_station"));
+                    num_trains_view.setText("NUMBER OF TRAINS: "+String.valueOf(chosen_trains.size()));
+
                     String main_station_lat = current_train.get("main_lan");
                     String main_station_lon = current_train.get("main_lon");
                     String train_lat = current_train.get("train_lat");
