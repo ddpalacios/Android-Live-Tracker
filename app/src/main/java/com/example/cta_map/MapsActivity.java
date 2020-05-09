@@ -45,7 +45,7 @@ import java.util.HashMap;
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
-    private Button disconnect;
+    private Button disconnect, switchDir;
 
     final boolean[] connect = {true};
     private GoogleMap mMap;
@@ -70,6 +70,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final Context context = getApplicationContext();
         HashMap <String, String> StationTypeKey = TrainLineKeys();
         disconnect = findViewById(R.id.disconnect);
+        switchDir = findViewById(R.id.switch_direction);
         mMap = googleMap;
         Bundle bb;
         bb=getIntent().getExtras();
@@ -78,12 +79,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final String station_name = bb.getString("target_station_name");
         final String station_type = bb.getString("target_station_type");
         final String [] station_coordinates = bb.getStringArray("target_station_coordinates");
-        final String train_dir = bb.getString("train_direction");
-
+        final String[] train_dir = {bb.getString("train_direction")};
         ZoomIn(13.1f, station_coordinates);
         String type  = StationTypeKey.get(station_type.toLowerCase());
         final String url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s", type);
         Log.e("url", url);
+        final String[] main_station_name = {""};
+
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -103,7 +106,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             HashMap<String, String> train_info = get_train_info(each_train);
 
 
-                            if (train_info.get("train_direction").equals(train_dir)){
+                            if (train_info.get("train_direction").equals(train_dir[0])){
 
                                 String[] main_station_coordinates = chicago_transits.retrieve_station_coordinates(train_info.get("main_station"), station_type);
                                 Double main_station_lat = Double.parseDouble(main_station_coordinates[0]);
@@ -118,8 +121,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 Double train_to_main = calculate_coordinate_distance(currentLat, currentLon, main_station_lat, main_station_lon);
                                 Double train_to_target = calculate_coordinate_distance(target_station_lat, target_station_lon, currentLat, currentLon);
                                 Double main_to_target_distance = calculate_coordinate_distance(target_station_lat, target_station_lon, main_station_lat, main_station_lon);
+                                main_station_name[0] = train_info.get("main_station");
 
-                                if (train_to_main >= 0 && train_to_main <= main_to_target_distance) { // Train threshold to determine if train has passed target station
+                                if (withinBounds(train_to_main, main_to_target_distance)){// Train threshold to determine if train has passed target station
                                     continue;
 
                                 }else {
@@ -133,81 +137,101 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                         }
+                        display_on_user_interface(chosen_trains, station_coordinates, station_name, station_type);
+                        Log.d("update", "done.");
+                        sleep(2500);
 
-                            runOnUiThread(new Runnable() {
-                            @SuppressLint({"SetTextI18n", "LongLogTag"})
+
+                        }catch (IOException | InterruptedException e){
+                            e.printStackTrace();
+                        }
+
+                        switchDir.setOnClickListener(new View.OnClickListener() {
                             @Override
-                            public void run() {
-                                Log.e("Size", String.valueOf(chosen_trains.size()));
-                                mMap.clear();
-                                for (HashMap<String, String>current_train : chosen_trains) {
-                                    String main_station_lat = (String) current_train.get("main_lan");
-                                    String main_station_lon = (String) current_train.get("main_lon");
-                                    String train_lat = (String) current_train.get("train_lat");
-                                    String train_lon = (String) (String) current_train.get("train_lon");
-                                    Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
-                                    station_marker.showInfoWindow();
-                                    Marker main_marker = addMarker(main_station_lat, main_station_lon, (String) current_train.get("main_station"), "main");
-                                    Marker train_marker = addMarker( train_lat, train_lon,  "Next Stop: "+(String) current_train.get("next_stop"), station_type);
+                            public void onClick(View v) {
 
-                                    Log.e("app", current_train.get("isApproaching"));
-                                    if (current_train.get("isApproaching").equals("1")){
-                                        addMarker( train_lat, train_lon,  "Arrived at: "+(String) station_name, "green");
-
-                                    }
-
-
-                                    if (Double.parseDouble((String) current_train.get("train_to_target")) <= .2) { // Check if arrived at station
-                                            Log.e("ARRIVED", "Train arrived at: " + station_name);
-                                           addMarker( train_lat, train_lon,  "Arrived at: "+(String) station_name, "orange");
-
-
-                                    }
-
-
-
+                                Log.e("train", train_dir[0]);
+                                if (train_dir[0].equals("1")){
+                                    train_dir[0] = "5";
+                                    Log.e("name", main_station_name[0]);
+                                }else {
+                                    train_dir[0] = "1";
+                                    Log.e("name", main_station_name[0]);
 
 
                                 }
-                            }
 
+                            }
                         });
 
-                        Log.d("update", "done");
 
-
-
-                    Thread.sleep(2500);
-                    }catch (IOException | InterruptedException e){
-                        e.printStackTrace();
+                        disconnect.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    mMap.clear();
+                                    Log.d("Connection Status", "Connection Closed");
+                                    connect[0] = false;
+                                    Intent intent = new Intent(MapsActivity.this, mainactivity.class);
+                                    startActivity(intent);
+                                }
+                            });
                     }
-                    disconnect.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                mMap.clear();
-                                Log.d("Connection Status", "Connection Closed");
-                                connect[0] = false;
-                                Intent intent = new Intent(MapsActivity.this, mainactivity.class);
-                                startActivity(intent);
-                            }
-                        });
-                }
 
-            }
-        }).start();
+                }
+            }).start();
 
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private  BufferedReader get_csv_reader(){
         InputStream CSVfile = getResources().openRawResource(R.raw.train_stations);
         BufferedReader reader = new BufferedReader(new InputStreamReader(CSVfile, StandardCharsets.UTF_8));
         return reader;
 
     }
+    private void sleep(int milli) throws InterruptedException {
+        Thread.sleep(milli);
+
+    }
+    private void display_on_user_interface(final ArrayList<HashMap> chosen_trains, final String[] station_coordinates, final String station_name, final String station_type){
+
+
+        runOnUiThread(new Runnable() {
+            @SuppressLint({"SetTextI18n", "LongLogTag"})
+            @Override
+            public void run() {
+                Log.e("Size", String.valueOf(chosen_trains.size()));
+                mMap.clear();
+                for (HashMap<String, String>current_train : chosen_trains) {
+                    String main_station_lat = current_train.get("main_lan");
+                    String main_station_lon = current_train.get("main_lon");
+                    String train_lat = current_train.get("train_lat");
+                    String train_lon =  current_train.get("train_lon");
+                    Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
+                    station_marker.showInfoWindow();
+                    Marker main_marker = addMarker(main_station_lat, main_station_lon, current_train.get("main_station"), "main");
+                    Marker train_marker = addMarker( train_lat, train_lon,  "Next Stop: "+ current_train.get("next_stop"), station_type);
+
+                    if (current_train.get("isApproaching").equals("1")){
+                        addMarker( train_lat, train_lon,  "Arrived at: "+station_name, "green");
+
+                    }
+
+                    if (Double.parseDouble( current_train.get("train_to_target")) <= .2) { // Check if arrived at station
+                        Log.e("ARRIVED", "Train arrived at: " + station_name);
+                        addMarker( train_lat, train_lon,  "Arrived at: "+station_name, "orange");
+
+
+                    }
+                }
+            }
+
+        });
 
 
 
+    }
     private Double calculate_coordinate_distance(double lat1, double lon1, double lat2, double lon2){
         final int R = 6371; // Radious of the earth
 
@@ -224,8 +248,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return R * c;
 
     }
-
-private HashMap<String, String> get_train_info(String each_train){
+    private HashMap<String, String> get_train_info(String each_train){
     HashMap<String, String> train_info = new HashMap<>();
 
     String currTrain= each_train.replaceAll("\n", "")
@@ -238,14 +261,14 @@ private HashMap<String, String> get_train_info(String each_train){
     currTrain = currTrain.replaceAll("<rn>[\\s\\S]*?</rn>","");
     currTrain = currTrain.replaceAll("<destSt>[\\s\\S]*?</destSt>","");
 
-    String main_station = StringUtils.substringBetween(currTrain, "<destNm>", "</destNm>");
-    String train_direction = StringUtils.substringBetween(currTrain, "<trDr>", "</trDr>");
-    String next_train_stop = StringUtils.substringBetween(currTrain, "<nextStaNm>", "</nextStaNm>");
-    String predicted_arrival_time = StringUtils.substringBetween(currTrain, "<arrT>", "</arrT>");
-    String isApproaching = StringUtils.substringBetween(currTrain, "<isApp>", "</isApp>");
-    String isDelayed = StringUtils.substringBetween(currTrain, "<isDly>", "</isDly>");
-    String train_lat = StringUtils.substringBetween(currTrain, "<lat>", "</lat>");
-    String train_lon = StringUtils.substringBetween(currTrain, "<lon>", "</lon>");
+    String main_station =  get_xml_tag_value(currTrain, "<destNm>", "</destNm>");
+    String train_direction =  get_xml_tag_value(currTrain, "<trDr>", "</trDr>");
+    String next_train_stop =  get_xml_tag_value(currTrain, "<nextStaNm>", "</nextStaNm>");
+    String predicted_arrival_time =  get_xml_tag_value(currTrain, "<arrT>", "</arrT>");
+    String isApproaching =  get_xml_tag_value(currTrain, "<isApp>", "</isApp>");
+    String isDelayed =  get_xml_tag_value(currTrain, "<isDly>", "</isDly>");
+    String train_lat =  get_xml_tag_value(currTrain, "<lat>", "</lat>");
+    String train_lon =  get_xml_tag_value(currTrain, "<lon>", "</lon>");
 
     train_info.put("isApproaching", isApproaching);
     train_info.put("isDelayed", isDelayed);
@@ -260,7 +283,10 @@ private HashMap<String, String> get_train_info(String each_train){
     return train_info;
 }
 
+    private String get_xml_tag_value(String raw_xml, String startTag, String endTag){
 
+        return StringUtils.substringBetween(raw_xml, startTag, endTag);
+    }
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -290,33 +316,12 @@ private HashMap<String, String> get_train_info(String each_train){
 
 
     }
-    private ArrayList<Integer> get_trains_from(String dir, Document content){
-        final ArrayList<Integer> indexies = new ArrayList<>();
-        Context context = getApplicationContext();
-        String[] train_direction = content.select("trDr").text().split(" ");
-        if (train_direction.length <= 0){
-            Toast.makeText(context, "No trains available", Toast.LENGTH_LONG).show();
-        }
-        for (int i=0; i< train_direction.length; i++){
-            String elem = train_direction[i];
-            if (elem.equals(dir)){
-                indexies.add(i);
-            }
-
-        }
-
-        return indexies;
-    }
-
-
-
     private void ZoomIn(Float zoomLevel, String[] coord){
         assert coord != null;
         LatLng position = new LatLng(Double.parseDouble(coord[0]), Double.parseDouble(coord[1]));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, zoomLevel));
 
     }
-
     private HashMap<String, String> TrainLineKeys(){
         HashMap<String, String> TrainLineKeyCodes  = new HashMap<>();
         TrainLineKeyCodes.put("red", "red");
@@ -330,36 +335,16 @@ private HashMap<String, String> get_train_info(String each_train){
 
         return TrainLineKeyCodes;
     }
-    private ArrayList<Double>  calculate_train_distance(ArrayList<String> chosen_trains,String[] station_coordinates) {
-        ArrayList<Double> train_distance = new ArrayList<>();
-        final int R = 6371; // Radious of the earth
-
-        double station_lat = Double.parseDouble(station_coordinates[0]);
-        double station_lon = Double.parseDouble(station_coordinates[1]);
-
-        for (String coord : chosen_trains){
-            String[] train_cord = coord.split(",");
-            double train_lat = Double.parseDouble(train_cord[0]);
-            double train_lon = Double.parseDouble(train_cord[1]);
-            Double latDistance = toRad(train_lat-station_lat);
-            Double lonDistance = toRad(train_lon-station_lon);
-
-            double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2) +
-                    Math.cos(toRad(station_lat)) * Math.cos(toRad(train_lat)) *
-                            Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-
-            double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            double distance = R * c;
-
-            train_distance.add(distance);
-        }
-
-        return  train_distance;//train_distance.get(0) * 0.62137;
-    }
     private static Double toRad(Double value) {
         return value * Math.PI / 180;
     }
+    private boolean withinBounds(double dist1, double dist2){
 
+        if (dist1 >= 0 && dist1 <= dist2) { // Train threshold to determine if train has passed target station
+            return true;
+
+        }else{
+            return false;
+        }
+    }
 }
-
-
