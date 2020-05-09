@@ -36,7 +36,7 @@
             android:id="@+id/pickStation"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_toRightOf="@id/switch_direction"
             android:text="Choose Station"
             />
 

@@ -98,7 +98,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 while (connect[0]){
                     final ArrayList<HashMap> chosen_trains = new ArrayList<>();
-                    final HashMap<String, String> main_and_target_info = new HashMap<>();
+                    final ArrayList<Double> train_distances_from_target = new ArrayList<>();
+
+
                     try {
 
                         Document content = Jsoup.connect(url).get();
@@ -134,6 +136,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     continue;
 
                                 }else {
+                                    train_distances_from_target.add(train_to_target);
+                                    String[] train_coordinates = (train_info.get("train_lat") +","+ train_info.get("train_lon")).split(",");
+                                    Log.e("KEY", train_to_target+" Value: "+ train_coordinates[0] +","+train_coordinates[1] );
+                                    train_info.put(String.valueOf(train_to_target), train_coordinates[0] +","+train_coordinates[1]);
                                     train_info.put("train_to_target", String.valueOf(train_to_target));
                                     train_info.put("train_to_main", String.valueOf(train_to_main));
                                     train_info.put("main_lan", String.valueOf(main_station_lat));
@@ -145,6 +151,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                         }
+                        Collections.sort(train_distances_from_target);
+                        display_on_user_interface(chosen_trains, station_coordinates, station_name, station_type, train_distances_from_target);
+
 
                         switchDir.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -160,9 +169,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             }
                         });
 
-                        display_on_user_interface(chosen_trains, station_coordinates, station_name, station_type);
 //                        Log.d("update", "done.");
-                        sleep(250);
+                        sleep(2500);
 
 
                         }catch (IOException | InterruptedException e){
@@ -201,20 +209,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Thread.sleep(milli);
 
     }
-    private void display_on_user_interface(final ArrayList<HashMap> chosen_trains, final String[] station_coordinates, final String station_name, final String station_type){
-
-
+    private void display_on_user_interface(final ArrayList<HashMap> chosen_trains,
+                                           final String[] station_coordinates,
+                                           final String station_name,
+                                           final String station_type,
+                                           final ArrayList<Double> sorted_train_distances
+                                          ){
         runOnUiThread(new Runnable() {
             @SuppressLint({"SetTextI18n", "LongLogTag"})
             @Override
             public void run() {
-//                Log.e("Size", String.valueOf(chosen_trains.size()));
+                int idx =0;
                 mMap.clear();
                 for (HashMap<String, String>current_train : chosen_trains) {
+
+
+
+
+//                    String train_to_track = current_train.get(String.valueOf(sorted_train_distances.get(idx)));
+//                    String trainLat = current_train.get(sorted_train_distances.get(idx))[0];
+//                    String trainLon = current_train.get(sorted_train_distances.get(idx))[1];
+//                    Log.e("COORD", ""+train_to_track);
+
+
+
                     target_station_view.setText("TRACKING: "+station_name);
                     main_station_view.setText("TOWARDS: "+current_train.get("main_station"));
                     num_trains_view.setText("NUMBER OF TRAINS: "+String.valueOf(chosen_trains.size()));
-
+                    Log.e("Distance", current_train.get("train_to_target"));
                     String main_station_lat = current_train.get("main_lan");
                     String main_station_lon = current_train.get("main_lon");
                     String train_lat = current_train.get("train_lat");
@@ -222,10 +244,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
                     station_marker.showInfoWindow();
                     Marker main_marker = addMarker(main_station_lat, main_station_lon, current_train.get("main_station"), "main");
-                    Marker train_marker = addMarker( train_lat, train_lon,  "Next Stop: "+ current_train.get("next_stop"), station_type);
-
+                    Marker train_marker = addMarker(train_lat, train_lon,  "Next Stop: "+ current_train.get("train_to_target"), station_type);
+//
                     if (current_train.get("isApproaching").equals("1")){
-                        addMarker( train_lat, train_lon,  "Arrived at: "+station_name, "green");
+                        addMarker(train_lat, train_lon,  "Arrived at: "+station_name, "green");
 
                     }
 
@@ -235,7 +257,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                     }
+                    idx++;
+                    if (idx == 20){
+                        break;
+                    }
                 }
+                Log.d("DONE", "DONE");
             }
 
         });
