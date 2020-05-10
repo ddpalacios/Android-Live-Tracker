@@ -47,7 +47,7 @@ import java.util.HashMap;
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
-    private Button disconnect, switchDir;
+    private Button disconnect, switchDir, chooseStation;
     private TextView target_station_view, main_station_view, arrival_time_view, nearest_train_dist_view,num_trains_view;
     final boolean[] connect = {true};
     private GoogleMap mMap;
@@ -66,6 +66,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+
+
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -78,6 +80,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         arrival_time_view = findViewById(R.id.arrival_time_view);
         nearest_train_dist_view = findViewById(R.id.nearest_train_dist_view);
         num_trains_view = findViewById(R.id.num_trains_view);
+        chooseStation = findViewById(R.id.pickStation);
         mMap = googleMap;
         Bundle bb;
         bb=getIntent().getExtras();
@@ -146,6 +149,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             }
                         }
                         display_on_user_interface(chosen_trains, station_coordinates, station_name, station_type);
+
+                        chooseStation.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(MapsActivity.this, mainactivity.class);
+                                connect[0] = false;
+                                Log.d("Connection Status", "Connection Closed");
+                                startActivity(intent);
+                            }
+                        });
+
+
+
                         switchDir.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -165,12 +181,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         disconnect.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    mMap.clear();
-                                    Log.d("Connection Status", "Connection Closed");
-                                    connect[0] = false;
-                                    disconnect.setText("Connect");
-//                                    Intent intent = new Intent(MapsActivity.this, mainactivity.class);
-//                                    startActivity(intent);
+                                    if (connect[0] == true) {
+                                        disconnect.setText("Connect");
+                                        connect[0] = false;
+                                        Log.d("Connection Status", "Connection Closed");
+                                        Toast.makeText(context, "DISCONNECTED", Toast.LENGTH_SHORT).show();
+                                        mMap.clear();
+
+                                    }else {
+                                        disconnect.setText("Disconnect");
+                                        connect[0] = true;
+                                        Toast.makeText(context, "CONNECTED", Toast.LENGTH_SHORT).show();
+                                        Log.d("Connection Status", "Connection Opened");
+                                        onMapReady(mMap);
+
+                                    }
+
                                 }
                             });
                     }
@@ -204,6 +230,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (chosen_trains.size() == 0) {
                     Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
                 } else {
+                    boolean yellow_indicator = false;
                     for (HashMap<String, String> current_train : chosen_trains) {
                         String main_station_lat = current_train.get("main_lan");
                         String main_station_lon = current_train.get("main_lon");
@@ -227,13 +254,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             continue;
                         } else if (current_distance_from_target >= 1.9 && current_distance_from_target <= 3.0) {
                             Marker t = addMarker(train_lat, train_lon, "Next Stop: " + next_stop, "green");
-                            t.showInfoWindow();
-                            continue;
-
-                        } else if (current_distance_from_target >= .5 && current_distance_from_target <= 1.89) {
-                            String current_distance = String.format("%.2f", current_distance_from_target);
-                            Marker t = addMarker(train_lat, train_lon, current_distance+" MILES AWAY FROM " + station_name.toUpperCase(), "yellow");
-                            t.showInfoWindow();
+                            if (!yellow_indicator) {
+                                t.showInfoWindow();
+                            }
                             continue;
 
                         } else if (next_stop.equals(station_name) && isApproaching.equals("1")) {
@@ -248,22 +271,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     .build();                   // Creates a CameraPosition from the builder
                             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                             t.showInfoWindow();
-                            continue;
-                        } else if (current_distance_from_target >= 0.0 && current_distance_from_target <= .49) {
-                            Marker t = addMarker(train_lat, train_lon, "ARRIVED "+station_name.toUpperCase(), "orange");
-                            t.showInfoWindow();
-                            LatLng target = new LatLng(Double.parseDouble(train_lat), Double.parseDouble(train_lon));
-                            CameraPosition cameraPosition = new CameraPosition.Builder()
-                                    .target(target)
-                                    .zoom(17)                   // Sets the zoom
-                                    .bearing(90)                // Sets the orientation of the camera to east
-                                    .tilt(40)                  // Sets the tilt of the camera to 40 degrees
-                                    .build();                   // Creates a CameraPosition from the builder
-                            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+
                             continue;
 
-                        }
-                        else {
+                        }else if (current_distance_from_target >= .1 && current_distance_from_target <= 1.89) {
+                            String current_distance = String.format("%.2f", current_distance_from_target);
+                            Marker t = addMarker(train_lat, train_lon, current_distance+" MILES AWAY FROM " + station_name.toUpperCase(), "yellow");
+                            yellow_indicator = true;
+                            t.showInfoWindow();
+                            continue;
+
+                        } if (current_distance_from_target <=.05 && isApproaching.equals("0")){
+                            Marker ts = addMarker(train_lat, train_lon, "ARRIVED "+station_name.toUpperCase(), "orange");
+                            ts.showInfoWindow();
+                            continue;
+
+
+                        } else {
                             addMarker(train_lat, train_lon, "Next Stop: " + next_stop, station_type);
                         }
 
