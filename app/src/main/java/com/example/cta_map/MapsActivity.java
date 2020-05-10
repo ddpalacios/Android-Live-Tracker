@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentActivity;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -47,7 +48,7 @@ import java.util.HashMap;
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
-    private Button disconnect, switchDir, chooseStation;
+    private Button disconnect, switchDir, chooseStation, status;
     private TextView target_station_view, main_station_view, arrival_time_view, nearest_train_dist_view,num_trains_view;
     final boolean[] connect = {true};
     private GoogleMap mMap;
@@ -81,6 +82,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         nearest_train_dist_view = findViewById(R.id.nearest_train_dist_view);
         num_trains_view = findViewById(R.id.num_trains_view);
         chooseStation = findViewById(R.id.pickStation);
+        status = findViewById(R.id.status);
         mMap = googleMap;
         Bundle bb;
         bb=getIntent().getExtras();
@@ -160,8 +162,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             }
                         });
 
-
-
                         switchDir.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -186,7 +186,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         connect[0] = false;
                                         Log.d("Connection Status", "Connection Closed");
                                         Toast.makeText(context, "DISCONNECTED", Toast.LENGTH_SHORT).show();
-                                        mMap.clear();
+//                                        mMap.clear();
 
                                     }else {
                                         disconnect.setText("Disconnect");
@@ -226,11 +226,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @SuppressLint({"SetTextI18n", "LongLogTag"})
             @Override
             public void run() {
+                Context context = getApplicationContext();
                 mMap.clear();
                 if (chosen_trains.size() == 0) {
                     Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
+                    station_marker.showInfoWindow();
+                    status.setBackgroundColor(Color.WHITE);
+                    status.setText("No Trains Near.");
+
                 } else {
-                    boolean yellow_indicator = false;
+                    boolean green_indicator = false; // get ready to leave
+                    boolean yellow_indicator = false; // start to leave
+                    boolean blue_indicator = false; // train is approaching station
+                    boolean orange_indicator = false; // train has arrived
+                    boolean ButtonIsOn = false;
+
                     for (HashMap<String, String> current_train : chosen_trains) {
                         String main_station_lat = current_train.get("main_lan");
                         String main_station_lon = current_train.get("main_lon");
@@ -242,56 +252,82 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         String isDelayed = current_train.get("isDelayed");
                         String arrival_time = current_train.get("arrival_time");
                         String next_stop = current_train.get("next_stop");
-
-
+                        String current_distance = String.format("%.2f", current_distance_from_target);
                         Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
                         Marker main_marker = addMarker(main_station_lat, main_station_lon, current_train.get("main_station"), "main");
 
-
-                        if (isDelayed.equals("1")) {
+                        if (!yellow_indicator && !green_indicator && !blue_indicator && !orange_indicator){ // if no train near, show station name
+                            station_marker.showInfoWindow();
+                        }
+                        if (isDelayed.equals("1")) { // if current train is delayed
                             Marker t = addMarker(train_lat, train_lon, "DELAYED", "rose");
                             t.showInfoWindow();
                             continue;
-                        } else if (current_distance_from_target >= 1.9 && current_distance_from_target <= 3.0) {
+                        }
+
+                         else if (current_distance_from_target >= 1.9 && current_distance_from_target <= 3.0) {  // get ready to leave
+                            nearest_train_dist_view.setText(("nearest train is " + current_distance + " mi away").toUpperCase());
+                            target_station_view.setText("tracking ".toUpperCase() + station_name.toUpperCase() + " (" + station_type.toUpperCase() + ")");
                             Marker t = addMarker(train_lat, train_lon, "Next Stop: " + next_stop, "green");
-                            if (!yellow_indicator) {
+                            green_indicator = true;
+                            ButtonIsOn = true;
+
+                            status.setBackgroundColor(Color.GREEN);
+                            status.setText("Get Ready To Leave");
+
+                                if (!yellow_indicator) {
+                                    t.showInfoWindow();
+                                }
+
+                                continue;
+
+                        }
+
+                        else if (next_stop.equals(station_name) && isApproaching.equals("1")) {
+                            Marker t = addMarker(train_lat, train_lon, "APPROACHING " + station_name.toUpperCase(), "blue");
+                            blue_indicator = true;
+
+                            status.setText("Run. Train is Approaching");
+                            status.setBackgroundColor(Color.BLUE);
+
+                            nearest_train_dist_view.setText(("nearest train is " + current_distance + " mi away").toUpperCase());
+                            t.showInfoWindow();
+                            ZoomIn((float) 17, train_coord);
+                            t.showInfoWindow();
+                            continue;
+                        }
+                        else if (current_distance_from_target >= .1 && current_distance_from_target <= 1.89) {
+                            Marker t = addMarker(train_lat, train_lon, current_distance + " MILES AWAY FROM " + station_name.toUpperCase(), "yellow");
+                            yellow_indicator = true;
+                            status.setText("Walk Over To Station");
+                            status.setBackgroundColor(Color.YELLOW);
+                            nearest_train_dist_view.setText(("nearest train is " + current_distance + " mi away").toUpperCase());
+                            target_station_view.setText("tracking ".toUpperCase() + station_name.toUpperCase() + " (" + station_type.toUpperCase() + ")");
+
+                            if (!orange_indicator) {
                                 t.showInfoWindow();
                             }
                             continue;
-
-                        } else if (next_stop.equals(station_name) && isApproaching.equals("1")) {
-                            Marker t = addMarker(train_lat, train_lon, "APPROACHING "+station_name.toUpperCase(), "blue");
-                            t.showInfoWindow();
-                            LatLng target = new LatLng(Double.parseDouble(train_lat), Double.parseDouble(train_lon));
-                            CameraPosition cameraPosition = new CameraPosition.Builder()
-                                    .target(target)
-                                    .zoom(17)                   // Sets the zoom
-                                    .bearing(90)                // Sets the orientation of the camera to east
-                                    .tilt(40)                  // Sets the tilt of the camera to 40 degrees
-                                    .build();                   // Creates a CameraPosition from the builder
-                            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-                            t.showInfoWindow();
-
-
-                            continue;
-
-                        }else if (current_distance_from_target >= .1 && current_distance_from_target <= 1.89) {
-                            String current_distance = String.format("%.2f", current_distance_from_target);
-                            Marker t = addMarker(train_lat, train_lon, current_distance+" MILES AWAY FROM " + station_name.toUpperCase(), "yellow");
-                            yellow_indicator = true;
-                            t.showInfoWindow();
-                            continue;
-
-                        } if (current_distance_from_target <=.05 && isApproaching.equals("0")){
-                            Marker ts = addMarker(train_lat, train_lon, "ARRIVED "+station_name.toUpperCase(), "orange");
+                    }
+                        if (current_distance_from_target <=.05){
+                            station_marker.remove();
+                            orange_indicator=true;
+                            Marker ts = addMarker(train_lat, train_lon, "ARRIVED AT "+station_name.toUpperCase(), "orange");
+                            status.setBackgroundColor(Color.rgb(255, 127, 0));
+                            target_station_view.setText("arrived at".toUpperCase()+station_name.toUpperCase()+" ("+station_type.toUpperCase()+")");
                             ts.showInfoWindow();
                             continue;
-
-
-                        } else {
-                            addMarker(train_lat, train_lon, "Next Stop: " + next_stop, station_type);
                         }
+                        else {
+                            addMarker(train_lat, train_lon, "Next Stop: " + next_stop, station_type);
+                            main_station_view.setText(("heading towards "+current_train.get("main_station")).toUpperCase());
+                            if (!green_indicator && !yellow_indicator && !blue_indicator && !orange_indicator){
+                                status.setBackgroundColor(Color.WHITE);
+                                status.setText("No Train Near.");
 
+                            }
+                        }
+                        num_trains_view.setText("number of trains: ".toUpperCase()+chosen_trains.size());
                     }
                     Log.d("DONE", "DONE");
                 }
@@ -387,8 +423,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
     private void ZoomIn(Float zoomLevel, String[] coord){
         assert coord != null;
-        LatLng position = new LatLng(Double.parseDouble(coord[0]), Double.parseDouble(coord[1]));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, zoomLevel));
+        LatLng target = new LatLng(Double.parseDouble(coord[0]), Double.parseDouble(coord[1]));
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(target)
+                .zoom(zoomLevel)                   // Sets the zoom
+                .bearing(90)                // Sets the orientation of the camera to east
+                .tilt(40)                  // Sets the tilt of the camera to 40 degrees
+                .build();                   // Creates a CameraPosition from the builder
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
 
     }
     private HashMap<String, String> TrainLineKeys(){
