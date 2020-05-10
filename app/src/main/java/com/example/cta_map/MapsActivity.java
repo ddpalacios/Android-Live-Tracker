@@ -230,10 +230,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             continue;
 
                         } else if (current_distance_from_target >= .5 && current_distance_from_target <= 1.89) {
-                            addMarker(train_lat, train_lon, "Next Stop: " + next_stop, "yellow");
+                            station_marker.hideInfoWindow();
+                            Marker t = addMarker(train_lat, train_lon, current_distance_from_target+" MILES AWAY FROM " + station_name, "yellow");
+                            t.showInfoWindow();
                             continue;
 
                         } else if (next_stop.equals(station_name) && isApproaching.equals("1")) {
+                            station_marker.hideInfoWindow();
                             Marker t = addMarker(train_lat, train_lon, "APPROACHING "+station_name.toUpperCase(), "blue");
                             t.showInfoWindow();
                             LatLng target = new LatLng(Double.parseDouble(train_lat), Double.parseDouble(train_lon));
@@ -244,8 +247,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     .tilt(40)                  // Sets the tilt of the camera to 30 degrees
                                     .build();                   // Creates a CameraPosition from the builder
                             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                            t.showInfoWindow();
                             continue;
-                        } else if (current_distance_from_target >= 0.0 && current_distance_from_target <= .49) {
+                        } else if (current_distance_from_target == 0.0 && current_distance_from_target <= .49) {
                             Marker t = addMarker(train_lat, train_lon, "ARRIVED "+station_name.toUpperCase(), "orange");
                             t.showInfoWindow();
                             continue;
