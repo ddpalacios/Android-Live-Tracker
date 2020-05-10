@@ -168,8 +168,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     mMap.clear();
                                     Log.d("Connection Status", "Connection Closed");
                                     connect[0] = false;
-                                    Intent intent = new Intent(MapsActivity.this, mainactivity.class);
-                                    startActivity(intent);
+                                    disconnect.setText("Connect");
+//                                    Intent intent = new Intent(MapsActivity.this, mainactivity.class);
+//                                    startActivity(intent);
                                 }
                             });
                     }
@@ -218,7 +219,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
                         Marker main_marker = addMarker(main_station_lat, main_station_lon, current_train.get("main_station"), "main");
-                        station_marker.showInfoWindow();
 
 
                         if (isDelayed.equals("1")) {
@@ -226,32 +226,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             t.showInfoWindow();
                             continue;
                         } else if (current_distance_from_target >= 1.9 && current_distance_from_target <= 3.0) {
-                            addMarker(train_lat, train_lon, "Next Stop: " + next_stop, "green");
+                            Marker t = addMarker(train_lat, train_lon, "Next Stop: " + next_stop, "green");
+                            t.showInfoWindow();
                             continue;
 
                         } else if (current_distance_from_target >= .5 && current_distance_from_target <= 1.89) {
-                            station_marker.hideInfoWindow();
-                            Marker t = addMarker(train_lat, train_lon, current_distance_from_target+" MILES AWAY FROM " + station_name, "yellow");
+                            String current_distance = String.format("%.2f", current_distance_from_target);
+                            Marker t = addMarker(train_lat, train_lon, current_distance+" MILES AWAY FROM " + station_name.toUpperCase(), "yellow");
                             t.showInfoWindow();
                             continue;
 
                         } else if (next_stop.equals(station_name) && isApproaching.equals("1")) {
-                            station_marker.hideInfoWindow();
                             Marker t = addMarker(train_lat, train_lon, "APPROACHING "+station_name.toUpperCase(), "blue");
                             t.showInfoWindow();
                             LatLng target = new LatLng(Double.parseDouble(train_lat), Double.parseDouble(train_lon));
                             CameraPosition cameraPosition = new CameraPosition.Builder()
-                                    .target(target)      // Sets the center of the map to Mountain View
+                                    .target(target)
                                     .zoom(17)                   // Sets the zoom
                                     .bearing(90)                // Sets the orientation of the camera to east
-                                    .tilt(40)                  // Sets the tilt of the camera to 30 degrees
+                                    .tilt(40)                  // Sets the tilt of the camera to 40 degrees
                                     .build();                   // Creates a CameraPosition from the builder
                             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                             t.showInfoWindow();
                             continue;
-                        } else if (current_distance_from_target == 0.0 && current_distance_from_target <= .49) {
+                        } else if (current_distance_from_target >= 0.0 && current_distance_from_target <= .49) {
                             Marker t = addMarker(train_lat, train_lon, "ARRIVED "+station_name.toUpperCase(), "orange");
                             t.showInfoWindow();
+                            LatLng target = new LatLng(Double.parseDouble(train_lat), Double.parseDouble(train_lon));
+                            CameraPosition cameraPosition = new CameraPosition.Builder()
+                                    .target(target)
+                                    .zoom(17)                   // Sets the zoom
+                                    .bearing(90)                // Sets the orientation of the camera to east
+                                    .tilt(40)                  // Sets the tilt of the camera to 40 degrees
+                                    .build();                   // Creates a CameraPosition from the builder
+                            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                             continue;
 
                         }
