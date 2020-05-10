@@ -251,8 +251,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             continue;
 
                         }
-
-
                         else {
                             addMarker(train_lat, train_lon, "Next Stop: " + next_stop, station_type);
                         }
