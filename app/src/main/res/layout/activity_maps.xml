@@ -17,31 +17,50 @@
 
     <Button
         android:id="@+id/status"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
         android:text="status"
         />
+<!--    <TextView-->
+<!--        android:id="@+id/test"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:textSize="15dp"-->
+<!--        android:text="Tracking:"-->
+<!--        android:textColor="@android:color/black"-->
+<!--        android:layout_below="@id/switch_direction"-->
+<!--        android:layout_marginLeft="20dp"-->
+<!--        android:layout_alignParentLeft="true"-->
+<!--        />-->
+
 
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="190dp"
         android:orientation="vertical"
+        android:id="@+id/background"
         android:layout_gravity="bottom"
         android:background="@android:color/white">
 
+
+
         <Button
             android:id="@+id/disconnect"
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:text="disconnect"
+            android:shadowColor="@android:color/background_dark"
             />
 
 
         <Button
             android:id="@+id/pickStation"
+            android:layout_marginLeft="25dp"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/switch_direction"
@@ -52,76 +71,89 @@
             android:id="@+id/switch_direction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="17dp"
             android:layout_toRightOf="@id/disconnect"
             android:text="switch_direction" />
 
 
-
-        <TextView
-            android:id="@+id/target_station_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="15dp"
-            android:text="Tracking:"
-            android:layout_below="@id/switch_direction"
-            android:layout_marginLeft="20dp"
-            android:layout_alignParentLeft="true"
-            />
+        <ListView
+            android:id = "@+id/list"
+            android:layout_below="@+id/disconnect"
+            android:layout_width = "wrap_content"
+            android:layout_height = "wrap_content"/>
 
 
-        <TextView
-            android:id="@+id/main_station_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="15dp"
-            android:text="Towards:"
-            android:layout_below="@id/target_station_view"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="20dp"
-            android:layout_alignParentLeft="true"
-             />
 
-        <TextView
-            android:id="@+id/nearest_train_dist_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="15dp"
-            android:text="Nearest train distance: "
-            android:layout_below="@id/main_station_view"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="20dp"
-            android:layout_alignParentLeft="true"
-            />
+<!--        <TextView-->
+<!--            android:id="@+id/target_station_view"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:textSize="15dp"-->
+<!--            android:text="Tracking:"-->
+<!--            android:textColor="@android:color/black"-->
+<!--            android:layout_below="@id/switch_direction"-->
+<!--            android:layout_marginLeft="20dp"-->
+<!--            android:layout_alignParentLeft="true"-->
+<!--            />-->
 
 
-        <TextView
-            android:id="@+id/num_trains_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="15dp"
-            android:text="Current number of trains:"
-            android:layout_below="@id/nearest_train_dist_view"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="20dp"
-            android:layout_alignParentLeft="true"
+<!--        <TextView-->
+<!--            android:id="@+id/main_station_view"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:textColor="@android:color/black"-->
+<!--            android:textSize="15dp"-->
+<!--            android:text="Towards:"-->
+<!--            android:layout_below="@id/target_station_view"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            android:layout_marginLeft="20dp"-->
+<!--            android:layout_alignParentLeft="true"-->
+<!--             />-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/nearest_train_dist_view"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:textColor="@android:color/black"-->
+<!--            android:textSize="15dp"-->
+<!--            android:text="Nearest train distance: "-->
+<!--            android:layout_below="@id/main_station_view"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            android:layout_marginLeft="20dp"-->
+<!--            android:layout_alignParentLeft="true"-->
+<!--            />-->
 
 
-            />
+<!--        <TextView-->
+<!--            android:id="@+id/num_trains_view"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:textColor="@android:color/black"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:textSize="15dp"-->
+<!--            android:text="Current number of trains:"-->
+<!--            android:layout_below="@id/nearest_train_dist_view"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            android:layout_marginLeft="20dp"-->
+<!--            android:layout_alignParentLeft="true"-->
 
 
-        <TextView
-            android:id="@+id/arrival_time_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="15dp"
-            android:text="Arrival Time:"
-            android:layout_below="@id/num_trains_view"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="20dp"
-            android:layout_alignParentLeft="true"
+<!--            />-->
 
 
-            />
+<!--        <TextView-->
+<!--            android:id="@+id/arrival_time_view"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:textColor="@android:color/black"-->
+<!--            android:textSize="15dp"-->
+<!--            android:text="Arrival Time:"-->
+<!--            android:layout_below="@id/num_trains_view"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            android:layout_marginLeft="20dp"-->
+<!--            android:layout_alignParentLeft="true"-->
+
+
+<!--            />-->
 
 
         ></RelativeLayout>

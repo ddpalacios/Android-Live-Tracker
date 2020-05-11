@@ -12,7 +12,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,6 +52,7 @@ import java.util.HashMap;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private Button disconnect, switchDir, chooseStation, status;
+    private ListView list;
     private TextView target_station_view, main_station_view, arrival_time_view, nearest_train_dist_view,num_trains_view;
     final boolean[] connect = {true};
     private GoogleMap mMap;
@@ -76,11 +80,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         HashMap <String, String> StationTypeKey = TrainLineKeys();
         disconnect = findViewById(R.id.disconnect);
         switchDir = findViewById(R.id.switch_direction);
-        main_station_view = findViewById(R.id.main_station_view);
-        target_station_view = findViewById(R.id.target_station_view);
-        arrival_time_view = findViewById(R.id.arrival_time_view);
-        nearest_train_dist_view = findViewById(R.id.nearest_train_dist_view);
-        num_trains_view = findViewById(R.id.num_trains_view);
+        list = findViewById(R.id.list);
+//        main_station_view = findViewById(R.id.main_station_view);
+//        target_station_view = findViewById(R.id.target_station_view);
+//        arrival_time_view = findViewById(R.id.arrival_time_view);
+//        nearest_train_dist_view = findViewById(R.id.nearest_train_dist_view);
+//        num_trains_view = findViewById(R.id.num_trains_view);
         chooseStation = findViewById(R.id.pickStation);
         status = findViewById(R.id.status);
         mMap = googleMap;
@@ -92,10 +97,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final String station_type = bb.getString("target_station_type");
         final String [] station_coordinates = bb.getStringArray("target_station_coordinates");
         final String[] train_dir = {bb.getString("train_direction")};
-        ZoomIn(13.1f, station_coordinates);
+
+        LatLng chicago = new LatLng(Double.parseDouble(station_coordinates[0]), Double.parseDouble(station_coordinates[1]));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(chicago, 13.1f));
+
+
         String type  = StationTypeKey.get(station_type.toLowerCase());
         final String url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s", type);
         Log.e("url", url);
+
 
 
         new Thread(new Runnable() {
@@ -105,6 +115,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 while (connect[0]){
                     final ArrayList<HashMap> chosen_trains = new ArrayList<>();
                     final HashMap<Double, String> coord_from_dist = new HashMap<>();
+
+
                     int num_trains= 0;
 
                     try {
@@ -151,6 +163,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             }
                         }
                         display_on_user_interface(chosen_trains, station_coordinates, station_name, station_type);
+                        disconnect.setBackgroundColor(Color.rgb(133, 205,186));
+                        chooseStation.setBackgroundColor(Color.rgb(133, 205,186));
+                        switchDir.setBackgroundColor(Color.rgb(133, 205,186));
 
                         chooseStation.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -199,11 +214,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                 }
                             });
+
+
                     }
 
                 }
             }).start();
     }
+
+
+
+
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private  BufferedReader get_csv_reader(){
         InputStream CSVfile = getResources().openRawResource(R.raw.train_stations);
@@ -227,6 +248,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void run() {
                 Context context = getApplicationContext();
+                final ArrayAdapter<String> adapter;
+                final ArrayList<String> arrayList;
+                arrayList = new ArrayList<String>();
+                adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
+                list.setAdapter(adapter);
+                int train_num =1;
+
+
                 mMap.clear();
                 if (chosen_trains.size() == 0) {
                     Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
@@ -256,6 +285,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
                         Marker main_marker = addMarker(main_station_lat, main_station_lon, current_train.get("main_station"), "main");
 
+
+
+
                         if (!yellow_indicator && !green_indicator && !blue_indicator && !orange_indicator){ // if no train near, show station name
                             station_marker.showInfoWindow();
                         }
@@ -266,31 +298,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         }
 
                          else if (current_distance_from_target >= 1.9 && current_distance_from_target <= 3.0) {  // get ready to leave
-                            nearest_train_dist_view.setText(("nearest train is " + current_distance + " mi away").toUpperCase());
-                            target_station_view.setText("tracking ".toUpperCase() + station_name.toUpperCase() + " (" + station_type.toUpperCase() + ")");
+//                            nearest_train_dist_view.setText(("nearest train is " + current_distance + " mi away").toUpperCase());
+//                            target_station_view.setText("tracking ".toUpperCase() + station_name.toUpperCase() + " (" + station_type.toUpperCase() + ")");
+//                            arrival_time_view.setText(("arrival time to "+next_stop+": "+ arrival_time.substring(8)).toUpperCase());
                             Marker t = addMarker(train_lat, train_lon, "Next Stop: " + next_stop, "green");
                             green_indicator = true;
-                            ButtonIsOn = true;
+                            arrayList.add("Get ready to Leave!");
+                            adapter.notifyDataSetChanged();
+                            if (!ButtonIsOn){
+                                status.setBackgroundColor(Color.GREEN);
+                                status.setText("Get Ready To Leave");
 
-                            status.setBackgroundColor(Color.GREEN);
-                            status.setText("Get Ready To Leave");
-
+                            }
                                 if (!yellow_indicator) {
                                     t.showInfoWindow();
                                 }
-
                                 continue;
-
                         }
-
                         else if (next_stop.equals(station_name) && isApproaching.equals("1")) {
                             Marker t = addMarker(train_lat, train_lon, "APPROACHING " + station_name.toUpperCase(), "blue");
                             blue_indicator = true;
+                            arrayList.add("Is Appraching!");
+                            adapter.notifyDataSetChanged();
 
-                            status.setText("Run. Train is Approaching");
-                            status.setBackgroundColor(Color.BLUE);
+                            if (!ButtonIsOn) {
+                                ButtonIsOn=true;
+                                status.setText("Run. Train is Approaching");
+                                status.setBackgroundColor(Color.BLUE);
+                            }
 
-                            nearest_train_dist_view.setText(("nearest train is " + current_distance + " mi away").toUpperCase());
+//                            nearest_train_dist_view.setText(("nearest train is " + current_distance + " mi away").toUpperCase());
+//                            arrival_time_view.setText(("arrival time to "+next_stop+": "+ arrival_time.substring(8)).toUpperCase());
+
+
+
                             t.showInfoWindow();
                             ZoomIn((float) 17, train_coord);
                             t.showInfoWindow();
@@ -299,10 +340,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         else if (current_distance_from_target >= .1 && current_distance_from_target <= 1.89) {
                             Marker t = addMarker(train_lat, train_lon, current_distance + " MILES AWAY FROM " + station_name.toUpperCase(), "yellow");
                             yellow_indicator = true;
-                            status.setText("Walk Over To Station");
-                            status.setBackgroundColor(Color.YELLOW);
-                            nearest_train_dist_view.setText(("nearest train is " + current_distance + " mi away").toUpperCase());
-                            target_station_view.setText("tracking ".toUpperCase() + station_name.toUpperCase() + " (" + station_type.toUpperCase() + ")");
+                            arrayList.add("Start walking!");
+                            adapter.notifyDataSetChanged();
+
+                            if (!ButtonIsOn) {
+                                ButtonIsOn=true;
+                                status.setText("Walk Over To Station");
+                                status.setBackgroundColor(Color.YELLOW);
+//                                nearest_train_dist_view.setText(("nearest train is " + current_distance + " mi away").toUpperCase());
+//                                target_station_view.setText("tracking ".toUpperCase() + station_name.toUpperCase() + " (" + station_type.toUpperCase() + ")");
+//                                arrival_time_view.setText(("arrival time to "+next_stop+": "+ arrival_time.substring(8)).toUpperCase());
+
+
+
+                            }
 
                             if (!orange_indicator) {
                                 t.showInfoWindow();
@@ -313,21 +364,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             station_marker.remove();
                             orange_indicator=true;
                             Marker ts = addMarker(train_lat, train_lon, "ARRIVED AT "+station_name.toUpperCase(), "orange");
-                            status.setBackgroundColor(Color.rgb(255, 127, 0));
-                            target_station_view.setText("arrived at".toUpperCase()+station_name.toUpperCase()+" ("+station_type.toUpperCase()+")");
+                            arrayList.add("ARRIVED");
+                            adapter.notifyDataSetChanged();
+
+                            if (!ButtonIsOn) {
+                                ButtonIsOn=true;
+                                status.setBackgroundColor(Color.rgb(255, 127, 0));
+                                status.setText("ARRIVED");
+
+                            }
+//                            target_station_view.setText("arrived at".toUpperCase()+station_name.toUpperCase()+" ("+station_type.toUpperCase()+")");
                             ts.showInfoWindow();
                             continue;
                         }
                         else {
                             addMarker(train_lat, train_lon, "Next Stop: " + next_stop, station_type);
-                            main_station_view.setText(("heading towards "+current_train.get("main_station")).toUpperCase());
+                            arrayList.add("Train Heading towards: "+ next_stop);
+                            adapter.notifyDataSetChanged();
+//                            main_station_view.setText(("heading towards "+current_train.get("main_station")).toUpperCase());
+
                             if (!green_indicator && !yellow_indicator && !blue_indicator && !orange_indicator){
                                 status.setBackgroundColor(Color.WHITE);
                                 status.setText("No Train Near.");
 
                             }
                         }
-                        num_trains_view.setText("number of trains: ".toUpperCase()+chosen_trains.size());
+//                        num_trains_view.setText("number of trains: ".toUpperCase()+chosen_trains.size());
                     }
                     Log.d("DONE", "DONE");
                 }
@@ -368,12 +430,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String main_station =  get_xml_tag_value(currTrain, "<destNm>", "</destNm>");
     String train_direction =  get_xml_tag_value(currTrain, "<trDr>", "</trDr>");
     String next_train_stop =  get_xml_tag_value(currTrain, "<nextStaNm>", "</nextStaNm>");
-    String predicted_arrival_time =  get_xml_tag_value(currTrain, "<arrT>", "</arrT>");
-    String isApproaching =  get_xml_tag_value(currTrain, "<isApp>", "</isApp>");
+        String predicted_arrival_time =  get_xml_tag_value(currTrain, "<arrT>", "</arrT>");
+        String isApproaching =  get_xml_tag_value(currTrain, "<isApp>", "</isApp>");
     String isDelayed =  get_xml_tag_value(currTrain, "<isDly>", "</isDly>");
     String train_lat =  get_xml_tag_value(currTrain, "<lat>", "</lat>");
     String train_lon =  get_xml_tag_value(currTrain, "<lon>", "</lon>");
-
+//    Log.e("time", predicted_arrival_time);
     train_info.put("isApproaching", isApproaching);
     train_info.put("isDelayed", isDelayed);
     train_info.put("main_station", main_station.toLowerCase().replace(" ", ""));
@@ -428,7 +490,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .target(target)
                 .zoom(zoomLevel)                   // Sets the zoom
                 .bearing(90)                // Sets the orientation of the camera to east
-                .tilt(40)                  // Sets the tilt of the camera to 40 degrees
+                .tilt(90)                  // Sets the tilt of the camera to 40 degrees
                 .build();                   // Creates a CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
