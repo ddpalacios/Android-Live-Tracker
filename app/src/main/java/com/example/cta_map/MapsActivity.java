@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -53,6 +54,7 @@ import java.util.HashMap;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private Button disconnect, switchDir, chooseStation, status;
     private ListView list;
+    private  RelativeLayout test;
     private TextView target_station_view, main_station_view, arrival_time_view, nearest_train_dist_view,num_trains_view;
     final boolean[] connect = {true};
     private GoogleMap mMap;
@@ -62,6 +64,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -81,6 +84,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         disconnect = findViewById(R.id.disconnect);
         switchDir = findViewById(R.id.switch_direction);
         list = findViewById(R.id.list);
+        test = findViewById(R.id.background);
 //        main_station_view = findViewById(R.id.main_station_view);
 //        target_station_view = findViewById(R.id.target_station_view);
 //        arrival_time_view = findViewById(R.id.arrival_time_view);
@@ -196,6 +200,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         disconnect.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
+//                                    if (test.getVisibility() == View.VISIBLE) {
+//                                        test.setVisibility(View.GONE);
+//                                    }
+
                                     if (connect[0] == true) {
                                         disconnect.setText("Connect");
                                         connect[0] = false;
