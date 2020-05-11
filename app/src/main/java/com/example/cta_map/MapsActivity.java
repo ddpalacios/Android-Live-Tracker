@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -85,14 +86,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         switchDir = findViewById(R.id.switch_direction);
         list = findViewById(R.id.list);
         test = findViewById(R.id.background);
-//        main_station_view = findViewById(R.id.main_station_view);
-//        target_station_view = findViewById(R.id.target_station_view);
-//        arrival_time_view = findViewById(R.id.arrival_time_view);
-//        nearest_train_dist_view = findViewById(R.id.nearest_train_dist_view);
-//        num_trains_view = findViewById(R.id.num_trains_view);
         chooseStation = findViewById(R.id.pickStation);
         status = findViewById(R.id.status);
         mMap = googleMap;
+        disconnect.setBackgroundColor(Color.rgb(133, 205,186));
+        chooseStation.setBackgroundColor(Color.rgb(133, 205,186));
+        switchDir.setBackgroundColor(Color.rgb(133, 205,186));
         Bundle bb;
         bb=getIntent().getExtras();
 
@@ -167,9 +166,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             }
                         }
                         display_on_user_interface(chosen_trains, station_coordinates, station_name, station_type);
-                        disconnect.setBackgroundColor(Color.rgb(133, 205,186));
-                        chooseStation.setBackgroundColor(Color.rgb(133, 205,186));
-                        switchDir.setBackgroundColor(Color.rgb(133, 205,186));
+
 
                         chooseStation.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -203,7 +200,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                                    if (test.getVisibility() == View.VISIBLE) {
 //                                        test.setVisibility(View.GONE);
 //                                    }
-
                                     if (connect[0] == true) {
                                         disconnect.setText("Connect");
                                         connect[0] = false;
@@ -252,16 +248,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         runOnUiThread(new Runnable() {
-            @SuppressLint({"SetTextI18n", "LongLogTag"})
-            @Override
-            public void run() {
-                Context context = getApplicationContext();
-                final ArrayAdapter<String> adapter;
-                final ArrayList<String> arrayList;
-                arrayList = new ArrayList<String>();
-                adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
-                list.setAdapter(adapter);
-                int train_num =1;
+                          @SuppressLint({"SetTextI18n", "LongLogTag"})
+                          @Override
+                          public void run() {
+                              final Context context = getApplicationContext();
+                              final ArrayAdapter<String> adapter;
+                              final ArrayList<String> arrayList;
+                              arrayList = new ArrayList<String>();
+                              adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
+                              list.setAdapter(adapter);
+                              int train_num = 1;
+
 
 
                 mMap.clear();
@@ -276,7 +273,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     boolean yellow_indicator = false; // start to leave
                     boolean blue_indicator = false; // train is approaching station
                     boolean orange_indicator = false; // train has arrived
-                    boolean ButtonIsOn = false;
+                    boolean ButtonIsOn = false; // status button
 
                     for (HashMap<String, String> current_train : chosen_trains) {
                         String main_station_lat = current_train.get("main_lan");
@@ -288,17 +285,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         String isApproaching = current_train.get("isApproaching");
                         String isDelayed = current_train.get("isDelayed");
                         String arrival_time = current_train.get("arrival_time");
-                        String next_stop = current_train.get("next_stop");
+                        final String next_stop = current_train.get("next_stop");
                         String current_distance = String.format("%.2f", current_distance_from_target);
                         Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
                         Marker main_marker = addMarker(main_station_lat, main_station_lon, current_train.get("main_station"), "main");
 
 
-
-
                         if (!yellow_indicator && !green_indicator && !blue_indicator && !orange_indicator){ // if no train near, show station name
                             station_marker.showInfoWindow();
                         }
+
+
+
                         if (isDelayed.equals("1")) { // if current train is delayed
                             Marker t = addMarker(train_lat, train_lon, "DELAYED", "rose");
                             t.showInfoWindow();
@@ -306,13 +304,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         }
 
                          else if (current_distance_from_target >= 1.9 && current_distance_from_target <= 3.0) {  // get ready to leave
-//                            nearest_train_dist_view.setText(("nearest train is " + current_distance + " mi away").toUpperCase());
-//                            target_station_view.setText("tracking ".toUpperCase() + station_name.toUpperCase() + " (" + station_type.toUpperCase() + ")");
-//                            arrival_time_view.setText(("arrival time to "+next_stop+": "+ arrival_time.substring(8)).toUpperCase());
+
                             Marker t = addMarker(train_lat, train_lon, "Next Stop: " + next_stop, "green");
                             green_indicator = true;
                             arrayList.add("Get ready to Leave!");
-                            adapter.notifyDataSetChanged();
                             if (!ButtonIsOn){
                                 status.setBackgroundColor(Color.GREEN);
                                 status.setText("Get Ready To Leave");
@@ -327,18 +322,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             Marker t = addMarker(train_lat, train_lon, "APPROACHING " + station_name.toUpperCase(), "blue");
                             blue_indicator = true;
                             arrayList.add("Is Appraching!");
-                            adapter.notifyDataSetChanged();
 
                             if (!ButtonIsOn) {
                                 ButtonIsOn=true;
                                 status.setText("Run. Train is Approaching");
                                 status.setBackgroundColor(Color.BLUE);
                             }
-
-//                            nearest_train_dist_view.setText(("nearest train is " + current_distance + " mi away").toUpperCase());
-//                            arrival_time_view.setText(("arrival time to "+next_stop+": "+ arrival_time.substring(8)).toUpperCase());
-
-
 
                             t.showInfoWindow();
                             ZoomIn((float) 17, train_coord);
@@ -349,18 +338,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             Marker t = addMarker(train_lat, train_lon, current_distance + " MILES AWAY FROM " + station_name.toUpperCase(), "yellow");
                             yellow_indicator = true;
                             arrayList.add("Start walking!");
-                            adapter.notifyDataSetChanged();
-
                             if (!ButtonIsOn) {
                                 ButtonIsOn=true;
                                 status.setText("Walk Over To Station");
                                 status.setBackgroundColor(Color.YELLOW);
-//                                nearest_train_dist_view.setText(("nearest train is " + current_distance + " mi away").toUpperCase());
-//                                target_station_view.setText("tracking ".toUpperCase() + station_name.toUpperCase() + " (" + station_type.toUpperCase() + ")");
-//                                arrival_time_view.setText(("arrival time to "+next_stop+": "+ arrival_time.substring(8)).toUpperCase());
-
-
-
                             }
 
                             if (!orange_indicator) {
@@ -373,23 +354,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             orange_indicator=true;
                             Marker ts = addMarker(train_lat, train_lon, "ARRIVED AT "+station_name.toUpperCase(), "orange");
                             arrayList.add("ARRIVED");
-                            adapter.notifyDataSetChanged();
+                           ZoomIn((float) 15, train_coord);
 
                             if (!ButtonIsOn) {
                                 ButtonIsOn=true;
                                 status.setBackgroundColor(Color.rgb(255, 127, 0));
                                 status.setText("ARRIVED");
 
+
                             }
-//                            target_station_view.setText("arrived at".toUpperCase()+station_name.toUpperCase()+" ("+station_type.toUpperCase()+")");
                             ts.showInfoWindow();
                             continue;
                         }
                         else {
                             addMarker(train_lat, train_lon, "Next Stop: " + next_stop, station_type);
-                            arrayList.add("Train Heading towards: "+ next_stop);
-                            adapter.notifyDataSetChanged();
-//                            main_station_view.setText(("heading towards "+current_train.get("main_station")).toUpperCase());
+                            if (isApproaching.equals("1")){
+                                arrayList.add("Train Approaching: "+ next_stop+",  Coordinates: "+train_lat+" "+train_lon);
+                            }
+                            else{
+                                arrayList.add("Train Heading towards: "+ next_stop+",  Coordinates: "+train_lat+" "+train_lon);
+
+                            }
+
+
+
 
                             if (!green_indicator && !yellow_indicator && !blue_indicator && !orange_indicator){
                                 status.setBackgroundColor(Color.WHITE);
@@ -397,15 +385,44 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                             }
                         }
-//                        num_trains_view.setText("number of trains: ".toUpperCase()+chosen_trains.size());
+
+
+
+
+                        adapter.notifyDataSetChanged();
+
                     }
                     Log.d("DONE", "DONE");
+
+                    list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            // Get the selected item text from ListView
+                            String selectedItem = (String) parent.getItemAtPosition(position);
+                            String[] coord = selectedItem.split(",  Coordinates: ");
+                            String[] coords =coord[1].split(" ");
+
+                            LatLng chicago = new LatLng(Double.parseDouble(coords[0]), Double.parseDouble(coords[1]));
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(chicago, 13.1f));
+
+
+
+                        }
+
+                    });
+
+
+
+
+
                 }
             }
 
         });
 
     }
+
+
     private Double calculate_coordinate_distance(double lat1, double lon1, double lat2, double lon2){
         final int R = 6371; // Radious of the earth
 
