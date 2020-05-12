@@ -32,13 +32,9 @@ class Chicago_Transits{
             }
 
         }
-
-
         return null;
     }
-
-
-        private HashMap<String, String> GetStation(String [] tokens, HashMap<String, String> train_lines){
+    private HashMap<String, String> GetStation(String [] tokens, HashMap<String, String> train_lines){
 
         // Train lines
         String red = tokens[1];
@@ -64,7 +60,7 @@ class Chicago_Transits{
 
         return train_lines;
     }
-        private String[] getCord(String [] tokens) {
+    private String[] getCord(String [] tokens) {
 
             // coordinates parse
             String station_coord = tokens[9] +" "+tokens[11];

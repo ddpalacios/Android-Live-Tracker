@@ -37,22 +37,15 @@ public class mainactivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_main);
-
-
         super.onCreate(savedInstanceState);
         myDb = new DatabaseHelper(this);
-
         station_name = (EditText) findViewById(R.id.station_name);
         station_type = (EditText) findViewById(R.id.station_type);
         direction = (EditText) findViewById(R.id.dest);
         toMap = (Button) findViewById(R.id.toMaps);
         headToMap();
-
-
     }
-
     private void headToMap(){
-
         toMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

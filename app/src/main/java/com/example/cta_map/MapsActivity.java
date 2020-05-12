@@ -1,5 +1,6 @@
 package com.example.cta_map;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.FragmentActivity;
 
@@ -7,10 +8,10 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -21,6 +22,9 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -30,6 +34,8 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -39,11 +45,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
 
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLocationButtonClickListener,
+        GoogleMap.OnMyLocationClickListener,
+        OnMapReadyCallback  {
     private Button disconnect, switchDir, chooseStation, status, show;
     private ListView list;
     private  RelativeLayout test;
@@ -51,6 +60,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     final boolean[] connect = {true};
     private GoogleMap mMap;
     boolean show_layout= false;
+    private FusedLocationProviderClient fusedLocationClient;
+
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -62,10 +73,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         assert mapFragment != null;
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mapFragment.getMapAsync(this);
 
 
     }
+
 
 
 
@@ -86,6 +99,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         disconnect.setBackgroundColor(Color.rgb(133, 205,186));
         chooseStation.setBackgroundColor(Color.rgb(133, 205,186));
         switchDir.setBackgroundColor(Color.rgb(133, 205,186));
+        mMap.setMyLocationEnabled(true);
+        mMap.setOnMyLocationButtonClickListener(this);
+        mMap.setOnMyLocationClickListener(this);
+
         Bundle bb;
         bb=getIntent().getExtras();
         assert bb != null;
@@ -93,6 +110,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final String station_type = bb.getString("target_station_type");
         final String [] station_coordinates = bb.getStringArray("target_station_coordinates");
         final String[] train_dir = {bb.getString("train_direction")};
+
 
         LatLng chicago = new LatLng(Double.parseDouble(station_coordinates[0]), Double.parseDouble(station_coordinates[1]));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(chicago, 13.1f));
@@ -102,17 +120,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.e("url", url);
 
         new Thread(new Runnable() {
-            @SuppressLint("DefaultLocale")
+            @SuppressLint({"DefaultLocale", "WrongConstant"})
             @Override
             public void run() {
+
 
                 while (connect[0]){
                     final ArrayList<HashMap> chosen_trains = new ArrayList<>();
 
-
-                    int num_trains= 0;
-
                     try {
+
 
                         Document content = Jsoup.connect(url).get();
                         String[] train = content.select("train").outerHtml().split("</train>");
@@ -150,14 +167,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     train_info.put("main_lan", String.valueOf(main_station_lat));
                                     train_info.put("main_lon", String.valueOf(main_station_lon));
                                     chosen_trains.add(train_info);
-                                    num_trains++;
                                 }
 
                             }
                         }
                         display_on_user_interface(chosen_trains, station_coordinates, station_name, station_type);
-
-
 
                         show.setOnClickListener(new View.OnClickListener() {
                             @SuppressLint("SetTextI18n")
@@ -176,11 +190,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         test.setVisibility(View.VISIBLE);
 
                                     }
-
-
                             }
                         });
-
 
                         chooseStation.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -257,7 +268,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         runOnUiThread(new Runnable() {
                           @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-                          @SuppressLint({"SetTextI18n", "LongLogTag"})
+                          @SuppressLint({"SetTextI18n", "LongLogTag", "DefaultLocale"})
                           @Override
                           public void run() {
                               final Context context = getApplicationContext();
@@ -266,168 +277,155 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                               arrayList = new ArrayList<String>();
                               adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
                               list.setAdapter(adapter);
-                              int train_num = 1;
 
-
-
-                mMap.clear();
-                if (chosen_trains.size() == 0) {
-                    Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
-                    station_marker.showInfoWindow();
-                    status.setBackgroundColor(Color.WHITE);
-                    status.setText("No Trains Near.");
-
-                } else {
-                    boolean green_indicator = false; // get ready to leave
-                    boolean yellow_indicator = false; // start to leave
-                    boolean blue_indicator = false; // train is approaching station
-                    boolean orange_indicator = false; // train has arrived
-                    boolean ButtonIsOn = false; // status button
-
-                    for (HashMap<String, String> current_train : chosen_trains) {
-                        String main_station_lat = current_train.get("main_lan");
-                        String main_station_lon = current_train.get("main_lon");
-                        String[] train_coord = (current_train.get("train_lat") +","+current_train.get("train_lon")).split(",");
-                        String train_lat = current_train.get("train_lat");
-                        String train_lon = current_train.get("train_lon");
-                        Double current_distance_from_target = Double.parseDouble(Objects.requireNonNull(current_train.get("train_to_target"))) * 0.621371;
-                        String isApproaching = current_train.get("isApproaching");
-                        String isDelayed = current_train.get("isDelayed");
-                        String arrival_time = current_train.get("arrival_time");
-                        final String next_stop = current_train.get("next_stop");
-                        @SuppressLint("DefaultLocale") String current_distance = String.format("%.2f", current_distance_from_target);
-                        Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
-                        Marker main_marker = addMarker(main_station_lat, main_station_lon, current_train.get("main_station"), "main");
-                        int TRAIN_SPEED = 55;
-                        int ETA = (int) ((current_distance_from_target / TRAIN_SPEED)*100);
-                         Log.e("calculation", current_distance_from_target+" '/' "+ TRAIN_SPEED+ " = "+ ETA+" Minute(s)");
-
-
-                        if (!yellow_indicator && !green_indicator && !blue_indicator && !orange_indicator){ // if no train near, show station name
-                            station_marker.showInfoWindow();
-                        }
-
-
-                        assert isDelayed != null;
-                        if (isDelayed.equals("1")) { // if current train is delayed
-                            Marker t = addMarker(train_lat, train_lon, "DELAYED", "rose");
-                            if (ETA <=0){
-                                double seconds =  ((current_distance_from_target / TRAIN_SPEED)*100);
-                                arrayList.add("TRAIN DELAYED. ETA: "+ETA+" Minute(s)");
-
-                            }else {
-                                arrayList.add("TRAIN DELAYED. ETA: "+ETA+" Minute(s)");
-
-                            }
-                            adapter.notifyDataSetChanged();
-
-
-                            t.showInfoWindow();
-                            continue;
-                        }
-
-                         else if (current_distance_from_target >= 1.9 && current_distance_from_target <= 3.0) {  // get ready to leave
-
-                            Marker t = addMarker(train_lat, train_lon, "Next Stop: " + next_stop, "green");
-                            green_indicator = true;
-                            arrayList.add("Get ready to Leave! ETA: "+ETA+" Minute(s)");
-                            if (!ButtonIsOn){
-                                status.setBackgroundColor(Color.GREEN);
-                                status.setText("Get Ready To Leave");
-
-                            }
-                                if (!yellow_indicator) {
-                                    t.showInfoWindow();
-                                }
-                                continue;
-                        }
-                        else if (next_stop.equals(station_name) && isApproaching.equals("1")) {
-                            Marker t = addMarker(train_lat, train_lon, "APPROACHING " + station_name.toUpperCase(), "blue");
-                            blue_indicator = true;
-
-                            if (ETA <=0){
-                                double seconds =  ((current_distance_from_target / TRAIN_SPEED)*100);
-                                arrayList.add("Is Approaching! ETA: "+String.format("%.1f", seconds*100)+" second(s)");
-                            }else {
-                                arrayList.add("Is Approaching! ETA: " + ETA + " Minute(s)");
-                            }
-                            adapter.notifyDataSetChanged();
-
-
-
-                            if (!ButtonIsOn) {
-                                ButtonIsOn=true;
-                                status.setText("Run. Train is Approaching");
-                                status.setBackgroundColor(Color.BLUE);
-                            }
-
-                            t.showInfoWindow();
-                            ZoomIn((float) 17, train_coord);
-                            t.showInfoWindow();
-                            continue;
-                        }
-                        else if (current_distance_from_target >= .1 && current_distance_from_target <= 1.89) {
-                            Marker t = addMarker(train_lat, train_lon, current_distance + " MILES AWAY FROM " + station_name.toUpperCase(), "yellow");
-                            yellow_indicator = true;
-
-                            if (ETA <=0){
-                                double seconds =  ((current_distance_from_target / TRAIN_SPEED)*100);
-                                arrayList.add("Start walking! ETA: "+String.format("%.1f", seconds*100)+" second(s)");
-                            }else {
-                                arrayList.add("Start walking! ETA: " + ETA + " Minute(s)");
-                            }
-                            adapter.notifyDataSetChanged();
-
-                            if (!ButtonIsOn) {
-                                ButtonIsOn=true;
-                                status.setText("Walk Over To Station");
-                                status.setBackgroundColor(Color.YELLOW);
-                            }
-
-                            if (!orange_indicator) {
-                                t.showInfoWindow();
-                            }
-                            continue;
-                    }
-                        if (current_distance_from_target <=.05){
-                            station_marker.remove();
-                            orange_indicator=true;
-                            Marker ts = addMarker(train_lat, train_lon, "ARRIVED AT "+station_name.toUpperCase(), "orange");
-                            arrayList.add("ARRIVED.");
-                           ZoomIn((float) 15, train_coord);
-                            adapter.notifyDataSetChanged();
-
-                            if (!ButtonIsOn) {
-                                ButtonIsOn=true;
-                                status.setBackgroundColor(Color.rgb(255, 127, 0));
-                                status.setText("ARRIVED");
-
-                            }
-                            ts.showInfoWindow();
-                            continue;
-                        }
-                        else {
-
-                            addMarker(train_lat, train_lon, "ETA: " + ETA, station_type);
-                            if (isApproaching.equals("1")){
-                                arrayList.add("ETA: "+ETA+" Minute(s)");
-                            }
-                            else{
-                                arrayList.add("ETA: "+ETA+" Minute(s)");
-
-
-                            }
-                            adapter.notifyDataSetChanged();
-
-
-                            if (!green_indicator && !yellow_indicator && !blue_indicator && !orange_indicator){
+                            mMap.clear();
+                            if (chosen_trains.size() == 0) {
+                                Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
+                                station_marker.showInfoWindow();
                                 status.setBackgroundColor(Color.WHITE);
-                                status.setText("No Train Near.");
+                                status.setText("No Trains Near.");
 
-                            }
-                        }
-                        adapter.notifyDataSetChanged();
-                    }
+                            } else {
+                                boolean green_indicator = false; // get ready to leave
+                                boolean yellow_indicator = false; // start to leave
+                                boolean blue_indicator = false; // train is approaching station
+                                boolean orange_indicator = false; // train has arrived
+                                boolean ButtonIsOn = false; // status button
+
+                                for (HashMap<String, String> current_train : chosen_trains) {
+                                    String main_station_lat = current_train.get("main_lan");
+                                    String main_station_lon = current_train.get("main_lon");
+                                    String[] train_coord = (current_train.get("train_lat") +","+current_train.get("train_lon")).split(",");
+                                    String train_lat = current_train.get("train_lat");
+                                    String train_lon = current_train.get("train_lon");
+                                    Double current_distance_from_target = Double.parseDouble(Objects.requireNonNull(current_train.get("train_to_target"))) * 0.621371;
+                                    String isApproaching = current_train.get("isApproaching");
+                                    String isDelayed = current_train.get("isDelayed");
+                                    String arrival_time = current_train.get("arrival_time");
+                                    final String next_stop = current_train.get("next_stop");
+                                    @SuppressLint("DefaultLocale") String current_distance = String.format("%.2f", current_distance_from_target);
+                                    Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
+                                    Marker main_marker = addMarker(main_station_lat, main_station_lon, current_train.get("main_station"), "main");
+                                    int TRAIN_SPEED = 55;
+                                    int ETA = (int) ((current_distance_from_target / TRAIN_SPEED)*100);
+                                    Log.e("calculation", current_distance_from_target+" '/' "+ TRAIN_SPEED+ " = "+ ETA+" Minute(s)");
+
+                                    if (!yellow_indicator && !green_indicator && !blue_indicator && !orange_indicator){ // if no train near, show station name
+                                        station_marker.showInfoWindow();
+                                    }
+                                    assert isDelayed != null;
+                                    if (isDelayed.equals("1")) { // if current train is delayed
+                                        Marker t = addMarker(train_lat, train_lon, "DELAYED", "rose");
+                                        if (ETA <=0){
+                                            double seconds =  ((current_distance_from_target / TRAIN_SPEED)*100);
+                                            arrayList.add("TRAIN DELAYED. ETA: "+ETA+" Second(s)");
+                                        }else {
+                                            arrayList.add("TRAIN DELAYED. ETA: "+ETA+" Minute(s)");
+                                        }
+                                        adapter.notifyDataSetChanged();
+
+                                        t.showInfoWindow();
+                                        continue;
+                                    }
+                                     else if (current_distance_from_target >= 1.9 && current_distance_from_target <= 3.0) {  // get ready to leave
+
+                                        Marker t = addMarker(train_lat, train_lon, "Next Stop: " + next_stop, "green");
+                                        green_indicator = true;
+                                        arrayList.add("Get ready to Leave! ETA: "+ETA+" Minute(s)");
+                                        if (!ButtonIsOn){
+                                            status.setBackgroundColor(Color.GREEN);
+                                            status.setText("Get Ready To Leave");
+                                        }
+                                            if (!yellow_indicator) {
+                                                t.showInfoWindow();
+                                            }
+                                            continue;
+                                    }
+                                    else if (next_stop.equals(station_name) && isApproaching.equals("1")) {
+                                        Marker t = addMarker(train_lat, train_lon, "APPROACHING " + station_name.toUpperCase(), "blue");
+                                        blue_indicator = true;
+
+                                        if (ETA <=0){
+                                            double seconds =  ((current_distance_from_target / TRAIN_SPEED)*100);
+                                            arrayList.add("Is Approaching! ETA: "+String.format("%.1f", seconds*100)+" second(s)");
+                                        }else {
+                                            arrayList.add("Is Approaching! ETA: " + ETA + " Minute(s)");
+                                        }
+                                        adapter.notifyDataSetChanged();
+
+                                        if (!ButtonIsOn) {
+                                            ButtonIsOn=true;
+                                            status.setText("Run. Train is Approaching");
+                                            status.setBackgroundColor(Color.BLUE);
+                                        }
+
+                                        t.showInfoWindow();
+                                        ZoomIn((float) 17, train_coord);
+                                        t.showInfoWindow();
+                                        continue;
+                                    }
+                                    else if (current_distance_from_target >= .1 && current_distance_from_target <= 1.89) {
+                                        Marker t = addMarker(train_lat, train_lon, current_distance + " MILES AWAY FROM " + station_name.toUpperCase(), "yellow");
+                                        yellow_indicator = true;
+
+                                        if (ETA <=0){
+                                            double seconds =  ((current_distance_from_target / TRAIN_SPEED)*100);
+                                            arrayList.add("Start walking! ETA: "+String.format("%.1f", seconds*100)+" second(s)");
+                                        }else {
+                                            arrayList.add("Start walking! ETA: " + ETA + " Minute(s)");
+                                        }
+                                        adapter.notifyDataSetChanged();
+
+                                        if (!ButtonIsOn) {
+                                            ButtonIsOn=true;
+                                            status.setText("Walk Over To Station");
+                                            status.setBackgroundColor(Color.YELLOW);
+                                        }
+
+                                        if (!orange_indicator) {
+                                            t.showInfoWindow();
+                                        }
+                                        continue;
+                                }
+                                    if (current_distance_from_target <=.05){
+                                        station_marker.remove();
+                                        orange_indicator=true;
+                                        Marker ts = addMarker(train_lat, train_lon, "ARRIVED AT "+station_name.toUpperCase(), "orange");
+                                        arrayList.add("ARRIVED.");
+                                       ZoomIn((float) 15, train_coord);
+                                        adapter.notifyDataSetChanged();
+
+                                        if (!ButtonIsOn) {
+                                            ButtonIsOn=true;
+                                            status.setBackgroundColor(Color.rgb(255, 127, 0));
+                                            status.setText("ARRIVED");
+
+                                        }
+                                        ts.showInfoWindow();
+                                        continue;
+                                    }
+                                    else {
+
+                                        addMarker(train_lat, train_lon, "ETA: " + ETA, station_type);
+                                        if (isApproaching.equals("1")){
+                                            arrayList.add("ETA: "+ETA+" Minute(s)");
+                                        }
+                                        else{
+                                            arrayList.add("ETA: "+ETA+" Minute(s)");
+
+
+                                        }
+                                        adapter.notifyDataSetChanged();
+
+
+                                        if (!green_indicator && !yellow_indicator && !blue_indicator && !orange_indicator){
+                                            status.setBackgroundColor(Color.WHITE);
+                                            status.setText("No Train Near.");
+
+                                        }
+                                    }
+                                    adapter.notifyDataSetChanged();
+                                }
                     Log.d("DONE", "DONE");
 
                 }
@@ -560,5 +558,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }else{
             return false;
         }
+    }
+
+
+
+    @Override
+    public void onMyLocationClick(@NonNull Location location) {
+        Toast.makeText(this, "Current location:\n" + location, Toast.LENGTH_LONG).show();
+    }
+
+
+    @Override
+    public boolean onMyLocationButtonClick() {
+        Toast.makeText(this, "MyLocation button clicked", Toast.LENGTH_SHORT).show();
+        // Return false so that we don't consume the event and the default behavior still occurs
+        // (the camera animates to the user's current position).
+
+        return false;
     }
 }
