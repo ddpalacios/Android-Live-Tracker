@@ -48,7 +48,6 @@ public class mainactivity extends AppCompatActivity {
         station_type = (EditText) findViewById(R.id.station_type);
         direction = (EditText) findViewById(R.id.dest);
         toMap = (Button) findViewById(R.id.toMaps);
-
         headToMap();
 
 
