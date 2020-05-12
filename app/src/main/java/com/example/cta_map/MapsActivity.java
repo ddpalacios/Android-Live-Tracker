@@ -64,7 +64,7 @@ import java.util.Objects;
 public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLocationButtonClickListener,
         GoogleMap.OnMyLocationClickListener,
         OnMapReadyCallback  {
-    private Button disconnect, switchDir, chooseStation, status, show;
+    private Button disconnect, switchDir, chooseStation, status, show, userLoc, minutes;
     private ListView list;
     private  RelativeLayout test;
     private TextView target_station_view, main_station_view, arrival_time_view, nearest_train_dist_view,num_trains_view;
@@ -104,6 +104,8 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         test = findViewById(R.id.background);
         chooseStation = findViewById(R.id.pickStation);
         status = findViewById(R.id.status);
+        userLoc = findViewById(R.id.userLoc);
+        minutes = findViewById(R.id.minutes);
         mMap = googleMap;
         show = (Button) findViewById(R.id.show);
         show.setBackgroundColor(Color.rgb(133, 205,186));
@@ -113,6 +115,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         mMap.setMyLocationEnabled(true);
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMyLocationClickListener(this);
+        userLoc.setVisibility(View.GONE);
 
         Bundle bb;
         bb=getIntent().getExtras();
@@ -137,6 +140,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
 
                 while (connect[0]){
+                    getLastLocation();
                     final ArrayList<HashMap> chosen_trains = new ArrayList<>();
 
                     try {
@@ -178,7 +182,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                     train_info.put("main_lan", String.valueOf(main_station_lat));
                                     train_info.put("main_lon", String.valueOf(main_station_lon));
                                     chosen_trains.add(train_info);
-                                    getLastLocation();
                                 }
 
                             }
@@ -276,8 +279,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                 if (location == null) {
                                     requestNewLocationData();
                                 } else {
-                                    Log.e("location", (location.getLatitude()+","+ location.getLongitude()));
-                                    show.setText(location.getLatitude()+","+location.getLongitude());
+                                    userLoc.setText(location.getLatitude()+","+location.getLongitude());
 
 
                                 }
@@ -315,9 +317,9 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         @Override
         public void onLocationResult(LocationResult locationResult) {
             Location mLastLocation = locationResult.getLastLocation();
-            Log.e("loc", (mLastLocation.getLatitude()+","+ mLastLocation.getLongitude()));
-//            latTextView.setText(mLastLocation.getLatitude()+"");
-//            lonTextView.setText(mLastLocation.getLongitude()+"");
+//            Log.e("loc", (mLastLocation.getLatitude()+","+ mLastLocation.getLongitude()));
+            userLoc.setText(mLastLocation.getLatitude()+","+mLastLocation.getLongitude());
+
         }
     };
 
@@ -370,71 +372,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private  BufferedReader get_csv_reader(){
         InputStream CSVfile = getResources().openRawResource(R.raw.train_stations);
@@ -457,7 +394,13 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                           @SuppressLint({"SetTextI18n", "LongLogTag", "DefaultLocale"})
                           @Override
                           public void run() {
+                              String[] userLocation = ((String) userLoc.getText()).split(",");
+                              double userLatitude = Double.parseDouble(userLocation[0]);
+                              double userLongitude = Double.parseDouble(userLocation[1]);
                               final Context context = getApplicationContext();
+                              double targetLatitude = Double.parseDouble(station_coordinates[0]);
+                              double targetLongitude = Double.parseDouble(station_coordinates[1]);
+                              double user_distance_from_station = calculate_coordinate_distance(userLatitude, userLongitude, targetLatitude,targetLongitude)  * 0.621371;
                               final ArrayAdapter<String> adapter;
                               final ArrayList<String> arrayList;
                               arrayList = new ArrayList<String>();
@@ -484,17 +427,28 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                     String[] train_coord = (current_train.get("train_lat") +","+current_train.get("train_lon")).split(",");
                                     String train_lat = current_train.get("train_lat");
                                     String train_lon = current_train.get("train_lon");
-                                    Double current_distance_from_target = Double.parseDouble(Objects.requireNonNull(current_train.get("train_to_target"))) * 0.621371;
                                     String isApproaching = current_train.get("isApproaching");
                                     String isDelayed = current_train.get("isDelayed");
                                     String arrival_time = current_train.get("arrival_time");
-                                    final String next_stop = current_train.get("next_stop");
+                                    String next_stop = current_train.get("next_stop");
+                                    double current_distance_from_target = Double.parseDouble(Objects.requireNonNull(current_train.get("train_to_target"))) * 0.621371;
+
+
+
                                     @SuppressLint("DefaultLocale") String current_distance = String.format("%.2f", current_distance_from_target);
                                     Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
                                     Marker main_marker = addMarker(main_station_lat, main_station_lon, current_train.get("main_station"), "main");
                                     int TRAIN_SPEED = 55;
+                                    float WALK_SPEED = (float) 3.1;
                                     int ETA = (int) ((current_distance_from_target / TRAIN_SPEED)*100);
-                                    Log.e("calculation", current_distance_from_target+" '/' "+ TRAIN_SPEED+ " = "+ ETA+" Minute(s)");
+                                    int user_to_target_ETA = (int) ((user_distance_from_station/ WALK_SPEED)*100);
+
+
+
+                                    Log.e("USER DISTANCE", user_to_target_ETA+" Minute(s) - Hour(s)");
+                                    minutes.setText(user_to_target_ETA+ " Minute(s) Away");
+
+
 
                                     if (!yellow_indicator && !green_indicator && !blue_indicator && !orange_indicator){ // if no train near, show station name
                                         station_marker.showInfoWindow();
