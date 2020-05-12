@@ -113,11 +113,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final String url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s", type);
         Log.e("url", url);
 
-
-
-
-
-
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -209,6 +204,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         switchDir.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                Thread.currentThread().interrupt();
+                                Toast.makeText(context, "Switching Directions. Please Wait...", Toast.LENGTH_SHORT).show();
 
                                 if (train_dir[0].equals("1")){
                                     train_dir[0] = "5";
@@ -218,7 +215,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 }
                             }
                         });
-                        sleep(700);
+                        sleep(2000);
                         }catch (IOException | InterruptedException e){
                             e.printStackTrace();
                         }
@@ -244,17 +241,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                 }
                             });
-
-
                     }
 
                 }
             }).start();
     }
-
-
-
-
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private  BufferedReader get_csv_reader(){
         InputStream CSVfile = getResources().openRawResource(R.raw.train_stations);
