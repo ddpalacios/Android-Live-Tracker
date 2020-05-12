@@ -10,20 +10,17 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -33,26 +30,17 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.Objects;
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -114,12 +102,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.e("url", url);
 
         new Thread(new Runnable() {
+            @SuppressLint("DefaultLocale")
             @Override
             public void run() {
 
                 while (connect[0]){
                     final ArrayList<HashMap> chosen_trains = new ArrayList<>();
-                    final HashMap<Double, String> coord_from_dist = new HashMap<>();
 
 
                     int num_trains= 0;
@@ -141,14 +129,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 String[] main_station_coordinates = chicago_transits.retrieve_station_coordinates(main_station_name, station_type);
 
 
-                                final Double main_station_lat = Double.parseDouble(main_station_coordinates[0]);
-                                final Double main_station_lon = Double.parseDouble(main_station_coordinates[1]);
+                                final double main_station_lat = Double.parseDouble(main_station_coordinates[0]);
+                                final double main_station_lon = Double.parseDouble(main_station_coordinates[1]);
 
-                                Double target_station_lat = Double.parseDouble(station_coordinates[0]);
-                                Double target_station_lon = Double.parseDouble(station_coordinates[1]);
+                                double target_station_lat = Double.parseDouble(station_coordinates[0]);
+                                double target_station_lon = Double.parseDouble(station_coordinates[1]);
 
-                                Double currentLat = Double.parseDouble(train_info.get("train_lat"));
-                                Double currentLon = Double.parseDouble(train_info.get("train_lon"));
+                                double currentLat = Double.parseDouble(train_info.get("train_lat"));
+                                double currentLon = Double.parseDouble(train_info.get("train_lon"));
 
                                 Double train_to_main = calculate_coordinate_distance(currentLat, currentLon, main_station_lat, main_station_lon);
                                 Double train_to_target = calculate_coordinate_distance(target_station_lat, target_station_lon, currentLat, currentLon);
@@ -172,12 +160,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                         show.setOnClickListener(new View.OnClickListener() {
+                            @SuppressLint("SetTextI18n")
                             @Override
                             public void onClick(View v) {
                                     if (test.getVisibility() == View.VISIBLE) {
                                         show.setText("SHOW");
-
                                         test.setVisibility(View.GONE);
+                                        FrameLayout frameLayout = (FrameLayout)findViewById(R.id.framelayout);
+                                        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) disconnect.getLayoutParams();
+                                        disconnect.setLayoutParams(lp);
 
                                     }
                                     else if (test.getVisibility() != View.VISIBLE) {
@@ -220,10 +211,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             e.printStackTrace();
                         }
                         disconnect.setOnClickListener(new View.OnClickListener() {
+                                @SuppressLint("SetTextI18n")
                                 @Override
                                 public void onClick(View v) {
 
-                                    if (connect[0] == true) {
+                                    if (connect[0]) {
                                         disconnect.setText("Connect");
                                         connect[0] = false;
                                         Log.d("Connection Status", "Connection Closed");
@@ -249,8 +241,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private  BufferedReader get_csv_reader(){
         InputStream CSVfile = getResources().openRawResource(R.raw.train_stations);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(CSVfile, StandardCharsets.UTF_8));
-        return reader;
+        return new BufferedReader(new InputStreamReader(CSVfile, StandardCharsets.UTF_8));
 
     }
     private void sleep(int milli) throws InterruptedException {
@@ -265,6 +256,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         runOnUiThread(new Runnable() {
+                          @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                           @SuppressLint({"SetTextI18n", "LongLogTag"})
                           @Override
                           public void run() {
@@ -298,12 +290,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         String[] train_coord = (current_train.get("train_lat") +","+current_train.get("train_lon")).split(",");
                         String train_lat = current_train.get("train_lat");
                         String train_lon = current_train.get("train_lon");
-                        Double current_distance_from_target = Double.parseDouble(current_train.get("train_to_target")) * 0.621371;
+                        Double current_distance_from_target = Double.parseDouble(Objects.requireNonNull(current_train.get("train_to_target"))) * 0.621371;
                         String isApproaching = current_train.get("isApproaching");
                         String isDelayed = current_train.get("isDelayed");
                         String arrival_time = current_train.get("arrival_time");
                         final String next_stop = current_train.get("next_stop");
-                        String current_distance = String.format("%.2f", current_distance_from_target);
+                        @SuppressLint("DefaultLocale") String current_distance = String.format("%.2f", current_distance_from_target);
                         Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
                         Marker main_marker = addMarker(main_station_lat, main_station_lon, current_train.get("main_station"), "main");
                         int TRAIN_SPEED = 55;
@@ -316,7 +308,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         }
 
 
-
+                        assert isDelayed != null;
                         if (isDelayed.equals("1")) { // if current train is delayed
                             Marker t = addMarker(train_lat, train_lon, "DELAYED", "rose");
                             if (ETA <=0){
