@@ -84,6 +84,7 @@ public class mainactivity extends AppCompatActivity {
                 final String stationType = station_type.getText().toString().toLowerCase();
                 final String trainDirection = direction.getText().toString().toLowerCase();
 
+
                 String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(stationName, stationType);
                 if (target_station_coordinates == null){
                     debug.ShowToast(context, "Error! Target Station Not Found");
@@ -100,6 +101,12 @@ public class mainactivity extends AppCompatActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    private  BufferedReader get_main_stations(){
+        InputStream CSVfile = getResources().openRawResource(R.raw.train_stations);
+        return new BufferedReader(new InputStreamReader(CSVfile, StandardCharsets.UTF_8));
+
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @SuppressLint("MissingPermission")
@@ -154,7 +161,6 @@ public class mainactivity extends AppCompatActivity {
         public void onLocationResult(LocationResult locationResult) {
             Location mLastLocation = locationResult.getLastLocation();
             Log.e("loc", (mLastLocation.getLatitude()+","+ mLastLocation.getLongitude()));
-//            userLoc.setText(mLastLocation.getLatitude()+","+mLastLocation.getLongitude());
 
         }
     };
@@ -174,10 +180,6 @@ public class mainactivity extends AppCompatActivity {
                 PERMISSION_ID
         );
     }
-
-
-
-
 
 
     private boolean isLocationEnabled() {

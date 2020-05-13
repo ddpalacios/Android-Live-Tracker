@@ -26,7 +26,6 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -44,7 +43,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import org.apache.commons.lang3.StringUtils;
@@ -56,7 +54,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -67,15 +64,13 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         private Button disconnect, switchDir, chooseStation, status, show, userLoc, minutes;
         private ListView list;
         private  RelativeLayout test;
-        private TextView target_station_view, main_station_view, arrival_time_view, nearest_train_dist_view,num_trains_view;
         final boolean[] connect = {true};
         private GoogleMap mMap;
-        boolean show_layout= false;
         int PERMISSION_ID = 44;
         private FusedLocationProviderClient mFusedLocationClient;
 
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,145 +80,129 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         assert mapFragment != null;
-
-
+        display_map_interface_buttons();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         getLastLocation();
-
-
-
         mapFragment.getMapAsync(this);
 
 
     }
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
-        final Context context = getApplicationContext();
-        HashMap <String, String> StationTypeKey = TrainLineKeys();
-        disconnect = findViewById(R.id.disconnect);
-        switchDir = findViewById(R.id.switch_direction);
-        list = findViewById(R.id.list);
-        test = findViewById(R.id.background);
-        chooseStation = findViewById(R.id.pickStation);
-        status = findViewById(R.id.status);
-        userLoc = findViewById(R.id.userLoc);
-        minutes = findViewById(R.id.minutes);
+        HashMap <String, String> StationTypeKey = TrainLineKeys(); // Train line key codes
+
+
         mMap = googleMap;
-        show = (Button) findViewById(R.id.show);
-        show.setBackgroundColor(Color.rgb(133, 205,186));
-        disconnect.setBackgroundColor(Color.rgb(133, 205,186));
-        chooseStation.setBackgroundColor(Color.rgb(133, 205,186));
+        switchDir = findViewById(R.id.switch_direction);
         switchDir.setBackgroundColor(Color.rgb(133, 205,186));
-        mMap.setMyLocationEnabled(true);
+        mMap.setMyLocationEnabled(true); // Enable user location permission
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMyLocationClickListener(this);
-        userLoc.setVisibility(View.GONE);
 
-        Bundle bb;
+        Bundle bb; // Retrieve data from main screen
+        bb=getIntent().getExtras();
+        assert bb != null;
+        final String station_type = bb.getString("target_station_type");
+        final String [] station_coordinates = bb.getStringArray("target_station_coordinates");
+        assert station_coordinates != null;
+        ZoomIn((float) 13.1, station_coordinates);
+        assert station_type != null;
+        String type  = StationTypeKey.get(station_type.toLowerCase()); // Retrieve train line code and extract from given url
+        final String url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s", type);
+        Log.e("url", url);
+        connect_and_run_main_thread(url);
+
+    }
+
+
+
+
+    private void connect_and_run_main_thread(final String url){
+        final Context context = getApplicationContext();
+        Bundle bb; // Retrieve data from main screen
         bb=getIntent().getExtras();
         assert bb != null;
         final String station_name = bb.getString("target_station_name");
         final String station_type = bb.getString("target_station_type");
         final String [] station_coordinates = bb.getStringArray("target_station_coordinates");
-        final String[] train_dir = {bb.getString("train_direction")};
+        assert station_coordinates != null;
+        final String[] specified_train_direction = {bb.getString("train_direction")};
+        final double target_station_latitude = Double.parseDouble(station_coordinates[0]);
+        final double target_station_longitude = Double.parseDouble(station_coordinates[1]);
+        ZoomIn((float) 13.1, station_coordinates);
 
 
-        LatLng chicago = new LatLng(Double.parseDouble(station_coordinates[0]), Double.parseDouble(station_coordinates[1]));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(chicago, 13.1f));
-        show.setText("HIDE");
-        String type  = StationTypeKey.get(station_type.toLowerCase());
-        final String url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s", type);
-        Log.e("url", url);
-
+          /*
+          Everything is being ran within its own thread.
+         This allows us to run our continuous web extraction
+         while also performing other user interactions
+          */
         new Thread(new Runnable() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
             @SuppressLint({"DefaultLocale", "WrongConstant"})
             @Override
             public void run() {
-
-
                 while (connect[0]){
-                    getLastLocation();
+                    getLastLocation(); // Continuously extract users last location
+
                     final ArrayList<HashMap> chosen_trains = new ArrayList<>();
 
                     try {
-                        Document content = Jsoup.connect(url).get();
-                        String[] train = content.select("train").outerHtml().split("</train>");
+                        Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
+                        String[] train = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
+
+
+
                         for (String each_train: train){
-                            BufferedReader reader = get_csv_reader();
-                            final Chicago_Transits chicago_transits = new Chicago_Transits(reader);
 
+                            BufferedReader reader = read_station_coordinates();
+                            Chicago_Transits chicago_transits = new Chicago_Transits(reader);
+                            HashMap<String, String> train_info = get_train_info(each_train); // Feed in given and prepare it as a hashmap with necessary train data
 
-                            HashMap<String, String> train_info = get_train_info(each_train);
+                            if (Objects.equals(train_info.get("train_direction"), specified_train_direction[0])){ // Only retrieve the trains that going to users specified direction
 
-
-                            if (train_info.get("train_direction").equals(train_dir[0])){
-                                final String main_station_name = train_info.get("main_station");
+                                String main_station_name = train_info.get("main_station");
                                 String[] main_station_coordinates = chicago_transits.retrieve_station_coordinates(main_station_name, station_type);
 
+                                train_info.put("main_lan", main_station_coordinates[0]);
+                                train_info.put("main_lon", main_station_coordinates[1]);
 
-                                final double main_station_lat = Double.parseDouble(main_station_coordinates[0]);
-                                final double main_station_lon = Double.parseDouble(main_station_coordinates[1]);
 
-                                double target_station_lat = Double.parseDouble(station_coordinates[0]);
-                                double target_station_lon = Double.parseDouble(station_coordinates[1]);
 
-                                double currentLat = Double.parseDouble(train_info.get("train_lat"));
-                                double currentLon = Double.parseDouble(train_info.get("train_lon"));
+                                Double distance_from_train_to_main = calculate_coordinate_distance(
+                                        Double.parseDouble(Objects.requireNonNull(train_info.get("train_lat"))),
+                                        Double.parseDouble(Objects.requireNonNull(train_info.get("train_lon"))),
+                                        Double.parseDouble(main_station_coordinates[0]),
+                                        Double.parseDouble(main_station_coordinates[1]));
 
-                                Double train_to_main = calculate_coordinate_distance(currentLat, currentLon, main_station_lat, main_station_lon);
-                                Double train_to_target = calculate_coordinate_distance(target_station_lat, target_station_lon, currentLat, currentLon);
-                                Double main_to_target_distance = calculate_coordinate_distance(target_station_lat, target_station_lon, main_station_lat, main_station_lon);
 
-                                if (withinBounds(train_to_main, main_to_target_distance)){// Train threshold to determine if train has passed target station
+                                Double distance_from_train_to_target = calculate_coordinate_distance(target_station_latitude,
+                                        target_station_longitude,
+                                        Double.parseDouble(Objects.requireNonNull(train_info.get("train_lat"))),
+                                        Double.parseDouble(Objects.requireNonNull(train_info.get("train_lon"))));
+
+
+                                Double distance_from_target_to_main = calculate_coordinate_distance(target_station_latitude,
+                                        target_station_longitude,
+                                        Double.parseDouble(main_station_coordinates[0]),
+                                        Double.parseDouble(main_station_coordinates[1]));
+
+
+                                if (withinBounds(distance_from_train_to_main, distance_from_target_to_main)){
+                                    // TODO: Debug threshold of train lines. e.g. BLUE line does not pass.
                                     continue;
+
                                 }else {
-                                    train_info.put("train_to_target", String.format("%.2f", train_to_target));
-                                    train_info.put("train_to_main", String.valueOf(train_to_main));
-                                    train_info.put("main_lan", String.valueOf(main_station_lat));
-                                    train_info.put("main_lon", String.valueOf(main_station_lon));
-                                    chosen_trains.add(train_info);
+                                    train_info.put("train_to_target", String.format("%.2f", distance_from_train_to_target));
+                                    chosen_trains.add(train_info); // Extracted trains going specified direction and still heading towards target station
                                 }
 
                             }
+
                         }
-                        display_on_user_interface(chosen_trains, station_coordinates, station_name, station_type);
-
-                        show.setOnClickListener(new View.OnClickListener() {
-                            @SuppressLint("SetTextI18n")
-                            @Override
-                            public void onClick(View v) {
-                                    if (test.getVisibility() == View.VISIBLE) {
-                                        show.setText("SHOW");
-                                        test.setVisibility(View.GONE);
-                                        chooseStation.setVisibility(View.GONE);
-                                        switchDir.setVisibility(View.GONE);
-
-                                        FrameLayout frameLayout = (FrameLayout)findViewById(R.id.framelayout);
-                                        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) disconnect.getLayoutParams();
-                                        disconnect.setLayoutParams(lp);
-
-                                    }
-                                    else if (test.getVisibility() != View.VISIBLE) {
-                                        show.setText("HIDE");
-                                        test.setVisibility(View.VISIBLE);
-                                        chooseStation.setVisibility(View.VISIBLE);
-                                        switchDir.setVisibility(View.VISIBLE);
-
-                                    }
-                            }
-                        });
-
-                        chooseStation.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(MapsActivity.this, mainactivity.class);
-                                connect[0] = false;
-                                Log.d("Connection Status", "Connection Closed");
-                                startActivity(intent);
-                            }
-                        });
 
                         switchDir.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -231,153 +210,41 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                 Thread.currentThread().interrupt();
                                 Toast.makeText(context, "Switching Directions. Please Wait...", Toast.LENGTH_SHORT).show();
 
-                                if (train_dir[0].equals("1")){
-                                    train_dir[0] = "5";
+                                if (specified_train_direction[0].equals("1")){
+                                    specified_train_direction[0] = "5";
 
                                 }else {
-                                    train_dir[0] = "1";
+                                    specified_train_direction[0] = "1";
                                 }
                             }
                         });
+
+
+                        display_on_user_interface(chosen_trains, station_coordinates, station_name, station_type);
                         sleep(2000);
-                        }catch (IOException | InterruptedException e){
-                            e.printStackTrace();
-                        }
-                        disconnect.setOnClickListener(new View.OnClickListener() {
-                                @SuppressLint("SetTextI18n")
-                                @Override
-                                public void onClick(View v) {
-
-                                    if (connect[0]) {
-                                        disconnect.setText("Connect");
-                                        connect[0] = false;
-                                        Log.d("Connection Status", "Connection Closed");
-                                        Toast.makeText(context, "DISCONNECTED", Toast.LENGTH_SHORT).show();
-//                                        mMap.clear();
-
-                                    }else {
-                                        disconnect.setText("Disconnect");
-                                        connect[0] = true;
-                                        Toast.makeText(context, "CONNECTED", Toast.LENGTH_SHORT).show();
-                                        Log.d("Connection Status", "Connection Opened");
-                                        onMapReady(mMap);
-
-                                    }
-
-                                }
-                            });
+                    }catch (IOException | InterruptedException e){
+                        e.printStackTrace();
                     }
-
                 }
-            }).start();
-    }
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    @SuppressLint("MissingPermission")
-    private void getLastLocation(){
-        if (checkPermissions()) {
-            if (isLocationEnabled()) {
-                mFusedLocationClient.getLastLocation().addOnCompleteListener(
-                        new OnCompleteListener<Location>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Location> task) {
-                                Location location = task.getResult();
-                                if (location == null) {
-                                    requestNewLocationData();
-                                } else {
-                                    userLoc.setText(location.getLatitude()+","+location.getLongitude());
 
-
-                                }
-                            }
-                        }
-                );
-            } else {
-                Toast.makeText(this, "Turn on location", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(intent);
             }
-        } else {
-            requestPermissions();
-        }
-    }
-    @SuppressLint("MissingPermission")
-    private void requestNewLocationData(){
+        }).start();
 
-        LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(0);
-        mLocationRequest.setFastestInterval(0);
-        mLocationRequest.setNumUpdates(1);
 
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        mFusedLocationClient.requestLocationUpdates(
-                mLocationRequest, mLocationCallback,
-                Looper.myLooper()
-        );
 
     }
 
-    private LocationCallback mLocationCallback = new LocationCallback() {
-        @Override
-        public void onLocationResult(LocationResult locationResult) {
-            Location mLastLocation = locationResult.getLastLocation();
-//            Log.e("loc", (mLastLocation.getLatitude()+","+ mLastLocation.getLongitude()));
-            userLoc.setText(mLastLocation.getLatitude()+","+mLastLocation.getLongitude());
-
-        }
-    };
-
-    private boolean checkPermissions() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-        return false;
-    }
-
-    private void requestPermissions() {
-        ActivityCompat.requestPermissions(
-                this,
-                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
-                PERMISSION_ID
-        );
-    }
-
-
-    private boolean isLocationEnabled() {
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
-                LocationManager.NETWORK_PROVIDER
-        );
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERMISSION_ID) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getLastLocation();
-            }
-        }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    @Override
-    public void onResume(){
-        super.onResume();
-        if (checkPermissions()) {
-            getLastLocation();
-        }
-
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    private  BufferedReader get_csv_reader(){
+    private  BufferedReader read_station_coordinates(){
         InputStream CSVfile = getResources().openRawResource(R.raw.train_stations);
         return new BufferedReader(new InputStreamReader(CSVfile, StandardCharsets.UTF_8));
 
     }
+
+
+
+
     private void sleep(int milli) throws InterruptedException {
         Thread.sleep(milli);
 
@@ -387,7 +254,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                            final String station_name,
                                            final String station_type
                                           ){
-
 
         runOnUiThread(new Runnable() {
                           @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -438,7 +304,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                     @SuppressLint("DefaultLocale") String current_distance = String.format("%.2f", current_distance_from_target);
                                     Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
                                     Marker main_marker = addMarker(main_station_lat, main_station_lon, current_train.get("main_station"), "main");
-                                    int TRAIN_SPEED = 55;
+                                    int TRAIN_SPEED = 35;
                                     float WALK_SPEED = (float) 3.1;
                                     int ETA = (int) ((current_distance_from_target / TRAIN_SPEED)*100);
                                     int user_to_target_ETA = (int) ((user_distance_from_station/ WALK_SPEED)*100);
@@ -575,6 +441,9 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         });
 
     }
+
+
+
     private Double calculate_coordinate_distance(double lat1, double lon1, double lat2, double lon2){
         final int R = 6371; // Radious of the earth
 
@@ -710,4 +579,185 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
         return false;
     }
+    private void display_map_interface_buttons(){
+        final Context context = getApplicationContext();
+        disconnect = findViewById(R.id.disconnect);  // Initialize buttons
+        list = findViewById(R.id.list);
+        test = findViewById(R.id.background);
+        chooseStation = findViewById(R.id.pickStation);
+        status = findViewById(R.id.status);
+        minutes = findViewById(R.id.minutes);
+        show = findViewById(R.id.show);
+        userLoc = findViewById(R.id.userLoc);
+        userLoc.setVisibility(View.GONE);
+
+
+
+
+        show.setBackgroundColor(Color.rgb(133, 205,186)); // set button background color
+        disconnect.setBackgroundColor(Color.rgb(133, 205,186));
+        chooseStation.setBackgroundColor(Color.rgb(133, 205,186));
+
+
+        show.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onClick(View v) {
+                if (test.getVisibility() == View.VISIBLE) {
+                    show.setText("SHOW");
+                    test.setVisibility(View.GONE);
+                    chooseStation.setVisibility(View.GONE);
+                    switchDir.setVisibility(View.GONE);
+
+                    FrameLayout frameLayout = (FrameLayout)findViewById(R.id.framelayout);
+                    FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) disconnect.getLayoutParams();
+                    disconnect.setLayoutParams(lp);
+
+                }
+                else if (test.getVisibility() != View.VISIBLE) {
+                    show.setText("HIDE");
+                    test.setVisibility(View.VISIBLE);
+                    chooseStation.setVisibility(View.VISIBLE);
+                    switchDir.setVisibility(View.VISIBLE);
+
+                }
+            }
+        });
+
+        chooseStation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MapsActivity.this, mainactivity.class);
+                connect[0] = false;
+                Log.d("Connection Status", "Connection Closed");
+                startActivity(intent);
+            }
+        });
+
+
+
+        disconnect.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onClick(View v) {
+
+                if (connect[0]) {
+                    disconnect.setText("Connect");
+                    connect[0] = false;
+                    Log.d("Connection Status", "Connection Closed");
+                    Toast.makeText(context, "DISCONNECTED", Toast.LENGTH_SHORT).show();
+
+                }else {
+                    disconnect.setText("Disconnect");
+                    connect[0] = true;
+                    Toast.makeText(context, "CONNECTED", Toast.LENGTH_SHORT).show();
+                    Log.d("Connection Status", "Connection Opened");
+                    onMapReady(mMap);
+
+                }
+
+            }
+        });
+
+
+
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    @SuppressLint("MissingPermission")
+    private void getLastLocation(){
+        if (checkPermissions()) {
+            if (isLocationEnabled()) {
+                mFusedLocationClient.getLastLocation().addOnCompleteListener(
+                        new OnCompleteListener<Location>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Location> task) {
+                                Location location = task.getResult();
+                                if (location == null) {
+                                    requestNewLocationData();
+                                } else {
+                                    userLoc.setText(location.getLatitude()+","+location.getLongitude());
+
+
+                                }
+                            }
+                        }
+                );
+            } else {
+                Toast.makeText(this, "Turn on location", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(intent);
+            }
+        } else {
+            requestPermissions();
+        }
+    }
+    @SuppressLint("MissingPermission")
+    private void requestNewLocationData(){
+
+        LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setInterval(0);
+        mLocationRequest.setFastestInterval(0);
+        mLocationRequest.setNumUpdates(1);
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        mFusedLocationClient.requestLocationUpdates(
+                mLocationRequest, mLocationCallback,
+                Looper.myLooper()
+        );
+
+    }
+
+    private LocationCallback mLocationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            Location mLastLocation = locationResult.getLastLocation();
+//            Log.e("loc", (mLastLocation.getLatitude()+","+ mLastLocation.getLongitude()));
+            userLoc.setText(mLastLocation.getLatitude()+","+mLastLocation.getLongitude());
+
+        }
+    };
+
+    private boolean checkPermissions() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        }
+        return false;
+    }
+    private void requestPermissions() {
+        ActivityCompat.requestPermissions(
+                this,
+                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
+                PERMISSION_ID
+        );
+    }
+    private boolean isLocationEnabled() {
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
+                LocationManager.NETWORK_PROVIDER
+        );
+    }
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_ID) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getLastLocation();
+            }
+        }
+    }
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    @Override
+    public void onResume(){
+        super.onResume();
+        if (checkPermissions()) {
+            getLastLocation();
+        }
+
+    }
+
 }
