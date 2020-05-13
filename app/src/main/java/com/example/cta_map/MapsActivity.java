@@ -199,6 +199,9 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                     if (test.getVisibility() == View.VISIBLE) {
                                         show.setText("SHOW");
                                         test.setVisibility(View.GONE);
+                                        chooseStation.setVisibility(View.GONE);
+                                        switchDir.setVisibility(View.GONE);
+
                                         FrameLayout frameLayout = (FrameLayout)findViewById(R.id.framelayout);
                                         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) disconnect.getLayoutParams();
                                         disconnect.setLayoutParams(lp);
@@ -207,6 +210,8 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                     else if (test.getVisibility() != View.VISIBLE) {
                                         show.setText("HIDE");
                                         test.setVisibility(View.VISIBLE);
+                                        chooseStation.setVisibility(View.VISIBLE);
+                                        switchDir.setVisibility(View.VISIBLE);
 
                                     }
                             }
@@ -416,7 +421,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                 Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default");
                                 station_marker.showInfoWindow();
                                 status.setBackgroundColor(Color.WHITE);
-                                status.setText("No Trains Near.");
+//                                status.setText("No Trains Near.");
 
                             } else {
                                 boolean green_indicator = false; // get ready to leave
@@ -482,7 +487,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                         arrayList.add("Get ready to Leave! ETA: "+ETA+" Minute(s)");
                                         if (!ButtonIsOn){
                                             status.setBackgroundColor(Color.GREEN);
-                                            status.setText("Get Ready To Leave");
                                         }
                                             if (!yellow_indicator) {
                                                 t.showInfoWindow();
@@ -503,7 +507,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
                                         if (!ButtonIsOn) {
                                             ButtonIsOn=true;
-                                            status.setText("Run. Train is Approaching");
                                             status.setBackgroundColor(Color.BLUE);
                                         }
 
@@ -526,7 +529,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
                                         if (!ButtonIsOn) {
                                             ButtonIsOn=true;
-                                            status.setText("Walk Over To Station");
                                             status.setBackgroundColor(Color.YELLOW);
                                         }
 
@@ -568,7 +570,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
                                         if (!green_indicator && !yellow_indicator && !blue_indicator && !orange_indicator){
                                             status.setBackgroundColor(Color.WHITE);
-                                            status.setText("No Train Near.");
+//                                            status.setText("No Train Near.");
 
                                         }
                                     }
