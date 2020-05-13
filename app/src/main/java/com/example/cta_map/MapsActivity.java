@@ -85,7 +85,11 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         assert mapFragment != null;
+
+
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        getLastLocation();
+
 
 
         mapFragment.getMapAsync(this);
