@@ -64,15 +64,15 @@ import java.util.Objects;
 public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLocationButtonClickListener,
         GoogleMap.OnMyLocationClickListener,
         OnMapReadyCallback  {
-    private Button disconnect, switchDir, chooseStation, status, show, userLoc, minutes;
-    private ListView list;
-    private  RelativeLayout test;
-    private TextView target_station_view, main_station_view, arrival_time_view, nearest_train_dist_view,num_trains_view;
-    final boolean[] connect = {true};
-    private GoogleMap mMap;
-    boolean show_layout= false;
-    int PERMISSION_ID = 44;
-    private FusedLocationProviderClient mFusedLocationClient;
+        private Button disconnect, switchDir, chooseStation, status, show, userLoc, minutes;
+        private ListView list;
+        private  RelativeLayout test;
+        private TextView target_station_view, main_station_view, arrival_time_view, nearest_train_dist_view,num_trains_view;
+        final boolean[] connect = {true};
+        private GoogleMap mMap;
+        boolean show_layout= false;
+        int PERMISSION_ID = 44;
+        private FusedLocationProviderClient mFusedLocationClient;
 
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -148,8 +148,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                     final ArrayList<HashMap> chosen_trains = new ArrayList<>();
 
                     try {
-
-
                         Document content = Jsoup.connect(url).get();
                         String[] train = content.select("train").outerHtml().split("</train>");
                         for (String each_train: train){
@@ -268,8 +266,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                 }
             }).start();
     }
-
-
     @RequiresApi(api = Build.VERSION_CODES.M)
     @SuppressLint("MissingPermission")
     private void getLastLocation(){
@@ -299,7 +295,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
             requestPermissions();
         }
     }
-
     @SuppressLint("MissingPermission")
     private void requestNewLocationData(){
 
@@ -342,10 +337,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                 PERMISSION_ID
         );
     }
-
-
-
-
 
 
     private boolean isLocationEnabled() {
