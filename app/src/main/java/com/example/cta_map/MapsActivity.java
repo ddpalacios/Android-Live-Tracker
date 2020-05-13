@@ -446,7 +446,11 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
 
                                     Log.e("USER DISTANCE", user_to_target_ETA+" Minute(s) - Hour(s)");
-                                    minutes.setText(user_to_target_ETA+ " Minute(s) Away");
+
+                                    int hours = user_to_target_ETA / 60;
+                                    int min = user_to_target_ETA % 60;
+
+                                    minutes.setText(hours+ " Hour(s) "+ min+" Minute(s)");
 
 
 
