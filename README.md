@@ -68,7 +68,7 @@ Live-Updates From Nearest Trains For Android Devices
   
   - Purple Marker (Target Station: Station the user picks)
   
-  - light Blue (Train final Destination)
+  - Light Blue (Train final Destination)
   <dd>
 </dl>
 
