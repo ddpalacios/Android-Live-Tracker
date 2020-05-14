@@ -43,7 +43,6 @@ class Debugger{
     }
 }
 
-@RequiresApi(api = Build.VERSION_CODES.KITKAT)
 @SuppressLint("Registered")
 public class mainactivity extends AppCompatActivity {
     DatabaseHelper myDb;
@@ -53,7 +52,7 @@ public class mainactivity extends AppCompatActivity {
     private FusedLocationProviderClient mFusedLocationClient;
 
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_main);
@@ -69,6 +68,7 @@ public class mainactivity extends AppCompatActivity {
     }
     private void headToMap(){
         toMap.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View v) {
 
