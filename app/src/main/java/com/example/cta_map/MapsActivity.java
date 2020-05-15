@@ -265,7 +265,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                               int minutes_to_spare = 0;
                               int late_amount = 0;
                               float marked_opacity = 1f;
-                              float unmarked_opacity = .7f;
+                              float unmarked_opacity = .5f;
                               String[] userLocation = ((String) userLoc.getText()).split(",");
                               double userLatitude = Double.parseDouble(userLocation[0]);
                               double userLongitude = Double.parseDouble(userLocation[1]);
@@ -561,12 +561,18 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                 if (test.getVisibility() == View.VISIBLE) {
                     show.setText("SHOW");
                     test.setVisibility(View.GONE);
+                    switchDir.setVisibility(View.GONE);
+                    chooseStation.setVisibility(View.GONE);
+
 
 
                 }
                 else if (test.getVisibility() != View.VISIBLE) {
                     show.setText("HIDE");
                     test.setVisibility(View.VISIBLE);
+                    switchDir.setVisibility(View.VISIBLE);
+                    chooseStation.setVisibility(View.VISIBLE);
+
 
 
                 }
