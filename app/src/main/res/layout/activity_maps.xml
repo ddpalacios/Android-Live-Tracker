@@ -20,6 +20,7 @@
     <Button
         android:id="@+id/status"
         android:layout_marginLeft="20dp"
+        android:layout_marginTop="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -33,7 +34,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:layout_marginBottom="200dp"
         android:layout_marginRight="5dp"
         android:text="HIDE"
         />
@@ -45,7 +45,7 @@
 
 
         android:layout_marginLeft="5dp"
-
+        android:layout_marginTop="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
@@ -60,10 +60,9 @@
         android:id="@+id/pickStation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="148dp"
-        android:layout_marginRight="5dp"
-
-        android:layout_gravity="center_vertical|right"
+        android:layout_marginLeft="5dp"
+        android:layout_gravity="top|left"
+        android:layout_marginTop="140dp"
 
         android:text="Choose Station"
         />
@@ -72,9 +71,10 @@
         android:id="@+id/switch_direction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="5dp"
-        android:layout_gravity="right"
-        android:layout_marginTop="410dp"
+        android:layout_marginTop="70dp"
+        android:layout_marginLeft="5dp"
+        android:layout_gravity="top|left"
+
 
         android:text="switch direction" />
 
@@ -83,9 +83,7 @@
         android:id="@+id/userLoc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
-        android:layout_marginRight="5dp"
-        android:layout_gravity="right"
+        android:layout_gravity="bottom|right"
         android:layout_marginTop="300dp"
 
          />
@@ -94,11 +92,10 @@
         android:id="@+id/minutes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|center_horizontal"
+        android:layout_gravity="bottom|right"
         android:layout_marginLeft="25dp"
-        android:layout_marginTop="50dp"
 
-        />
+        tools:ignore="RtlHardcoded" />
 
 
 
@@ -116,6 +113,7 @@
         <ListView
             android:id = "@+id/list"
             android:layout_marginTop="10dp"
+            android:layout_marginBottom="55dp"
             android:layout_marginRight="5dp"
             android:layout_width = "wrap_content"
             android:layout_height = "match_parent"/>
