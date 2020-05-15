@@ -3,96 +3,80 @@
 Live-Updates From Nearest Trains For Android Devices 
 
 
-<dt>Tools Used: </dt>
- - JSOUP - For XML continous extraction
+ # Introduction
  
- <dt>Data Obtained and Extracted: </dt>
- 
- - XML Document (CTA transit data)
-
-- train_Stations.csv (Mapping of all station coordinates (LAT/LON))
-
-
-
 <dl>
-  <dt>Inital Description:</dt>
+ <hr>
+ 
  The Chicago Transit Authority (CTA) is the operator of mass transit in Chicago, 
  Illinois and some of its surrounding suburbs, including the trains of the Chicago "L" and CTA bus service.
  
- In this project, we will be using Chicago's CTA transit API. 
+As a local in Chicago, we often face the daily hassle of catching the train on time to our daily station. Sometimes we do not know where our transit is at nor when it would be an appropriate time to leave our current location to our indicated station. Chicago's CTA service offers Apps or TEXT-messages that give us an approximation when a train or bus will be arriving, however, oftentimes this can be a hassle to keep looking back at; especially if you are in a hurry. This project expands existing technologies to provide users more transits, get their current locations, and provide appropriate approximations for when it is recommended to leave based on their location. 
  
+ <hr>
+ 
+# Technologies
+ 
+ <hr>
+ 
+ - Android Studio 3.6.3
+ 
+ - Java (Gradel Version - 5.6.4)
 
- <dt>API description: </dt>
-  <dd>
-  <p>The CTA Train Tracker APIs provide a gateway into near-real-time CTA bus train estimated arrival times. You can use the official CTA Train Tracker service via Web or mobile device.
-  
-  
-  The API makes it easy for developers to get specific, machine-readable information from CTA Train Tracker to incorporate estimated arrival/route progress information into innovative apps--mobile, online, or at locations.
-  </dd>
+ - JSOUP - 1.11.1
+ 
+ - Google Maps Android API v2
+ 
+ - Google play-services-location:17.0.0'
+ 
+ <hr>
+ 
+ 
+# Setup
 
- <dt>Baseline Approach: </dt>
-<dd>
-<p>The mobile application updates itself every 5 seconds to estimate live tracking effiency</p>
- <hr> 
+<hr>
+ 
+ To start, make sure you have the most updated version of Android Studio. 
+ 
+ `Android Gradle Plugin Version 3.6.3`
+ 
+ And,
+ 
+ `Gradle Version 5.6.4`
+ 
+ Next: In `AndroidManifest.xml`
+ 
+ Make sure you have (or add) the following permissions: 
+ 
+ `
+   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name = "android.permission.WRITE_EXTERNAL_STORAGE"/>
+ `
+ 
+ 
+ The `ACCESS_COARSE/FINE_LOCATION` permissions are not required to use Google Maps Android API v2, but you must specify either coarse or fine location permissions for the `MyLocation` functionality.
+ 
+ 
+ Now head to `build.gradle(:app)` and add at the end of `dependencies`:
+ 
+ `{`
 
-  <p>This Android Mobile Application allows live viewing for each and any train that the user wants to track.
- This CTA tracker allows user location to give an estimation for the time he/she needs to leave from their current location
- to catch its nearest train. 
+`implementation 'org.jsoup:jsoup:1.11.1'`
  
- <dt>How this is different from offical CTA tracker apps: </dt>
+ `}`
  
- - Allows user's current location and calculates walk distance from their current location and their target station
+ At the time of this project the most current version was `1.11.1` for Jsoup, but make sure you have the most latest version to avoid any faulty functionalities.
  
- - Users can see more live trains than provided in other official apps
  
- - Notifies the user when they should leave based on the location on the train
  
- - Live 3D Viewing for each train 
  
- - Color indications based on distance and Estimated Time Arrivals (ETA)
  
-  </p> 
----
-
- <dt>Initial MAP Viewings </dt>
- <dd>
-  <p>Example Viewing of trains approaching Granville Station.</p>
-  
-  - Green (Time to spare before train arrival)
-  
-  - Yellow (2 - 4 Minutes before train arrives Based on User's Location)
-  
-  - Blue (Train is Approaching))
-  
-  - Orange (Train Arrived at station)
-  
-  - Purple Marker (Target Station: Station the user picks)
-  
-  - Light Blue (Train final Destination)
-  <dd>
 </dl>
 
 
-Green Marker (Time to spare based on user location)   | Yellow Marker (Users walk distance > Train distance from the station)
-:-------------------------:|:-------------------------:
-![](images/green.png)  |  ![](images/yellow.png)
 
-
-<dl><br></dl>
-
-Blue Marker (Train is Approaching)   |  Orange Marker (Train has Arrived)
-:-------------------------:|:-------------------------:
-![](images/blue.png)  |  ![](images/orange.png)
-
-
----
-
-  <br>
-   <hr> 
- <dd>
- 
 
  
-
-</dl>
-
