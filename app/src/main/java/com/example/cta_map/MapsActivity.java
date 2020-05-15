@@ -200,7 +200,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
                                 }else {
                                     train_info.put("train_to_target", String.format("%.2f", distance_from_train_to_target));
-                                    Log.e("CHOSEN", train_info+"");
 
                                     chosen_trains.add(train_info); // Extracted trains going specified direction and still heading towards target station
                                 }
@@ -267,27 +266,37 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                               int late_amount = 0;
                               float marked_opacity = 1f;
                               float unmarked_opacity = .7f;
+                              String[] userLocation = ((String) userLoc.getText()).split(",");
+                              double userLatitude = Double.parseDouble(userLocation[0]);
+                              double userLongitude = Double.parseDouble(userLocation[1]);
+                              double targetLatitude = Double.parseDouble(station_coordinates[0]);
+                              double targetLongitude = Double.parseDouble(station_coordinates[1]);
                               final ArrayList<String> arrayList  = new ArrayList<>();
                               final ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
+                              double user_distance_from_station = calculate_coordinate_distance(userLatitude, userLongitude, targetLatitude,targetLongitude)  * 0.621371;
+                              int user_to_target_ETA = (int) ((user_distance_from_station/ WALK_SPEED)*100);
                               list.setAdapter(adapter);
                               ArrayList<Integer> train_eta = new ArrayList<>();
+                              arrayList.add("You are "+user_to_target_ETA+" minute(s) away from "+station_name );
+                              adapter.notifyDataSetChanged();
 
                               for (HashMap current_train: chosen_trains){
                                   double current_distance_from_target = Double.parseDouble((String) Objects.requireNonNull(current_train.get("train_to_target"))) * 0.621371;
                                   int train_min_ETA = (int) ((current_distance_from_target / TRAIN_SPEED)*100); // TODO: debug time approximations. Faulty calculation result < 30 mph Mistrack markers
                                   train_eta.add(train_min_ETA);
 
+
                               }
                               Collections.sort(train_eta);
                               for (Integer i: train_eta){
                                   String main_name = (String) chosen_trains.get(0).get("main_station");
 
-                                  if (i < 2){
-                                      arrayList.add("To "+main_name+". ETA: < 2 Minutes");
+                                  if (i < 1){
+                                      adapter.add("Train to " + main_name + ". Less Than 1 Minute away");
                                       adapter.notifyDataSetChanged();
 
                                   }else {
-                                      arrayList.add("To " + main_name + ". ETA: " + i + " Minute(s)");
+                                      arrayList.add("Train to " + main_name + ". ETA: " + i + " Minute(s)");
                                       adapter.notifyDataSetChanged();
                                   }
 
@@ -303,37 +312,29 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                   String main_station_lon = (String) current_train.get("main_lon");
                                   String train_lat = (String) current_train.get("train_lat");
                                   String train_lon = (String) current_train.get("train_lon");
-                                  Log.e("COORDINATES", train_coord[0]+" "+ train_coord[1]+" "+current_train.get("next_stop")+" "+ current_distance_from_target);
 
                                   Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default",marked_opacity);
                                   addMarker(main_station_lat, main_station_lon, (String) current_train.get("main_station"), "main",marked_opacity);
                                   int train_hour_ETA = (int) ((current_distance_from_target / TRAIN_SPEED)*100) /60;
-                                  String[] userLocation = ((String) userLoc.getText()).split(",");
-                                  double userLatitude = Double.parseDouble(userLocation[0]);
-                                  double userLongitude = Double.parseDouble(userLocation[1]);
-                                  double targetLatitude = Double.parseDouble(station_coordinates[0]);
-                                  double targetLongitude = Double.parseDouble(station_coordinates[1]);
-                                  double user_distance_from_station = calculate_coordinate_distance(userLatitude, userLongitude, targetLatitude,targetLongitude)  * 0.621371;
-                                  int user_to_target_ETA =  (int) ((user_distance_from_station/ WALK_SPEED)*100);
-                                  int hours = user_to_target_ETA / 60;
-                                  int min = user_to_target_ETA % 60;
-                                  minutes.setText(min+" Minute(s) Away from "+station_name);
+
+
 
                                   if (train_min_ETA >= 0 && train_min_ETA <=20){
+
                                       if (user_to_target_ETA <= train_min_ETA) {
                                           green_indicator = true;
-                                          addMarker(train_lat, train_lon, "NEXT STOP:  "+ train_min_ETA, "green", marked_opacity);
+                                          addMarker(train_lat, train_lon, "NEXT STOP:  "+ current_train.get("next_stop"), "green", marked_opacity);
                                           minutes_to_spare = train_min_ETA - user_to_target_ETA;
 
                                       }else if (user_to_target_ETA > train_min_ETA){
                                           late_amount = user_to_target_ETA - train_min_ETA;
                                           if (late_amount >=0 && late_amount <4){
                                               yellow_indicator = true;
-                                              addMarker(train_lat, train_lon, "NEXT STOP:  "+ train_min_ETA, "yellow", marked_opacity);
+                                              addMarker(train_lat, train_lon, "NEXT STOP:  "+ current_train.get("next_stop"), "yellow", marked_opacity);
 
                                           }else if (late_amount >=4){
                                               blue_indicator = true;
-                                              addMarker(train_lat, train_lon, "NEXT STOP:  "+ train_min_ETA, "blue",marked_opacity).showInfoWindow();
+                                              addMarker(train_lat, train_lon, "NEXT STOP:  "+ current_train.get("next_stop"), "blue",marked_opacity).showInfoWindow();
 
 
                                           }
@@ -341,6 +342,9 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                   } else{
                                       Marker regular_marker = addMarker(train_lat, train_lon, "NEXT STOP:  "+ train_min_ETA, station_type,unmarked_opacity);
                                   }
+
+
+
 
                                   if (!yellow_indicator && !green_indicator && !blue_indicator){ // if no train near, show station name
                                       station_marker.showInfoWindow();
@@ -363,11 +367,24 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                       status.setBackgroundColor(Color.YELLOW);
                                       status.setText(late_amount+" Minute(s) Late.");
                                       status.setTextColor(Color.BLACK);
-                                  }else{
+                                  }
+                                  else if (current_train.get("isApproaching").equals("1") && current_train.get("next_stop").equals(station_name)){
+                                      Log.e("status", "Approaching");
+                                      arrayList.set(1, "Train to " + current_train.get("main_station") + " is Approaching");
+                                      adapter.notifyDataSetChanged();
+                                  }
+
+
+                                  else{
                                       status.setBackgroundColor(Color.BLUE);
                                       status.setText(late_amount+" Minute(s) Late.");
                                       status.setTextColor(Color.WHITE);
                                   }
+
+
+
+
+
 
                               }
                               Log.d("DONE", "DONE");
@@ -524,7 +541,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         test = findViewById(R.id.background);
         chooseStation = findViewById(R.id.pickStation);
         status = findViewById(R.id.status);
-        minutes = findViewById(R.id.minutes);
+//        minutes = findViewById(R.id.minutes);
         show = findViewById(R.id.show);
         userLoc = findViewById(R.id.userLoc);
         userLoc.setVisibility(View.GONE);
