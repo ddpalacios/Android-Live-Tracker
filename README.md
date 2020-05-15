@@ -71,6 +71,31 @@ As a local in Chicago, we often face the daily hassle of catching the train on t
  At the time of this project the most current version was `1.11.1` for Jsoup, but make sure you have the most latest version to avoid any faulty functionalities.
  
  
+ # Features
+ 
+ - Live 3D Mapping of Chicago and current transits
+ 
+ - View of user's current location
+ 
+ - Google Maps API for directions based on current location to target station
+ 
+ - Distance calculation based on current location at indicated station
+ 
+ - Color code change based on distance of the nearest train (Green -> Yellow -> Blue)
+
+- Displays all possible indicated transits and their Estimated Approximation Times (ETA)
+ 
+ ### To Do:
+ 
+ - Have flexiable user interface when choosing which line and station to track
+ 
+ - Give users the option to not have user location if not perferred
+ 
+ - Notifify users when app is running and when the nearest train is arriving
+ 
+ 
+ # Illustrations
+ 
  
  
  
