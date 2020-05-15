@@ -90,7 +90,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
     }
 
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
@@ -118,9 +117,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         connect_and_run_main_thread(url);
 
     }
-
-
-
 
     private void connect_and_run_main_thread(final String url){
         final Context context = getApplicationContext();
@@ -196,16 +192,11 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                     // TODO: Debug threshold of train lines. e.g. BLUE line does not pass.
                                     out_of_bounds++;
                                     continue;
-
-
                                 }else {
                                     train_info.put("train_to_target", String.format("%.2f", distance_from_train_to_target));
-
                                     chosen_trains.add(train_info); // Extracted trains going specified direction and still heading towards target station
                                 }
-
                             }
-
                         }
                         display_on_user_interface(chosen_trains, station_coordinates, station_name, station_type);
                         switchDir.setOnClickListener(new View.OnClickListener() {
@@ -340,7 +331,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                           }
                                       }
                                   } else{
-                                      Marker regular_marker = addMarker(train_lat, train_lon, "NEXT STOP:  "+ train_min_ETA, station_type,unmarked_opacity);
+                                      Marker regular_marker = addMarker(train_lat, train_lon, "NEXT STOP:  "+ current_train.get("next_stop"), station_type,unmarked_opacity);
                                   }
 
 
