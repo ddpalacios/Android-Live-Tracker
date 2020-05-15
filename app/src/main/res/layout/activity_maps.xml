@@ -33,8 +33,10 @@
 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginRight="5dp"
+        android:layout_gravity="bottom |left"
+        android:layout_marginBottom="5dp"
+
+        android:layout_marginLeft="5dp"
         android:text="HIDE"
         />
 
@@ -60,9 +62,10 @@
         android:id="@+id/pickStation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_gravity="top|left"
-        android:layout_marginTop="140dp"
+        android:layout_marginRight="5dp"
+        android:layout_gravity="bottom|right"
+        android:layout_marginBottom="5dp"
+
 
         android:text="Choose Station"
         />
@@ -71,9 +74,10 @@
         android:id="@+id/switch_direction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="70dp"
-        android:layout_marginLeft="5dp"
-        android:layout_gravity="top|left"
+
+        android:layout_gravity="bottom|center"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="10dp"
 
 
         android:text="switch direction" />
@@ -103,6 +107,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="190dp"
+
         android:orientation="vertical"
         android:id="@+id/background"
         android:layout_gravity="bottom"
