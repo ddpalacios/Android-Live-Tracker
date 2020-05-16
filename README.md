@@ -113,10 +113,11 @@ As a local in Chicago, we often face the daily hassle of catching the train on t
 
 `light blue` marker is the train's final destination (its direction)
  
+ <hr>
  
-On the left, the user may input their target station, line, and direction of the train as you normally would in existing CTA's transit locators.  
+`On the left`, the user may input their target station, line, and direction of the train as you normally would in existing CTA's transit locators.  
 
-On the right, we see its current live transits with their specific latitude and longitude location. The application extracts its data from the Chicago Transit Authority's API `XML` URL using `Jsoup` and it is updated every 5 seconds.
+`On the right`, we see its current live transits with their specific latitude and longitude location. The application extracts its data from the Chicago Transit Authority's API `XML` URL using `Jsoup` and it is updated every 5 seconds.
 
 
 Each train line is color-coded with their appropriated color.
@@ -142,17 +143,17 @@ As it displays that the user is currently `5 minutes away` from Granville and th
 
 As time progresses, the train will get closer to our target location and the changing from `Green` --> `Yellow` --> `Blue`
 
-On the left, you can see that that the user is currently `5 minutes away` from Granville but the nearest train is `1 minute away` before reaching our target station. We can see on the top, our status changes color to `blue` to indicate that the user `may not reach the train on time` based on their current location. but may still have a chance to reach the next nearest train which is `18 minutes away`
+`On the left`, you can see that that the user is currently `5 minutes away` from Granville but the nearest train is `1 minute away` before reaching our target station. We can see on the top, our status changes color to `blue` to indicate that the user `may not reach the train on time` based on their current location. but may still have a chance to reach the next nearest train which is `18 minutes away`
 
 Each color indication is determined by the approximate distance based on the current user location. 
 
-On the right, we can see that the user is `238` minutes late (walking distance) to station `Ashland Green Line`. 
+`On the right`, we can see that the user is `238` minutes late (walking distance) to station `Ashland Green Line`. 
 
 Because of the user's current distance, both trains that are at most `20 minutes away` from the target location, the user is most likely not able to make those trains. Of course, those trains that are `farther away` from than `20 minutes` are indicated with a `low opacity` with their appropriate train line color.  
 
 
 
-User is late to reach nearest train   |  blue marker late indications for green line to Ashland
+User is late to reach nearest train   |  Blue marker late indications for green line to Ashland
 :-------------------------:|:-------------------------:
 ![](images/late_to_granville.png)  |  ![](images/blue_marker_indications_for_green_line.png)
 
@@ -161,7 +162,7 @@ User is late to reach nearest train   |  blue marker late indications for green 
 
 
 
- User is late to reach the nearest train   |  blue line transits to O'hare
+ User is late to reach the nearest train   |  Blue line transits to O'hare
 :-------------------------:|:-------------------------:
 ![](images/yellow_late_to_granville.png)  |  ![](images/trains_to_ohare.png)
 
