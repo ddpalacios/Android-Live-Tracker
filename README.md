@@ -22,6 +22,8 @@ As a local in Chicago, we often face the daily hassle of catching the train on t
  - Android Studio 3.6.3
  
  - Java (Gradel Version - 5.6.4)
+ 
+ - Google Maps API
 
  - JSOUP - 1.11.1
  
