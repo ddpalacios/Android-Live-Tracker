@@ -149,7 +149,7 @@ As time progresses, the train will get closer to our target location and the cha
 
 Each color indication is determined by the approximate distance based on the current user location. 
 
-`On the right`, we can see that the user is `238` minutes late (walking distance) to station `Ashland Green Line`. 
+`On the right`, we can see that the user is `238 minutes late` (walking distance) to station `Ashland Green Line`. 
 
 Because of the user's current distance, both trains that are at most `20 minutes away` from the target location, the user is most likely not able to make those trains. Of course, those trains that are `farther away` from than `20 minutes` are indicated with a `low opacity` with their appropriate train line color.  
 
