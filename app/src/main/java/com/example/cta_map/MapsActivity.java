@@ -135,9 +135,11 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
 
           /*
+
           Everything is being ran within its own thread.
          This allows us to run our continuous web extraction
          while also performing other user interactions
+
           */
         new Thread(new Runnable() {
             @RequiresApi(api = Build.VERSION_CODES.M)
@@ -266,7 +268,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                               final ArrayList<String> arrayList  = new ArrayList<>();
                               final ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
                               double user_distance_from_station = calculate_coordinate_distance(userLatitude, userLongitude, targetLatitude,targetLongitude)  * 0.621371;
-                              int user_to_target_ETA = 5;//(int) ((user_distance_from_station/ WALK_SPEED)*100);
+                              int user_to_target_ETA = (int) ((user_distance_from_station/ WALK_SPEED)*100);
                               list.setAdapter(adapter);
                               ArrayList<Integer> train_eta = new ArrayList<>();
                               arrayList.add("You are "+user_to_target_ETA+" minute(s) away from "+station_name );
