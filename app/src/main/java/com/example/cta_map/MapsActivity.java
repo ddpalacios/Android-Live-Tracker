@@ -256,6 +256,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                               boolean ButtonIsOn = false; // status button
                               int TRAIN_SPEED = 25;
                               float WALK_SPEED = (float) 3.1;
+                              int num_of_vibrants = 0;
                               int minutes_to_spare = 0;
                               int late_amount = 0;
                               float marked_opacity = 1f;
@@ -370,11 +371,15 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
 
                                   else{
-                                      Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                                       status.setBackgroundColor(Color.BLUE);
                                       status.setText(late_amount+" Minute(s) Late.");
                                       status.setTextColor(Color.WHITE);
-                                      v.vibrate(2000);
+                                      if (num_of_vibrants <=0) {
+                                          Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                                          v.vibrate(2000);
+                                          num_of_vibrants++;
+                                      }
+
                                   }
 
 
