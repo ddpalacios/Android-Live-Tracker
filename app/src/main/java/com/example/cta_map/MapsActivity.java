@@ -160,6 +160,9 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
                             BufferedReader reader = read_station_coordinates();
                             Chicago_Transits chicago_transits = new Chicago_Transits(reader);
+
+
+
                             HashMap<String, String> train_info = get_train_info(each_train); // Feed in given and prepare it as a hashmap with necessary train data
 
                             if (Objects.equals(train_info.get("train_direction"), specified_train_direction[0])){ // Only retrieve the trains that going to users specified direction
@@ -374,11 +377,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                       status.setBackgroundColor(Color.BLUE);
                                       status.setText(late_amount+" Minute(s) Late.");
                                       status.setTextColor(Color.WHITE);
-                                      if (num_of_vibrants <=0) {
-                                          Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                                          v.vibrate(2000);
-                                          num_of_vibrants++;
-                                      }
 
                                   }
 
