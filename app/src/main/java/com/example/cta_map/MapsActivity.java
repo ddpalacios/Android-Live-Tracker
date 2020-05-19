@@ -48,6 +48,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import java.io.BufferedReader;
@@ -93,7 +94,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
+        Runnable_Connection connection = new Runnable_Connection();
         HashMap <String, String> StationTypeKey = TrainLineKeys(); // Train line key codes
 
 
@@ -115,7 +116,8 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         String type  = StationTypeKey.get(station_type.toLowerCase()); // Retrieve train line code and extract from given url
         final String url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s", type);
         Log.e("url", url);
-        connect_and_run_main_thread(url);
+
+         connect_and_run_main_thread(url);
 
     }
 
@@ -163,7 +165,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
 
 
-                            HashMap<String, String> train_info = get_train_info(each_train); // Feed in given and prepare it as a hashmap with necessary train data
+                            HashMap<String, String> train_info = chicago_transits.get_train_info(each_train); // Feed in given and prepare it as a hashmap with necessary train data
 
                             if (Objects.equals(train_info.get("train_direction"), specified_train_direction[0])){ // Only retrieve the trains that going to users specified direction
 

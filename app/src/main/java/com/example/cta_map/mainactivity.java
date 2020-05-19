@@ -45,7 +45,6 @@ class Debugger{
 
 @SuppressLint("Registered")
 public class mainactivity extends AppCompatActivity {
-    DatabaseHelper myDb;
     private Button  toMap;
     private EditText station_name, station_type, direction;
     int PERMISSION_ID = 44;
@@ -57,7 +56,6 @@ public class mainactivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_main);
         super.onCreate(savedInstanceState);
-        myDb = new DatabaseHelper(this);
         station_name = (EditText) findViewById(R.id.station_name);
         station_type = (EditText) findViewById(R.id.station_type);
         direction = (EditText) findViewById(R.id.dest);
