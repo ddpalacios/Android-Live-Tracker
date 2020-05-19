@@ -89,7 +89,6 @@ public class mainactivity extends AppCompatActivity {
                 }else {
                     intent.putExtra("target_station_name", stationName);
                     intent.putExtra("target_station_type", stationType);
-                    intent.putExtra("target_station_coordinates", target_station_coordinates);
                     intent.putExtra("train_direction", trainDirection);
                     startActivity(intent);
                 }

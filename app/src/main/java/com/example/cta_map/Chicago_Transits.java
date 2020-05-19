@@ -1,4 +1,9 @@
 package com.example.cta_map;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
@@ -15,6 +20,7 @@ class Chicago_Transits {
     }
 
     String[] retrieve_station_coordinates(String station_name, String station_type) {
+
         String line;
         while (true) {
             try {
@@ -114,5 +120,57 @@ class Chicago_Transits {
 
         return StringUtils.substringBetween(raw_xml, startTag, endTag);
     }
+
+
+    public Double calculate_coordinate_distance(double lat1, double lon1, double lat2, double lon2){
+        final int R = 6371; // Radious of the earth
+
+
+        Double latDistance = toRad(lat2-lat1);
+        Double lonDistance = toRad(lon2-lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2) +
+                Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                        Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+        return R * c;
+
+    }
+
+    private static Double toRad(Double value) {
+        return value * Math.PI / 180;
+    }
+
+    public HashMap<String, String> TrainLineKeys(){
+        HashMap<String, String> TrainLineKeyCodes  = new HashMap<>();
+        TrainLineKeyCodes.put("red", "red");
+        TrainLineKeyCodes.put("blue", "blue");
+        TrainLineKeyCodes.put("brown", "brn");
+        TrainLineKeyCodes.put("green", "g");
+        TrainLineKeyCodes.put("orange", "org");
+        TrainLineKeyCodes.put("pink", "pink");
+        TrainLineKeyCodes.put("purple", "p");
+        TrainLineKeyCodes.put("yellow", "y");
+
+        return TrainLineKeyCodes;
+    }
+
+
+        public void ZoomIn(GoogleMap mMap, Float zoomLevel, String[] coord){
+        assert coord != null;
+        LatLng target = new LatLng(Double.parseDouble(coord[0]), Double.parseDouble(coord[1]));
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(target)
+                .zoom(zoomLevel)                   // Sets the zoom
+                .bearing(90)                // Sets the orientation of the camera to east
+                .tilt(90)                  // Sets the tilt of the camera to 40 degrees
+                .build();                   // Creates a CameraPosition from the builder
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+
+    }
+
 
 }

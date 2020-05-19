@@ -36,7 +36,7 @@
         android:layout_gravity="bottom |left"
         android:layout_marginBottom="5dp"
 
-        android:layout_marginLeft="5dp"
+        android:layout_marginLeft="1dp"
         android:text="HIDE"
         />
 
@@ -77,7 +77,7 @@
 
         android:layout_gravity="bottom|center"
         android:layout_marginBottom="5dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginRight="30dp"
 
 
         android:text="switch direction" />
