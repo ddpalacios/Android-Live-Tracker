@@ -1,4 +1,6 @@
 package com.example.cta_map;
+import android.util.Log;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -8,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 
@@ -46,6 +49,44 @@ class Chicago_Transits {
         return null;
     }
 
+
+    ArrayList<String> retrieve_line_stations(BufferedReader reader, String station_type){
+        String line;
+        ArrayList<String> train_line_stops = new ArrayList<>();
+        while (true){
+            try{
+                if ((line = reader.readLine()) != null) {
+                    String[] tokens = line.split(",");
+                    if (tokens[0].toLowerCase().equals(station_type)){
+                        train_line_stops.add(tokens[0]);
+
+                    }
+                    if (tokens[1].toLowerCase().equals(station_type)){
+                        train_line_stops.add(tokens[1]);
+
+                    }
+
+                }else{
+                    break;
+                }
+
+
+
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+
+
+        }
+
+
+        return train_line_stops;
+
+
+    }
+
+
+
     private HashMap<String, String> GetStation(String[] tokens, HashMap<String, String> train_lines) {
 
         // Train lines
@@ -82,7 +123,7 @@ class Chicago_Transits {
     }
 
 
-    public HashMap<String, String> get_train_info(String each_train) {
+    public HashMap<String, String> get_train_info(String each_train, String station_type) {
         HashMap<String, String> train_info = new HashMap<>();
 
         String currTrain = each_train.replaceAll("\n", "")
@@ -110,6 +151,14 @@ class Chicago_Transits {
         train_info.put("train_direction", train_direction);
         train_info.put("train_lat", train_lat);
         train_info.put("train_lon", train_lon);
+        String main_station_name = train_info.get("main_station");
+
+        String[] main_station_coordinates = retrieve_station_coordinates(main_station_name, station_type);
+        train_info.put("main_lan", main_station_coordinates[0]);
+        train_info.put("main_lon", main_station_coordinates[1]);
+
+
+
 
         return train_info;
 

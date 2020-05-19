@@ -40,11 +40,17 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 
 public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLocationButtonClickListener,
@@ -63,6 +69,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        final Context context = getApplicationContext();
         setContentView(R.layout.activity_maps);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -72,7 +79,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         final RelativeLayout train_eta_list = findViewById(R.id.background);
-        Button disconnect = initiate_button(R.id.disconnect, 133, 205,186);
+        final Button disconnect = initiate_button(R.id.disconnect, 133, 205,186);
         final Button hide = initiate_button(R.id.show, 133, 205,186);
         final Button switch_direction = initiate_button(R.id.switch_direction, 133, 205,186);
         final Button choose_station = initiate_button(R.id.pickStation, 133, 205,186);
@@ -109,24 +116,49 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
             }
         });
 
+
+                disconnect.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onClick(View v) {
+
+                if (connect[0]) {
+                    disconnect.setText("Connect");
+                    connect[0] = false;
+                    Log.d("Connection Status", "Connection Closed");
+                    Toast.makeText(context, "DISCONNECTED", Toast.LENGTH_SHORT).show();
+
+                }else {
+                    disconnect.setText("Disconnect");
+                    connect[0] = true;
+                    Toast.makeText(context, "CONNECTED", Toast.LENGTH_SHORT).show();
+                    Log.d("Connection Status", "Connection Opened");
+                    onMapReady(mMap);
+
+                }
+
+            }
+        });
+
         mapFragment.getMapAsync(this);
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        final Context context = getApplicationContext();
         BufferedReader reader = setup_file_reader(R.raw.train_stations);
-        Chicago_Transits chicago_transits = new Chicago_Transits(reader);
+        final Chicago_Transits chicago_transits = new Chicago_Transits(reader);
         HashMap <String, String> StationTypeKey = chicago_transits.TrainLineKeys(); // Train line key codes
         Bundle bb; // Retrieve data from main screen
         bb=getIntent().getExtras();
         assert bb != null;
-        String station_type = bb.getString("target_station_type");
-        String station_name = bb.getString("target_station_name");
-        String[] specified_train_direction = {bb.getString("train_direction")};
-        String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(station_name, station_type);
+        final String station_type = bb.getString("target_station_type");
+        final String station_name = bb.getString("target_station_name");
+        final String[] specified_train_direction = {bb.getString("train_direction")};
+        final String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(station_name, station_type);
         chicago_transits.ZoomIn(mMap, (float) 13.3, target_station_coordinates);
         Marker target_station_marker = addMarker(target_station_coordinates[0], target_station_coordinates[1], station_name, "default", 1f);
         target_station_marker.showInfoWindow();
@@ -134,10 +166,61 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMyLocationClickListener(this);
 
+
+
+        BufferedReader train_station_stops_reader = setup_file_reader(R.raw.train_line_stops);
+        ArrayList<String> stops = chicago_transits.retrieve_line_stations(train_station_stops_reader, station_type);
+        Log.e("stops", stops+"");
+
+
         final String url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s",  StationTypeKey.get(station_type.toLowerCase()));
         Log.e("url", url);
 
-//         connect_and_run_main_thread(url);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (connect[0]){
+
+                try {
+                    Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
+                    String[] train = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
+                    final ArrayList<HashMap> chosen_trains = new ArrayList<>();
+                    for (String each_train: train){
+                        BufferedReader reader = setup_file_reader(R.raw.train_stations);
+                        final Chicago_Transits chicago_transits = new Chicago_Transits(reader);
+
+                        HashMap<String, String> train_info = chicago_transits.get_train_info(each_train, station_type); // Feed in given and prepare it as a hashmap with necessary train data
+                        if (Objects.equals(train_info.get("train_direction"), specified_train_direction[0])){
+
+
+
+
+
+
+                        }
+
+                    }
+
+
+
+                        Thread.sleep(2000);
+
+
+
+
+
+
+                } catch (IOException | InterruptedException e) {
+                    Toast.makeText(context, "Invalid URL", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
+                }
+            }
+        }).start();
+
+
+
+
 
     }
 
@@ -185,22 +268,27 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 //
 //
 //                                Double distance_from_train_to_main = chicago_transits.calculate_coordinate_distance(
-//                                        Double.parseDouble(train_info.get("train_lat")),
-//                                        Double.parseDouble(train_info.get("train_lon")),
-//                                        Double.parseDouble(main_station_coordinates[0]),
-//                                        Double.parseDouble(main_station_coordinates[1]));
+//                                        Double.parseDouble(Objects.requireNonNull(train_info.get("train_lat"))),
+//                                        Double.parseDouble(Objects.requireNonNull(train_info.get("train_lon"))),
+//                                        Double.parseDouble(Objects.requireNonNull(train_info.get("main_lan"))),
+//                                        Double.parseDouble(Objects.requireNonNull(train_info.get("main_lon"))));
 //
 //
-//                                Double distance_from_train_to_target = chicago_transits.calculate_coordinate_distance(target_station_latitude,
-//                                        target_station_longitude,
-//                                        Double.parseDouble(train_info.get("train_lat")),
-//                                        Double.parseDouble(train_info.get("train_lon")));
+//                                Double distance_from_train_to_target = chicago_transits.calculate_coordinate_distance(
+//                                        Double.parseDouble(target_station_coordinates[0]),
+//                                        Double.parseDouble(target_station_coordinates[1]),
+//                                        Double.parseDouble(Objects.requireNonNull(train_info.get("train_lat"))),
+//                                        Double.parseDouble(Objects.requireNonNull(train_info.get("train_lon"))));
 //
 //
-//                                Double distance_from_target_to_main = chicago_transits.calculate_coordinate_distance(target_station_latitude,
-//                                        target_station_longitude,
-//                                        Double.parseDouble(main_station_coordinates[0]),
-//                                        Double.parseDouble(main_station_coordinates[1]));
+//                                Double distance_from_target_to_main = chicago_transits.calculate_coordinate_distance(
+//                                        Double.parseDouble(target_station_coordinates[0]),
+//                                        Double.parseDouble(target_station_coordinates[1]),
+//                                        Double.parseDouble(Objects.requireNonNull(train_info.get("main_lan"))),
+//                                        Double.parseDouble(Objects.requireNonNull(train_info.get("main_lon"))));
+//
+//
+//                                chosen_trains.add(train_info);
 //
 //
 //                                if (withinBounds(distance_from_train_to_main, distance_from_target_to_main)){
