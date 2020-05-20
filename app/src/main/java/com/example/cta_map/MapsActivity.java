@@ -50,6 +50,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -74,9 +75,9 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+
         assert mapFragment != null;
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
         final RelativeLayout train_eta_list = findViewById(R.id.background);
         final Button disconnect = initiate_button(R.id.disconnect, 133, 205,186);
         final Button hide = initiate_button(R.id.show, 133, 205,186);
@@ -210,16 +211,42 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                       addMarker(train_info.get("main_lat"), train_info.get("main_lon"), train_info.get("main_station"), "cyan", 1f);
 
                                       if (specified_train_direction[0].equals("1")){
-                                          Log.e("INDEX", stops.indexOf(station_name)+" - "+station_name+" going towards "+stops.get(0) );
+                                          int start = 0;
+                                          int end = stops.indexOf(station_name);
+                                          List<String> ignored_stations = stops.subList(start, end);
+                                          if (ignored_stations.contains(train_info.get("next_stop"))){
+                                              Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, .5f);
+
+                                          }
+                                          else{
+                                              Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, 1f);
+
+                                          }
+
+
 
 
                                       }
                                       else {
-                                          Log.e("INDEX", stops.indexOf(station_name)+" - "+station_name+" going towards "+stops.get(stops.size()-1) );
+
+                                          int start= stops.indexOf(station_name)+1;
+                                          int end = stops.size();
+                                          List<String> ignored_stations = stops.subList(start, end);
+                                          if (ignored_stations.contains(train_info.get("next_stop"))){
+                                              Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, .5f);
+
+                                          }
+                                          else{
+                                              Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, 1f);
+
+                                          }
+
+
+
 
 
                                       }
-                                      Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, 1f);
+
 
 
 
@@ -227,6 +254,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
 
                                   }
+                                  Log.d("Update", "DONE.");
 
                               }
 
