@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 
@@ -57,14 +58,9 @@ class Chicago_Transits {
             try{
                 if ((line = reader.readLine()) != null) {
                     String[] tokens = line.split(",");
-                    if (tokens[0].toLowerCase().equals(station_type)){
-                        train_line_stops.add(tokens[0]);
+                    String stops = tokens[0];
+                    train_line_stops.add(stops);
 
-                    }
-                    if (tokens[1].toLowerCase().equals(station_type)){
-                        train_line_stops.add(tokens[1]);
-
-                    }
 
                 }else{
                     break;
@@ -78,6 +74,9 @@ class Chicago_Transits {
 
 
         }
+        train_line_stops.remove(0);
+        train_line_stops.remove(train_line_stops.size()-1);
+
 
 
         return train_line_stops;
@@ -154,7 +153,7 @@ class Chicago_Transits {
         String main_station_name = train_info.get("main_station");
 
         String[] main_station_coordinates = retrieve_station_coordinates(main_station_name, station_type);
-        train_info.put("main_lan", main_station_coordinates[0]);
+        train_info.put("main_lat", main_station_coordinates[0]);
         train_info.put("main_lon", main_station_coordinates[1]);
 
 
@@ -217,8 +216,6 @@ class Chicago_Transits {
                 .tilt(90)                  // Sets the tilt of the camera to 40 degrees
                 .build();                   // Creates a CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-
     }
 
 
