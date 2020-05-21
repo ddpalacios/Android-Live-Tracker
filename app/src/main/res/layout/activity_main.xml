@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="western(o’harebranch)"
+        android:text="ashland"
         android:hint="Station..." />
 
     <EditText
@@ -27,7 +27,7 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:layout_below="@+id/station_name"
-        android:text="blue"
+        android:text="green"
         android:hint="train type..." />
 
 

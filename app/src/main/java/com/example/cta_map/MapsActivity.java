@@ -267,17 +267,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                           }
                             });
 
-
-
-
-
-
-
-
-
-
-
-
                     Thread.sleep(2000);
                 } catch (IOException | InterruptedException e) {
                     Toast.makeText(context, "Invalid URL", Toast.LENGTH_LONG).show();

@@ -15,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -63,6 +64,8 @@ class Chicago_Transits {
             try{
                 if ((line = reader.readLine()) != null) {
                     String[] tokens = line.split(",");
+
+                    train_lines.put("green", tokens[0]);
                     train_lines.put("red", tokens[1]);
                     train_lines.put("blue", tokens[2]);
 
@@ -84,6 +87,9 @@ class Chicago_Transits {
 
         }
         train_line_stops.remove(0);
+        if (train_line_stops.contains("null")){
+            train_line_stops.removeAll(Collections.singleton("null"));
+        }
 
 
 
