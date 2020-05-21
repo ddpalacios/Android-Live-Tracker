@@ -1,5 +1,8 @@
 package com.example.cta_map;
+import android.os.Build;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -13,6 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Objects;
 
 
 class Chicago_Transits {
@@ -31,8 +35,7 @@ class Chicago_Transits {
                 if ((line = this.reader.readLine()) != null) {
                     String[] tokens = line.split(",");
                     String stationCanidate = tokens[0].replace(" ", "_").toLowerCase();
-                    HashMap<String, String> train_lines = new HashMap<>();
-                    HashMap<String, String> train_types = GetStation(tokens, train_lines); //HashMap of All train lines
+                    HashMap<String, String> train_types = GetStation(tokens); //HashMap of All train lines
 
                     if (stationCanidate.equals(station_name) && Boolean.parseBoolean(train_types.get(station_type))) {
                         return getCord(tokens);
@@ -51,15 +54,21 @@ class Chicago_Transits {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     ArrayList<String> retrieve_line_stations(BufferedReader reader, String station_type){
         String line;
         ArrayList<String> train_line_stops = new ArrayList<>();
+        HashMap<String, String> train_lines = new HashMap<>();
         while (true){
             try{
                 if ((line = reader.readLine()) != null) {
                     String[] tokens = line.split(",");
-                    String stops = tokens[0];
-                    train_line_stops.add(stops);
+                    train_lines.put("red", tokens[1]);
+                    train_lines.put("blue", tokens[2]);
+
+
+                    String stops = train_lines.get(station_type);
+                    train_line_stops.add(stops.replaceAll("[^a-zA-Z0-9]", "").replaceAll(" ", "").toLowerCase());
 
 
                 }else{
@@ -85,8 +94,8 @@ class Chicago_Transits {
 
 
 
-    private HashMap<String, String> GetStation(String[] tokens, HashMap<String, String> train_lines) {
-
+    private HashMap<String, String> GetStation(String[] tokens) {
+        HashMap<String, String> train_lines = new HashMap<>();
         // Train lines
         String red = tokens[1];
         String blue = tokens[2];
