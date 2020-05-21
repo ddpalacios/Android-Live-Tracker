@@ -49,6 +49,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -193,6 +194,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
             public void run() {
                 while (connect[0]){
                 try {
+                    final int[] trains = {0};
                     Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
                     final String[] train = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
                     final ArrayList<HashMap> chosen_trains = new ArrayList<>();
@@ -208,30 +210,30 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                   final Chicago_Transits chicago_transits = new Chicago_Transits(reader);
                                   final HashMap<String, String> train_info = chicago_transits.get_train_info(each_train, station_type); // Feed in given and prepare it as a hashmap with necessary train data
                                   if (Objects.equals(train_info.get("train_direction"), specified_train_direction[0])) {
+                                      trains[0] +=1;
                                       addMarker(train_info.get("main_lat"), train_info.get("main_lon"), train_info.get("main_station"), "cyan", 1f);
 
                                       if (specified_train_direction[0].equals("1")){
                                           int start = 0;
                                           int end = stops.indexOf(station_name);
                                           List<String> ignored_stations = stops.subList(start, end);
+                                          Log.e("Ignoring", ignored_stations+"");
                                           if (ignored_stations.contains(train_info.get("next_stop"))){
                                               Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, .5f);
 
-                                          }
-                                          else{
+                                          } else{
                                               Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, 1f);
 
                                           }
 
-
-
-
                                       }
-                                      else {
+                                      else if (specified_train_direction[0].equals("5")){
 
                                           int start= stops.indexOf(station_name)+1;
                                           int end = stops.size();
                                           List<String> ignored_stations = stops.subList(start, end);
+                                          Log.e("Ignoring", ignored_stations+"");
+
                                           if (ignored_stations.contains(train_info.get("next_stop"))){
                                               Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, .5f);
 
@@ -254,9 +256,12 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
 
                                   }
-                                  Log.d("Update", "DONE.");
 
                               }
+                              Log.d("Update", "DONE.");
+                              Log.d("Update", "TRAINS: "+ Arrays.toString(trains));
+
+
 
 
                           }

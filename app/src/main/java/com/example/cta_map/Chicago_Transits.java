@@ -75,7 +75,6 @@ class Chicago_Transits {
 
         }
         train_line_stops.remove(0);
-        train_line_stops.remove(train_line_stops.size()-1);
 
 
 
