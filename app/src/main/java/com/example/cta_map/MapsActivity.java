@@ -591,16 +591,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
     }
 
-//    private boolean withinBounds(double dist1, double dist2){
-//        if (dist1 >= 0 && dist1 <= dist2){   // Train threshold to determine if train has passed target station
-//            return true;
-//
-//        }else {
-//            return false;
-//}
-//
-//
-//    }
 //    @Override
 //    public void onMyLocationClick(@NonNull Location location) {
 //    }
