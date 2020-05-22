@@ -64,7 +64,6 @@ class Chicago_Transits {
             try{
                 if ((line = reader.readLine()) != null) {
                     String[] tokens = line.split(",");
-
                     train_lines.put("green", tokens[0]);
                     train_lines.put("red", tokens[1]);
                     train_lines.put("blue", tokens[2]);
