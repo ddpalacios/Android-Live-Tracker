@@ -27,6 +27,8 @@ As a local in Chicago, we often face the daily hassle of catching the train on t
 
  - JSOUP - 1.11.1
  
+ - SQLite
+ 
  - Google Maps Android API v2
  
  - Google play-services-location:17.0.0'
