@@ -159,7 +159,7 @@ class Chicago_Transits {
         String train_lon = get_xml_tag_value(currTrain, "<lon>", "</lon>");
         train_info.put("isApproaching", isApproaching);
         train_info.put("isDelayed", isDelayed);
-        train_info.put("main_station", main_station.toLowerCase().replace(" ", ""));
+        train_info.put("main_station", main_station);
 //    train_info.put("arrival_time", predicted_arrival_time);
         train_info.put("next_stop", next_train_stop.toLowerCase().replace(" ", ""));
         train_info.put("train_direction", train_direction);
@@ -167,7 +167,7 @@ class Chicago_Transits {
         train_info.put("train_lon", train_lon);
         String main_station_name = train_info.get("main_station");
 
-        String[] main_station_coordinates = retrieve_station_coordinates(main_station_name, station_type);
+        String[] main_station_coordinates = retrieve_station_coordinates(main_station_name.toLowerCase().replace(" ", ""), station_type);
         train_info.put("main_lat", main_station_coordinates[0]);
         train_info.put("main_lon", main_station_coordinates[1]);
 

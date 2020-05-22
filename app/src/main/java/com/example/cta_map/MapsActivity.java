@@ -1,10 +1,8 @@
 package com.example.cta_map;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -20,11 +18,11 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -39,16 +37,15 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -160,6 +157,14 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         final String[] specified_train_direction = {bb.getString("train_direction")};
         final String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(station_name, station_type);
         final Button switch_direction = initiate_button(R.id.switch_direction, 133, 205,186);
+        final ArrayAdapter<String> adapter;
+        final ArrayList<String> arrayList;
+        final ArrayList<Integer> train_etas = new ArrayList<>();
+        arrayList = new ArrayList<>();
+        adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
+        list = findViewById(R.id.list);
+        list.setAdapter(adapter);
+
         chicago_transits.ZoomIn(mMap, (float) 13.3, target_station_coordinates);
         mMap.setMyLocationEnabled(true); // Enable user location permission
         mMap.setOnMyLocationButtonClickListener(this);
@@ -187,13 +192,16 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         assert station_type != null;
         final String url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s",  StationTypeKey.get(station_type.toLowerCase()));
         Log.e("url", url);
-               /*
+
+
+        /*
 
           Everything is being ran within its own thread.
          This allows us to run our continuous web extraction
          while also performing other user interactions
 
           */
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -207,52 +215,88 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                           @Override
                           public void run() {
                               mMap.clear();
-                             addMarker(target_station_coordinates[0], target_station_coordinates[1], station_name, "default", 1f).showInfoWindow();
-                              for (String each_train: train) {
+                              addMarker(target_station_coordinates[0], target_station_coordinates[1], station_name, "default", 1f).showInfoWindow();
+                              for (String each_train : train) {
                                   BufferedReader reader = setup_file_reader(R.raw.train_stations);
                                   final Chicago_Transits chicago_transits = new Chicago_Transits(reader);
                                   final HashMap<String, String> train_info = chicago_transits.get_train_info(each_train, station_type); // Feed in given and prepare it as a hashmap with necessary train data
                                   if (Objects.equals(train_info.get("train_direction"), specified_train_direction[0])) {
                                       addMarker(train_info.get("main_lat"), train_info.get("main_lon"), train_info.get("main_station"), "cyan", 1f);
 
-                                      if (specified_train_direction[0].equals("1")){
+                                      if (specified_train_direction[0].equals("1")) {
 
-                                          List<String> ignored_stations = stops.subList(0,stops.indexOf(station_name.replaceAll("[^a-zA-Z0-9]", "")));
+                                          List<String> ignored_stations = stops.subList(0, stops.indexOf(station_name.replaceAll("[^a-zA-Z0-9]", "")));
                                           String next_stop = Objects.requireNonNull(train_info.get("next_stop")).replaceAll("[^a-zA-Z0-9]", "");
 
-                                          if (ignored_stations.contains(next_stop)){
+                                          if (ignored_stations.contains(next_stop)) {
                                               Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, .5f);
 
-                                          } else{
+                                          } else {
                                               Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, 1f);
                                               // TODO: Retrieve ETA for each train and sort to display
+                                              Time times = new Time();
+                                              int train_speed = 35;
+                                              Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance(
+                                                              Double.parseDouble(train_info.get("train_lat")),
+                                                              Double.parseDouble(train_info.get("train_lon")),
+                                                              Double.parseDouble(target_station_coordinates[0]),
+                                                              Double.parseDouble(target_station_coordinates[1]));
+
+
+                                              int current_train_eta = times.get_estimated_time_arrival(train_speed, current_train_distance_from_target_station);
+                                              train_etas.add(current_train_eta);
+
 
                                           }
+                                      } else if (specified_train_direction[0].equals("5")) {
 
-                                      }
-                                      else if (specified_train_direction[0].equals("5")){
-
-                                          List<String> ignored_stations = stops.subList(stops.indexOf(station_name.replaceAll("[^a-zA-Z0-9]", ""))+1,  stops.size());
+                                          List<String> ignored_stations = stops.subList(stops.indexOf(station_name.replaceAll("[^a-zA-Z0-9]", "")) + 1, stops.size());
                                           String next_stop = Objects.requireNonNull(train_info.get("next_stop")).replaceAll("[^a-zA-Z0-9]", "");
 
-                                          if (ignored_stations.contains(next_stop)){
+                                          if (ignored_stations.contains(next_stop)) {
                                               Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, .5f);
 
-                                          }
-                                          else{
+                                          } else {
                                               Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, 1f);
+                                              Time times = new Time();
+                                              int train_speed = 35;
+                                              Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance(
+                                                      Double.parseDouble(train_info.get("train_lat")),
+                                                      Double.parseDouble(train_info.get("train_lon")),
+                                                      Double.parseDouble(target_station_coordinates[0]),
+                                                      Double.parseDouble(target_station_coordinates[1]));
+
+
+                                              int current_train_eta = times.get_estimated_time_arrival(train_speed, current_train_distance_from_target_station);
+                                              train_etas.add(current_train_eta);
+
+
+
 
                                           }
                                       }
+                                      adapter.clear();
+                                      Collections.sort(train_etas);
+                                      for (int each_eta : train_etas) {
+                                          Log.e("name",train_info.get("main_station"));
+                                          // TODO: Append ListView ETA for each sorted train
+                                          arrayList.add("To "+train_info.get("main_station")+": "+each_eta+" Minutes");
+                                          adapter.notifyDataSetChanged();
+
+                                      }
+
+
                                   }
 
                               }
                               Log.d("Update", "DONE.");
-                              // TODO: Append ListView ETA for each sorted train
                           }
-                            });
+
+                    });
 
                     Thread.sleep(2000);
+                    train_etas.clear();
+
                 } catch (IOException | InterruptedException e) {
                     Toast.makeText(context, "Invalid URL", Toast.LENGTH_LONG).show();
                     e.printStackTrace();
