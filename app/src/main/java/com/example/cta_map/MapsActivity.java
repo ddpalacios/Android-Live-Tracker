@@ -225,6 +225,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
                                           } else{
                                               Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, 1f);
+                                              // TODO: Retrieve ETA for each train and sort to display
 
                                           }
 
@@ -247,6 +248,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
                               }
                               Log.d("Update", "DONE.");
+                              // TODO: Append ListView ETA for each sorted train
                           }
                             });
 
