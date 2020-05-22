@@ -147,6 +147,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         mMap = googleMap;
         final Context context = getApplicationContext();
         userLoc = findViewById(R.id.userLoc);
+        userLoc.setVisibility(View.GONE);
         BufferedReader reader = setup_file_reader(R.raw.train_stations);
         final Chicago_Transits chicago_transits = new Chicago_Transits(reader);
         HashMap <String, String> StationTypeKey = chicago_transits.TrainLineKeys(); // Train line key codes
