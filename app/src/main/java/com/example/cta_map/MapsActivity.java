@@ -160,11 +160,11 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         final ArrayAdapter<String> adapter;
         final ArrayList<String> arrayList;
         final ArrayList<Integer> train_etas = new ArrayList<>();
+        final int train_speed = 25; // TODO: implement adjustable times per train line.
         arrayList = new ArrayList<>();
         adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
         list = findViewById(R.id.list);
         list.setAdapter(adapter);
-
         chicago_transits.ZoomIn(mMap, (float) 13.3, target_station_coordinates);
         mMap.setMyLocationEnabled(true); // Enable user location permission
         mMap.setOnMyLocationButtonClickListener(this);
@@ -233,9 +233,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
                                           } else {
                                               Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, 1f);
-                                              // TODO: Retrieve ETA for each train and sort to display
                                               Time times = new Time();
-                                              int train_speed = 35;
                                               Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance(
                                                               Double.parseDouble(train_info.get("train_lat")),
                                                               Double.parseDouble(train_info.get("train_lon")),
@@ -259,7 +257,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                           } else {
                                               Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, 1f);
                                               Time times = new Time();
-                                              int train_speed = 35;
                                               Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance(
                                                       Double.parseDouble(train_info.get("train_lat")),
                                                       Double.parseDouble(train_info.get("train_lon")),
@@ -279,7 +276,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                       Collections.sort(train_etas);
                                       for (int each_eta : train_etas) {
                                           Log.e("name",train_info.get("main_station"));
-                                          // TODO: Append ListView ETA for each sorted train
                                           arrayList.add("To "+train_info.get("main_station")+": "+each_eta+" Minutes");
                                           adapter.notifyDataSetChanged();
 
