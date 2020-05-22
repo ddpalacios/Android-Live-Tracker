@@ -187,7 +187,13 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
         final String url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s",  StationTypeKey.get(station_type.toLowerCase()));
         Log.e("url", url);
+               /*
 
+          Everything is being ran within its own thread.
+         This allows us to run our continuous web extraction
+         while also performing other user interactions
+
+          */
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -243,27 +249,11 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                               Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, 1f);
 
                                           }
-
-
-
-
-
                                       }
-
-
-
-
-
-
-
                                   }
 
                               }
                               Log.d("Update", "DONE.");
-
-
-
-
                           }
                             });
 
@@ -277,278 +267,8 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         }).start();
 
 
-
-
-
     }
 
-//    private void connect_and_run_main_thread(final String url){
-//        final Context context = getApplicationContext();
-//          /*
-//
-//          Everything is being ran within its own thread.
-//         This allows us to run our continuous web extraction
-//         while also performing other user interactions
-//
-//          */
-//        new Thread(new Runnable() {
-//            @RequiresApi(api = Build.VERSION_CODES.M)
-//            @SuppressLint({"DefaultLocale", "WrongConstant"})
-//            @Override
-//            public void run() {
-//                while (connect[0]){
-//                    int out_of_bounds = 0;
-//                    getLastLocation(); // Continuously extract users last location
-//
-//                    final ArrayList<HashMap> chosen_trains = new ArrayList<>();
-//
-//                    try {
-//                        Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
-//                        String[] train = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
-//
-//                        for (String each_train: train){
-//
-//                            BufferedReader reader = read_station_coordinates(R.raw.train_stations);
-//                            Chicago_Transits chicago_transits = new Chicago_Transits(reader);
-//
-//
-//
-//                            HashMap<String, String> train_info = chicago_transits.get_train_info(each_train); // Feed in given and prepare it as a hashmap with necessary train data
-//
-//                            if (Objects.equals(train_info.get("train_direction"), specified_train_direction[0])){ // Only retrieve the trains that going to users specified direction
-//
-//                                String main_station_name = train_info.get("main_station");
-//                                String[] main_station_coordinates = chicago_transits.retrieve_station_coordinates(main_station_name, station_type);
-//
-//                                train_info.put("main_lan", main_station_coordinates[0]);
-//                                train_info.put("main_lon", main_station_coordinates[1]);
-//
-//
-//
-//                                Double distance_from_train_to_main = chicago_transits.calculate_coordinate_distance(
-//                                        Double.parseDouble(Objects.requireNonNull(train_info.get("train_lat"))),
-//                                        Double.parseDouble(Objects.requireNonNull(train_info.get("train_lon"))),
-//                                        Double.parseDouble(Objects.requireNonNull(train_info.get("main_lan"))),
-//                                        Double.parseDouble(Objects.requireNonNull(train_info.get("main_lon"))));
-//
-//
-//                                Double distance_from_train_to_target = chicago_transits.calculate_coordinate_distance(
-//                                        Double.parseDouble(target_station_coordinates[0]),
-//                                        Double.parseDouble(target_station_coordinates[1]),
-//                                        Double.parseDouble(Objects.requireNonNull(train_info.get("train_lat"))),
-//                                        Double.parseDouble(Objects.requireNonNull(train_info.get("train_lon"))));
-//
-//
-//                                Double distance_from_target_to_main = chicago_transits.calculate_coordinate_distance(
-//                                        Double.parseDouble(target_station_coordinates[0]),
-//                                        Double.parseDouble(target_station_coordinates[1]),
-//                                        Double.parseDouble(Objects.requireNonNull(train_info.get("main_lan"))),
-//                                        Double.parseDouble(Objects.requireNonNull(train_info.get("main_lon"))));
-//
-//
-//                                chosen_trains.add(train_info);
-//
-//
-//                                if (withinBounds(distance_from_train_to_main, distance_from_target_to_main)){
-//                                    // TODO: Debug threshold of train lines. e.g. BLUE line does not pass.
-//                                    out_of_bounds++;
-//                                    continue;
-//                                }else {
-//                                    train_info.put("train_to_target", String.format("%.2f", distance_from_train_to_target));
-//                                    chosen_trains.add(train_info); // Extracted trains going specified direction and still heading towards target station
-//                                }
-//                            }
-//                        }
-//                        display_on_user_interface(chosen_trains, station_coordinates, station_name, station_type);
-//                        switchDir.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                Thread.currentThread().interrupt();
-//                                Toast.makeText(context, "Switching Directions. Please Wait...", Toast.LENGTH_SHORT).show();
-//
-//                                if (specified_train_direction[0].equals("1")){
-//                                    specified_train_direction[0] = "5";
-//
-//                                }else {
-//                                    specified_train_direction[0] = "1";
-//                                }
-//                            }
-//                        });
-//
-//
-//                        Thread.sleep(2000);
-//                    }catch (IOException | InterruptedException e){
-//                        e.printStackTrace();
-//                    }
-//                }
-//
-//            }
-//        }).start();
-//
-//
-//
-//    }
-//
-//    private void display_on_user_interface(final ArrayList<HashMap> chosen_trains,
-//                                           final String[] station_coordinates,
-//                                           final String station_name,
-//                                           final String station_type
-//                                          ){
-//        runOnUiThread(new Runnable() {
-//                          @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-//                          @SuppressLint({"SetTextI18n", "LongLogTag", "DefaultLocale", "WrongConstant", "ShowToast"})
-//                          @Override
-//                          public void run() {
-//                              mMap.clear();
-//
-//                              if (chosen_trains.size() ==0){
-//                                  status.setBackgroundColor(Color.WHITE);
-//                                  status.setText("No Trains Available.");
-//                                  Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default",1f);
-//                              }
-//                              BufferedReader reader = read_station_coordinates(R.raw.train_stations);
-//                              Chicago_Transits chicago_transits = new Chicago_Transits(reader);
-//
-//                              boolean green_indicator = false; // get ready to leave
-//                              boolean yellow_indicator = false; // start to leave
-//                              boolean blue_indicator = false; // train is approaching station
-//                              boolean orange_indicator = false; // train has arrived
-//                              boolean ButtonIsOn = false; // status button
-//                              int TRAIN_SPEED = 25;
-//                              float WALK_SPEED = (float) 3.1;
-//                              int num_of_vibrants = 0;
-//                              int minutes_to_spare = 0;
-//                              int late_amount = 0;
-//                              float marked_opacity = 1f;
-//                              float unmarked_opacity = .5f;
-//                              String[] userLocation = ((String) userLoc.getText()).split(",");
-//                              double userLatitude = Double.parseDouble(userLocation[0]);
-//                              double userLongitude = Double.parseDouble(userLocation[1]);
-//                              double targetLatitude = Double.parseDouble(station_coordinates[0]);
-//                              double targetLongitude = Double.parseDouble(station_coordinates[1]);
-//                              final ArrayList<String> arrayList  = new ArrayList<>();
-//                              final ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
-//                              double user_distance_from_station = chicago_transits.calculate_coordinate_distance(userLatitude, userLongitude, targetLatitude,targetLongitude)  * 0.621371;
-//                              int user_to_target_ETA = (int) ((user_distance_from_station/ WALK_SPEED)*100);
-//                              list.setAdapter(adapter);
-//                              ArrayList<Integer> train_eta = new ArrayList<>();
-//                              arrayList.add("You are "+user_to_target_ETA+" minute(s) away from "+station_name );
-//                              adapter.notifyDataSetChanged();
-//
-//                              for (HashMap current_train: chosen_trains){
-//                                  double current_distance_from_target = Double.parseDouble((String) Objects.requireNonNull(current_train.get("train_to_target"))) * 0.621371;
-//                                  int train_min_ETA = (int) ((current_distance_from_target / TRAIN_SPEED)*100); // TODO: debug time approximations. Faulty calculation result < 30 mph Mistrack markers
-//                                  train_eta.add(train_min_ETA);
-//
-//
-//                              }
-//                              Collections.sort(train_eta);
-//                              for (Integer i: train_eta){
-//                                  String main_name = (String) chosen_trains.get(0).get("main_station");
-//
-//                                  if (i < 1){
-//                                      adapter.add("Train to " + main_name + ". Less Than 1 Minute away");
-//                                      adapter.notifyDataSetChanged();
-//
-//                                  }else {
-//                                      arrayList.add("Train to " + main_name + ". ETA: " + i + " Minute(s)");
-//                                      adapter.notifyDataSetChanged();
-//                                  }
-//
-//                              }
-//
-//
-//
-//                              for (HashMap current_train: chosen_trains){
-//                                  double current_distance_from_target = Double.parseDouble((String) Objects.requireNonNull(current_train.get("train_to_target"))) * 0.621371;
-//                                  int train_min_ETA = (int) ((current_distance_from_target / TRAIN_SPEED)*100) ;
-//                                  String[] train_coord = (current_train.get("train_lat") +","+current_train.get("train_lon")).split(",");
-//                                  String main_station_lat = (String) current_train.get("main_lan");
-//                                  String main_station_lon = (String) current_train.get("main_lon");
-//                                  String train_lat = (String) current_train.get("train_lat");
-//                                  String train_lon = (String) current_train.get("train_lon");
-//
-//                                  Marker station_marker = addMarker(station_coordinates[0], station_coordinates[1], station_name, "default",marked_opacity);
-//                                  addMarker(main_station_lat, main_station_lon, (String) current_train.get("main_station"), "main",marked_opacity);
-//                                  int train_hour_ETA = (int) ((current_distance_from_target / TRAIN_SPEED)*100) /60;
-//
-//
-//
-//                                  if (train_min_ETA >= 0 && train_min_ETA <=20){
-//
-//                                      if (user_to_target_ETA <= train_min_ETA) {
-//                                          green_indicator = true;
-//                                          addMarker(train_lat, train_lon, "NEXT STOP:  "+ current_train.get("next_stop"), "green", marked_opacity);
-//                                          minutes_to_spare = train_min_ETA - user_to_target_ETA;
-//
-//                                      }else if (user_to_target_ETA > train_min_ETA){
-//                                          late_amount = user_to_target_ETA - train_min_ETA;
-//                                          if (late_amount >=0 && late_amount <4){
-//                                              yellow_indicator = true;
-//                                              addMarker(train_lat, train_lon, "NEXT STOP:  "+ current_train.get("next_stop"), "yellow", marked_opacity);
-//
-//                                          }else if (late_amount >=4){
-//                                              blue_indicator = true;
-//                                              addMarker(train_lat, train_lon, "NEXT STOP:  "+ current_train.get("next_stop"), "blue",marked_opacity).showInfoWindow();
-//
-//
-//                                          }
-//                                      }
-//                                  } else{
-//                                      Marker regular_marker = addMarker(train_lat, train_lon, "NEXT STOP:  "+ current_train.get("next_stop"), station_type,unmarked_opacity);
-//                                  }
-//
-//
-//
-//
-//                                  if (!yellow_indicator && !green_indicator && !blue_indicator){ // if no train near, show station name
-//                                      station_marker.showInfoWindow();
-//                                      status.setBackgroundColor(Color.WHITE);
-//                                      status.setText("No Nearby Trains.");
-//                                      status.setTextColor(Color.BLACK);
-//                                  }
-//                                  else if (!blue_indicator && green_indicator&& !yellow_indicator){
-//                                      status.setBackgroundColor(Color.GREEN);
-//                                      status.setText(minutes_to_spare+" Minute(s) to spare.");
-//                                      status.setTextColor(Color.BLACK);
-//
-//                                  }
-//                                  else if (!blue_indicator && !green_indicator&& yellow_indicator){
-//                                      status.setBackgroundColor(Color.YELLOW);
-//                                      status.setText(late_amount+" Minute(s) Late.");
-//                                      status.setTextColor(Color.BLACK);
-//                                  }
-//                                  else if (!blue_indicator && green_indicator && yellow_indicator){
-//                                      status.setBackgroundColor(Color.YELLOW);
-//                                      status.setText(late_amount+" Minute(s) Late.");
-//                                      status.setTextColor(Color.BLACK);
-//                                  }
-//                                  else if (current_train.get("isApproaching").equals("1") && current_train.get("next_stop").equals(station_name)){
-//                                      Log.e("status", "Approaching");
-//                                      arrayList.set(1, "Train to " + current_train.get("main_station") + " is Approaching");
-//                                      adapter.notifyDataSetChanged();
-//                                  }
-//
-//
-//                                  else{
-//                                      status.setBackgroundColor(Color.BLUE);
-//                                      status.setText(late_amount+" Minute(s) Late.");
-//                                      status.setTextColor(Color.WHITE);
-//
-//                                  }
-//
-//
-//
-//
-//
-//
-//                              }
-//                              Log.d("DONE", "DONE");
-//            }
-//
-//        });
-//
-//    }
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private BufferedReader setup_file_reader(int file){
         InputStream CSVfile = getResources().openRawResource(file);
@@ -560,13 +280,13 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
     private Marker addMarker(String lat, String lon, String title, String color, Float alpha){
         float opacity = alpha;
         HashMap<String, Float> colors = new HashMap<>();
-        colors.put("default", BitmapDescriptorFactory.HUE_MAGENTA);
+        colors.put("default", BitmapDescriptorFactory.HUE_ROSE);
         colors.put("main", BitmapDescriptorFactory.HUE_AZURE);
         colors.put("blue", BitmapDescriptorFactory.HUE_BLUE );
         colors.put("cyan", BitmapDescriptorFactory.HUE_CYAN );
         colors.put("rose", BitmapDescriptorFactory.HUE_ROSE );
         colors.put("purple", BitmapDescriptorFactory.HUE_CYAN );
-        colors.put("pink", BitmapDescriptorFactory.HUE_BLUE );
+        colors.put("pink", BitmapDescriptorFactory.HUE_MAGENTA+5 );
         colors.put("green", BitmapDescriptorFactory.HUE_GREEN );
         colors.put("brown",BitmapDescriptorFactory.HUE_GREEN );
         colors.put("orange", BitmapDescriptorFactory.HUE_ORANGE );
@@ -580,42 +300,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
     }
 
-//    @Override
-//    public void onMyLocationClick(@NonNull Location location) {
-//    }
-//    @Override
-//    public boolean onMyLocationButtonClick() {
-//        return false;
-//    }
 
-//
-//        disconnect.setOnClickListener(new View.OnClickListener() {
-//            @SuppressLint("SetTextI18n")
-//            @Override
-//            public void onClick(View v) {
-//
-//                if (connect[0]) {
-//                    disconnect.setText("Connect");
-//                    connect[0] = false;
-//                    Log.d("Connection Status", "Connection Closed");
-//                    Toast.makeText(context, "DISCONNECTED", Toast.LENGTH_SHORT).show();
-//
-//                }else {
-//                    disconnect.setText("Disconnect");
-//                    connect[0] = true;
-//                    Toast.makeText(context, "CONNECTED", Toast.LENGTH_SHORT).show();
-//                    Log.d("Connection Status", "Connection Opened");
-//                    onMapReady(mMap);
-//
-//                }
-//
-//            }
-//        });
-//
-//
-//
-//
-//    }
     @RequiresApi(api = Build.VERSION_CODES.M)
     @SuppressLint("MissingPermission")
 

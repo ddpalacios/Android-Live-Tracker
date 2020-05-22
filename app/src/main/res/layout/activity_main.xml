@@ -27,7 +27,7 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:layout_below="@+id/station_name"
-        android:text="green"
+        android:text="pink"
         android:hint="train type..." />
 
 
