@@ -1,34 +1,34 @@
-GREEN,RED,BLUE,YELLOW,PINK,ORANGE
-Harlem/Lake,howard,o’hare,Dempster-skokie,loop,loop
-oakpark,jarvis,rosemont,Oakton-skokie,clinton,roosevelt
-ridgeland,morse,cumberland,howard,morgan,halsted
-austin,loyola,harlem(o’harebranch),null,ashland,ashland
-central,granville,jeffersonpark,null,polk,35th/archer
-laramie,thorndale,montrose,null,18th,western
-cicero,brynmawr,irvingpark,null,damen,kedzie
-pulaski,berwyn,addison,null,western,pulaski
-Conservatory-CentralParkDrive,argyle,belmont,null,california,midway
-kedzie,lawrence,logansquare,null,kedzie,null
-california,wilson,california,null,central park,null
-ashland,sheridan,western(o’harebranch),null,pulaski,null
-morgan,addison,damen,null,kostner,null
-clinton,belmont,division,null,cicero,null
-clark/lake,fullerton,chicago,null,54th/cermak,null
-state/lake,north/clybourn,grand,null,null,null
-Washington/Wabash,clark/division,clark/lake,null,null,null
-adams/wabash,chicago,washington,null,null,null
-roosevelt,grand,monroe,null,null,null
-Cermak-McCormickPlace,lake,jackson,null,null,null
-35th-Bronzeville-IIT,monroe,lasalle,null,null,null
-Indiana,jackson,clinton,null,null,null
-43rd,harrison,uic-halsted,null,null,null
-47th,roosevelt,racine,null,null,null
-51st,cermak-chinatown,illinoismedicaldistrict,null,null,null
-garfield,sox-35th,western(forestparkbranch),null,null,null
-king Drive,47th,Kedzie-homan,null,null,null
-Cottage Grove,garfield,pulaski,null,null,null
-Halsted,63rd,cicero,null,null,null
-Ashland/63rd,69th,austin,null,null,null
-null,79th,oakpark,null,null,null
-null,87th,harlem(forestparkbranch),null,null,null
-null,95th/danryan,forestpark,null,null,null
+GREEN,RED,BLUE,YELLOW,PINK,ORANGE,BROWN,PURPLE
+Harlem/Lake,howard,o’hare,Dempster-skokie,loop,loop,kimball,Linden
+oakpark,jarvis,rosemont,Oakton-skokie,clinton,roosevelt,kedzie,central
+ridgeland,morse,cumberland,howard,morgan,halsted,francisco,noyes
+austin,loyola,harlem(o’harebranch),null,ashland,ashland,rockwell,foster
+central,granville,jeffersonpark,null,polk,35th/archer,western,davis
+laramie,thorndale,montrose,null,18th,western,damen,dempster
+cicero,brynmawr,irvingpark,null,damen,kedzie,montrose,main
+pulaski,berwyn,addison,null,western,pulaski,irving park,south boulevard
+Conservatory-CentralParkDrive,argyle,belmont,null,california,midway,addison,howard
+kedzie,lawrence,logansquare,null,kedzie,null,paulina,loop
+california,wilson,california,null,central park,null,southport,null
+ashland,sheridan,western(o’harebranch),null,pulaski,null,belmont,null
+morgan,addison,damen,null,kostner,null,wellington,null
+clinton,belmont,division,null,cicero,null,diversey,null
+clark/lake,fullerton,chicago,null,54th/cermak,null,fullerton,null
+state/lake,north/clybourn,grand,null,null,null,armitage,null
+Washington/Wabash,clark/division,clark/lake,null,null,null,sedgwick,null
+adams/wabash,chicago,washington,null,null,null,chicago,null
+roosevelt,grand,monroe,null,null,null,merchandise mart,null
+Cermak-McCormickPlace,lake,jackson,null,null,null,loop,null
+35th-Bronzeville-IIT,monroe,lasalle,null,null,null,null,null
+Indiana,jackson,clinton,null,null,null,null,null
+43rd,harrison,uic-halsted,null,null,null,null,null
+47th,roosevelt,racine,null,null,null,null,null
+51st,cermak-chinatown,illinoismedicaldistrict,null,null,null,null,null
+garfield,sox-35th,western(forestparkbranch),null,null,null,null,null
+king Drive,47th,Kedzie-homan,null,null,null,null,null
+Cottage Grove,garfield,pulaski,null,null,null,null,null
+Halsted,63rd,cicero,null,null,null,null,null
+Ashland/63rd,69th,austin,null,null,null,null,null
+null,79th,oakpark,null,null,null,null,null
+null,87th,harlem(forestparkbranch),null,null,null,null,null
+null,95th/danryan,forestpark,null,null,null,null,null

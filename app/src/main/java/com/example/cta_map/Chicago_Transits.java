@@ -71,13 +71,10 @@ class Chicago_Transits {
                     train_lines.put("yellow", tokens[3]);
                     train_lines.put("pink", tokens[4]);
                     train_lines.put("orange", tokens[5]);
-
-
-
-
+                    train_lines.put("brown", tokens[6]);
+                    train_lines.put("purple", tokens[7]);
                     String stops = train_lines.get(station_type);
                     train_line_stops.add(stops.replaceAll("[^a-zA-Z0-9]", "").replaceAll(" ", "").toLowerCase());
-
 
                 }else{
                     break;

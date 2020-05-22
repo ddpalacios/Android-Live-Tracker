@@ -285,10 +285,10 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         colors.put("blue", BitmapDescriptorFactory.HUE_BLUE );
         colors.put("cyan", BitmapDescriptorFactory.HUE_CYAN );
         colors.put("rose", BitmapDescriptorFactory.HUE_ROSE );
-        colors.put("purple", BitmapDescriptorFactory.HUE_CYAN );
+        colors.put("purple", BitmapDescriptorFactory.HUE_VIOLET);
         colors.put("pink", BitmapDescriptorFactory.HUE_MAGENTA+5 );
         colors.put("green", BitmapDescriptorFactory.HUE_GREEN );
-        colors.put("brown",BitmapDescriptorFactory.HUE_GREEN );
+        colors.put("brown",BitmapDescriptorFactory.HUE_BLUE);
         colors.put("orange", BitmapDescriptorFactory.HUE_ORANGE );
         colors.put("red", BitmapDescriptorFactory.HUE_RED);
         colors.put("yellow", BitmapDescriptorFactory.HUE_YELLOW);
