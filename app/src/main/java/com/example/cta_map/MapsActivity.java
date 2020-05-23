@@ -151,6 +151,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         final MapMarker mapMarker = new MapMarker(mMap);
         final Time times = new Time();
         final Context context = getApplicationContext();
+        final MapRelativeListView mapRelativeListView = new MapRelativeListView(context);
         userLoc = findViewById(R.id.userLoc);
         userLoc.setVisibility(View.GONE);
         BufferedReader reader = setup_file_reader(R.raw.train_stations);
@@ -272,13 +273,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                               train_etas.add(current_train_eta);
                                           }
                                       }
-                                      adapter.clear();
-                                      Collections.sort(train_etas);
-                                      for (int current_eta : train_etas) {
-                                          arrayList.add("To "+train_info.get("main_station")+": "+current_eta+" Minutes");
-                                          adapter.notifyDataSetChanged();
-
-                                      }
+                                      mapRelativeListView.add_to_list_view(arrayList, adapter, train_etas, train_info);
                                   }
                               }
                               if (train_etas.size() > 0) {
@@ -302,8 +297,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                           }
 
                     });
-
-
                     Thread.sleep(2000);
                     train_etas.clear();
 
