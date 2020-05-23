@@ -34,4 +34,29 @@ public class MapMarker {
         assert TRAIN_COLOR != null;
         return this.mMap.addMarker(new MarkerOptions().position(train_marker).title(title).icon(BitmapDescriptorFactory.defaultMarker(TRAIN_COLOR)).alpha(opacity));
     }
+
+    public void display_marker_boundries(int current_train_eta, int user_to_target_eta,HashMap<String, String> train_info, String station_type,int track_from, int track_to){
+
+        if (current_train_eta >=track_from && current_train_eta <=track_to){
+            if (user_to_target_eta <= current_train_eta){
+                Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), "green", 1f);
+                int minutes_to_spare = current_train_eta - user_to_target_eta;
+            }else if (user_to_target_eta > current_train_eta){
+                int late_amount = user_to_target_eta - current_train_eta;
+                if (late_amount >=0 && late_amount <4 ){
+                    Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), "yellow", 1f);
+                }else if (late_amount >=4){
+                    Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), "blue", 1f);
+                }
+            }
+        }else{
+            Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, 1f);
+        }
+
+
+    }
+
+
+
+
 }
