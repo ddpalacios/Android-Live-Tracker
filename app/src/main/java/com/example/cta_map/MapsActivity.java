@@ -62,7 +62,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         private FusedLocationProviderClient mFusedLocationClient;
 
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +81,9 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         final Button switch_direction = initiate_button(R.id.switch_direction, 133, 205,186);
         final Button choose_station = initiate_button(R.id.pickStation, 133, 205,186);
 //        location.setVisibility(View.GONE);
+        Intent intent = new Intent(MapsActivity.this, mainactivity.class);
+        NotificationBuilder notificationBuilder = new NotificationBuilder(context, intent);
+        notificationBuilder.notificationDialog("Testing", "hullo");
 
         hide.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")

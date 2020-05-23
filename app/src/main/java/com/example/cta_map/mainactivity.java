@@ -56,7 +56,7 @@ public class mainactivity extends AppCompatActivity {
     private FusedLocationProviderClient mFusedLocationClient;
 
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_main);
@@ -76,7 +76,7 @@ public class mainactivity extends AppCompatActivity {
 
 
 
-
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void headToMap(){
         toMap.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -85,11 +85,11 @@ public class mainactivity extends AppCompatActivity {
 
                 final Context context = getApplicationContext();
                 final Debugger debug = new Debugger();
-
                 InputStream CSVfile = getResources().openRawResource(R.raw.train_stations);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(CSVfile, StandardCharsets.UTF_8));
                 final Chicago_Transits chicago_transits = new Chicago_Transits(reader);
                 Intent intent = new Intent(mainactivity.this, MapsActivity.class);
+
 
                 final String stationName = station_name.getText().toString().toLowerCase().replaceAll(" ", "");
                 final String stationType = station_type.getText().toString().toLowerCase();

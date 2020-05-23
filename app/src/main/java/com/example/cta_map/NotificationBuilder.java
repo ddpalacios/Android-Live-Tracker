@@ -4,7 +4,9 @@ import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 
@@ -13,15 +15,14 @@ import androidx.core.app.NotificationCompat;
 
 public class NotificationBuilder {
     Context context;
-    public NotificationBuilder(Context context){
+    Intent intent;
+    public NotificationBuilder(Context context, Intent intent){
         this.context = context;
-
+        this.intent = intent;
     }
 
-
-
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void notificationDialog() {
+    public void notificationDialog(String notification_title, String text ) {
         NotificationManager notificationManager = (NotificationManager) this.context.getSystemService(Context.NOTIFICATION_SERVICE);
         String NOTIFICATION_CHANNEL_ID = "tutorialspoint_01";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -41,9 +42,14 @@ public class NotificationBuilder {
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setTicker("Tutorialspoint")
                 //.setPriority(Notification.PRIORITY_MAX)
-                .setContentTitle("sample notification")
-                .setContentText("This is sample notification")
+                .setContentTitle(notification_title)
+                .setContentText(text)
                 .setContentInfo("Information");
+
+        PendingIntent conPendingIntent = PendingIntent.getActivity(this.context,0, this.intent,PendingIntent.FLAG_UPDATE_CURRENT);
+
+        notificationBuilder.setContentIntent(conPendingIntent);
+
         notificationManager.notify(1, notificationBuilder.build());
     }
 
