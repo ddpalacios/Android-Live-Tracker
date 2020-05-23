@@ -209,7 +209,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                                               Double.parseDouble(target_station_coordinates[0]),
                                                               Double.parseDouble(target_station_coordinates[1]));
                                               int current_train_eta = times.get_estimated_time_arrival(train_speed, current_train_distance_from_target_station);
-                                              Marker train_marker = mapMarker.addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, 1f);
                                               userLocation.getLastLocation(mMap, target_station_coordinates, current_train_eta, train_info, station_type);
 
 
@@ -228,9 +227,8 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                                       Double.parseDouble(target_station_coordinates[0]),
                                                       Double.parseDouble(target_station_coordinates[1]));
                                               int current_train_eta = times.get_estimated_time_arrival(train_speed, current_train_distance_from_target_station);
-                                              Marker train_marker = mapMarker.addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, 1f);
+                                              userLocation.getLastLocation(mMap, target_station_coordinates, current_train_eta, train_info, station_type);
 
-//                                              int user_to_target_eta = times.get_estimated_time_arrival((int) 3.1, distance_from_user_and_target);
                                               train_etas.add(current_train_eta);
                                           }
                                       }
