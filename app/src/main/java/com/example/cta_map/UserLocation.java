@@ -33,12 +33,7 @@ public class UserLocation extends Activity {
     public UserLocation(Context context){
         this.context = context;
         this.mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this.context);
-
-
-
     }
-
-
     public void getLastLocation(){
         if (checkPermissions()) {
             if (isLocationEnabled()) {
