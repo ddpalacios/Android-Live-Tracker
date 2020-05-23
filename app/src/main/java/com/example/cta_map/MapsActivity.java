@@ -28,14 +28,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-
 public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLocationButtonClickListener,
         GoogleMap.OnMyLocationClickListener,
         OnMapReadyCallback  {
-        private Button  userLoc;
         final boolean[] connect = {true};
         private GoogleMap mMap;
-
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -139,12 +136,9 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         final int train_speed = 25; // TODO: implement adjustable times per train line.
 
 
-        userLoc = findViewById(R.id.userLoc);
-        userLoc.setVisibility(View.GONE);
         mMap.setMyLocationEnabled(true); // Enable user location permission
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMyLocationClickListener(this);
-
 
 
         BufferedReader train_station_stops_reader = chicago_transits.setup_file_reader(context, R.raw.train_line_stops);
@@ -183,20 +177,16 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                 final NotificationBuilder notificationBuilder = new NotificationBuilder(context, intent);
 
                 while (connect[0]){
-                    userLocation.getLastLocation();
                 try {
 
                     Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
                     final String[] train = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
                     runOnUiThread(new Runnable() {
                           @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-                          @SuppressLint({"SetTextI18n", "LongLogTag", "DefaultLocale", "WrongConstant", "ShowToast"})
+                          @SuppressLint({"SetTextI18n", "LongLogTag", "DefaultLocale", "WrongConstant", "ShowToast", "NewApi"})
                           @Override
                           public void run() {
                               mMap.clear();
-//                              double user_lat = Double.parseDouble(String.valueOf(userLoc.getText()).split(",")[0]);
-//                              double user_lon = Double.parseDouble(String.valueOf(userLoc.getText()).split(",")[1]);
-//                              Double distance_from_user_and_target = chicago_transits.calculate_coordinate_distance(user_lat, user_lon, Double.parseDouble(target_station_coordinates[0]),Double.parseDouble(target_station_coordinates[1]));
                               mapMarker.addMarker(target_station_coordinates[0], target_station_coordinates[1], station_name, "default", 1f).showInfoWindow();
                               for (String each_train : train) {
                                   BufferedReader reread_train_coordinates = chicago_transits.setup_file_reader(context,R.raw.train_stations);
@@ -220,9 +210,9 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                                               Double.parseDouble(target_station_coordinates[1]));
                                               int current_train_eta = times.get_estimated_time_arrival(train_speed, current_train_distance_from_target_station);
                                               Marker train_marker = mapMarker.addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, 1f);
+                                              userLocation.getLastLocation(mMap, target_station_coordinates, current_train_eta, train_info, station_type);
 
-//                                              int user_to_target_eta = times.get_estimated_time_arrival((int) 3.1, distance_from_user_and_target);
-//                                              mapMarker.display_marker_boundries(current_train_eta, user_to_target_eta, train_info, station_type, 0, 10);
+
                                               train_etas.add(current_train_eta);
 
                                           }
@@ -241,7 +231,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                               Marker train_marker = mapMarker.addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, 1f);
 
 //                                              int user_to_target_eta = times.get_estimated_time_arrival((int) 3.1, distance_from_user_and_target);
-//                                              mapMarker.display_marker_boundries(current_train_eta, user_to_target_eta, train_info, station_type, 0, 10);
                                               train_etas.add(current_train_eta);
                                           }
                                       }
@@ -295,7 +284,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         Context context = getApplicationContext();
         final UserLocation userLocation = new UserLocation(context);
         if (userLocation.checkPermissions()) {
-            userLocation.getLastLocation();
+            userLocation.getLastLocation(mMap, null, null, null, null);
         }
 
     }

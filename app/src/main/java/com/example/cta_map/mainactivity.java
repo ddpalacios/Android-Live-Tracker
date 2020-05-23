@@ -64,8 +64,8 @@ public class mainactivity extends AppCompatActivity {
         station_type = (EditText) findViewById(R.id.station_type);
         direction = (EditText) findViewById(R.id.dest);
         toMap = (Button) findViewById(R.id.toMaps);
-        final UserLocation userLocation = new UserLocation(context);
-        userLocation.getLastLocation();
+//        final UserLocation userLocation = new UserLocation(context);
+//        userLocation.getLastLocation("hellow");
         headToMap();
     }
 
@@ -102,15 +102,4 @@ public class mainactivity extends AppCompatActivity {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    @Override
-    public void onResume(){
-        super.onResume();
-        Context context = getApplicationContext();
-        final UserLocation userLocation = new UserLocation(context);
-        if (userLocation.checkPermissions()) {
-            userLocation.getLastLocation();
-        }
-
-    }
 }

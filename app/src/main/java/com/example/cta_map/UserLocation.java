@@ -23,18 +23,27 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+
+import java.util.HashMap;
 
 public class UserLocation extends Activity {
     Context context;
     private int PERMISSION_ID = 44;
     private FusedLocationProviderClient mFusedLocationClient;
+
     public UserLocation(Context context){
         this.context = context;
         this.mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this.context);
+
+
     }
-    public void getLastLocation(){
+
+
+
+    public void getLastLocation(final GoogleMap mMap, final String[] target_station, final Integer current_train_eta, final HashMap<String, String>train_info, final String station_type){
         if (checkPermissions()) {
             if (isLocationEnabled()) {
                 this.mFusedLocationClient.getLastLocation().addOnCompleteListener(
@@ -42,12 +51,29 @@ public class UserLocation extends Activity {
                             @SuppressLint("SetTextI18n")
                             @Override
                             public void onComplete(@NonNull Task<Location> task) {
+                                Time time = new Time();
+                                MapMarker mapMarker = new MapMarker(mMap);
+                                Chicago_Transits chicago_transits = new Chicago_Transits();
                                 Location location = task.getResult();
                                 if (location == null) {
                                     requestNewLocationData();
                                 }else{
-                                    Log.e("loc", location.getLatitude()+","+location.getLongitude());
-//                                    userLoc.setText(location.getLatitude()+","+location.getLongitude());
+                                    if (target_station == null || current_train_eta == null && train_info ==null || station_type == null){
+                                        Log.e("None", "None");
+
+                                    }else {
+                                        Double distance_from_user_and_target = chicago_transits.calculate_coordinate_distance(
+                                                location.getLatitude(),
+                                                location.getLongitude(),
+                                                Double.parseDouble(target_station[0]),Double.parseDouble(target_station[1]));
+
+                                        int user_to_target_eta = time.get_estimated_time_arrival((int) 3.1, distance_from_user_and_target);
+                                        mapMarker.display_marker_boundries(current_train_eta, user_to_target_eta, train_info, station_type, 0, 10);
+
+
+                                        Log.e("distance", user_to_target_eta+"");
+
+                                    }
 
                                 }
                             }
@@ -114,7 +140,7 @@ public class UserLocation extends Activity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PERMISSION_ID) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getLastLocation();
+//                getLastLocation();
             }
         }
     }
