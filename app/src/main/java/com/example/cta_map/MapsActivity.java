@@ -55,7 +55,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         GoogleMap.OnMyLocationClickListener,
         OnMapReadyCallback  {
         private Button  userLoc;
-        private ListView list;
         final boolean[] connect = {true};
         private GoogleMap mMap;
         int PERMISSION_ID = 44;
@@ -151,14 +150,11 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         final MapMarker mapMarker = new MapMarker(mMap);
         final Time times = new Time();
         final Context context = getApplicationContext();
-        final MapRelativeListView mapRelativeListView = new MapRelativeListView(context);
-        userLoc = findViewById(R.id.userLoc);
-        userLoc.setVisibility(View.GONE);
-
+        final MapRelativeListView mapRelativeListView = new MapRelativeListView(context, findViewById(R.id.list));
         final Chicago_Transits chicago_transits = new Chicago_Transits();
-        final BufferedReader train_station_coordinates_reader = chicago_transits.setup_file_reader(context,R.raw.train_stations);
+        final UserLocation userLocation = new UserLocation(context);
 
-
+        BufferedReader train_station_coordinates_reader = chicago_transits.setup_file_reader(context,R.raw.train_stations);
         HashMap <String, String> StationTypeKey = chicago_transits.TrainLineKeys(); // Train line key codes
         Bundle bb; // Retrieve data from main screen
         bb=getIntent().getExtras();
@@ -171,15 +167,18 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         final ArrayList<Integer> train_etas = new ArrayList<>();
         final int train_speed = 25; // TODO: implement adjustable times per train line.
 
-        list = findViewById(R.id.list);
-        list.setAdapter(mapRelativeListView.adapter);
-        chicago_transits.ZoomIn(mMap, (float) 13.3, target_station_coordinates);
+
+        userLoc = findViewById(R.id.userLoc);
+        userLoc.setVisibility(View.GONE);
         mMap.setMyLocationEnabled(true); // Enable user location permission
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMyLocationClickListener(this);
+
+
+
         BufferedReader train_station_stops_reader = chicago_transits.setup_file_reader(context, R.raw.train_line_stops);
         final ArrayList<String> stops = chicago_transits.retrieve_line_stations(train_station_stops_reader, station_type);
-
+        chicago_transits.ZoomIn(mMap, (float) 13.3, target_station_coordinates);
         Log.e("stops", stops+"");
         switch_direction.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -213,7 +212,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                 final NotificationBuilder notificationBuilder = new NotificationBuilder(context, intent);
 
                 while (connect[0]){
-                    getLastLocation();
+                    userLocation.getLastLocation();
                 try {
 
                     Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
@@ -224,9 +223,9 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                           @Override
                           public void run() {
                               mMap.clear();
-                              double user_lat = Double.parseDouble(String.valueOf(userLoc.getText()).split(",")[0]);
-                              double user_lon = Double.parseDouble(String.valueOf(userLoc.getText()).split(",")[1]);
-                              Double distance_from_user_and_target = chicago_transits.calculate_coordinate_distance(user_lat, user_lon, Double.parseDouble(target_station_coordinates[0]),Double.parseDouble(target_station_coordinates[1]));
+//                              double user_lat = Double.parseDouble(String.valueOf(userLoc.getText()).split(",")[0]);
+//                              double user_lon = Double.parseDouble(String.valueOf(userLoc.getText()).split(",")[1]);
+//                              Double distance_from_user_and_target = chicago_transits.calculate_coordinate_distance(user_lat, user_lon, Double.parseDouble(target_station_coordinates[0]),Double.parseDouble(target_station_coordinates[1]));
                               mapMarker.addMarker(target_station_coordinates[0], target_station_coordinates[1], station_name, "default", 1f).showInfoWindow();
                               for (String each_train : train) {
                                   BufferedReader reread_train_coordinates = chicago_transits.setup_file_reader(context,R.raw.train_stations);
@@ -249,8 +248,8 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                                               Double.parseDouble(target_station_coordinates[0]),
                                                               Double.parseDouble(target_station_coordinates[1]));
                                               int current_train_eta = times.get_estimated_time_arrival(train_speed, current_train_distance_from_target_station);
-                                              int user_to_target_eta = times.get_estimated_time_arrival((int) 3.1, distance_from_user_and_target);
-                                              mapMarker.display_marker_boundries(current_train_eta, user_to_target_eta, train_info, station_type, 0, 10);
+//                                              int user_to_target_eta = times.get_estimated_time_arrival((int) 3.1, distance_from_user_and_target);
+//                                              mapMarker.display_marker_boundries(current_train_eta, user_to_target_eta, train_info, station_type, 0, 10);
                                               train_etas.add(current_train_eta);
 
                                           }
@@ -266,8 +265,8 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                                       Double.parseDouble(target_station_coordinates[0]),
                                                       Double.parseDouble(target_station_coordinates[1]));
                                               int current_train_eta = times.get_estimated_time_arrival(train_speed, current_train_distance_from_target_station);
-                                              int user_to_target_eta = times.get_estimated_time_arrival((int) 3.1, distance_from_user_and_target);
-                                              mapMarker.display_marker_boundries(current_train_eta, user_to_target_eta, train_info, station_type, 0, 10);
+//                                              int user_to_target_eta = times.get_estimated_time_arrival((int) 3.1, distance_from_user_and_target);
+//                                              mapMarker.display_marker_boundries(current_train_eta, user_to_target_eta, train_info, station_type, 0, 10);
                                               train_etas.add(current_train_eta);
                                           }
                                       }
@@ -314,90 +313,15 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
             button.setBackgroundColor(Color.rgb(r, g,b));
         return button;
     }
-    private void getLastLocation(){
-        if (checkPermissions()) {
-            if (isLocationEnabled()) {
-                mFusedLocationClient.getLastLocation().addOnCompleteListener(
-                        new OnCompleteListener<Location>() {
-                            @SuppressLint("SetTextI18n")
-                            @Override
-                            public void onComplete(@NonNull Task<Location> task) {
-                                Location location = task.getResult();
-                                if (location == null) {
-                                    requestNewLocationData();
-                                }else{
-                                    userLoc.setText(location.getLatitude()+","+location.getLongitude());
 
-                                }
-                            }
-                        }
-                );
-            } else {
-                Toast.makeText(this, "Turn on location", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(intent);
-            }
-        } else {
-            requestPermissions();
-        }
-    }
-    @SuppressLint("MissingPermission")
-    private void requestNewLocationData(){
-
-        LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(0);
-        mLocationRequest.setFastestInterval(0);
-        mLocationRequest.setNumUpdates(1);
-
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        mFusedLocationClient.requestLocationUpdates(
-                mLocationRequest, mLocationCallback,
-                Looper.myLooper()
-        );
-
-    }
-    private LocationCallback mLocationCallback = new LocationCallback() {
-        @SuppressLint("SetTextI18n")
-        @Override
-        public void onLocationResult(LocationResult locationResult) {
-            Location mLastLocation = locationResult.getLastLocation();
-        }
-    };
-    private boolean checkPermissions() {
-        return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-    }
-    private void requestPermissions() {
-        ActivityCompat.requestPermissions(
-                this,
-                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
-                PERMISSION_ID
-        );
-    }
-    private boolean isLocationEnabled() {
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        assert locationManager != null;
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
-                LocationManager.NETWORK_PROVIDER
-        );
-    }
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERMISSION_ID) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getLastLocation();
-            }
-        }
-    }
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onResume(){
         super.onResume();
-        if (checkPermissions()) {
-            getLastLocation();
+        Context context = getApplicationContext();
+        final UserLocation userLocation = new UserLocation(context);
+        if (userLocation.checkPermissions()) {
+            userLocation.getLastLocation();
         }
 
     }

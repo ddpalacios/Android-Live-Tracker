@@ -1,8 +1,10 @@
 package com.example.cta_map;
 
 import android.content.Context;
+import android.view.View;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.example.cta_map.R;
 
@@ -15,11 +17,16 @@ public class MapRelativeListView {
     private ArrayList<String> arrayList;
     private Context  context;
     public ArrayAdapter<String> adapter;
+    private ListView list;
 
-    public MapRelativeListView(Context context){
+
+    public MapRelativeListView(Context context, View list){
         this.context = context;
         this.arrayList = new ArrayList<>();
         this.adapter = new ArrayAdapter<String>(this.context, android.R.layout.simple_spinner_item, arrayList);
+        this.list = (ListView) list;
+        this.list.setAdapter(this.adapter);
+
 
 
 
@@ -27,6 +34,9 @@ public class MapRelativeListView {
 
 
     }
+
+
+
     public void add_to_list_view( ArrayList<Integer> train_etas, HashMap<String, String> train_info){
         this.adapter.clear();
         Collections.sort(train_etas);
