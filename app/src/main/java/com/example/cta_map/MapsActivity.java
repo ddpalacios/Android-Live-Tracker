@@ -223,7 +223,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                               mMap.clear();
                               double user_lat = Double.parseDouble(String.valueOf(userLoc.getText()).split(",")[0]);
                               double user_lon = Double.parseDouble(String.valueOf(userLoc.getText()).split(",")[1]);
-                              Log.e("Location", user_lat+" "+ user_lon);
+                              Double distance_from_user_and_target = chicago_transits.calculate_coordinate_distance(user_lat, user_lon, Double.parseDouble(target_station_coordinates[0]),Double.parseDouble(target_station_coordinates[1]));
                               addMarker(target_station_coordinates[0], target_station_coordinates[1], station_name, "default", 1f).showInfoWindow();
                               for (String each_train : train) {
                                   BufferedReader reader = setup_file_reader(R.raw.train_stations);
@@ -241,7 +241,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                               Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, .5f);
 
                                           } else {
-                                              Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, 1f);
                                               Time times = new Time();
                                               Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance(
                                                               Double.parseDouble(train_info.get("train_lat")),
@@ -249,8 +248,23 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                                               Double.parseDouble(target_station_coordinates[0]),
                                                               Double.parseDouble(target_station_coordinates[1]));
                                               int current_train_eta = times.get_estimated_time_arrival(train_speed, current_train_distance_from_target_station);
+                                              int user_to_target_eta = 5;//times.get_estimated_time_arrival((int) 3.1, distance_from_user_and_target);
+                                              if (current_train_eta >=0 && current_train_eta <=10){
+                                                  if (user_to_target_eta <= current_train_eta){
+                                                      Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), "green", 1f);
+                                                      int minutes_to_spare = current_train_eta - user_to_target_eta;
+                                                  }else if (user_to_target_eta > current_train_eta){
+                                                      int late_amount = user_to_target_eta - current_train_eta;
+                                                      if (late_amount >=0 && late_amount <4 ){
+                                                          Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), "yellow", 1f);
+                                                      }else if (late_amount >=4){
+                                                          Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), "blue", 1f);
+                                                      }
+                                                  }
+                                              }else{
+                                                  Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, 1f);
+                                              }
                                               train_etas.add(current_train_eta);
-
 
                                           }
                                       } else if (specified_train_direction[0].equals("5")) {
@@ -278,20 +292,14 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                       }
                                       adapter.clear();
                                       Collections.sort(train_etas);
-
                                       for (int current_eta : train_etas) {
                                           arrayList.add("To "+train_info.get("main_station")+": "+current_eta+" Minutes");
                                           adapter.notifyDataSetChanged();
 
                                       }
-
-
                                   }
                               }
-
-                              Log.e("etas", train_etas+"");
                               int closest_train_eta = train_etas.get(0);
-                              Log.e("eta", closest_train_eta+"");
                               if (closest_train_eta >5 && closest_train_eta <=10){
                                   notificationBuilder.notificationDialog("TRAIN UPDATE", "Train is "+closest_train_eta+" Away!");
 

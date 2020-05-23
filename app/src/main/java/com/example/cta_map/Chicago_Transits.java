@@ -198,7 +198,7 @@ class Chicago_Transits {
 
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
-        return R * c;
+        return R * c * 0.621371; // KM to Miles
 
     }
 
