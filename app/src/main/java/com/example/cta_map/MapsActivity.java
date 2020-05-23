@@ -80,10 +80,10 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         final Button hide = initiate_button(R.id.show, 133, 205,186);
         final Button switch_direction = initiate_button(R.id.switch_direction, 133, 205,186);
         final Button choose_station = initiate_button(R.id.pickStation, 133, 205,186);
-//        location.setVisibility(View.GONE);
+
+
         Intent intent = new Intent(MapsActivity.this, mainactivity.class);
-        NotificationBuilder notificationBuilder = new NotificationBuilder(context, intent);
-        notificationBuilder.notificationDialog("Testing", "hullo");
+
 
         hide.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
@@ -195,6 +195,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         assert station_type != null;
         final String url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s",  StationTypeKey.get(station_type.toLowerCase()));
         Log.e("url", url);
+
         /*
 
           Everything is being ran within its own thread.
@@ -205,12 +206,13 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         new Thread(new Runnable() {
             @Override
             public void run() {
+                final Intent intent = new Intent(MapsActivity.this, mainactivity.class);
+                final NotificationBuilder notificationBuilder = new NotificationBuilder(context, intent);
+
                 while (connect[0]){
                     getLastLocation();
                 try {
-//                    double user_lat = Double.parseDouble(String.valueOf(userLoc.getText()).split(",")[0]);
-//                    double user_lon = Double.parseDouble(String.valueOf(userLoc.getText()).split(",")[1]);
-//                    Log.e("Location", user_lat+" "+ user_lon);
+
                     Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
                     final String[] train = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
                     runOnUiThread(new Runnable() {
@@ -219,6 +221,9 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                           @Override
                           public void run() {
                               mMap.clear();
+                              double user_lat = Double.parseDouble(String.valueOf(userLoc.getText()).split(",")[0]);
+                              double user_lon = Double.parseDouble(String.valueOf(userLoc.getText()).split(",")[1]);
+                              Log.e("Location", user_lat+" "+ user_lon);
                               addMarker(target_station_coordinates[0], target_station_coordinates[1], station_name, "default", 1f).showInfoWindow();
                               for (String each_train : train) {
                                   BufferedReader reader = setup_file_reader(R.raw.train_stations);
@@ -273,17 +278,37 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                       }
                                       adapter.clear();
                                       Collections.sort(train_etas);
-                                      for (int each_eta : train_etas) {
-                                          arrayList.add("To "+train_info.get("main_station")+": "+each_eta+" Minutes");
+
+                                      for (int current_eta : train_etas) {
+                                          arrayList.add("To "+train_info.get("main_station")+": "+current_eta+" Minutes");
                                           adapter.notifyDataSetChanged();
 
                                       }
+
+
                                   }
                               }
+
+                              Log.e("etas", train_etas+"");
+                              int closest_train_eta = train_etas.get(0);
+                              Log.e("eta", closest_train_eta+"");
+                              if (closest_train_eta >5 && closest_train_eta <=10){
+                                  notificationBuilder.notificationDialog("TRAIN UPDATE", "Train is "+closest_train_eta+" Away!");
+
+
+                              }else if (closest_train_eta> 2 && closest_train_eta <=5){
+                                  notificationBuilder.notificationDialog("TRAIN UPDATE", "Train is "+closest_train_eta+" Away!");
+
+
+                              }else if (closest_train_eta <=2) {
+                                  notificationBuilder.notificationDialog("TRAIN UPDATE", "Train is Approaching! " + closest_train_eta + " Minutes away!");
+                              }
+
                               Log.d("Update", "DONE.");
                           }
 
                     });
+
 
                     Thread.sleep(2000);
                     train_etas.clear();
@@ -298,6 +323,11 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
 
     }
+
+
+
+
+
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private BufferedReader setup_file_reader(int file){

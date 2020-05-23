@@ -41,8 +41,10 @@ public class NotificationBuilder {
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setTicker("Tutorialspoint")
-                //.setPriority(Notification.PRIORITY_MAX)
+                .setPriority(Notification.PRIORITY_MAX)
                 .setContentTitle(notification_title)
+                .setAutoCancel(true) // This dismisses the Notification when it is clicked
+                .setOnlyAlertOnce(true) //this is very important, it pops up the notification only once. Subsequent notify updates are muted. unless it is loaded again
                 .setContentText(text)
                 .setContentInfo("Information");
 
