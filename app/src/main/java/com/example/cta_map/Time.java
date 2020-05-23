@@ -6,4 +6,5 @@ public class Time {
 
         return (int) ((distance / speed)*100);
     }
+
 }

@@ -205,9 +205,9 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                 while (connect[0]){
                     getLastLocation();
                 try {
-                    Double user_lat = Double.parseDouble(String.valueOf(userLoc.getText()).split(",")[0]);
-                    Double user_lon = Double.parseDouble(String.valueOf(userLoc.getText()).split(",")[1]);
-                    Log.e("Location", user_lat+" "+ user_lon);
+//                    double user_lat = Double.parseDouble(String.valueOf(userLoc.getText()).split(",")[0]);
+//                    double user_lon = Double.parseDouble(String.valueOf(userLoc.getText()).split(",")[1]);
+//                    Log.e("Location", user_lat+" "+ user_lon);
                     Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
                     final String[] train = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
                     runOnUiThread(new Runnable() {
@@ -275,10 +275,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                           adapter.notifyDataSetChanged();
 
                                       }
-
-
                                   }
-
                               }
                               Log.d("Update", "DONE.");
                           }
