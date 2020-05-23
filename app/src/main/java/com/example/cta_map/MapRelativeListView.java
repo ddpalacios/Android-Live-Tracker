@@ -27,15 +27,7 @@ public class MapRelativeListView {
         this.list = (ListView) list;
         this.list.setAdapter(this.adapter);
 
-
-
-
-
-
-
     }
-
-
 
     public void add_to_list_view( ArrayList<Integer> train_etas, HashMap<String, String> train_info){
         this.adapter.clear();

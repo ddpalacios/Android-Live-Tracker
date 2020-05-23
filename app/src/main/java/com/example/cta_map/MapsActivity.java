@@ -57,8 +57,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         private Button  userLoc;
         final boolean[] connect = {true};
         private GoogleMap mMap;
-        int PERMISSION_ID = 44;
-        private FusedLocationProviderClient mFusedLocationClient;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -73,7 +71,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                 .findFragmentById(R.id.map);
 
         assert mapFragment != null;
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         final RelativeLayout train_eta_list = findViewById(R.id.background);
         final Button disconnect = initiate_button(R.id.disconnect, 133, 205,186);
         final Button hide = initiate_button(R.id.show, 133, 205,186);
@@ -248,6 +245,8 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                                               Double.parseDouble(target_station_coordinates[0]),
                                                               Double.parseDouble(target_station_coordinates[1]));
                                               int current_train_eta = times.get_estimated_time_arrival(train_speed, current_train_distance_from_target_station);
+                                              Marker train_marker = mapMarker.addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, 1f);
+
 //                                              int user_to_target_eta = times.get_estimated_time_arrival((int) 3.1, distance_from_user_and_target);
 //                                              mapMarker.display_marker_boundries(current_train_eta, user_to_target_eta, train_info, station_type, 0, 10);
                                               train_etas.add(current_train_eta);
@@ -265,6 +264,8 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                                       Double.parseDouble(target_station_coordinates[0]),
                                                       Double.parseDouble(target_station_coordinates[1]));
                                               int current_train_eta = times.get_estimated_time_arrival(train_speed, current_train_distance_from_target_station);
+                                              Marker train_marker = mapMarker.addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, 1f);
+
 //                                              int user_to_target_eta = times.get_estimated_time_arrival((int) 3.1, distance_from_user_and_target);
 //                                              mapMarker.display_marker_boundries(current_train_eta, user_to_target_eta, train_info, station_type, 0, 10);
                                               train_etas.add(current_train_eta);
@@ -313,7 +314,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
             button.setBackgroundColor(Color.rgb(r, g,b));
         return button;
     }
-
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onResume(){
