@@ -167,9 +167,10 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         final ArrayAdapter<String> adapter;
         final ArrayList<String> arrayList;
         final ArrayList<Integer> train_etas = new ArrayList<>();
-        final int train_speed = 25; // TODO: implement adjustable times per train line.
         arrayList = new ArrayList<>();
         adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
+        final int train_speed = 25; // TODO: implement adjustable times per train line.
+
         list = findViewById(R.id.list);
         list.setAdapter(adapter);
         chicago_transits.ZoomIn(mMap, (float) 13.3, target_station_coordinates);
@@ -280,17 +281,21 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                       }
                                   }
                               }
-                              int closest_train_eta = train_etas.get(0);
-                              if (closest_train_eta >5 && closest_train_eta <=10){
-                                  notificationBuilder.notificationDialog("TRAIN UPDATE", "Train is "+closest_train_eta+" Away!");
+                              if (train_etas.size() > 0) {
+                                  int closest_train_eta = train_etas.get(0);
+                                  if (closest_train_eta > 5 && closest_train_eta <= 10) {
+                                      notificationBuilder.notificationDialog("TRAIN UPDATE", "Train is " + closest_train_eta + " Away!");
 
 
-                              }else if (closest_train_eta> 2 && closest_train_eta <=5){
-                                  notificationBuilder.notificationDialog("TRAIN UPDATE", "Train is "+closest_train_eta+" Away!");
+                                  } else if (closest_train_eta > 2 && closest_train_eta <= 5) {
+                                      notificationBuilder.notificationDialog("TRAIN UPDATE", "Train is " + closest_train_eta + " Away!");
 
 
-                              }else if (closest_train_eta <=2) {
-                                  notificationBuilder.notificationDialog("TRAIN UPDATE", "Train is Approaching! " + closest_train_eta + " Minutes away!");
+                                  } else if (closest_train_eta <= 2) {
+                                      notificationBuilder.notificationDialog("TRAIN UPDATE", "Train is Approaching! " + closest_train_eta + " Minutes away!");
+                                  }
+                              }else{
+                                  Toast.makeText(context, "No Trains Available", Toast.LENGTH_SHORT).show();
                               }
 
                               Log.d("Update", "DONE.");
