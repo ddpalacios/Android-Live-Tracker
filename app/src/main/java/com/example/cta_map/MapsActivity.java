@@ -165,15 +165,11 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         final String[] specified_train_direction = {bb.getString("train_direction")};
         final String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(station_name, station_type);
         final Button switch_direction = initiate_button(R.id.switch_direction, 133, 205,186);
-        final ArrayAdapter<String> adapter;
-        final ArrayList<String> arrayList;
         final ArrayList<Integer> train_etas = new ArrayList<>();
-        arrayList = new ArrayList<>();
-        adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
         final int train_speed = 25; // TODO: implement adjustable times per train line.
 
         list = findViewById(R.id.list);
-        list.setAdapter(adapter);
+        list.setAdapter(mapRelativeListView.adapter);
         chicago_transits.ZoomIn(mMap, (float) 13.3, target_station_coordinates);
         mMap.setMyLocationEnabled(true); // Enable user location permission
         mMap.setOnMyLocationButtonClickListener(this);
@@ -273,7 +269,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                               train_etas.add(current_train_eta);
                                           }
                                       }
-                                      mapRelativeListView.add_to_list_view(arrayList, adapter, train_etas, train_info);
+                                      mapRelativeListView.add_to_list_view(train_etas, train_info);
                                   }
                               }
                               if (train_etas.size() > 0) {
