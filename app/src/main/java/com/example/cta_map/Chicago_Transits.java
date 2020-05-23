@@ -1,4 +1,5 @@
 package com.example.cta_map;
+import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
@@ -13,6 +14,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,19 +25,14 @@ import java.util.Objects;
 
 
 class Chicago_Transits {
-    private BufferedReader reader;
 
-    Chicago_Transits(BufferedReader reader) {
-        this.reader = reader;
 
-    }
-
-    String[] retrieve_station_coordinates(String station_name, String station_type) {
+    String[] retrieve_station_coordinates(BufferedReader reader, String station_name, String station_type) {
 
         String line;
         while (true) {
             try {
-                if ((line = this.reader.readLine()) != null) {
+                if ((line = reader.readLine()) != null) {
                     String[] tokens = line.split(",");
                     String stationCanidate = tokens[0].replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
                     HashMap<String, String> train_types = GetStation(tokens); //HashMap of All train lines
@@ -52,6 +51,14 @@ class Chicago_Transits {
 
         }
         return null;
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public BufferedReader setup_file_reader(Context context, int file){
+        InputStream CSVfile = context.getResources().openRawResource(file);
+        return new BufferedReader(new InputStreamReader(CSVfile, StandardCharsets.UTF_8));
+
     }
 
 
@@ -137,7 +144,7 @@ class Chicago_Transits {
     }
 
 
-    public HashMap<String, String> get_train_info(String each_train, String station_type) {
+    public HashMap<String, String> get_train_info(BufferedReader reader, String each_train, String station_type) {
         HashMap<String, String> train_info = new HashMap<>();
 
         String currTrain = each_train.replaceAll("\n", "")
@@ -167,7 +174,7 @@ class Chicago_Transits {
         train_info.put("train_lon", train_lon);
         String main_station_name = train_info.get("main_station");
 
-        String[] main_station_coordinates = retrieve_station_coordinates(main_station_name.toLowerCase().replace(" ", ""), station_type);
+        String[] main_station_coordinates = retrieve_station_coordinates(reader, main_station_name.toLowerCase().replace(" ", ""), station_type);
         train_info.put("main_lat", main_station_coordinates[0]);
         train_info.put("main_lon", main_station_coordinates[1]);
 

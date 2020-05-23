@@ -154,8 +154,11 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         final MapRelativeListView mapRelativeListView = new MapRelativeListView(context);
         userLoc = findViewById(R.id.userLoc);
         userLoc.setVisibility(View.GONE);
-        BufferedReader reader = setup_file_reader(R.raw.train_stations);
-        final Chicago_Transits chicago_transits = new Chicago_Transits(reader);
+
+        final Chicago_Transits chicago_transits = new Chicago_Transits();
+        final BufferedReader train_station_coordinates_reader = chicago_transits.setup_file_reader(context,R.raw.train_stations);
+
+
         HashMap <String, String> StationTypeKey = chicago_transits.TrainLineKeys(); // Train line key codes
         Bundle bb; // Retrieve data from main screen
         bb=getIntent().getExtras();
@@ -163,7 +166,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         final String station_type = bb.getString("target_station_type");
         final String station_name = bb.getString("target_station_name");
         final String[] specified_train_direction = {bb.getString("train_direction")};
-        final String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(station_name, station_type);
+        final String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(train_station_coordinates_reader, station_name, station_type);
         final Button switch_direction = initiate_button(R.id.switch_direction, 133, 205,186);
         final ArrayList<Integer> train_etas = new ArrayList<>();
         final int train_speed = 25; // TODO: implement adjustable times per train line.
@@ -174,7 +177,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         mMap.setMyLocationEnabled(true); // Enable user location permission
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMyLocationClickListener(this);
-        BufferedReader train_station_stops_reader = setup_file_reader(R.raw.train_line_stops);
+        BufferedReader train_station_stops_reader = chicago_transits.setup_file_reader(context, R.raw.train_line_stops);
         final ArrayList<String> stops = chicago_transits.retrieve_line_stations(train_station_stops_reader, station_type);
 
         Log.e("stops", stops+"");
@@ -226,9 +229,8 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                               Double distance_from_user_and_target = chicago_transits.calculate_coordinate_distance(user_lat, user_lon, Double.parseDouble(target_station_coordinates[0]),Double.parseDouble(target_station_coordinates[1]));
                               mapMarker.addMarker(target_station_coordinates[0], target_station_coordinates[1], station_name, "default", 1f).showInfoWindow();
                               for (String each_train : train) {
-                                  BufferedReader reader = setup_file_reader(R.raw.train_stations);
-                                  final Chicago_Transits chicago_transits = new Chicago_Transits(reader);
-                                  final HashMap<String, String> train_info = chicago_transits.get_train_info(each_train, station_type); // Feed in given and prepare it as a hashmap with necessary train data
+                                  BufferedReader reread_train_coordinates = chicago_transits.setup_file_reader(context,R.raw.train_stations);
+                                  final HashMap<String, String> train_info = chicago_transits.get_train_info(reread_train_coordinates, each_train, station_type); // Feed in given and prepare it as a hashmap with necessary train data
                                   if (Objects.equals(train_info.get("train_direction"), specified_train_direction[0])) {
                                       mapMarker.addMarker(train_info.get("main_lat"), train_info.get("main_lon"),"Next Stop: "+ train_info.get("main_station"), "cyan", 1f);
 
@@ -303,13 +305,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                 }
             }
         }).start();
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    private BufferedReader setup_file_reader(int file){
-        InputStream CSVfile = getResources().openRawResource(file);
-        return new BufferedReader(new InputStreamReader(CSVfile, StandardCharsets.UTF_8));
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)

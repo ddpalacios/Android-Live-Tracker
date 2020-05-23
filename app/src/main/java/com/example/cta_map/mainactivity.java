@@ -85,9 +85,10 @@ public class mainactivity extends AppCompatActivity {
 
                 final Context context = getApplicationContext();
                 final Debugger debug = new Debugger();
-                InputStream CSVfile = getResources().openRawResource(R.raw.train_stations);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(CSVfile, StandardCharsets.UTF_8));
-                final Chicago_Transits chicago_transits = new Chicago_Transits(reader);
+//                InputStream CSVfile = getResources().openRawResource(R.raw.train_stations);
+//                BufferedReader reader = new BufferedReader(new InputStreamReader(CSVfile, StandardCharsets.UTF_8));
+                final Chicago_Transits chicago_transits = new Chicago_Transits();
+                BufferedReader station_coordinates_reader = chicago_transits.setup_file_reader(context, R.raw.train_stations);
                 Intent intent = new Intent(mainactivity.this, MapsActivity.class);
 
 
@@ -96,7 +97,7 @@ public class mainactivity extends AppCompatActivity {
                 final String trainDirection = direction.getText().toString().toLowerCase();
 
 
-                String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(stationName, stationType);
+                String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(station_coordinates_reader, stationName, stationType);
                 if (target_station_coordinates == null){
                     debug.ShowToast(context, "Error! Target Station Not Found");
                 }else {
