@@ -25,11 +25,6 @@ public class activity_arrival_times extends AppCompatActivity {
         Chicago_Transits chicago_transits = new Chicago_Transits();
         BufferedReader train_station_stops_reader = chicago_transits.setup_file_reader(context, R.raw.train_line_stops);
         ArrayList<String> all_stops = chicago_transits.retrieve_line_stations(train_station_stops_reader, current_train_info.get("station_type"));
-        for (String each_stop : all_stops){
-
-
-
-        }
 
 
 

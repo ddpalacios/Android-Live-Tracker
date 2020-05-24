@@ -24,6 +24,7 @@ import org.jsoup.nodes.Document;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -178,6 +179,8 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                           @SuppressLint({"SetTextI18n", "LongLogTag", "DefaultLocale", "WrongConstant", "ShowToast", "NewApi"})
                           @Override
                           public void run() {
+                              List<String> ignored_stations = null;
+                              ArrayList<HashMap> chosen_trains = new ArrayList<>();
                               mMap.clear();
                               mapMarker.addMarker(target_station_coordinates[0], target_station_coordinates[1], station_name, "default", 1f).showInfoWindow();
                               for (String each_train : train_list) {
@@ -186,7 +189,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                   if (Objects.equals(train_info.get("train_direction"), specified_train_direction[0])) {
                                       mapMarker.addMarker(train_info.get("main_lat"), train_info.get("main_lon"),"Next Stop: "+ train_info.get("main_station"), "cyan", 1f);
                                       if (specified_train_direction[0].equals("1")) {
-                                          List<String> ignored_stations = stops.subList(0, stops.indexOf(station_name.replaceAll("[^a-zA-Z0-9]", "")));
+                                          ignored_stations = stops.subList(0, stops.indexOf(station_name.replaceAll("[^a-zA-Z0-9]", "")));
                                           String next_stop = Objects.requireNonNull(train_info.get("next_stop")).replaceAll("[^a-zA-Z0-9]", "");
 
                                           if (ignored_stations.contains(next_stop)) {
@@ -197,10 +200,16 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                               int current_train_eta = times.get_estimated_time_arrival(train_speed, current_train_distance_from_target_station);
                                               userLocation.getLastLocation(mMap, target_station_coordinates, current_train_eta, train_info, station_type);
                                               train_etas.add(current_train_eta);
+                                              Collections.sort(train_etas);
+                                              train_info.put(String.valueOf(current_train_eta), next_stop);
+                                              chosen_trains.add(train_info);
+
+
+
 
                                           }
                                       } else if (specified_train_direction[0].equals("5")) {
-                                          List<String> ignored_stations = stops.subList(stops.indexOf(station_name.replaceAll("[^a-zA-Z0-9]", "")) + 1, stops.size());
+                                          ignored_stations = stops.subList(stops.indexOf(station_name.replaceAll("[^a-zA-Z0-9]", "")) + 1, stops.size());
                                           String next_stop = Objects.requireNonNull(train_info.get("next_stop")).replaceAll("[^a-zA-Z0-9]", "");
                                           if (ignored_stations.contains(next_stop)) {
                                               Marker train_marker = mapMarker.addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, .5f);
@@ -209,9 +218,13 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                               int current_train_eta = times.get_estimated_time_arrival(train_speed, current_train_distance_from_target_station);
                                               userLocation.getLastLocation(mMap, target_station_coordinates, current_train_eta, train_info, station_type);
                                               train_etas.add(current_train_eta);
+                                              Collections.sort(train_etas);
+                                              train_info.put(String.valueOf(current_train_eta), next_stop);
+//                                              chosen_trains.add(train_info);
+
                                           }
                                       }
-                                      mapRelativeListView.add_to_list_view(train_etas, train_info);
+                                      mapRelativeListView.add_to_list_view(train_etas, train_info, chosen_trains);
                                   }
                               }
                               Log.d("Update", "DONE.");

@@ -2,6 +2,8 @@ package com.example.cta_map;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Adapter;
@@ -9,11 +11,15 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import androidx.annotation.RequiresApi;
+
 import com.example.cta_map.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 
 public class MapRelativeListView {
 //    private  ArrayAdapter<String> adapter;
@@ -32,24 +38,48 @@ public class MapRelativeListView {
 
     }
 
-    public void add_to_list_view(ArrayList<Integer> train_etas, final HashMap<String, String> current_train_info){
+    public void add_to_list_view(final ArrayList<Integer> train_etas, final HashMap<String, String> current_train_info, final ArrayList<HashMap> chosen_trains){
         this.adapter.clear();
         final Context context = this.context;
-        Collections.sort(train_etas);
+
+
+
         for (int current_eta : train_etas) {
+
             current_train_info.put(current_train_info.get("train_id"), String.valueOf(current_eta));
             this.arrayList.add("To "+current_train_info.get("main_station")+": "+current_eta+" Minutes");
             this.adapter.notifyDataSetChanged();
 
         }
+
         this.list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.e("Clicked", position+" "+id);
-                Intent intent = new Intent(context, activity_arrival_times.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("current_train_info", current_train_info);
-                context.startActivity(intent);
+                String key = String.valueOf(list.getItemAtPosition(position)).replaceAll("[^\\d.]", "");
+//                Log.e("retrieved", current_train_info.get(key)+"");
+                for (HashMap<String, String>each_train : chosen_trains){
+                    if (each_train.containsKey(key)) {
+                        Log.e("next stop: ", each_train.get(key));
+
+                    }
+                    else{
+                        continue;
+                    }
+
+                }
+
+
+
+
+//                Log.e("each_stop", current_train_info.get("next_stop")+"");
+//
+//                Intent intent = new Intent(context, activity_arrival_times.class);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                intent.putExtra("current_train_info", current_train_info);
+//                intent.putExtra("train_etas", train_etas);
+//
+//                context.startActivity(intent);
 
 
             }
