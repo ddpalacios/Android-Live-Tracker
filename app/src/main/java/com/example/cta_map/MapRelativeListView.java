@@ -1,6 +1,7 @@
 package com.example.cta_map;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.widget.Adapter;
@@ -33,6 +34,7 @@ public class MapRelativeListView {
 
     public void add_to_list_view( ArrayList<Integer> train_etas, HashMap<String, String> train_info){
         this.adapter.clear();
+        final Context context = this.context;
         Collections.sort(train_etas);
         for (int current_eta : train_etas) {
             train_info.put(train_info.get("train_id"), String.valueOf(current_eta));
@@ -40,11 +42,15 @@ public class MapRelativeListView {
             this.adapter.notifyDataSetChanged();
 
         }
-
         this.list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.e("Clicked", position+" "+id);
+                Intent intent = new Intent(context, activity_arrival_times.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+
+
             }
         });
 
