@@ -32,13 +32,13 @@ public class MapRelativeListView {
 
     }
 
-    public void add_to_list_view( ArrayList<Integer> train_etas, HashMap<String, String> train_info){
+    public void add_to_list_view(ArrayList<Integer> train_etas, final HashMap<String, String> current_train_info){
         this.adapter.clear();
         final Context context = this.context;
         Collections.sort(train_etas);
         for (int current_eta : train_etas) {
-            train_info.put(train_info.get("train_id"), String.valueOf(current_eta));
-            this.arrayList.add("To "+train_info.get("main_station")+": "+current_eta+" Minutes");
+            current_train_info.put(current_train_info.get("train_id"), String.valueOf(current_eta));
+            this.arrayList.add("To "+current_train_info.get("main_station")+": "+current_eta+" Minutes");
             this.adapter.notifyDataSetChanged();
 
         }
@@ -48,6 +48,7 @@ public class MapRelativeListView {
                 Log.e("Clicked", position+" "+id);
                 Intent intent = new Intent(context, activity_arrival_times.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("current_train_info", current_train_info);
                 context.startActivity(intent);
 
 

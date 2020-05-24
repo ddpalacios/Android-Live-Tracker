@@ -173,6 +173,7 @@ class Chicago_Transits {
         train_info.put("train_direction", train_direction);
         train_info.put("train_lat", train_lat);
         train_info.put("train_lon", train_lon);
+        train_info.put("station_type", station_type);
         String main_station_name = train_info.get("main_station");
 
         String[] main_station_coordinates = retrieve_station_coordinates(reader, main_station_name.toLowerCase().replace(" ", ""), station_type);
