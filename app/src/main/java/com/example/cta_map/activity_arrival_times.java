@@ -21,16 +21,23 @@ public class activity_arrival_times extends AppCompatActivity {
         setContentView(R.layout.activity_arrival_times);
         super.onCreate(savedInstanceState);
         Context context = getApplicationContext();
-        HashMap<String,String> current_train_info = (HashMap<String,String>) getIntent().getExtras().get("current_train_info");
+        HashMap<String, String> current_train_info = (HashMap<String, String>) getIntent().getExtras().get("current_train_info");
         Chicago_Transits chicago_transits = new Chicago_Transits();
         BufferedReader train_station_stops_reader = chicago_transits.setup_file_reader(context, R.raw.train_line_stops);
         ArrayList<String> all_stops = chicago_transits.retrieve_line_stations(train_station_stops_reader, current_train_info.get("station_type"));
-
+        Bundle bb; // Retrieve data from main screen
+        bb=getIntent().getExtras();
+        assert bb != null;
+        final String next_stop = bb.getString("next_stop");
+        Log.e("stops", all_stops+"");
+        Log.e("next_stop", next_stop);
+        Log.e("DIR",current_train_info.get("train_direction"));
+        Log.e("main", current_train_info.get("main_station"));
+        Log.e("target", current_train_info.get("target_station")+"");
 
 
 
     }
-
 
 
 }

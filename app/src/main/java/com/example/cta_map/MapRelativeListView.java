@@ -56,14 +56,19 @@ public class MapRelativeListView {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String key = String.valueOf(list.getItemAtPosition(position)).replaceAll("[^\\d.]", "");
-//                Log.e("retrieved", current_train_info.get(key)+"");
+                String[] list_item = String.valueOf(list.getItemAtPosition(position)).split(":"); //.replaceAll("[^\\d.]", "");
+                String key = list_item[1].replaceAll("[^\\d.]", "");
                 for (HashMap<String, String>each_train : chosen_trains){
                     if (each_train.containsKey(key)) {
-                        Log.e("next stop: ", each_train.get(key));
+                        Intent intent = new Intent(context, activity_arrival_times.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra("current_train_info", current_train_info);
+                        intent.putExtra("next_stop", each_train.get(key));
+                        context.startActivity(intent);
 
                     }
                     else{
+
                         continue;
                     }
 
@@ -72,14 +77,7 @@ public class MapRelativeListView {
 
 
 
-//                Log.e("each_stop", current_train_info.get("next_stop")+"");
-//
-//                Intent intent = new Intent(context, activity_arrival_times.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                intent.putExtra("current_train_info", current_train_info);
-//                intent.putExtra("train_etas", train_etas);
-//
-//                context.startActivity(intent);
+
 
 
             }

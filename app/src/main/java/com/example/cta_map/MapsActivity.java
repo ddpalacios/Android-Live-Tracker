@@ -179,7 +179,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                           @SuppressLint({"SetTextI18n", "LongLogTag", "DefaultLocale", "WrongConstant", "ShowToast", "NewApi"})
                           @Override
                           public void run() {
-                              List<String> ignored_stations = null;
+                              List<String> ignored_stations;
                               ArrayList<HashMap> chosen_trains = new ArrayList<>();
                               mMap.clear();
                               mapMarker.addMarker(target_station_coordinates[0], target_station_coordinates[1], station_name, "default", 1f).showInfoWindow();
@@ -202,6 +202,8 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                               train_etas.add(current_train_eta);
                                               Collections.sort(train_etas);
                                               train_info.put(String.valueOf(current_train_eta), next_stop);
+                                              train_info.put("target_station", station_name);
+                                              train_info.put("train_direction", specified_train_direction[0]);
                                               chosen_trains.add(train_info);
 
 
@@ -220,7 +222,9 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                               train_etas.add(current_train_eta);
                                               Collections.sort(train_etas);
                                               train_info.put(String.valueOf(current_train_eta), next_stop);
-//                                              chosen_trains.add(train_info);
+                                              train_info.put("target_station", station_name);
+                                              train_info.put("train_direction", specified_train_direction[0]);
+                                              chosen_trains.add(train_info);
 
                                           }
                                       }
