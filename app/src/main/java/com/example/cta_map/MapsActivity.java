@@ -110,7 +110,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         mapFragment.getMapAsync(this);
 
     }
-
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -121,7 +120,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         final MapRelativeListView mapRelativeListView = new MapRelativeListView(context, findViewById(R.id.list));
         final Chicago_Transits chicago_transits = new Chicago_Transits();
         final UserLocation userLocation = new UserLocation(context);
-
         BufferedReader train_station_coordinates_reader = chicago_transits.setup_file_reader(context,R.raw.train_stations);
         HashMap <String, String> StationTypeKey = chicago_transits.TrainLineKeys(); // Train line key codes
         Bundle bb; // Retrieve data from main screen
@@ -134,13 +132,9 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         final Button switch_direction = initiate_button(R.id.switch_direction, 133, 205,186);
         final ArrayList<Integer> train_etas = new ArrayList<>();
         final int train_speed = 25; // TODO: implement adjustable times per train line.
-
-
         mMap.setMyLocationEnabled(true); // Enable user location permission
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMyLocationClickListener(this);
-
-
         BufferedReader train_station_stops_reader = chicago_transits.setup_file_reader(context, R.raw.train_line_stops);
         final ArrayList<String> stops = chicago_transits.retrieve_line_stations(train_station_stops_reader, station_type);
         chicago_transits.ZoomIn(mMap, (float) 13.3, target_station_coordinates);
@@ -162,7 +156,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         assert station_type != null;
         final String url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s",  StationTypeKey.get(station_type.toLowerCase()));
         Log.e("url", url);
-
         /*
 
           Everything is being ran within its own thread.
@@ -178,9 +171,8 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
                 while (connect[0]){
                 try {
-
                     Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
-                    final String[] train = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
+                    final String[] train_list = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
                     runOnUiThread(new Runnable() {
                           @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                           @SuppressLint({"SetTextI18n", "LongLogTag", "DefaultLocale", "WrongConstant", "ShowToast", "NewApi"})
@@ -188,14 +180,12 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                           public void run() {
                               mMap.clear();
                               mapMarker.addMarker(target_station_coordinates[0], target_station_coordinates[1], station_name, "default", 1f).showInfoWindow();
-                              for (String each_train : train) {
-                                  BufferedReader reread_train_coordinates = chicago_transits.setup_file_reader(context,R.raw.train_stations);
-                                  final HashMap<String, String> train_info = chicago_transits.get_train_info(reread_train_coordinates, each_train, station_type); // Feed in given and prepare it as a hashmap with necessary train data
+                              for (String each_train : train_list) {
+                                  BufferedReader train_station_coordinates = chicago_transits.setup_file_reader(context,R.raw.train_stations);
+                                  HashMap<String, String> train_info = chicago_transits.get_train_info(train_station_coordinates, each_train, station_type); // Feed in given and prepare it as a hashmap with necessary train data
                                   if (Objects.equals(train_info.get("train_direction"), specified_train_direction[0])) {
                                       mapMarker.addMarker(train_info.get("main_lat"), train_info.get("main_lon"),"Next Stop: "+ train_info.get("main_station"), "cyan", 1f);
-
                                       if (specified_train_direction[0].equals("1")) {
-
                                           List<String> ignored_stations = stops.subList(0, stops.indexOf(station_name.replaceAll("[^a-zA-Z0-9]", "")));
                                           String next_stop = Objects.requireNonNull(train_info.get("next_stop")).replaceAll("[^a-zA-Z0-9]", "");
 
@@ -203,15 +193,9 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                               Marker train_marker = mapMarker.addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, .5f);
 
                                           } else {
-                                              Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance(
-                                                              Double.parseDouble(train_info.get("train_lat")),
-                                                              Double.parseDouble(train_info.get("train_lon")),
-                                                              Double.parseDouble(target_station_coordinates[0]),
-                                                              Double.parseDouble(target_station_coordinates[1]));
+                                              Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance(Double.parseDouble(train_info.get("train_lat")), Double.parseDouble(train_info.get("train_lon")), Double.parseDouble(target_station_coordinates[0]), Double.parseDouble(target_station_coordinates[1]));
                                               int current_train_eta = times.get_estimated_time_arrival(train_speed, current_train_distance_from_target_station);
                                               userLocation.getLastLocation(mMap, target_station_coordinates, current_train_eta, train_info, station_type);
-
-
                                               train_etas.add(current_train_eta);
 
                                           }
@@ -221,37 +205,15 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                           if (ignored_stations.contains(next_stop)) {
                                               Marker train_marker = mapMarker.addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), station_type, .5f);
                                           } else {
-                                              Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance(
-                                                      Double.parseDouble(train_info.get("train_lat")),
-                                                      Double.parseDouble(train_info.get("train_lon")),
-                                                      Double.parseDouble(target_station_coordinates[0]),
-                                                      Double.parseDouble(target_station_coordinates[1]));
+                                              Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance(Double.parseDouble(train_info.get("train_lat")), Double.parseDouble(train_info.get("train_lon")), Double.parseDouble(target_station_coordinates[0]), Double.parseDouble(target_station_coordinates[1]));
                                               int current_train_eta = times.get_estimated_time_arrival(train_speed, current_train_distance_from_target_station);
                                               userLocation.getLastLocation(mMap, target_station_coordinates, current_train_eta, train_info, station_type);
-
                                               train_etas.add(current_train_eta);
                                           }
                                       }
                                       mapRelativeListView.add_to_list_view(train_etas, train_info);
                                   }
                               }
-                              if (train_etas.size() > 0) {
-                                  int closest_train_eta = train_etas.get(0);
-                                  if (closest_train_eta > 5 && closest_train_eta <= 10) {
-                                      notificationBuilder.notificationDialog("TRAIN UPDATE", "Train is " + closest_train_eta + " Away!");
-
-
-                                  } else if (closest_train_eta > 2 && closest_train_eta <= 5) {
-                                      notificationBuilder.notificationDialog("TRAIN UPDATE", "Train is " + closest_train_eta + " Away!");
-
-
-                                  } else if (closest_train_eta <= 2) {
-                                      notificationBuilder.notificationDialog("TRAIN UPDATE", "Train is Approaching! " + closest_train_eta + " Minutes away!");
-                                  }
-                              }else{
-                                  Toast.makeText(context, "No Trains Available", Toast.LENGTH_SHORT).show();
-                              }
-
                               Log.d("Update", "DONE.");
                           }
 
@@ -277,14 +239,13 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
     }
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         Context context = getApplicationContext();
         final UserLocation userLocation = new UserLocation(context);
         if (userLocation.checkPermissions()) {
             userLocation.getLastLocation(mMap, null, null, null, null);
         }
-
     }
     @Override
     public boolean onMyLocationButtonClick() {
@@ -293,5 +254,4 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
     @Override
     public void onMyLocationClick(@NonNull Location location) {
 
-    }
-}
+    }}

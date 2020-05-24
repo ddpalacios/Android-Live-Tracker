@@ -46,7 +46,7 @@ public class MapMarker {
                 if (late_amount >=0 && late_amount <4 ){
                     Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), "yellow", 1f);
                 }else if (late_amount >=4){
-                    Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), "blue", 1f);
+                    Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), "pink", 1f);
                 }
             }
         }else{

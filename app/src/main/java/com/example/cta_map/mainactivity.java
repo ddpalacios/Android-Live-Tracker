@@ -64,30 +64,18 @@ public class mainactivity extends AppCompatActivity {
         station_type = (EditText) findViewById(R.id.station_type);
         direction = (EditText) findViewById(R.id.dest);
         toMap = (Button) findViewById(R.id.toMaps);
-//        final UserLocation userLocation = new UserLocation(context);
-//        userLocation.getLastLocation("hellow");
-        headToMap();
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void headToMap(){
         toMap.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View v) {
-
                 final Context context = getApplicationContext();
                 final Debugger debug = new Debugger();
                 final Chicago_Transits chicago_transits = new Chicago_Transits();
                 BufferedReader station_coordinates_reader = chicago_transits.setup_file_reader(context, R.raw.train_stations);
                 Intent intent = new Intent(mainactivity.this, MapsActivity.class);
-
-
                 final String stationName = station_name.getText().toString().toLowerCase().replaceAll(" ", "");
                 final String stationType = station_type.getText().toString().toLowerCase();
                 final String trainDirection = direction.getText().toString().toLowerCase();
-
-
                 String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(station_coordinates_reader, stationName, stationType);
                 if (target_station_coordinates == null){
                     debug.ShowToast(context, "Error! Target Station Not Found");
@@ -101,5 +89,4 @@ public class mainactivity extends AppCompatActivity {
 
         });
     }
-
 }

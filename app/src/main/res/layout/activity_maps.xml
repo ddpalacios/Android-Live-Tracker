@@ -17,15 +17,7 @@
         android:layout_marginBottom="2dp"
         tools:context=".MapsActivity" />
 
-    <Button
-        android:id="@+id/status"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="5dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="status"
-        />
+
 
 
     <Button
@@ -83,14 +75,7 @@
         android:text="switch direction" />
 
 
-    <Button
-        android:id="@+id/userLoc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        android:layout_marginTop="300dp"
 
-         />
 
 
 
