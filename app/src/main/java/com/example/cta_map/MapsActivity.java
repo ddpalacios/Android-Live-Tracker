@@ -206,9 +206,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                               train_info.put("train_direction", specified_train_direction[0]);
                                               chosen_trains.add(train_info);
 
-
-
-
                                           }
                                       } else if (specified_train_direction[0].equals("5")) {
                                           ignored_stations = stops.subList(stops.indexOf(station_name.replaceAll("[^a-zA-Z0-9]", "")) + 1, stops.size());

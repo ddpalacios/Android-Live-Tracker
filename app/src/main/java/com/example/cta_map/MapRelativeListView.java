@@ -62,24 +62,15 @@ public class MapRelativeListView {
                     if (each_train.containsKey(key)) {
                         Intent intent = new Intent(context, activity_arrival_times.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        intent.putExtra("current_train_info", current_train_info);
+                        intent.putExtra("current_train_info", each_train);
                         intent.putExtra("next_stop", each_train.get(key));
                         context.startActivity(intent);
-
                     }
                     else{
-
                         continue;
                     }
 
                 }
-
-
-
-
-
-
-
             }
         });
 
