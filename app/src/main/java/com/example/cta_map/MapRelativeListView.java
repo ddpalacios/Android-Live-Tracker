@@ -1,8 +1,10 @@
 package com.example.cta_map;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -33,10 +35,19 @@ public class MapRelativeListView {
         this.adapter.clear();
         Collections.sort(train_etas);
         for (int current_eta : train_etas) {
+            train_info.put(train_info.get("train_id"), String.valueOf(current_eta));
             this.arrayList.add("To "+train_info.get("main_station")+": "+current_eta+" Minutes");
             this.adapter.notifyDataSetChanged();
 
         }
+
+        this.list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.e("Clicked", position+" "+id);
+            }
+        });
+
 
     }
 

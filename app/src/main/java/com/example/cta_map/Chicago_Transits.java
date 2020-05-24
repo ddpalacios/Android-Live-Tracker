@@ -154,7 +154,6 @@ class Chicago_Transits {
 
         currTrain = currTrain.replaceAll("<nextStaId>[\\s\\S]*?</nextStaId>", "");
         currTrain = currTrain.replaceAll("<nextStpId>[\\s\\S]*?</nextStpId>", "");
-        currTrain = currTrain.replaceAll("<rn>[\\s\\S]*?</rn>", "");
         currTrain = currTrain.replaceAll("<destSt>[\\s\\S]*?</destSt>", "");
         String main_station = get_xml_tag_value(currTrain, "<destNm>", "</destNm>");
         String train_direction = get_xml_tag_value(currTrain, "<trDr>", "</trDr>");
@@ -164,10 +163,12 @@ class Chicago_Transits {
         String isDelayed = get_xml_tag_value(currTrain, "<isDly>", "</isDly>");
         String train_lat = get_xml_tag_value(currTrain, "<lat>", "</lat>");
         String train_lon = get_xml_tag_value(currTrain, "<lon>", "</lon>");
+        String train_id = get_xml_tag_value(currTrain, "<rn>", "</rn>");
+
         train_info.put("isApproaching", isApproaching);
         train_info.put("isDelayed", isDelayed);
         train_info.put("main_station", main_station);
-//    train_info.put("arrival_time", predicted_arrival_time);
+        train_info.put("train_id", train_id);
         train_info.put("next_stop", next_train_stop.toLowerCase().replace(" ", ""));
         train_info.put("train_direction", train_direction);
         train_info.put("train_lat", train_lat);
