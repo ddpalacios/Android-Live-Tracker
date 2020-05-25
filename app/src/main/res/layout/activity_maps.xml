@@ -34,18 +34,6 @@
 
 
 
-    <Button
-        android:id="@+id/disconnect"
-
-
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:text="disconnect"
-        android:shadowColor="@android:color/background_dark"
-        />
 
 
 
@@ -81,13 +69,24 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="190dp"
+        android:layout_height="match_parent"
 
         android:orientation="vertical"
         android:id="@+id/background"
         android:layout_gravity="bottom"
         android:background="@android:color/white">
 
+        <Button
+            android:id="@+id/disconnect"
+
+
+            android:layout_marginLeft="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:text="disconnect"
+            android:shadowColor="@android:color/background_dark"
+            />
 
 
 
@@ -96,6 +95,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="55dp"
             android:layout_marginRight="5dp"
+            android:layout_below="@+id/disconnect"
             android:layout_width = "wrap_content"
             android:layout_height = "match_parent"/>
 
