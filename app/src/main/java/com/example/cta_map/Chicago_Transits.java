@@ -145,7 +145,7 @@ class Chicago_Transits {
     }
 
 
-    public HashMap<String, String> get_train_info(BufferedReader reader, String each_train, String station_type) {
+    public HashMap<String, String> get_train_info(BufferedReader reader, String each_train, String target_name, String station_type) {
         HashMap<String, String> train_info = new HashMap<>();
 
         String currTrain = each_train.replaceAll("\n", "")
@@ -180,6 +180,7 @@ class Chicago_Transits {
         String[] main_station_coordinates = retrieve_station_coordinates(reader, main_station_name.toLowerCase().replace(" ", ""), station_type);
         train_info.put("main_lat", main_station_coordinates[0]);
         train_info.put("main_lon", main_station_coordinates[1]);
+        train_info.put("target_station", target_name);
 
 
 

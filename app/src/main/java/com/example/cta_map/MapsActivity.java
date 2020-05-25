@@ -170,11 +170,10 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                 mapMarker.addMarker(target_station_coordinates[0], target_station_coordinates[1], target_station_name, "default", 1f).showInfoWindow();
                                 for (String each_train : train_list) {
                                     // prepare each train as a map
-                                    HashMap<String, String> train_info = chicago_transits.get_train_info(chicago_transits.setup_file_reader(getApplicationContext(),R.raw.train_stations), each_train, target_station_type);
+                                    HashMap<String, String> train_info = chicago_transits.get_train_info(chicago_transits.setup_file_reader(getApplicationContext(),R.raw.train_stations), each_train,target_station_name ,target_station_type);
                                    int start = 0;
                                    int end =0;
                                     if (Objects.equals(train_info.get("train_direction"), specified_train_direction[0])) {
-                                        train_info.put("target_station", target_station_name);
                                         train_info.put("target_station_lat", target_station_coordinates[0]);
                                         train_info.put("target_station_lon", target_station_coordinates[1]);
                                         mapMarker.addMarker(train_info.get("main_lat"), train_info.get("main_lon"),train_info.get("main_station"), "cyan", 1f);
@@ -189,7 +188,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                         setup_train_direction(train_info, stops, start, end, Integer.parseInt(specified_train_direction[0]), getApplicationContext());
                                     }
                                 }
-
                                 Log.d("Update", "DONE.");
                             }
 
@@ -197,7 +195,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                         train_etas.clear();
                         chosen_trains.clear();
                         Thread.sleep(2000);
-
 
                     } catch (IOException | InterruptedException e) {
                         Toast.makeText(getApplicationContext(), "Invalid URL", Toast.LENGTH_LONG).show();
