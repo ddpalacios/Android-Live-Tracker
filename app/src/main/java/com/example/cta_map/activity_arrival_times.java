@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Objects;
 
 @SuppressLint("Registered")
-public class activity_arrival_times extends AppCompatActivity implements TrainDirection{
+public class activity_arrival_times extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     protected void onCreate(Bundle savedInstanceState) {
         // TODO: refresh layout for train updates
@@ -73,9 +73,4 @@ public class activity_arrival_times extends AppCompatActivity implements TrainDi
         }
     }
 
-
-    @Override
-    public void setup_train_direction(HashMap<String, String> current_train_info, ArrayList<String> stops, int start, int end, int dir, Context context) {
-
-    }
 }
