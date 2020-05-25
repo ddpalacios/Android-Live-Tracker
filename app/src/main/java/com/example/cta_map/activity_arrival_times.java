@@ -4,6 +4,9 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -34,7 +37,7 @@ public class activity_arrival_times extends AppCompatActivity {
         final String next_stop = bb.getString("next_stop");
         ArrayList<String> arrayList = new ArrayList<>();
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, arrayList);
-        ListView list = (ListView) findViewById(R.id.train_etas);
+        final ListView list = (ListView) findViewById(R.id.train_etas);
         list.setAdapter(adapter);
         String specified_train_direction = current_train_info.get("train_direction");
         String target_station =  current_train_info.get("target_station");
@@ -69,6 +72,12 @@ public class activity_arrival_times extends AppCompatActivity {
                 idx++;
             }
         }
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.e("val", String.valueOf(list.getItemAtPosition(position)));
+            }
+        });
     }
 
 }
