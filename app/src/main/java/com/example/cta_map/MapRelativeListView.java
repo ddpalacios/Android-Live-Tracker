@@ -41,10 +41,8 @@ public class MapRelativeListView {
     public void add_to_list_view(final ArrayList<Integer> train_etas, final HashMap<String, String> current_train_info, final ArrayList<HashMap> chosen_trains){
         this.adapter.clear();
         final Context context = this.context;
-
-
-
         for (int current_eta : train_etas) {
+//            Log.e("LIST", "To "+current_train_info.get("main_station")+": "+current_eta+" Minutes");
 
             current_train_info.put(current_train_info.get("train_id"), String.valueOf(current_eta));
             this.arrayList.add("To "+current_train_info.get("main_station")+": "+current_eta+" Minutes");
