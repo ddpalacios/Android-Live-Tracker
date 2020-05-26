@@ -17,53 +17,53 @@ import java.util.HashMap;
 
 @SuppressLint("Registered")
 public class ChooseDirectionActivity  extends AppCompatActivity {
+    ListView list;
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_choose_direction);
+
         Bundle bb; // Retrieve data from main screen
         bb=getIntent().getExtras();
         assert bb != null;
         final String target_station_type = bb.getString("target_station_type").toLowerCase();
         Chicago_Transits chicago_transits = new Chicago_Transits();
-
-
-
-
-//        BufferedReader reader = chicago_transits.setup_file_reader(getApplicationContext(), R.raw.main_stations);
-//        ArrayList<String> arrayList = new ArrayList<>();
-//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
-//        list.setAdapter(adapter);
-//        String line;
-//        while (true) {
-//            try {
-//                if ((line = reader.readLine()) != null) {
-//                    String[] tokens = line.split(",");
-//                    String stationCanidate = tokens[0].replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
-//                    Log.e("statio", stationCanidate);
-//                    if (stationCanidate.equals(target_station_type)){
-//                        Log.e("Bounds", tokens[1]+" "+ tokens[2]);
-//                        arrayList.add(tokens[1]);
-//                        adapter.notifyDataSetChanged();
-//                        arrayList.add(tokens[2]);
-//                        adapter.notifyDataSetChanged();
-//                        break;
+        list = (ListView) findViewById(R.id.direction_choice);
+        BufferedReader reader = chicago_transits.setup_file_reader(getApplicationContext(), R.raw.main_stations);
+        ArrayList<String> arrayList = new ArrayList<>();
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
+        final ListView list = (ListView) findViewById(R.id.direction_choice);
+        list.setAdapter(adapter);
+        String line;
+        while (true) {
+            try {
+                if ((line = reader.readLine()) != null) {
+                    String[] tokens = line.split(",");
+                    String stationCanidate = tokens[0].replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+                    Log.e("statio", stationCanidate);
+                    if (stationCanidate.equals(target_station_type)){
+                        Log.e("Bounds", tokens[1]+" "+ tokens[2]);
+                        arrayList.add("To "+tokens[1]);
+                        arrayList.add("To "+tokens[2]);
+                        adapter.notifyDataSetChanged();
+                        break;
+                    }
+//                    HashMap<String, String> train_types = GetStation(tokens); //HashMap of All train lines
+//
+//                    if (stationCanidate.equals(station_name.replaceAll("[^a-zA-Z0-9]", "")) && Boolean.parseBoolean(train_types.get(station_type))) {
+//                        return getCord(tokens);
 //                    }
-////                    HashMap<String, String> train_types = GetStation(tokens); //HashMap of All train lines
-////
-////                    if (stationCanidate.equals(station_name.replaceAll("[^a-zA-Z0-9]", "")) && Boolean.parseBoolean(train_types.get(station_type))) {
-////                        return getCord(tokens);
-////                    }
-//
-//                } else {
-//                    break;
-//                }
-//
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//
-//        }
-//
+
+                } else {
+                    break;
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
     }
 }
