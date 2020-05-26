@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback, TrainDirection{
-    final boolean[] connect = {false};
+    final boolean[] connect = {true};
     private GoogleMap mMap;
     List<String> ignored_stations;
     ArrayList<Integer> train_etas = new ArrayList<>();
@@ -112,6 +112,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
         mMap = googleMap;
         mMap.setMyLocationEnabled(true); // Enable user location permission
         mMap.setOnMyLocationButtonClickListener(this);
@@ -153,7 +154,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
          while also performing other user interactions
 
           */
-        connect[0] = true;
+        Toast.makeText(getApplicationContext(), "CONNECTED", Toast.LENGTH_SHORT).show();
         new Thread(new Runnable() {
             @Override
             public void run() {
