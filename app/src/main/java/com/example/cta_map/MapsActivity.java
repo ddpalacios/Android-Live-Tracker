@@ -197,6 +197,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                         chosen_trains.clear();
                         Thread.sleep(2000);
 
+
                     } catch (IOException | InterruptedException e) {
                         Toast.makeText(getApplicationContext(), "Invalid URL", Toast.LENGTH_LONG).show();
                         e.printStackTrace();
@@ -255,6 +256,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                 current_train_info.put(String.valueOf(current_train_eta), next_stop);
                 userLocation.getLastLocation(mMap, target_station_coordinates, current_train_eta, current_train_info, current_train_info.get("station_type"));
         }
-        mapRelativeListView.add_to_list_view(train_etas, current_train_info, chosen_trains);
+        mapRelativeListView.add_to_list_view(train_etas, current_train_info, chosen_trains, connect);
     }
 }

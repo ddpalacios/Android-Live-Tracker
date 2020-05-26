@@ -10,6 +10,7 @@ import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
@@ -38,7 +39,7 @@ public class MapRelativeListView {
 
     }
 
-    public void add_to_list_view(final ArrayList<Integer> train_etas, final HashMap<String, String> current_train_info, final ArrayList<HashMap> chosen_trains){
+    public void add_to_list_view(final ArrayList<Integer> train_etas, final HashMap<String, String> current_train_info, final ArrayList<HashMap> chosen_trains, final boolean[] connect){
         this.adapter.clear();
         final Context context = this.context;
         for (int current_eta : train_etas) {
@@ -54,6 +55,12 @@ public class MapRelativeListView {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (connect[0]) {
+                    connect[0] = false;
+                    Log.d("Connection Status", "Connection Closed");
+                    Toast.makeText(context, "DISCONNECTED", Toast.LENGTH_SHORT).show();
+
+                }
                 String[] list_item = String.valueOf(list.getItemAtPosition(position)).split(":"); //.replaceAll("[^\\d.]", "");
                 String key = list_item[1].replaceAll("[^\\d.]", "");
                 for (HashMap<String, String>each_train : chosen_trains){
