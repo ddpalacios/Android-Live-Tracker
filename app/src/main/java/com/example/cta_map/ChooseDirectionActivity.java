@@ -32,7 +32,6 @@ public class ChooseDirectionActivity  extends AppCompatActivity {
         BufferedReader reader = chicago_transits.setup_file_reader(getApplicationContext(), R.raw.main_stations);
         ArrayList<String> arrayList = new ArrayList<>();
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
-        final ListView list = (ListView) findViewById(R.id.direction_choice);
         list.setAdapter(adapter);
         String line;
         while (true) {
