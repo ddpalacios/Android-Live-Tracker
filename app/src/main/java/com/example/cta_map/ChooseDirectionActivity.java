@@ -1,8 +1,11 @@
 package com.example.cta_map;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import androidx.annotation.RequiresApi;
@@ -14,6 +17,7 @@ import java.util.ArrayList;
 @SuppressLint("Registered")
 public class ChooseDirectionActivity  extends AppCompatActivity {
     ListView list;
+    Bundle bb; // Retrieve data from main screen
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +56,29 @@ public class ChooseDirectionActivity  extends AppCompatActivity {
             }
 
         }
+
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(ChooseDirectionActivity.this,TrainStationActivity.class);
+                if (position == 0){
+                    intent.putExtra("train_direction", String.valueOf(1));
+                    intent.putExtra("train_direction_name", String.valueOf(list.getItemAtPosition(position)));
+
+                }else{
+                    intent.putExtra("train_direction", String.valueOf(5));
+                    intent.putExtra("train_direction_name", String.valueOf(list.getItemAtPosition(position)));
+
+                }
+
+                intent.putExtra("target_station_type", target_station_type);
+                startActivity(intent);
+
+
+            }
+        });
+
+
 
     }
 }

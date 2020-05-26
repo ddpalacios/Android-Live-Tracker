@@ -48,7 +48,6 @@ class Chicago_Transits {
         return null;
     }
 
-
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public BufferedReader setup_file_reader(Context context, int file){
         InputStream CSVfile = context.getResources().openRawResource(file);
@@ -271,11 +270,8 @@ class Chicago_Transits {
                 idx++;
             }
 
-//            Log.e("remaining", "ETA To "+remaining_stop +": "+ next_stop_eta+" Minutes");
             train_stop_etas.add(next_stop_eta);
         }
-
-
     return train_stop_etas;
     }
 

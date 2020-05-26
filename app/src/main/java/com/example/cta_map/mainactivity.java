@@ -15,7 +15,6 @@ import java.util.ArrayList;
 
 @SuppressLint("Registered")
 public class mainactivity extends AppCompatActivity {
-
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
