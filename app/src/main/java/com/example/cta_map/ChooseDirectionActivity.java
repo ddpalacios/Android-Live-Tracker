@@ -1,19 +1,15 @@
 package com.example.cta_map;
-
 import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 @SuppressLint("Registered")
 public class ChooseDirectionActivity  extends AppCompatActivity {
@@ -23,7 +19,6 @@ public class ChooseDirectionActivity  extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_direction);
-
         Bundle bb; // Retrieve data from main screen
         bb=getIntent().getExtras();
         assert bb != null;
@@ -41,7 +36,6 @@ public class ChooseDirectionActivity  extends AppCompatActivity {
                 if ((line = reader.readLine()) != null) {
                     String[] tokens = line.split(",");
                     String stationCanidate = tokens[0].replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
-                    Log.e("statio", stationCanidate);
                     if (stationCanidate.equals(target_station_type)){
                         Log.e("Bounds", tokens[1]+" "+ tokens[2]);
                         arrayList.add("To "+tokens[1]);
@@ -49,12 +43,6 @@ public class ChooseDirectionActivity  extends AppCompatActivity {
                         adapter.notifyDataSetChanged();
                         break;
                     }
-//                    HashMap<String, String> train_types = GetStation(tokens); //HashMap of All train lines
-//
-//                    if (stationCanidate.equals(station_name.replaceAll("[^a-zA-Z0-9]", "")) && Boolean.parseBoolean(train_types.get(station_type))) {
-//                        return getCord(tokens);
-//                    }
-
                 } else {
                     break;
                 }
