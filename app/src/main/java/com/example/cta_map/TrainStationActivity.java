@@ -1,20 +1,15 @@
 package com.example.cta_map;
-
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 
 public class TrainStationActivity  extends AppCompatActivity {
     Bundle bb; // Retrieve data from main screen
@@ -25,7 +20,7 @@ public class TrainStationActivity  extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.train_station_activity);
         Chicago_Transits chicago_transits = new Chicago_Transits();
-        ListView list = (ListView) findViewById(R.id.train_stops);
+        final ListView list = (ListView) findViewById(R.id.train_stops);
         ArrayList<String> arrayList = new ArrayList<>();
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
         list.setAdapter(adapter);
@@ -43,8 +38,20 @@ public class TrainStationActivity  extends AppCompatActivity {
         arrayList.add(each_stop);
         adapter.notifyDataSetChanged();
 
-
     }
+        final String finalTarget_station_type = target_station_type;
+        final String finalTrain_direction = train_direction;
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            String target_station = String.valueOf(list.getItemAtPosition(position));
+            Intent intent = new Intent(TrainStationActivity.this,MapsActivity.class);
+            intent.putExtra("target_station_type", finalTarget_station_type);
+            intent.putExtra("target_station_name", target_station);
+            intent.putExtra("train_direction", finalTrain_direction);
+            startActivity(intent);
+        }
+    });
 
     }
 }
