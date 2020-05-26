@@ -2,6 +2,7 @@ package com.example.cta_map;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,7 +28,7 @@ public class activity_arrival_times extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Time time = new Time();
         Context context = getApplicationContext();
-        HashMap<String, String> current_train_info = (HashMap<String, String>) getIntent().getExtras().get("current_train_info");
+        final HashMap<String, String> current_train_info = (HashMap<String, String>) getIntent().getExtras().get("current_train_info");
         Chicago_Transits chicago_transits = new Chicago_Transits();
         BufferedReader train_station_stops_reader = chicago_transits.setup_file_reader(context, R.raw.train_line_stops);
         ArrayList<String> all_stops = chicago_transits.retrieve_line_stations(train_station_stops_reader, current_train_info.get("station_type"));
@@ -76,6 +77,13 @@ public class activity_arrival_times extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.e("val", String.valueOf(list.getItemAtPosition(position)));
+                String[] list_item = String.valueOf(list.getItemAtPosition(position)).split(":"); //.replaceAll("[^\\d.]", "");
+                String target_station_name = list_item[0].split("To")[1].replaceAll(" ","");
+                Intent intent = new Intent(activity_arrival_times.this, MapsActivity.class);
+                intent.putExtra("target_station_name", target_station_name);
+                intent.putExtra("target_station_type", current_train_info.get("station_type"));
+                intent.putExtra("train_direction", current_train_info.get("train_direction"));
+                startActivity(intent);
             }
         });
     }

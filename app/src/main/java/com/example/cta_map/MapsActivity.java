@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback, TrainDirection{
-    final boolean[] connect = {true};
+    final boolean[] connect = {false};
     private GoogleMap mMap;
     List<String> ignored_stations;
     ArrayList<Integer> train_etas = new ArrayList<>();
@@ -153,6 +153,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
          while also performing other user interactions
 
           */
+        connect[0] = true;
         new Thread(new Runnable() {
             @Override
             public void run() {
