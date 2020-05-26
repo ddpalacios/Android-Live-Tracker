@@ -17,8 +17,11 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 import android.os.Vibrator;
 import androidx.annotation.NonNull;
@@ -39,7 +42,9 @@ import java.io.BufferedReader;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 class Debugger{
     void ShowToast(Context context, String text){
@@ -60,33 +65,53 @@ public class mainactivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         super.onCreate(savedInstanceState);
         Context context = getApplicationContext();
-        station_name = (EditText) findViewById(R.id.station_name);
-        station_type = (EditText) findViewById(R.id.station_type);
-        direction = (EditText) findViewById(R.id.dest);
-        toMap = (Button) findViewById(R.id.toMaps);
-        toMap.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-            @Override
-            public void onClick(View v) {
-                final Context context = getApplicationContext();
-                final Debugger debug = new Debugger();
-                final Chicago_Transits chicago_transits = new Chicago_Transits();
-                BufferedReader station_coordinates_reader = chicago_transits.setup_file_reader(context, R.raw.train_stations);
-                Intent intent = new Intent(mainactivity.this, MapsActivity.class);
-                final String stationName = station_name.getText().toString().toLowerCase().replaceAll(" ", "");
-                final String stationType = station_type.getText().toString().toLowerCase();
-                final String trainDirection = direction.getText().toString().toLowerCase();
-                String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(station_coordinates_reader, stationName, stationType);
-                if (target_station_coordinates == null){
-                    debug.ShowToast(context, "Error! Target Station Not Found");
-                }else {
-                    intent.putExtra("target_station_name", stationName);
-                    intent.putExtra("target_station_type", stationType);
-                    intent.putExtra("train_direction", trainDirection);
-                    startActivity(intent);
-                }
-            }
+        ArrayList<String> arrayList = new ArrayList<>();
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, arrayList);
+        final ListView list = (ListView) findViewById(R.id.station_lines);
+        list.setAdapter(adapter);
+        String[] station_lines = new String[]{"Red", "Blue", "Brown", "Green", "Orange", "Purple", "Pink", "Yellow"};
+        for (String lines : station_lines){
+            arrayList.add(lines);
+            adapter.notifyDataSetChanged();
+        }
 
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(mainactivity.this,ChooseDirectionActivity.class);
+                intent.putExtra("target_station_type", String.valueOf(list.getItemAtPosition(position)));
+                startActivity(intent);
+            }
         });
+
+
+//        station_name = (EditText) findViewById(R.id.station_name);
+//        station_type = (EditText) findViewById(R.id.station_type);
+//        direction = (EditText) findViewById(R.id.dest);
+//        toMap = (Button) findViewById(R.id.toMaps);
+//        toMap.setOnClickListener(new View.OnClickListener() {
+//            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+//            @Override
+//            public void onClick(View v) {
+//                final Context context = getApplicationContext();
+//                final Debugger debug = new Debugger();
+//                final Chicago_Transits chicago_transits = new Chicago_Transits();
+//                BufferedReader station_coordinates_reader = chicago_transits.setup_file_reader(context, R.raw.train_stations);
+//                Intent intent = new Intent(mainactivity.this, MapsActivity.class);
+//                final String stationName = station_name.getText().toString().toLowerCase().replaceAll(" ", "");
+//                final String stationType = station_type.getText().toString().toLowerCase();
+//                final String trainDirection = direction.getText().toString().toLowerCase();
+//                String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(station_coordinates_reader, stationName, stationType);
+//                if (target_station_coordinates == null){
+//                    debug.ShowToast(context, "Error! Target Station Not Found");
+//                }else {
+//                    intent.putExtra("target_station_name", stationName);
+//                    intent.putExtra("target_station_type", stationType);
+//                    intent.putExtra("train_direction", trainDirection);
+//                    startActivity(intent);
+//                }
+//            }
+//
+//        });
     }
 }

@@ -11,117 +11,48 @@
 
 
 
-    <EditText
-        android:id="@+id/station_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="damen"
-        android:hint="Station..." />
+<!--    <EditText-->
+<!--        android:id="@+id/station_name"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:ems="10"-->
+<!--        android:inputType="textPersonName"-->
+<!--        android:text="damen"-->
+<!--        android:hint="Station..." />-->
 
-    <EditText
-        android:id="@+id/station_type"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:layout_below="@+id/station_name"
-        android:text="blue"
-        android:hint="train type..." />
-
-
-
-    <EditText
-        android:id="@+id/dest"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:layout_below="@+id/station_type"
-        android:text="1"
-        android:hint="Direction..." />
-
-
-    <Button
-        android:id="@+id/toMaps"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/dest"
-
-        android:text="To Maps" />
+<!--    <EditText-->
+<!--        android:id="@+id/station_type"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:ems="10"-->
+<!--        android:inputType="textPersonName"-->
+<!--        android:layout_below="@+id/station_name"-->
+<!--        android:text="blue"-->
+<!--        android:hint="train type..." />-->
 
 
 
+<!--    <EditText-->
+<!--        android:id="@+id/dest"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:ems="10"-->
+<!--        android:layout_below="@+id/station_type"-->
+<!--        android:text="1"-->
+<!--        android:hint="Direction..." />-->
 
+
+<!--    <Button-->
+<!--        android:id="@+id/toMaps"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_below="@+id/dest"-->
+
+<!--        android:text="To Maps" />-->
+
+
+    <ListView
+        android:id="@+id/station_lines"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </RelativeLayout>
-<!--    <Button-->
-<!--        android:id="@+id/getData"-->
-<!--        android:layout_width="134dp"-->
-<!--        android:layout_height="53dp"-->
-<!--        android:layout_alignParentTop="true"-->
-<!--        android:layout_alignParentRight="true"-->
-<!--        android:layout_alignParentBottom="true"-->
-<!--        android:layout_marginTop="0dp"-->
-<!--        android:layout_marginRight="6dp"-->
-<!--        android:layout_marginBottom="550dp"-->
-<!--        android:text="Connect to content" />-->
-
-<!--        <Button-->
-<!--        android:id="@+id/ToMaps"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--            android:text="Head To Maps" />-->
-
-<!--    <Button-->
-<!--        android:id="@+id/closeData"-->
-<!--        android:layout_width="128dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_alignParentEnd="true"-->
-<!--        android:layout_alignParentRight="true"-->
-<!--        android:layout_alignParentBottom="true"-->
-<!--        android:layout_marginTop="50dp"-->
-<!--        android:layout_marginEnd="8dp"-->
-<!--        android:layout_marginRight="8dp"-->
-<!--        android:layout_marginBottom="478dp"-->
-<!--        android:text="Close Connection" />-->
-
-
-<!--    <TextView-->
-<!--        android:id="@+id/result"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_alignParentEnd="true"-->
-<!--        android:layout_alignParentRight="true"-->
-<!--        android:layout_alignParentBottom="true"-->
-<!--        android:layout_marginTop="30dp"-->
-<!--        android:layout_marginEnd="172dp"-->
-<!--        android:layout_marginRight="172dp"-->
-<!--        android:layout_marginBottom="169dp"-->
-<!--        android:scrollbars="vertical"-->
-<!--        android:text="Result ..."-->
-<!--        android:textSize="15sp" />-->
-
-
-<!--    <Button-->
-<!--        android:id="@+id/dataReader"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_alignParentEnd="true"-->
-<!--        android:layout_alignParentRight="true"-->
-<!--        android:layout_alignParentBottom="true"-->
-<!--        android:layout_marginTop="50dp"-->
-<!--        android:layout_marginEnd="26dp"-->
-<!--        android:layout_marginRight="26dp"-->
-<!--        android:layout_marginBottom="404dp"-->
-<!--        android:text="Read CSV" />-->
-
-<!--    <Button-->
-<!--        android:id="@+id/getUserLoc"-->
-<!--        android:layout_width="193dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_alignParentBottom="true"-->
-<!--        android:layout_marginTop="144dp"-->
-<!--        android:layout_marginBottom="489dp"-->
-<!--        android:text="Retrieve Current Location Coord" />-->
-
-
