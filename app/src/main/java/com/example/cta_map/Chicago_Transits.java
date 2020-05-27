@@ -86,7 +86,6 @@ class Chicago_Transits {
                 e.printStackTrace();
             }
 
-
         }
         train_line_stops.remove(0);
         if (train_line_stops.contains("null")){

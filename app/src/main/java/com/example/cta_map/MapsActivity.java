@@ -20,6 +20,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -239,7 +241,8 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         Chicago_Transits chicago_transits = new Chicago_Transits();
         UserLocation userLocation = new UserLocation(context);
         MapRelativeListView mapRelativeListView = new MapRelativeListView(context,findViewById(R.id.list));
-        String[] target_station_coordinates = (current_train_info.get("train_lat") +","+current_train_info.get("train_lon")).split(",");
+        BufferedReader reader = chicago_transits.setup_file_reader(getApplicationContext(),R.raw.train_stations);
+        String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(reader, current_train_info.get("target_station"), current_train_info.get("station_type"));
         Time times = new Time();
 
         ignored_stations = stops.subList(start, end);
