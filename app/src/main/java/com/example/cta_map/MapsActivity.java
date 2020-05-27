@@ -143,16 +143,10 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         colors.put("red", Color.RED);
         colors.put("orange", Color.rgb(255,165,0));
         colors.put("brown", Color.rgb(165,42,42));
-        colors.put("pink", Color.rgb(255,182,193));
+        colors.put("pink", Color.rgb(231, 84, 128));
         colors.put("purple", Color.rgb(128,0,128));
         colors.put("green", Color.rgb(0,255,0));
         colors.put("yellow", Color.rgb(255,255,0));
-
-
-
-
-
-
 
         switch_direction.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -178,8 +172,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
          while also performing other user interactions
 
           */
-
-
         Toast.makeText(getApplicationContext(), "CONNECTED", Toast.LENGTH_SHORT).show();
         new Thread(new Runnable() {
             @Override
@@ -196,7 +188,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                             public void run() {
 
                                 mMap.clear();
-                                PolylineOptions options = new PolylineOptions().width(5).color(colors.get(target_station_type));
+                                PolylineOptions options = new PolylineOptions().width(15).color(colors.get(target_station_type));
                                 for (String each_stop : stops) {
                                     BufferedReader reader = chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_stations);
                                     String[] station_coord = chicago_transits.retrieve_station_coordinates(reader, each_stop, target_station_type);
@@ -207,12 +199,9 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                         double station_lon = Double.parseDouble(station_coord[1]);
                                         LatLng lt = new LatLng(station_lat, station_lon);
                                         options.add(lt);
-
                                     }
                                     mMap.addPolyline(options);
                                 }
-
-
                                 mapMarker.addMarker(target_station_coordinates[0], target_station_coordinates[1], target_station_name, "default", 1f).showInfoWindow();
                                 for (String each_train : train_list) {
                                     // prepare each train as a map
