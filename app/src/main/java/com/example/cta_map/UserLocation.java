@@ -60,18 +60,11 @@ public class UserLocation extends Activity {
                                         Log.e("None", "None");
 
                                     }else {
-                                        Log.e("ddd",  location.getLatitude() +" "+
-                                                location.getLongitude() +" "+
-                                                Double.parseDouble(target_station[0]) +" "+Double.parseDouble(target_station[1]));
 
                                         Double distance_from_user_and_target = chicago_transits.calculate_coordinate_distance(
                                                 location.getLatitude(),
                                                 location.getLongitude(),
                                                 Double.parseDouble(target_station[0]),Double.parseDouble(target_station[1]));
-
-
-                                        Log.e("Distnace", distance_from_user_and_target+"");
-
                                         int user_to_target_eta = time.get_estimated_time_arrival((int) 3.1, distance_from_user_and_target);
 
                                         mapMarker.display_marker_boundries(current_train_eta, user_to_target_eta, train_info, station_type, 0, 20);

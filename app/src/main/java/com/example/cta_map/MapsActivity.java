@@ -18,6 +18,10 @@ import android.widget.Toast;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -127,11 +131,29 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         final String target_station_type = bb.getString("target_station_type");
         final String target_station_name = bb.getString("target_station_name");
         final String[] specified_train_direction = {bb.getString("train_direction")};
-        final String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(chicago_transits.setup_file_reader(getApplicationContext(),R.raw.train_stations), target_station_name, target_station_type);
+        BufferedReader train_station_csv_reader = chicago_transits.setup_file_reader(getApplicationContext(),R.raw.train_stations);
+        final String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(train_station_csv_reader, target_station_name, target_station_type);
         final Button switch_direction = initiate_button(R.id.switch_direction);
         final ArrayList<String> stops = chicago_transits.retrieve_line_stations(chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_line_stops), target_station_type);
         chicago_transits.ZoomIn(mMap, (float) 13.3, target_station_coordinates);
         Log.e("stops", stops+"");
+
+        final HashMap<String, Integer> colors = new HashMap<>();
+        colors.put("blue", Color.BLUE);
+        colors.put("red", Color.RED);
+        colors.put("orange", Color.rgb(255,165,0));
+        colors.put("brown", Color.rgb(165,42,42));
+        colors.put("pink", Color.rgb(255,182,193));
+        colors.put("purple", Color.rgb(128,0,128));
+        colors.put("green", Color.rgb(0,255,0));
+        colors.put("yellow", Color.rgb(255,255,0));
+
+
+
+
+
+
+
         switch_direction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -156,11 +178,14 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
          while also performing other user interactions
 
           */
+
+
         Toast.makeText(getApplicationContext(), "CONNECTED", Toast.LENGTH_SHORT).show();
         new Thread(new Runnable() {
             @Override
             public void run() {
                 while (connect[0]){
+
                     try {
                         Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
                         final String[] train_list = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
@@ -171,6 +196,23 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                             public void run() {
 
                                 mMap.clear();
+                                PolylineOptions options = new PolylineOptions().width(5).color(colors.get(target_station_type));
+                                for (String each_stop : stops) {
+                                    BufferedReader reader = chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_stations);
+                                    String[] station_coord = chicago_transits.retrieve_station_coordinates(reader, each_stop, target_station_type);
+                                    if (station_coord == null) {
+                                        Log.e("ddd", station_coord[0] + "");
+                                    } else {
+                                        double station_lat = Double.parseDouble(station_coord[0]);
+                                        double station_lon = Double.parseDouble(station_coord[1]);
+                                        LatLng lt = new LatLng(station_lat, station_lon);
+                                        options.add(lt);
+
+                                    }
+                                    mMap.addPolyline(options);
+                                }
+
+
                                 mapMarker.addMarker(target_station_coordinates[0], target_station_coordinates[1], target_station_name, "default", 1f).showInfoWindow();
                                 for (String each_train : train_list) {
                                     // prepare each train as a map
