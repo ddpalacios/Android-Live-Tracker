@@ -240,7 +240,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                         });
                         train_etas.clear();
                         chosen_trains.clear();
-                        Thread.sleep(1000);
+                        Thread.sleep(2000);
 
 
                     } catch (IOException | InterruptedException e) {

@@ -30,6 +30,7 @@ class Chicago_Transits {
                 if ((line = reader.readLine()) != null) {
                     String[] tokens = line.split(",");
                     String stationCanidate = tokens[0].replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+                    Log.e("station", stationCanidate + " " + station_name);
                     HashMap<String, String> train_types = GetStation(tokens); //HashMap of All train lines
 
                     if (stationCanidate.equals(station_name.replaceAll("[^a-zA-Z0-9]", "")) && Boolean.parseBoolean(train_types.get(station_type))) {
