@@ -59,6 +59,8 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Button hide = (Button) findViewById(R.id.show);
+        Button choose_station = (Button) findViewById(R.id.pickStation);
+
 
         mMap = googleMap;
         mMap.setMyLocationEnabled(true); // Enable user location permission
@@ -87,6 +89,19 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                 intent.putExtra("target_station_name", target_station_name);
                 intent.putExtra("train_direction", specified_train_direction[0]);
                 startActivity(intent);
+            }
+        });
+
+        choose_station.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                connect[0] = false;
+                Intent intent = new Intent(MapsActivity.this,TrainTrackingActivity.class);
+                intent.putExtra("target_station_type", target_station_type);
+                intent.putExtra("target_station_name", target_station_name);
+                intent.putExtra("train_direction", specified_train_direction[0]);
+                startActivity(intent);
+
             }
         });
 

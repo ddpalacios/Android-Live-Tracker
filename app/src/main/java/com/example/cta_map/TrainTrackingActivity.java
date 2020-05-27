@@ -3,26 +3,19 @@ package com.example.cta_map;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.PolylineOptions;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -121,6 +114,7 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
             public void run() {
                 while (connect[0]) {
                     try {
+
                         final Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
                         final String[] train_list = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
                         runOnUiThread(new Runnable() {
@@ -128,6 +122,9 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                             @SuppressLint({"SetTextI18n", "LongLogTag", "DefaultLocale", "WrongConstant", "ShowToast", "NewApi"})
                             @Override
                             public void run() {
+                                RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.relativelayoutactivity);
+                                TextView rowTextView = new TextView(getApplicationContext());
+
                                 final String[] train_list = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
                                 for (String each_train : train_list) {
 //                                    // prepare each train as a map
@@ -137,16 +134,20 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                                     if (Objects.equals(train_info.get("train_direction"), specified_train_direction[0])) {
                                         train_info.put("target_station_lat", target_station_coordinates[0]);
                                         train_info.put("target_station_lon", target_station_coordinates[1]);
-                                        if (specified_train_direction[0].equals("1")){
+                                        if (specified_train_direction[0].equals("1")) {
                                             end = stops.indexOf(Objects.requireNonNull(train_info.get("target_station")).replaceAll("[^a-zA-Z0-9]", ""));
 //
-                                        }else if (specified_train_direction[0].equals("5")){
+                                        } else if (specified_train_direction[0].equals("5")) {
                                             start = stops.indexOf(Objects.requireNonNull(train_info.get("target_station")).replaceAll("[^a-zA-Z0-9]", "")) + 1;
                                             end = stops.size();
 
                                         }
                                         setup_train_direction(train_info, stops, start, end, Integer.parseInt(specified_train_direction[0]), getApplicationContext());
-                                    }
+
+
+                                        }
+
+
                                 }
 
                                 Log.d("Update", "DONE HERE.");

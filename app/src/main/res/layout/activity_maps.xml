@@ -29,7 +29,7 @@
         android:layout_marginBottom="5dp"
 
         android:layout_marginLeft="1dp"
-        android:text="HIDE"
+        android:text="arrival times"
         />
 
 
@@ -50,36 +50,8 @@
         android:text="Choose Station"
         />
 
-    <Button
-        android:id="@+id/switch_direction"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:layout_gravity="bottom|center"
-        android:layout_marginBottom="5dp"
-        android:layout_marginRight="30dp"
 
 
-        android:text="switch direction" />
-
-
-
-
-
-
-
-
-        <Button
-            android:id="@+id/disconnect"
-
-
-            android:layout_marginLeft="5dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:text="disconnect"
-            android:shadowColor="@android:color/background_dark"
-            />
 
 
 
