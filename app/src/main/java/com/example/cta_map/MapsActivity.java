@@ -19,9 +19,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -192,16 +190,14 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                 for (String each_stop : stops) {
                                     BufferedReader reader = chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_stations);
                                     String[] station_coord = chicago_transits.retrieve_station_coordinates(reader, each_stop, target_station_type);
-                                    if (station_coord == null) {
-                                        Log.e("ddd", station_coord[0] + "");
-                                    } else {
                                         double station_lat = Double.parseDouble(station_coord[0]);
                                         double station_lon = Double.parseDouble(station_coord[1]);
                                         LatLng lt = new LatLng(station_lat, station_lon);
                                         options.add(lt);
-                                    }
-                                    mMap.addPolyline(options);
+
                                 }
+                                mMap.addPolyline(options);
+
                                 mapMarker.addMarker(target_station_coordinates[0], target_station_coordinates[1], target_station_name, "default", 1f).showInfoWindow();
                                 for (String each_train : train_list) {
                                     // prepare each train as a map
@@ -230,7 +226,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                         train_etas.clear();
                         chosen_trains.clear();
                         Thread.sleep(2000);
-
 
                     } catch (IOException | InterruptedException e) {
                         Toast.makeText(getApplicationContext(), "Invalid URL", Toast.LENGTH_LONG).show();

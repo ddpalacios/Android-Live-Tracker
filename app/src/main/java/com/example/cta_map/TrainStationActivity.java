@@ -44,7 +44,7 @@ public class TrainStationActivity  extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             String target_station = String.valueOf(list.getItemAtPosition(position));
-            Intent intent = new Intent(TrainStationActivity.this,MapsActivity.class);
+            Intent intent = new Intent(TrainStationActivity.this,TrainTrackingActivity.class);
             intent.putExtra("target_station_type", finalTarget_station_type);
             intent.putExtra("target_station_name", target_station);
             intent.putExtra("train_direction", finalTrain_direction);
