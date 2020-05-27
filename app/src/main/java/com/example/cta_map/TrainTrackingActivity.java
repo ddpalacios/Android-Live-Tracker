@@ -2,10 +2,14 @@ package com.example.cta_map;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -47,6 +51,55 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
         final String target_station_type = bb.getString("target_station_type");
         final String target_station_name = bb.getString("target_station_name");
         final String[] specified_train_direction = {bb.getString("train_direction")};
+        final Button hide = initiate_button(R.id.show);
+        final Button switch_direction = initiate_button(R.id.switch_direction);
+        final Button choose_station = initiate_button(R.id.pickStation);
+
+
+
+        hide.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onClick(View v) {
+                connect[0]= false;
+                Intent intent = new Intent(TrainTrackingActivity.this, MapsActivity.class);
+                intent.putExtra("target_station_type", target_station_type);
+                intent.putExtra("target_station_name", target_station_name);
+                intent.putExtra("train_direction", specified_train_direction[0]);
+                startActivity(intent);
+
+            }
+        });
+
+
+        choose_station.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TrainTrackingActivity.this, mainactivity.class);
+                connect[0] = false;
+                Log.d("Connection Status", "Connection Closed");
+                startActivity(intent);
+            }
+        });
+
+        switch_direction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Thread.currentThread().interrupt();
+                Toast.makeText(getApplicationContext(), "Switching Directions. Please Wait...", Toast.LENGTH_SHORT).show();
+
+                if (specified_train_direction[0].equals("1")){
+                    specified_train_direction[0] = "5";
+
+                }else {
+                    specified_train_direction[0] = "1";
+                }
+            }
+        });
+
+
+
 
         BufferedReader train_station_csv_reader = chicago_transits.setup_file_reader(getApplicationContext(),R.raw.train_stations);
         final String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(train_station_csv_reader, target_station_name, target_station_type);
@@ -96,12 +149,12 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                                     }
                                 }
 
-                                Log.d("Update", "DONE.");
+                                Log.d("Update", "DONE HERE.");
                             }
                         });
                         train_etas.clear();
                         chosen_trains.clear();
-                        Thread.sleep(500);
+                        Thread.sleep(200);
                     }catch (IOException | InterruptedException e){
                         e.printStackTrace();
                     }
@@ -112,6 +165,11 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
             }
         }).start();
 
+    }
+
+    private Button initiate_button(int widget) {
+        Button button = findViewById(widget);
+        return button;
     }
 
 

@@ -49,66 +49,8 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
+
         assert mapFragment != null;
-        final RelativeLayout train_eta_list = findViewById(R.id.background);
-        final Button disconnect = initiate_button(R.id.disconnect);
-        final Button hide = initiate_button(R.id.show);
-        final Button switch_direction = initiate_button(R.id.switch_direction);
-        final Button choose_station = initiate_button(R.id.pickStation);
-        hide.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onClick(View v) {
-                if (train_eta_list.getVisibility() == View.VISIBLE) {
-                    hide.setText("SHOW");
-                    train_eta_list.setVisibility(View.GONE);
-                    switch_direction.setVisibility(View.GONE);
-                    choose_station.setVisibility(View.GONE);
-
-                } else if (train_eta_list.getVisibility() != View.VISIBLE) {
-                    hide.setText("HIDE");
-                    train_eta_list.setVisibility(View.VISIBLE);
-                    switch_direction.setVisibility(View.VISIBLE);
-                    choose_station.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-
-        choose_station.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MapsActivity.this, mainactivity.class);
-                connect[0] = false;
-                Log.d("Connection Status", "Connection Closed");
-                startActivity(intent);
-            }
-        });
-
-
-        disconnect.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onClick(View v) {
-
-                if (connect[0]) {
-                    disconnect.setText("Connect");
-                    connect[0] = false;
-                    Log.d("Connection Status", "Connection Closed");
-                    Toast.makeText(context, "DISCONNECTED", Toast.LENGTH_SHORT).show();
-
-                }else {
-                    disconnect.setText("Disconnect");
-                    connect[0] = true;
-                    Toast.makeText(context, "CONNECTED", Toast.LENGTH_SHORT).show();
-                    Log.d("Connection Status", "Connection Opened");
-                    onMapReady(mMap);
-
-                }
-
-            }
-        });
 
         mapFragment.getMapAsync(this);
 
@@ -116,6 +58,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        Button hide = (Button) findViewById(R.id.show);
 
         mMap = googleMap;
         mMap.setMyLocationEnabled(true); // Enable user location permission
@@ -131,10 +74,21 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         final String[] specified_train_direction = {bb.getString("train_direction")};
         BufferedReader train_station_csv_reader = chicago_transits.setup_file_reader(getApplicationContext(),R.raw.train_stations);
         final String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(train_station_csv_reader, target_station_name, target_station_type);
-        final Button switch_direction = initiate_button(R.id.switch_direction);
         final ArrayList<String> stops = chicago_transits.retrieve_line_stations(chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_line_stops), target_station_type);
         chicago_transits.ZoomIn(mMap, (float) 13.3, target_station_coordinates);
         Log.e("stops", stops+"");
+
+        hide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                connect[0]= false;
+                Intent intent = new Intent(MapsActivity.this,TrainTrackingActivity.class);
+                intent.putExtra("target_station_type", target_station_type);
+                intent.putExtra("target_station_name", target_station_name);
+                intent.putExtra("train_direction", specified_train_direction[0]);
+                startActivity(intent);
+            }
+        });
 
         final HashMap<String, Integer> colors = new HashMap<>();
         colors.put("blue", Color.BLUE);
@@ -146,20 +100,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         colors.put("green", Color.rgb(0,255,0));
         colors.put("yellow", Color.rgb(255,255,0));
 
-        switch_direction.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Thread.currentThread().interrupt();
-                Toast.makeText(getApplicationContext(), "Switching Directions. Please Wait...", Toast.LENGTH_SHORT).show();
 
-                if (specified_train_direction[0].equals("1")){
-                    specified_train_direction[0] = "5";
-
-                }else {
-                    specified_train_direction[0] = "1";
-                }
-            }
-        });
         assert target_station_type != null;
         final String url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s",  StationTypeKey.get(target_station_type.toLowerCase()));
         Log.e("url", url);
@@ -225,7 +166,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                         });
                         train_etas.clear();
                         chosen_trains.clear();
-                        Thread.sleep(2000);
+                        Thread.sleep(10000);
 
                     } catch (IOException | InterruptedException e) {
                         Toast.makeText(getApplicationContext(), "Invalid URL", Toast.LENGTH_LONG).show();
@@ -266,7 +207,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         MapMarker mapMarker = new MapMarker(mMap);
         Chicago_Transits chicago_transits = new Chicago_Transits();
         UserLocation userLocation = new UserLocation(context);
-        MapRelativeListView mapRelativeListView = new MapRelativeListView(context,findViewById(R.id.list));
         BufferedReader reader = chicago_transits.setup_file_reader(getApplicationContext(),R.raw.train_stations);
         String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(reader, current_train_info.get("target_station"), current_train_info.get("station_type"));
         Time times = new Time();
@@ -286,6 +226,5 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                 current_train_info.put(String.valueOf(current_train_eta), next_stop);
                 userLocation.getLastLocation(mMap, target_station_coordinates, current_train_eta, current_train_info, current_train_info.get("station_type"));
         }
-        mapRelativeListView.add_to_list_view(train_etas, current_train_info, chosen_trains, connect);
     }
 }

@@ -79,7 +79,7 @@ public class activity_arrival_times extends AppCompatActivity {
                 Log.e("val", String.valueOf(list.getItemAtPosition(position)));
                 String[] list_item = String.valueOf(list.getItemAtPosition(position)).split(":"); //.replaceAll("[^\\d.]", "");
                 String target_station_name = list_item[0].split("To")[1].replaceAll(" ","");
-                Intent intent = new Intent(activity_arrival_times.this, MapsActivity.class);
+                Intent intent = new Intent(activity_arrival_times.this, TrainTrackingActivity.class);
                 intent.putExtra("target_station_name", target_station_name);
                 intent.putExtra("target_station_type", current_train_info.get("station_type"));
                 intent.putExtra("train_direction", current_train_info.get("train_direction"));
