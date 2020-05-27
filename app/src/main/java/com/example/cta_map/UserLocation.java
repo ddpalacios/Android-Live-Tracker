@@ -72,9 +72,9 @@ public class UserLocation extends Activity {
 
                                         Log.e("Distnace", distance_from_user_and_target+"");
 
-                                        Double user_to_target_eta = (distance_from_user_and_target / 3.1)*100;//time.get_estimated_time_arrival((int) 3.1, distance_from_user_and_target);
+                                        int user_to_target_eta = time.get_estimated_time_arrival((int) 3.1, distance_from_user_and_target);
 
-//                                        mapMarker.display_marker_boundries(current_train_eta, user_to_target_eta, train_info, station_type, 0, 20);
+                                        mapMarker.display_marker_boundries(current_train_eta, user_to_target_eta, train_info, station_type, 0, 20);
 
                                     }
 
