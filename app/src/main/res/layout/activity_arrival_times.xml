@@ -7,6 +7,14 @@
     <ListView
         android:id="@+id/train_etas"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        />
+
+
+
+
+
+
+
 
 </RelativeLayout>

@@ -6,4 +6,46 @@
         android:id="@+id/train_layout_arrival_times"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+
+
+    <Button
+        android:id="@+id/show"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom= "true"
+
+
+        android:text="View Map"
+        />
+
+
+
+
+
+
+
+    <Button
+        android:id="@+id/pickStation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@id/show"
+
+
+        android:text="Choose Station"
+        />
+
+    <Button
+        android:id="@+id/switch_direction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@id/pickStation"
+
+
+
+        android:text="switch direction" />
 </RelativeLayout>
