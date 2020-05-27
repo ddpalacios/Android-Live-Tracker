@@ -30,7 +30,6 @@ public class mainactivity extends AppCompatActivity {
             arrayList.add(lines);
             adapter.notifyDataSetChanged();
         }
-
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

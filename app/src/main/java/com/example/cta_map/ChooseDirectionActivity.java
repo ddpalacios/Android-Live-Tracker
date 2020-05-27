@@ -55,7 +55,6 @@ public class ChooseDirectionActivity  extends AppCompatActivity {
             }
 
         }
-
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -63,21 +62,13 @@ public class ChooseDirectionActivity  extends AppCompatActivity {
                 if (position == 0){
                     intent.putExtra("train_direction", String.valueOf(1));
                     intent.putExtra("train_direction_name", String.valueOf(list.getItemAtPosition(position)));
-
                 }else{
                     intent.putExtra("train_direction", String.valueOf(5));
                     intent.putExtra("train_direction_name", String.valueOf(list.getItemAtPosition(position)));
-
                 }
-
                 intent.putExtra("target_station_type", target_station_type);
                 startActivity(intent);
-
-
             }
         });
-
-
-
     }
 }
