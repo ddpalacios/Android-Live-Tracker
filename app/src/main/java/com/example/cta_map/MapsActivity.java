@@ -59,8 +59,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
     public void onMapReady(GoogleMap googleMap) {
         Button hide = (Button) findViewById(R.id.show);
         Button choose_station = (Button) findViewById(R.id.pickStation);
-
-
         mMap = googleMap;
         mMap.setMyLocationEnabled(true); // Enable user location permission
         mMap.setOnMyLocationButtonClickListener(this);
@@ -119,11 +117,9 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         final String url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s",  StationTypeKey.get(target_station_type.toLowerCase()));
         Log.e("url", url);
         /*
-
           Everything is being ran within its own thread.
          This allows us to run our continuous web extraction
          while also performing other user interactions
-
           */
         Toast.makeText(getApplicationContext(), "CONNECTED", Toast.LENGTH_SHORT).show();
         new Thread(new Runnable() {
@@ -232,6 +228,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                  mapMarker.addMarker(current_train_info.get("train_lat"), current_train_info.get("train_lon"), current_train_info.get("next_stop"), current_train_info.get("station_type"), .5f);
 
             }else {
+            Log.e("main", current_train_info.get("main_station"));
             Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance(Double.parseDouble(Objects.requireNonNull(current_train_info.get("train_lat"))), Double.parseDouble(Objects.requireNonNull(current_train_info.get("train_lon"))), Double.parseDouble(Objects.requireNonNull(current_train_info.get("target_station_lat"))), Double.parseDouble(Objects.requireNonNull(current_train_info.get("target_station_lon"))));
                 int current_train_eta = times.get_estimated_time_arrival(25, current_train_distance_from_target_station);
                 train_etas.add(current_train_eta);

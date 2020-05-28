@@ -33,6 +33,11 @@ public class TrainStationActivity  extends AppCompatActivity {
             train_direction = intent.getStringExtra("train_direction");
         }
     ArrayList<String> train_stops = chicago_transits.retrieve_line_stations(chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_line_stops), target_station_type);
+    if (target_station_type.equals("purple")){
+        train_stops.subList(9,18).clear();
+    }
+
+
     for (String each_stop: train_stops){
         arrayList.add(each_stop);
         adapter.notifyDataSetChanged();

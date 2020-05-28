@@ -1,4 +1,5 @@
 package com.example.cta_map;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
@@ -22,6 +23,7 @@ import java.util.List;
 class Chicago_Transits {
 
 
+    @SuppressLint("LongLogTag")
     String[] retrieve_station_coordinates(BufferedReader reader, String station_name, String station_type) {
 
         String line;
@@ -30,9 +32,11 @@ class Chicago_Transits {
                 if ((line = reader.readLine()) != null) {
                     String[] tokens = line.split(",");
                     String stationCanidate = tokens[0].replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+//                    Log.e("station", stationCanidate + " "+ station_name);
                     HashMap<String, String> train_types = GetStation(tokens); //HashMap of All train lines
-
                     if (stationCanidate.equals(station_name.replaceAll("[^a-zA-Z0-9]", "")) && Boolean.parseBoolean(train_types.get(station_type))) {
+//                        Log.e("FOUND !!!!!!!!!!!!!!!!!!!!!!! station", stationCanidate + " "+ station_name);
+
                         return getCord(tokens);
                     }
 
@@ -245,7 +249,6 @@ class Chicago_Transits {
         BufferedReader train_station_stops_reader = setup_file_reader(context, R.raw.train_line_stops);
         ArrayList<String> all_stops = retrieve_line_stations(train_station_stops_reader, current_train_info.get("station_type"));
         List<String> all_stops_till_target = all_stops.subList(start , end);
-        Log.e("stops", all_stops_till_target+"");
 
         if (dir==1){
             idx = all_stops_till_target.size() -1;

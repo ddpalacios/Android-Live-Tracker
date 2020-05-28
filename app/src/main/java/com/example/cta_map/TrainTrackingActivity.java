@@ -46,11 +46,6 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
         final Button switch_direction = initiate_button(R.id.switch_direction);
         final Button choose_station = initiate_button(R.id.pickStation);
 
-
-
-
-
-
         choose_station.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
             @Override
@@ -107,12 +102,8 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                             @SuppressLint({"SetTextI18n", "LongLogTag", "DefaultLocale", "WrongConstant", "ShowToast", "NewApi"})
                             @Override
                             public void run() {
-                                RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.relativelayoutactivity);
-                                TextView rowTextView = new TextView(getApplicationContext());
-
                                 final String[] train_list = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
                                 for (String each_train : train_list) {
-//                                    // prepare each train as a map
                                     HashMap<String, String> train_info = chicago_transits.get_train_info(chicago_transits.setup_file_reader(getApplicationContext(),R.raw.train_stations), each_train,target_station_name ,target_station_type);
                                     int start = 0;
                                     int end =0;
@@ -131,10 +122,7 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
 
 
                                         }
-
-
                                 }
-
                                 Log.d("Update", "DONE HERE.");
                             }
                         });
@@ -144,9 +132,6 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                     }catch (IOException | InterruptedException e){
                         e.printStackTrace();
                     }
-
-
-
                 }
             }
         }).start();
@@ -168,15 +153,9 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                     e.printStackTrace();
                 }
                 startActivity(intent);
-
             }
         });
-
-
-
-
     }
-
     private Button initiate_button(int widget) {
         Button button = findViewById(widget);
         return button;
