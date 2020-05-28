@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -88,10 +89,13 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
          while also performing other user interactions
 
           */
+
         Toast.makeText(getApplicationContext(), "CONNECTED", Toast.LENGTH_SHORT).show();
         new Thread(new Runnable() {
             @Override
             public void run() {
+                Looper.prepare();
+
                 while (connect[0]) {
                     try {
 
@@ -126,6 +130,24 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                                 Log.d("Update", "DONE HERE.");
                             }
                         });
+                        if (train_etas.size() != 0){
+                            Context context = getApplicationContext();
+                            UserLocation userLocation = new UserLocation(context);
+                            Intent intent = new Intent(TrainTrackingActivity.this,ChooseDirectionActivity.class);
+                            int closest_train_eta = train_etas.get(0);
+                            Log.e("closest", closest_train_eta+"");
+                            for (HashMap<String, String>current_train : chosen_trains){
+                                if (current_train.containsKey(String.valueOf(closest_train_eta))){
+                                    userLocation.getLastLocation(current_train);
+
+
+                                }
+                            }
+
+                        }
+
+
+
                         train_etas.clear();
                         chosen_trains.clear();
                         Thread.sleep(1000);
@@ -163,7 +185,6 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void setup_train_direction(HashMap<String, String> current_train_info, ArrayList<String> stops, int start, int end, int dir, Context context) {
         Chicago_Transits chicago_transits = new Chicago_Transits();
-        UserLocation userLocation = new UserLocation(context);
         MapRelativeListView mapRelativeListView = new MapRelativeListView(context,findViewById(R.id.train_layout_arrival_times));
         BufferedReader reader = chicago_transits.setup_file_reader(getApplicationContext(),R.raw.train_stations);
         String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(reader, current_train_info.get("target_station"), current_train_info.get("station_type"));

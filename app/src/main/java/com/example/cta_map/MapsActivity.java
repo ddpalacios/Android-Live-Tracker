@@ -201,7 +201,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         final UserLocation userLocation = new UserLocation(context);
         if (userLocation.checkPermissions()) {
             Intent intent = new Intent(MapsActivity.this,ChooseDirectionActivity.class);
-            userLocation.getLastLocation(intent, mMap, null, null, null, null, context);
+//            userLocation.getLastLocation(intent, mMap, null, null, null, null, context);
         }
     }
     @Override
@@ -236,7 +236,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                 Collections.sort(train_etas);
                 chosen_trains.add(current_train_info);
                 current_train_info.put(String.valueOf(current_train_eta), next_stop);
-                userLocation.getLastLocation(intent, mMap, target_station_coordinates, current_train_eta, current_train_info, current_train_info.get("station_type"), context);
+//                userLocation.getLastLocation(intent, mMap, target_station_coordinates, current_train_eta, current_train_info, current_train_info.get("station_type"), context);
         }
     }
 }

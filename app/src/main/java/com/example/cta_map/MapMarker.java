@@ -44,22 +44,18 @@ public class MapMarker {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void display_marker_boundries(Intent intent, Context context, int current_train_eta, int user_to_target_eta, HashMap<String, String> train_info, String station_type, int track_from, int track_to){
-        NotificationBuilder notificationBuilder = new NotificationBuilder(context, intent);
         if (current_train_eta >=track_from && current_train_eta <=track_to){
             if (user_to_target_eta <= current_train_eta){
                 Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), "green", 1f);
-                notificationBuilder.notificationDialog("CTA TRAIN UPDATE", "GREEN IS ON");
                 int minutes_to_spare = current_train_eta - user_to_target_eta;
             }else if (user_to_target_eta > current_train_eta){
                 int late_amount = user_to_target_eta - current_train_eta;
                 if (late_amount >=0 && late_amount <4 ){
                     Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), "yellow", 1f);
-                    notificationBuilder.notificationDialog("CTA TRAIN UPDATE", "YELLOW IS ON");
 
 
                 }else if (late_amount >=4){
                     Marker train_marker = addMarker(train_info.get("train_lat"), train_info.get("train_lon"), train_info.get("next_stop"), "pink", 1f);
-                    notificationBuilder.notificationDialog("CTA TRAIN UPDATE", "PINK IS ON");
 
                 }
             }
