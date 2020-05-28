@@ -41,7 +41,7 @@ public class UserLocation extends Activity {
 
     }
 
-    public void getLastLocation(final GoogleMap mMap, final String[] target_station, final Integer current_train_eta, final HashMap<String, String>train_info, final String station_type){
+    public void getLastLocation(final Intent inte, final GoogleMap mMap, final String[] target_station, final Integer current_train_eta, final HashMap<String, String>train_info, final String station_type, final Context context){
         if (checkPermissions()) {
             if (isLocationEnabled()) {
                 this.mFusedLocationClient.getLastLocation().addOnCompleteListener(
@@ -65,9 +65,10 @@ public class UserLocation extends Activity {
                                                 location.getLatitude(),
                                                 location.getLongitude(),
                                                 Double.parseDouble(target_station[0]),Double.parseDouble(target_station[1]));
-                                        int user_to_target_eta = time.get_estimated_time_arrival((int) 3.1, distance_from_user_and_target);
+                                        int user_to_target_eta = 10; //time.get_estimated_time_arrival((int) 3.1, distance_from_user_and_target);
 
-                                        mapMarker.display_marker_boundries(current_train_eta, user_to_target_eta, train_info, station_type, 0, 20);
+                                        mapMarker.display_marker_boundries(inte, context, current_train_eta, user_to_target_eta, train_info, station_type, 0, 20);
+
 
                                     }
 
