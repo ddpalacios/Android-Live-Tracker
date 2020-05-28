@@ -48,19 +48,7 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
 
 
 
-        hide.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onClick(View v) {
-                connect[0]= false;
-                Intent intent = new Intent(TrainTrackingActivity.this, MapsActivity.class);
-                intent.putExtra("target_station_type", target_station_type);
-                intent.putExtra("target_station_name", target_station_name);
-                intent.putExtra("train_direction", specified_train_direction[0]);
-                startActivity(intent);
 
-            }
-        });
 
 
         choose_station.setOnClickListener(new View.OnClickListener() {
@@ -88,7 +76,6 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                 }
             }
         });
-
 
 
 
@@ -153,7 +140,7 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                         });
                         train_etas.clear();
                         chosen_trains.clear();
-                        Thread.sleep(200);
+                        Thread.sleep(1000);
                     }catch (IOException | InterruptedException e){
                         e.printStackTrace();
                     }
@@ -164,14 +151,36 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
             }
         }).start();
 
+
+        hide.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onClick(View v) {
+                connect[0]= false;
+                Intent intent = new Intent(TrainTrackingActivity.this, MapsActivity.class);
+                intent.putExtra("target_station_type", target_station_type);
+                intent.putExtra("target_station_name", target_station_name);
+                intent.putExtra("train_direction", specified_train_direction[0]);
+                Log.e("ddd", specified_train_direction[0] + " "+ target_station_name + " "+ target_station_type);
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                startActivity(intent);
+
+            }
+        });
+
+
+
+
     }
 
     private Button initiate_button(int widget) {
         Button button = findViewById(widget);
         return button;
     }
-
-
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void setup_train_direction(HashMap<String, String> current_train_info, ArrayList<String> stops, int start, int end, int dir, Context context) {
         Chicago_Transits chicago_transits = new Chicago_Transits();
@@ -196,5 +205,4 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
         }
         mapRelativeListView.add_to_list_view(train_etas, current_train_info, chosen_trains, connect);
     }
-
 }

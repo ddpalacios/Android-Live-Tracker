@@ -11,11 +11,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
-
 import androidx.annotation.RequiresApi;
-
 import com.example.cta_map.R;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,7 +20,6 @@ import java.util.List;
 import java.util.Objects;
 
 public class MapRelativeListView {
-//    private  ArrayAdapter<String> adapter;
     private ArrayList<String> arrayList;
     private Context  context;
     public ArrayAdapter<String> adapter;
@@ -64,31 +60,20 @@ public class MapRelativeListView {
                     Toast.makeText(context, "DISCONNECTED", Toast.LENGTH_SHORT).show();
 
                 }
-                String[] list_item = String.valueOf(list.getItemAtPosition(position)).split(":"); //.replaceAll("[^\\d.]", "");
+                String[] list_item = String.valueOf(list.getItemAtPosition(position)).split(":");
                 String key = list_item[1].replaceAll("[^\\d.]", "");
                 for (HashMap<String, String>each_train : chosen_trains){
                     if (each_train.containsKey(key)) {
                         Intent intent = new Intent(context, activity_arrival_times.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.putExtra("current_train_info", each_train);
-                        intent.putExtra("next_stop", each_train.get(key));
                         context.startActivity(intent);
                     }
                     else{
                         continue;
                     }
-
                 }
             }
         });
-
-
     }
-
-
-
-
-
-
-
 }
