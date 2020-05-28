@@ -216,7 +216,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
     @Override
     public void setup_train_direction(HashMap<String, String> current_train_info, ArrayList<String> stops, int start, int end, int dir, Context context) {
         MapMarker mapMarker = new MapMarker(mMap);
-        Intent intent = new Intent(MapsActivity.this,ChooseDirectionActivity.class);
+        Intent intent = new Intent(MapsActivity.this,mainactivity.class);
         Chicago_Transits chicago_transits = new Chicago_Transits();
         UserLocation userLocation = new UserLocation(context);
         BufferedReader reader = chicago_transits.setup_file_reader(getApplicationContext(),R.raw.train_stations);
