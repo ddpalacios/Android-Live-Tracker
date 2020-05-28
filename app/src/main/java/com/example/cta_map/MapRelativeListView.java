@@ -48,8 +48,6 @@ public class MapRelativeListView {
 
 
         for (int current_eta : train_etas) {
-//            Log.e("LIST", "To "+current_train_info.get("main_station")+": "+current_eta+" Minutes");
-
             current_train_info.put(current_train_info.get("train_id"), String.valueOf(current_eta));
             this.arrayList.add("To "+current_train_info.get("main_station")+": "+current_eta+" Minutes");
             this.adapter.notifyDataSetChanged();
