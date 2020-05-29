@@ -8,7 +8,9 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.RequiresApi;
@@ -36,6 +38,7 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
     Boolean[] yel = new Boolean[] {false};
     Boolean[] pink = new Boolean[] {false};
     GoogleMap mMap;
+    Boolean[] notify = new Boolean[] {false};
 
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -53,6 +56,7 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
         final Button hide = initiate_button(R.id.show);
         final Button switch_direction = initiate_button(R.id.switch_direction);
         final Button choose_station = initiate_button(R.id.pickStation);
+        final Switch notify_switch = (Switch) findViewById(R.id.switch1);
 
         choose_station.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
@@ -71,6 +75,8 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                 t[0] = false;
                 yel[0] = false;
                 pink[0] = false;
+                notify_switch.setChecked(false);
+                notify[0] = false;
                 Thread.currentThread().interrupt();
                 Toast.makeText(getApplicationContext(), "Switching Directions. Please Wait...", Toast.LENGTH_SHORT).show();
 
@@ -140,25 +146,43 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                                 Log.d("Update", "DONE HERE.");
                             }
                         });
-                        if (train_etas.size() != 0){
-                            Context context = getApplicationContext();
-                            UserLocation userLocation = new UserLocation(context);
-                            Intent intent = new Intent(TrainTrackingActivity.this, mainactivity.class);
-                            int closest_train_eta = train_etas.get(0);
-                            for (HashMap<String, String>current_train : chosen_trains){
-                                if (current_train.containsKey(String.valueOf(closest_train_eta))){
-                                    userLocation.getLastLocation(intent, getApplicationContext(), current_train, closest_train_eta, t, yel, pink, mMap, false);
+                        notify_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                            @Override
+                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                                Log.e("check", String.valueOf(isChecked));
+                                if (isChecked){
+                                    notify[0] = isChecked;
+                                    Log.e("Start", "Notifying user");
 
-
+                                }else{
+                                    Log.e("Not tracking", "Not notifying user");
                                 }
+
+
                             }
-                            if (closest_train_eta == 0){
-                                t[0] = false;
-                                yel[0] =false;
-                                pink[0] = false;
+                        });
+
+                        if (notify[0]){
+                            if (train_etas.size() != 0){
+                                Context context = getApplicationContext();
+                                UserLocation userLocation = new UserLocation(context);
+                                Intent intent = new Intent(TrainTrackingActivity.this, mainactivity.class);
+                                int closest_train_eta = train_etas.get(0);
+                                for (HashMap<String, String>current_train : chosen_trains){
+                                    if (current_train.containsKey(String.valueOf(closest_train_eta))){
+                                        userLocation.getLastLocation(intent, getApplicationContext(), current_train, closest_train_eta, t, yel, pink, mMap, false);
+                                    }
+                                }
+                                if (closest_train_eta == 0){
+                                    t[0] = false;
+                                    yel[0] =false;
+                                    pink[0] = false;
+                                }
+
                             }
 
                         }
+
 
 
                         train_etas.clear();
