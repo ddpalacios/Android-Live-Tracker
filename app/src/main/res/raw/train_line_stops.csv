@@ -1,11 +1,11 @@
 GREEN,RED,BLUE,YELLOW,PINK,ORANGE,BROWN,PURPLE
 Harlem/Lake,Howard,O’Hare,Dempster-skokie,Washington/Wells,Adams/Wabash,Kimball,Linden
 Oak Park,Jarvis,Rosemont,Oakton-skokie,Quincy/Wells,Washington/Wabash,Kedzie,Central
-Ridgeland,Morse,Cumberland,Howard,Lasalle/Van Buren,State/Lake,Francisco,Noyes
+Ridgeland,Morse,Cumberland,Howard,LaSalle/Van Buren,State/Lake,Francisco,Noyes
 Austin,Loyola,Harlem(O’Hare Branch),null,Harold Washington Library-State/Van Buren,Clark/Lake,Rockwell,Foster
 Central,Granville,Jefferson Park,null,Adams/Wabash,Washington/Wells,Western,Davis
 Laramie,Thorndale,Montrose,null,Washington/Wabash,Quincy/Wells,Damen,Dempster
-Cicero,Bryn Mawr,Irving Park,null,State/Lake,Lasalle/Van Buren,Montrose,Main
+Cicero,Bryn Mawr,Irving Park,null,State/Lake,LaSalle/Van Buren,Montrose,Main
 Pulaski,Berwyn,Addison,null,Clark/Lake,Harold Washington Library-State/Van Buren,Irving Park,South Boulevard
 Conservatory,Argyle,Belmont,null,Clinton,Roosevelt,Addison,Howard
 Kedzie,Lawrence,Logan Square,null,Morgan,Halsted,Paulina,Wilson
@@ -19,10 +19,10 @@ Washington/Wabash,Clark/Division,Clark/Lake,null,Kedzie,null,Sedgwick,Chicago
 Adams/Wabash,Chicago,Washington,null,Central Park,null,Chicago,Merchandise Mart
 Roosevelt,Grand,Monroe,null,Pulaski,null,Merchandise Mart,Clark/Lake
 Cermak-McCormick Place,Lake,Jackson,null,Kostner,null,Washington/Wells,State/Lake
-35th-Bronzeville-IIT,Monroe,Lasalle,null,Cicero,null,Quincy/Wells,Washington/Wabash
-Indiana,Jackson,Clinton,null,54th/Cermak,null,Lasalle/Van Buren,Adams/Wabash
+35th-Bronzeville-IIT,Monroe,LaSalle,null,Cicero,null,Quincy/Wells,Washington/Wabash
+Indiana,Jackson,Clinton,null,54th/Cermak,null,LaSalle/Van Buren,Adams/Wabash
 43rd,Harrison,UIC-Halsted,null,null,null,Harold Washington Library-State/Van Buren,Harold Washington Library-State/Van Buren
-47th,Roosevelt,Racine,null,null,null,Adams/Wabash,Lasalle/Van Buren
+47th,Roosevelt,Racine,null,null,null,Adams/Wabash,LaSalle/Van Buren
 51st,Cermak-Chinatown,Illinois Medical District,null,null,null,Washington/Wabash,Quincy/Wells
 Garfield,Sox-35th,Western(Forest Park Branch),null,null,null,State/Lake,Washington/Wells
 King Drive,47th,Kedzie-Homan,null,null,null,Clark/Lake,null

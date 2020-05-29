@@ -43,26 +43,45 @@ public class activity_arrival_times extends AppCompatActivity {
         int start;
         int end;
         if (specified_train_direction.equals("1")){
+            for (String each_stop: all_stops) {
+                if (each_stop.replaceAll(" ", "").equals(String.valueOf(next_stop).replaceAll(" ", ""))) {
+                    Log.e("MATCH", each_stop + " " + next_stop);
+                    break;
+                } else {
+                    Log.e("NO MATCH", each_stop + " " + next_stop);
+
+                }
+            }
+//            Log.e("idx activity", specified_train_direction);
+//            start = all_stops.indexOf(target_station);
+//            end = all_stops.indexOf(next_stop)+1;
+//            Log.e("idx activity", next_stop + " "+ target_station);
+//            Log.e("idx activity", start + " "+ end);
+
+
+        }if (specified_train_direction.equals("5")){
             Log.e("idx activity", specified_train_direction);
-            start = all_stops.indexOf(target_station);
-            end = all_stops.indexOf(next_stop)+1;
-            Log.e("idx activity", next_stop + " "+ target_station);
-            Log.e("idx activity", start + " "+ end);
+            for (String each_stop: all_stops){
+                if (each_stop.replaceAll(" ", "").equals(String.valueOf(next_stop).replaceAll(" ", ""))) {
+                    Log.e("MATCH", each_stop + " " + next_stop);
+                    break;
+                }
+                else {
+                    Log.e("NO MATCH", each_stop + " " + next_stop);
 
-
-        }else{
-            Log.e("idx activity", specified_train_direction);
-            start = all_stops.indexOf(next_stop);
-            end = all_stops.indexOf(target_station)+1;
-
-            Log.e("idx activity", next_stop + " "+ target_station);
-            Log.e("idx activity", start + " "+ end);
-            Log.e("idx activity", all_stops+"");
+                }
+            }
+//            start = all_stops.indexOf(next_stop);
+//            end = all_stops.indexOf(target_station)+1;
+//
+//            Log.e("idx activity", next_stop + " "+ target_station);
+//            Log.e("idx activity", start + " "+ end);
+//            Log.e("idx activity", all_stops+"");
 
         }
 
 
-        Log.e("idx activity", start + " "+ end);
+//        Log.e("idx activity", start + " "+ end);
 
 
 
