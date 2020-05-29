@@ -81,16 +81,20 @@ public class UserLocation extends Activity {
                                         int user_to_target_eta = 5;//time.get_estimated_time_arrival((int) 3.1, distance_from_user_and_target);
                                         if (inMaps) {
                                             MapMarker mapMarker = new MapMarker(mMap);
-                                            mapMarker.display_marker_boundries(inten, context, train_eta, user_to_target_eta, train_info, train_info.get("station_type"), 0, 20);
+                                            mapMarker.display_marker_boundries(inten, context, train_eta, user_to_target_eta, train_info, train_info.get("station_type"), 0, 10);
                                         }else{
                                         if (user_to_target_eta <= train_eta) {
                                                 int minutes_to_spare = train_eta - user_to_target_eta;
                                                 if (!t[0]){
                                                     notificationBuilder.notificationDialog("Train is "+train_eta+" Minutes Away From "+train_info.get("target_station"),
                                                             "You Have "+minutes_to_spare+" Minutes To Spare.");
+                                                    Log.e("Update", "Green!!!!");
+                                                    Log.e("bool", t[0]+"");
                                                     t[0] = true;
                                                     }
                                                 else{
+                                                    Log.e("bool", t[0]+"");
+                                                    Log.e("Update", "notified for green");
 
                                                 }
                                             }else if (user_to_target_eta > train_eta){
@@ -100,9 +104,13 @@ public class UserLocation extends Activity {
                                                     if (!yel[0]){
                                                         notificationBuilder.notificationDialog("Train is "+train_eta+" Minutes Away From "+train_info.get("target_station"),
                                                                 "You are "+late_amount+" Minutes Late.");
+                                                        Log.e("Update", "Yellow!!!!");
+                                                        Log.e("bool", yel[0]+"");
                                                         yel[0] = true;
                                                     }
                                                     else{
+                                                        Log.e("bool", yel[0]+"");
+                                                        Log.e("Update", "notified for yellow");
 
                                                     }
 
@@ -112,6 +120,8 @@ public class UserLocation extends Activity {
                                                     if (!pink[0] && train_eta!=0){
                                                         notificationBuilder.notificationDialog("Train is "+train_eta+" Minutes Away From "+train_info.get("target_station"),
                                                                 "You are "+late_amount+" Minutes Late. You May Miss this Train!");
+                                                        Log.e("Update", "Pink!!!!");
+                                                        Log.e("bool", pink[0]+"");
                                                         pink[0] = true;
                                                     }
                                                     else{
