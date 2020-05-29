@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -39,6 +40,9 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
     ArrayList<Integer> train_etas = new ArrayList<>();
     ArrayList<HashMap> chosen_trains = new ArrayList<>();
     Bundle bb; // Retrieve data from main screen
+    Boolean[] t = new Boolean[] {false};
+    Boolean[] yel = new Boolean[] {false};
+    Boolean[] pink = new Boolean[] {false};
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -136,6 +140,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         new Thread(new Runnable() {
             @Override
             public void run() {
+                Looper.prepare();
                 while (connect[0]){
 
                     try {
@@ -204,6 +209,34 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                             }
                         });
 
+
+
+                        if (isOn[0]){
+                            if (train_etas.size() != 0){
+                                Log.e("Tracking", isOn[0]+"");
+                                Context context = getApplicationContext();
+                                UserLocation userLocation = new UserLocation(context);
+                                Intent intent = new Intent(MapsActivity.this, mainactivity.class);
+                                int closest_train_eta = train_etas.get(0);
+                                for (HashMap<String, String>current_train : chosen_trains){
+                                    if (current_train.containsKey(String.valueOf(closest_train_eta))){
+                                        userLocation.getLastLocation(intent, getApplicationContext(), current_train, closest_train_eta, t, yel, pink, mMap, false);
+                                    }
+                                }
+                                if (closest_train_eta == 0){
+                                    t[0] = false;
+                                    yel[0] =false;
+                                    pink[0] = false;
+                                }
+
+                            }
+
+                        }
+
+
+
+
+
                         train_etas.clear();
                         chosen_trains.clear();
                         Thread.sleep(10000);
@@ -269,15 +302,8 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                 Boolean[] y = {false};
                 Boolean[] p = {false};
 
-                userLocation.getLastLocation(intent,
-                                            context,
-                                            current_train_info,
-                                            train_etas.get(0),
-                                            t,
-                                            y,
-                                            p,
-                                            mMap,
-                                            true);
+                userLocation.getLastLocation(intent, context, current_train_info, current_train_eta, null,null,null, mMap, true);
+
         }
     }
 }

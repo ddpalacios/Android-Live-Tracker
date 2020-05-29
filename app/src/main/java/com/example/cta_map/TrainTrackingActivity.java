@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
@@ -43,6 +44,7 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.train_tracking_activity);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         final Chicago_Transits chicago_transits = new Chicago_Transits();
 
         super.onCreate(savedInstanceState);
