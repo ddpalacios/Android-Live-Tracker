@@ -34,7 +34,7 @@ class Chicago_Transits {
                     String stationCanidate = tokens[0].replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
 //                    Log.e("station", stationCanidate + " "+ station_name);
                     HashMap<String, String> train_types = GetStation(tokens); //HashMap of All train lines
-                    if (stationCanidate.equals(station_name.replaceAll("[^a-zA-Z0-9]", "")) && Boolean.parseBoolean(train_types.get(station_type))) {
+                    if (stationCanidate.equals(station_name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase()) && Boolean.parseBoolean(train_types.get(station_type))) {
 //                        Log.e("FOUND !!!!!!!!!!!!!!!!!!!!!!! station", stationCanidate + " "+ station_name);
 
                         return getCord(tokens);
@@ -78,7 +78,7 @@ class Chicago_Transits {
                     train_lines.put("brown", tokens[6]);
                     train_lines.put("purple", tokens[7]);
                     String stops = train_lines.get(station_type);
-                    train_line_stops.add(stops.replaceAll("[^a-zA-Z0-9]", "").replaceAll(" ", "").toLowerCase());
+                    train_line_stops.add(stops);
 
                 }else{
                     break;
@@ -145,9 +145,10 @@ class Chicago_Transits {
         HashMap<String, String> train_info = new HashMap<>();
 
         String currTrain = each_train.replaceAll("\n", "")
-                .replaceAll(" ", "")
+                .replaceAll("\t", "")
                 .replaceAll("<train>", "</train>")
                 .replaceAll("</train>", "");
+
 
         currTrain = currTrain.replaceAll("<nextStaId>[\\s\\S]*?</nextStaId>", "");
         currTrain = currTrain.replaceAll("<nextStpId>[\\s\\S]*?</nextStpId>", "");
@@ -162,18 +163,20 @@ class Chicago_Transits {
         String train_lon = get_xml_tag_value(currTrain, "<lon>", "</lon>");
         String train_id = get_xml_tag_value(currTrain, "<rn>", "</rn>");
 
-        train_info.put("isApproaching", isApproaching);
-        train_info.put("isDelayed", isDelayed);
-        train_info.put("main_station", main_station);
-        train_info.put("train_id", train_id);
-        train_info.put("next_stop", next_train_stop.toLowerCase().replace(" ", ""));
-        train_info.put("train_direction", train_direction);
-        train_info.put("train_lat", train_lat);
-        train_info.put("train_lon", train_lon);
-        train_info.put("station_type", station_type);
+        train_info.put("isApproaching", isApproaching.replaceAll(" ", ""));
+        train_info.put("isDelayed", isDelayed.replaceAll(" ", ""));
+        String new_main = main_station.substring(2);
+        train_info.put("main_station", new_main);
+        train_info.put("train_id", train_id.replaceAll(" ", ""));
+        String new_stop = next_train_stop.substring(2);
+        train_info.put("next_stop",new_stop);
+        train_info.put("train_direction", train_direction.replaceAll(" ", ""));
+        train_info.put("train_lat", train_lat.replaceAll(" ", ""));
+        train_info.put("train_lon", train_lon.replaceAll(" ", ""));
+        train_info.put("station_type", station_type.replaceAll(" ", ""));
         String main_station_name = train_info.get("main_station");
 
-        String[] main_station_coordinates = retrieve_station_coordinates(reader, main_station_name.toLowerCase().replace(" ", ""), station_type);
+        String[] main_station_coordinates = retrieve_station_coordinates(reader, main_station_name, station_type);
         train_info.put("main_lat", main_station_coordinates[0]);
         train_info.put("main_lon", main_station_coordinates[1]);
         train_info.put("target_station", target_name);

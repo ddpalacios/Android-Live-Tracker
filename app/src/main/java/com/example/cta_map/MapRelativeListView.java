@@ -44,29 +44,14 @@ public class MapRelativeListView {
 
 
 
-
-
+        this.arrayList.add(0, current_train_info.get("target_station").toUpperCase());
         for (int current_eta : train_etas) {
             current_train_info.put(current_train_info.get("train_id"), String.valueOf(current_eta));
             this.arrayList.add("To "+current_train_info.get("main_station")+": "+current_eta+" Minutes");
             this.adapter.notifyDataSetChanged();
 
         }
-
-
-
-//        int closest_train_eta = train_etas.get(0);
-//        Log.e("eta", closest_train_eta+"");
-//        for (HashMap<String, String>current_train : chosen_trains){
-//            if (current_train.containsKey(String.valueOf(closest_train_eta))){
-//                String[] closest_train_coordinates = (current_train.get("train_lat")+ ","+ current_train.get("train_lon")).split(",");
-//                Log.e("Closest train coord", closest_train_coordinates[0]+ " "+closest_train_coordinates[1]);
-//
-//            }
-//
-//
-//        }
-
+        
 
         this.list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -82,6 +67,7 @@ public class MapRelativeListView {
                 String key = list_item[1].replaceAll("[^\\d.]", "");
                 for (HashMap<String, String>each_train : chosen_trains){
                     if (each_train.containsKey(key)) {
+                        Log.e("key", key);
                         Intent intent = new Intent(context, activity_arrival_times.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.putExtra("current_train_info", each_train);

@@ -43,13 +43,33 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+                <activity
+                    android:name=".ChooseDirectionActivity"
+                    android:label="@string/title_activity_maps">
+                    <intent-filter>
+<!--                        <action android:name="android.intent.action.MAIN" />-->
+
+
+                        <category android:name="android.intent.category.LAUNCHER" />
+                    </intent-filter>
+                </activity>
+                <activity
+                    android:name=".TrainStationActivity"
+                    android:label="@string/title_activity_maps">
+                    <intent-filter>
+<!--                        <action android:name="android.intent.action.MAIN" />-->
+
+
+                        <category android:name="android.intent.category.LAUNCHER" />
+                    </intent-filter>
+                </activity>
 
 
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+<!--                <action android:name="android.intent.action.MAIN" />-->
 
 
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -60,34 +80,16 @@
             android:name=".activity_arrival_times"
             android:label="@string/title_activity_maps">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+<!--                <action android:name="android.intent.action.MAIN" />-->
 
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".ChooseDirectionActivity"
-            android:label="@string/title_activity_maps">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
 
-        <activity
-            android:name=".TrainStationActivity"
-            android:label="@string/title_activity_maps">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
 
 
         <activity
@@ -100,6 +102,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
 
     </application>
 

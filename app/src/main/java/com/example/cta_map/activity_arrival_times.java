@@ -42,49 +42,65 @@ public class activity_arrival_times extends AppCompatActivity {
         int idx = 0;
         int start;
         int end;
-
         if (specified_train_direction.equals("1")){
-            start = all_stops.indexOf(target_station.replaceAll("[^a-zA-Z0-9]", ""));
+            Log.e("idx activity", specified_train_direction);
+            start = all_stops.indexOf(target_station);
             end = all_stops.indexOf(next_stop)+1;
+            Log.e("idx activity", next_stop + " "+ target_station);
+            Log.e("idx activity", start + " "+ end);
+
 
         }else{
+            Log.e("idx activity", specified_train_direction);
             start = all_stops.indexOf(next_stop);
-            end = all_stops.indexOf(target_station.replaceAll("[^a-zA-Z0-9]", ""))+1;
-        }
+            end = all_stops.indexOf(target_station)+1;
 
-        ArrayList<Integer> range_of_eta = chicago_transits.calculate_station_range_eta(current_train_info, start, end, Integer.parseInt(specified_train_direction), context);
-        List<String> all_stops_till_target = all_stops.subList(start , end);
-
-        if (specified_train_direction.equals("1")){
-            idx = all_stops_till_target.size() -1;
-        }
-
-
-        for (int i=0; i < all_stops_till_target.size(); i++){
-                String remaining_stop = all_stops_till_target.get(idx);
-                arrayList.add("ETA To "+remaining_stop +": "+ range_of_eta.get(i)+" Minutes");
-                adapter.notifyDataSetChanged();
-                if (specified_train_direction.equals("1")){
-                idx--;
-            }else{
-                idx++;
-                }
+            Log.e("idx activity", next_stop + " "+ target_station);
+            Log.e("idx activity", start + " "+ end);
+            Log.e("idx activity", all_stops+"");
 
         }
 
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.e("val", String.valueOf(list.getItemAtPosition(position)));
-                String[] list_item = String.valueOf(list.getItemAtPosition(position)).split(":"); //.replaceAll("[^\\d.]", "");
-                String target_station_name = list_item[0].split("To")[1].replaceAll(" ","");
-                Intent intent = new Intent(activity_arrival_times.this, TrainTrackingActivity.class);
-                intent.putExtra("target_station_name", target_station_name);
-                intent.putExtra("target_station_type", current_train_info.get("station_type"));
-                intent.putExtra("train_direction", current_train_info.get("train_direction"));
-                startActivity(intent);
-            }
-        });
+
+        Log.e("idx activity", start + " "+ end);
+
+
+
+
+
+//        ArrayList<Integer> range_of_eta = chicago_transits.calculate_station_range_eta(current_train_info, start, end, Integer.parseInt(specified_train_direction), context);
+//        List<String> all_stops_till_target = all_stops.subList(start , end);
+//
+//        if (specified_train_direction.equals("1")){
+//            idx = all_stops_till_target.size() -1;
+//        }
+//
+//
+//        for (int i=0; i < all_stops_till_target.size(); i++){
+//                String remaining_stop = all_stops_till_target.get(idx);
+//                arrayList.add("ETA To "+remaining_stop +": "+ range_of_eta.get(i)+" Minutes");
+//                adapter.notifyDataSetChanged();
+//                if (specified_train_direction.equals("1")){
+//                idx--;
+//            }else{
+//                idx++;
+//                }
+//
+//        }
+//
+//        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Log.e("val", String.valueOf(list.getItemAtPosition(position)));
+//                String[] list_item = String.valueOf(list.getItemAtPosition(position)).split(":"); //.replaceAll("[^\\d.]", "");
+//                String target_station_name = list_item[0].split("To")[1].replaceAll(" ","");
+//                Intent intent = new Intent(activity_arrival_times.this, TrainTrackingActivity.class);
+//                intent.putExtra("target_station_name", target_station_name);
+//                intent.putExtra("target_station_type", current_train_info.get("station_type"));
+//                intent.putExtra("train_direction", current_train_info.get("train_direction"));
+//                startActivity(intent);
+//            }
+//        });
     }
 
 }

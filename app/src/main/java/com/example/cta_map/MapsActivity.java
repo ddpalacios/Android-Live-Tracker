@@ -142,7 +142,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
             public void run() {
                 Looper.prepare();
                 while (connect[0]){
-
                     try {
                         Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
                         final String[] train_list = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
@@ -151,8 +150,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                             @SuppressLint({"SetTextI18n", "LongLogTag", "DefaultLocale", "WrongConstant", "ShowToast", "NewApi"})
                             @Override
                             public void run() {
-
-
                                 mMap.clear();
                                 PolylineOptions options = new PolylineOptions().width(15).color(colors.get(target_station_type));
                                 for (String each_stop : stops) {
@@ -286,7 +283,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         Time times = new Time();
 
         ignored_stations = stops.subList(start, end);
-        String next_stop = Objects.requireNonNull(current_train_info.get("next_stop")).replaceAll("[^a-zA-Z0-9]", "");
+        String next_stop = Objects.requireNonNull(current_train_info.get("next_stop"));
 
         if (ignored_stations.contains(next_stop)) {
                  mapMarker.addMarker(current_train_info.get("train_lat"), current_train_info.get("train_lon"), current_train_info.get("next_stop"), current_train_info.get("station_type"), .5f);
