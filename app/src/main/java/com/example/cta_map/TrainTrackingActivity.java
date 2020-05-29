@@ -13,6 +13,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.maps.GoogleMap;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import java.io.BufferedReader;
@@ -32,7 +35,7 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
     Boolean[] t = new Boolean[] {false};
     Boolean[] yel = new Boolean[] {false};
     Boolean[] pink = new Boolean[] {false};
-
+    GoogleMap mMap;
 
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -144,7 +147,7 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                             int closest_train_eta = train_etas.get(0);
                             for (HashMap<String, String>current_train : chosen_trains){
                                 if (current_train.containsKey(String.valueOf(closest_train_eta))){
-                                    userLocation.getLastLocation(intent, getApplicationContext(), current_train, closest_train_eta, t, yel, pink);
+                                    userLocation.getLastLocation(intent, getApplicationContext(), current_train, closest_train_eta, t, yel, pink, mMap, false);
 
 
                                 }

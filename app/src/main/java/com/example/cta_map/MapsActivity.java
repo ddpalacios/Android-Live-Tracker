@@ -76,7 +76,8 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         final ArrayList<String> stops = chicago_transits.retrieve_line_stations(chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_line_stops), target_station_type);
         chicago_transits.ZoomIn(mMap, (float) 13.3, target_station_coordinates);
         Log.e("stops", stops+"");
-
+        final Context context = getApplicationContext();
+        final Intent intent = new Intent(MapsActivity.this, mainactivity.class);
         hide.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -136,6 +137,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                             @Override
                             public void run() {
 
+
                                 mMap.clear();
                                 PolylineOptions options = new PolylineOptions().width(15).color(colors.get(target_station_type));
                                 for (String each_stop : stops) {
@@ -153,7 +155,8 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                 for (String each_train : train_list) {
                                     // prepare each train as a map
                                     HashMap<String, String> train_info = chicago_transits.get_train_info(chicago_transits.setup_file_reader(getApplicationContext(),R.raw.train_stations), each_train,target_station_name ,target_station_type);
-                                   int start = 0;
+
+                                    int start = 0;
                                    int end =0;
                                     if (Objects.equals(train_info.get("train_direction"), specified_train_direction[0])) {
                                         train_info.put("target_station_lat", target_station_coordinates[0]);
@@ -236,7 +239,19 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                 Collections.sort(train_etas);
                 chosen_trains.add(current_train_info);
                 current_train_info.put(String.valueOf(current_train_eta), next_stop);
-//                userLocation.getLastLocation(intent, mMap, target_station_coordinates, current_train_eta, current_train_info, current_train_info.get("station_type"), context);
+                Boolean[] t = {false};
+                Boolean[] y = {false};
+                Boolean[] p = {false};
+
+                userLocation.getLastLocation(intent,
+                                            context,
+                                            current_train_info,
+                                            train_etas.get(0),
+                                            t,
+                                            y,
+                                            p,
+                                            mMap,
+                                            true);
         }
     }
 }
