@@ -38,7 +38,6 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
     Boolean[] yel = new Boolean[] {false};
     Boolean[] pink = new Boolean[] {false};
     GoogleMap mMap;
-    Boolean[] notify = new Boolean[] {false};
 
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -82,7 +81,6 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                 yel[0] = false;
                 pink[0] = false;
                 notify_switch.setChecked(false);
-                notify[0] = false;
                 Thread.currentThread().interrupt();
                 Toast.makeText(getApplicationContext(), "Switching Directions. Please Wait...", Toast.LENGTH_SHORT).show();
 

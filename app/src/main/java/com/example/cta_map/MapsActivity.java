@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 import com.google.android.gms.maps.GoogleMap;
@@ -43,7 +44,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final Context context = getApplicationContext();
         setContentView(R.layout.activity_maps);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -56,7 +56,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Switch notify = (Switch) findViewById(R.id.switch2);
+        final Switch notify = (Switch) findViewById(R.id.switch2);
         Button hide = (Button) findViewById(R.id.show);
         Button choose_station = (Button) findViewById(R.id.pickStation);
         mMap = googleMap;
@@ -69,7 +69,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         bb=getIntent().getExtras();
         assert bb != null;
         final String target_station_type = bb.getString("target_station_type");
-        final Boolean isOn = bb.getBoolean("isOn");
+        final boolean[] isOn = {bb.getBoolean("isOn")};
         final String target_station_name = bb.getString("target_station_name");
         final String[] specified_train_direction = {bb.getString("train_direction")};
         BufferedReader train_station_csv_reader = chicago_transits.setup_file_reader(getApplicationContext(),R.raw.train_stations);
@@ -79,9 +79,9 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         Log.e("stops", stops+"");
         final Context context = getApplicationContext();
         final Intent intent = new Intent(MapsActivity.this, mainactivity.class);
-        Log.e("Tracking", isOn+"");
-        if (isOn){
-            notify.setChecked(isOn);
+        Log.e("Tracking", isOn[0] +"");
+        if (isOn[0]){
+            notify.setChecked(isOn[0]);
         }
 
 
@@ -91,7 +91,8 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
             public void onClick(View v) {
                 connect[0]= false;
                 Intent intent = new Intent(MapsActivity.this,TrainTrackingActivity.class);
-                intent.putExtra("isOn", isOn);
+                Log.e("MAP Tracking", isOn[0] +"");
+                intent.putExtra("isOn", isOn[0]);
                 intent.putExtra("target_station_type", target_station_type);
                 intent.putExtra("target_station_name", target_station_name);
                 intent.putExtra("train_direction", specified_train_direction[0]);
@@ -186,6 +187,23 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                             }
 
                         });
+
+                        notify.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                            @Override
+                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                                if (isChecked){
+                                    isOn[0] = isChecked;
+
+                                }else{
+                                    isOn[0] = false;
+                                    Log.e("Tracking", isOn[0]+"");
+
+                                }
+
+
+                            }
+                        });
+
                         train_etas.clear();
                         chosen_trains.clear();
                         Thread.sleep(10000);
@@ -213,7 +231,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         final UserLocation userLocation = new UserLocation(context);
         if (userLocation.checkPermissions()) {
             Intent intent = new Intent(MapsActivity.this,ChooseDirectionActivity.class);
-//            userLocation.getLastLocation(intent, mMap, null, null, null, null, context);
         }
     }
     @Override
