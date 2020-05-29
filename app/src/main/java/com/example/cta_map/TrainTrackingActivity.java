@@ -52,11 +52,17 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
         assert bb != null;
         final String target_station_type = bb.getString("target_station_type");
         final String target_station_name = bb.getString("target_station_name");
+        final boolean[] isOn = {bb.getBoolean("isOn")};
         final String[] specified_train_direction = {bb.getString("train_direction")};
         final Button hide = initiate_button(R.id.show);
         final Button switch_direction = initiate_button(R.id.switch_direction);
         final Button choose_station = initiate_button(R.id.pickStation);
         final Switch notify_switch = (Switch) findViewById(R.id.switch1);
+        Log.e("isON", isOn[0] +"");
+        if (isOn[0]){
+            notify_switch.setChecked(isOn[0]);
+        }
+
 
         choose_station.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
@@ -149,21 +155,25 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                         notify_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                             @Override
                             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                Log.e("check", String.valueOf(isChecked));
                                 if (isChecked){
-                                    notify[0] = isChecked;
-                                    Log.e("Start", "Notifying user");
+                                    isOn[0] = isChecked;
 
                                 }else{
-                                    Log.e("Not tracking", "Not notifying user");
+                                    isOn[0] = false;
+                                    t[0] = false;
+                                    yel[0] =false;
+                                    pink[0] = false;
+                                    Log.e("Tracking", isOn[0]+"");
+
                                 }
 
 
                             }
                         });
 
-                        if (notify[0]){
+                        if (isOn[0]){
                             if (train_etas.size() != 0){
+                                Log.e("Tracking", isOn[0]+"");
                                 Context context = getApplicationContext();
                                 UserLocation userLocation = new UserLocation(context);
                                 Intent intent = new Intent(TrainTrackingActivity.this, mainactivity.class);
@@ -187,7 +197,7 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
 
                         train_etas.clear();
                         chosen_trains.clear();
-                        Thread.sleep(1000);
+                        Thread.sleep(500);
                     }catch (IOException | InterruptedException e){
                         e.printStackTrace();
                     }
@@ -202,10 +212,10 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
             public void onClick(View v) {
                 connect[0]= false;
                 Intent intent = new Intent(TrainTrackingActivity.this, MapsActivity.class);
+                intent.putExtra("isOn", isOn[0]);
                 intent.putExtra("target_station_type", target_station_type);
                 intent.putExtra("target_station_name", target_station_name);
                 intent.putExtra("train_direction", specified_train_direction[0]);
-                Log.e("ddd", specified_train_direction[0] + " "+ target_station_name + " "+ target_station_type);
                 try {
                     Thread.sleep(10);
                 } catch (InterruptedException e) {
