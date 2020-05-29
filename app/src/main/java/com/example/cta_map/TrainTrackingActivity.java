@@ -152,9 +152,12 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                                 Log.e("check", String.valueOf(isChecked));
                                 if (isChecked){
                                     notify[0] = isChecked;
+
                                     Log.e("Start", "Notifying user");
 
+
                                 }else{
+                                    notify[0]=false;
                                     Log.e("Not tracking", "Not notifying user");
                                 }
 
@@ -187,7 +190,7 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
 
                         train_etas.clear();
                         chosen_trains.clear();
-                        Thread.sleep(1000);
+                        Thread.sleep(500);
                     }catch (IOException | InterruptedException e){
                         e.printStackTrace();
                     }
