@@ -29,6 +29,10 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
     ArrayList<Integer> train_etas = new ArrayList<>();
     ArrayList<HashMap> chosen_trains = new ArrayList<>();
     Bundle bb; // Retrieve data from main screen
+    Boolean[] t = new Boolean[] {false};
+    Boolean[] yel = new Boolean[] {false};
+    Boolean[] pink = new Boolean[] {false};
+
 
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -61,6 +65,9 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
         switch_direction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                t[0] = false;
+                yel[0] = false;
+                pink[0] = false;
                 Thread.currentThread().interrupt();
                 Toast.makeText(getApplicationContext(), "Switching Directions. Please Wait...", Toast.LENGTH_SHORT).show();
 
@@ -133,19 +140,22 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                         if (train_etas.size() != 0){
                             Context context = getApplicationContext();
                             UserLocation userLocation = new UserLocation(context);
-                            Intent intent = new Intent(TrainTrackingActivity.this,ChooseDirectionActivity.class);
+                            Intent intent = new Intent(TrainTrackingActivity.this, mainactivity.class);
                             int closest_train_eta = train_etas.get(0);
-                            Log.e("closest", closest_train_eta+"");
                             for (HashMap<String, String>current_train : chosen_trains){
                                 if (current_train.containsKey(String.valueOf(closest_train_eta))){
-                                    userLocation.getLastLocation(current_train);
+                                    userLocation.getLastLocation(intent, getApplicationContext(), current_train, closest_train_eta, t, yel, pink);
 
 
                                 }
                             }
+                            if (closest_train_eta == 0){
+                                t[0] = false;
+                                yel[0] =false;
+                                pink[0] = false;
+                            }
 
                         }
-
 
 
                         train_etas.clear();
