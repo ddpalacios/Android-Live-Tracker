@@ -94,6 +94,8 @@ As a local in Chicago, we often face the daily hassle of catching the train on t
 - Indicates if a train is approaching the target station or if any live train is delayed. 
 
 - Switch train direction while viewing its live mapping
+
+-  Notify users when the app is running and when the nearest train is arriving
  
  ### To Do:
  
@@ -101,7 +103,7 @@ As a local in Chicago, we often face the daily hassle of catching the train on t
  
  - Give users the option to not have user location if not preferred
  
- - Notify users when the app is running and when the nearest train is arriving
+
  
  
  # Illustrations
@@ -119,47 +121,22 @@ As a local in Chicago, we often face the daily hassle of catching the train on t
  
  <hr>
  
-`On the left`, the user may input their target station, line, and direction of the train as you normally would in existing CTA's transit locators.  
-
-`On the right`, we see its current live transits with their specific latitude and longitude location. The application extracts its data from the Chicago Transit Authority's API `XML` URL using `Jsoup` and it is updated every 5 seconds.
-
-
-Each train line is color-coded with their appropriated color.
-
-For Example, `Red` Line train markers will be colored 'Red'. `Blue` Lines will have 'Blue' Markers and so on...
-
-
-We can see that those trains that are farther than 20 minutes away from the target station have a `low opacity` with its appropriate color. In this case, |  Granville Station 'Red Line' (marked in `pink`)| and the train's final destination (`Howard` Marked in `blue`) 
-
-
-From here, the application then gathers the `user's location` (latitude and longitude) and calculates its distance from its current position to its target station. 
-
-As it displays that the user is currently `5 minutes away` from Granville and the nearest train is `19 minutes` away, this indicates that the based on the user's current location, they have `14 minutes` to spare before heading out to the station without missing the nearest train.  We can also view even further trains and where they are exactly. 
-
-
 
  Current HomeScreen   |  Granville Station Transit(s)
 :-------------------------:|:-------------------------:
-![](images/pic5.png)  |  ![](images/pic7.png)
+![](images/pic1.png)  |  ![](images/pic3.png)
 
 
 <dl><br></dl>
 
 As time progresses, the train will get closer to our target location and the changing from `Green` --> `Yellow` --> `Blue`
 
-`On the left`, you can see that that the user is currently `5 minutes away` from Granville but the nearest train is `1 minute away` before reaching our target station. We can see on the top, our status changes color to `blue` to indicate that the user `may not reach the train on time` based on their current location. but may still have a chance to reach the next nearest train which is `18 minutes away`
-
 Each color indication is determined by the approximate distance based on the current user location. 
-
-`On the right`, we can see that the user is `238 minutes late` (walking distance) to station `Ashland Green Line`. 
-
-Because of the user's current distance, both trains that are at most `20 minutes away` from the target location, the user is most likely not able to make those trains. Of course, those trains that are `farther away` from than `20 minutes` are indicated with a `low opacity` with their appropriate train line color.  
-
 
 
 User is late to reach nearest train   |  Blue marker late indications for green line to Ashland
 :-------------------------:|:-------------------------:
-![](images/pic1.png)  |  ![](images/pic3.png)
+![](images/pic4.png)  |  ![](images/pic2.png)
 
 
 
@@ -168,7 +145,7 @@ User is late to reach nearest train   |  Blue marker late indications for green 
 
  User is late to reach the nearest train   |  Blue line transits to O'hare
 :-------------------------:|:-------------------------:
-![](images/pic2.png)  |  ![](images/pic4.png)
+![](images/pic5.png)  |  ![](images/pic7.png)
 
  
  
