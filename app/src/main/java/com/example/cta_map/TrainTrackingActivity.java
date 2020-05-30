@@ -55,10 +55,16 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
         final String target_station_name = bb.getString("target_station_name");
         final boolean[] isOn = {bb.getBoolean("isOn")};
         final String[] specified_train_direction = {bb.getString("train_direction")};
+
+        Log.e("ddddd", target_station_name + " "+ target_station_type + " "+ isOn[0]);
+
+
         final Button hide = initiate_button(R.id.show);
         final Button switch_direction = initiate_button(R.id.switch_direction);
         final Button choose_station = initiate_button(R.id.pickStation);
         final Switch notify_switch = (Switch) findViewById(R.id.switch1);
+
+
         Log.e("isON", isOn[0] +"");
         if (isOn[0]){
             notify_switch.setChecked(isOn[0]);
@@ -92,8 +98,6 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                     Log.e("Tracking", isOn[0]+"");
 
                 }
-
-
             }
         });
 
@@ -117,9 +121,10 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
         });
 
 
+
         BufferedReader train_station_csv_reader = chicago_transits.setup_file_reader(getApplicationContext(),R.raw.train_stations);
         final String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(train_station_csv_reader, target_station_name, target_station_type);
-        final ArrayList<String> stops = chicago_transits.retrieve_line_stations(chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_line_stops), target_station_type, false);
+        final ArrayList<String> stops = chicago_transits.retrieve_line_stations(chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_line_stops), target_station_type, true);
         final String url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s",  StationTypeKey.get(target_station_type.toLowerCase()));
         Log.e("url", url);
         /*
@@ -137,7 +142,6 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                 Looper.prepare();
                 while (connect[0]) {
                     try {
-
                         final Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
                         runOnUiThread(new Runnable() {
                             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -145,9 +149,7 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                             @Override
                             public void run() {
                                 final String[] train_list = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
-                                Log.e("tttt", train_list.length+"");
                                 if (train_list.length > 1) {
-
                                     for (String each_train : train_list) {
                                         HashMap<String, String> train_info = chicago_transits.get_train_info(chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_stations), each_train, target_station_name, target_station_type);
                                         int start = 0;
@@ -156,15 +158,13 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                                             train_info.put("target_station_lat", target_station_coordinates[0]);
                                             train_info.put("target_station_lon", target_station_coordinates[1]);
                                             if (specified_train_direction[0].equals("1")) {
-                                                end = stops.indexOf(Objects.requireNonNull(train_info.get("target_station")));
+                                                end = stops.indexOf(Objects.requireNonNull(train_info.get("target_station").replaceAll("[^a-zA-Z0-9]", "")));
                                             } else if (specified_train_direction[0].equals("5")) {
-                                                start = stops.indexOf(Objects.requireNonNull(train_info.get("target_station"))) + 1;
+                                                start = stops.indexOf(Objects.requireNonNull(train_info.get("target_station").replaceAll("[^a-zA-Z0-9]", ""))) + 1;
                                                 end = stops.size();
 
                                             }
                                             setup_train_direction(train_info, stops, start, end, Integer.parseInt(specified_train_direction[0]), getApplicationContext());
-
-
                                         }
                                     }
                                 }else{
@@ -239,9 +239,11 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
         MapRelativeListView mapRelativeListView = new MapRelativeListView(context,findViewById(R.id.train_layout_arrival_times));
         Time times = new Time();
         ignored_stations = stops.subList(start, end);
-        String next_stop = current_train_info.get("next_stop");
+        String next_stop = current_train_info.get("next_stop").replaceAll("[^a-zA-Z0-9]", "");
 
-        if (!ignored_stations.contains(next_stop) && !current_train_info.get("train_lat").equals("0")) {
+        if (!ignored_stations.contains(next_stop)) {
+            Log.e("ignored", ignored_stations+" "+ next_stop);
+
 
 
             Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance( Double.parseDouble(current_train_info.get("train_lat")),
