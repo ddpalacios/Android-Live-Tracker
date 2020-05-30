@@ -140,7 +140,7 @@ As it displays that the user is currently `5 minutes away` from Granville and th
 
  Current HomeScreen   |  Granville Station Transit(s)
 :-------------------------:|:-------------------------:
-![](images/homescreen.png)  |  ![](images/granville_green_and_unmarked.png)
+![](images/pic5.png)  |  ![](images/pic7.png)
 
 
 <dl><br></dl>
@@ -159,7 +159,7 @@ Because of the user's current distance, both trains that are at most `20 minutes
 
 User is late to reach nearest train   |  Blue marker late indications for green line to Ashland
 :-------------------------:|:-------------------------:
-![](images/late_to_granville.png)  |  ![](images/blue_marker_indications_for_green_line.png)
+![](images/pic1.png)  |  ![](images/pic2.png)
 
 
 
@@ -168,7 +168,7 @@ User is late to reach nearest train   |  Blue marker late indications for green 
 
  User is late to reach the nearest train   |  Blue line transits to O'hare
 :-------------------------:|:-------------------------:
-![](images/yellow_late_to_granville.png)  |  ![](images/trains_to_ohare.png)
+![](images/pic3.png)  |  ![](images/pic4.png)
 
  
  
