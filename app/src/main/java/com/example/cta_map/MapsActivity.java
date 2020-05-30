@@ -159,14 +159,12 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                         double station_lon = Double.parseDouble(station_coord[1]);
                                         LatLng lt = new LatLng(station_lat, station_lon);
                                         options.add(lt);
-
                                 }
                                 mMap.addPolyline(options);
                                 mapMarker.addMarker(target_station_coordinates[0], target_station_coordinates[1], target_station_name, "default", 1f).showInfoWindow();
                                 for (String each_train : train_list) {
                                     // prepare each train as a map
                                     HashMap<String, String> train_info = chicago_transits.get_train_info(chicago_transits.setup_file_reader(getApplicationContext(),R.raw.train_stations), each_train,target_station_name ,target_station_type);
-
                                     int start = 0;
                                    int end =0;
                                     if (Objects.equals(train_info.get("train_direction"), specified_train_direction[0])) {
@@ -200,12 +198,8 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                     Log.e("Tracking", isOn[0]+"");
 
                                 }
-
-
                             }
                         });
-
-
 
                         if (isOn[0]){
                             if (train_etas.size() != 0){
@@ -224,15 +218,8 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                     yel[0] =false;
                                     pink[0] = false;
                                 }
-
                             }
-
                         }
-
-
-
-
-
                         train_etas.clear();
                         chosen_trains.clear();
                         Thread.sleep(10000);
@@ -298,9 +285,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                 Boolean[] t = {false};
                 Boolean[] y = {false};
                 Boolean[] p = {false};
-
                 userLocation.getLastLocation(intent, context, current_train_info, current_train_eta, null,null,null, mMap, true);
-
         }
     }
 }

@@ -117,7 +117,7 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
 
         BufferedReader train_station_csv_reader = chicago_transits.setup_file_reader(getApplicationContext(),R.raw.train_stations);
         final String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(train_station_csv_reader, target_station_name, target_station_type);
-        final ArrayList<String> stops = chicago_transits.retrieve_line_stations(chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_line_stops), target_station_type, false);
+        final ArrayList<String> stops = chicago_transits.retrieve_line_stations(chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_line_stops), target_station_type, true);
         final String url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s",  StationTypeKey.get(target_station_type.toLowerCase()));
         Log.e("url", url);
         /*
@@ -153,9 +153,9 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                                             train_info.put("target_station_lat", target_station_coordinates[0]);
                                             train_info.put("target_station_lon", target_station_coordinates[1]);
                                             if (specified_train_direction[0].equals("1")) {
-                                                end = stops.indexOf(Objects.requireNonNull(train_info.get("target_station")));
+                                                end = stops.indexOf(Objects.requireNonNull(train_info.get("target_station").replaceAll("[^a-zA-Z0-9]", "")));
                                             } else if (specified_train_direction[0].equals("5")) {
-                                                start = stops.indexOf(Objects.requireNonNull(train_info.get("target_station"))) + 1;
+                                                start = stops.indexOf(Objects.requireNonNull(train_info.get("target_station").replaceAll("[^a-zA-Z0-9]", ""))) + 1;
                                                 end = stops.size();
 
                                             }
@@ -234,9 +234,11 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
         MapRelativeListView mapRelativeListView = new MapRelativeListView(context,findViewById(R.id.train_layout_arrival_times));
         Time times = new Time();
         ignored_stations = stops.subList(start, end);
-        String next_stop = current_train_info.get("next_stop");
+        String next_stop = current_train_info.get("next_stop").replaceAll("[^a-zA-Z0-9]", "");
 
-        if (!ignored_stations.contains(next_stop) && !current_train_info.get("train_lat").equals("0")) {
+        if (!ignored_stations.contains(next_stop)) {
+            Log.e("ignored", ignored_stations+" "+ next_stop);
+
 
 
             Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance( Double.parseDouble(current_train_info.get("train_lat")),
