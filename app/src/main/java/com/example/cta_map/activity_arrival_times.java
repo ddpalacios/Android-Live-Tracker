@@ -117,11 +117,6 @@ public class activity_arrival_times extends AppCompatActivity {
         intent.putExtra("train_direction", train_direction[0]);
         intent.putExtra("isOn", isOn[0]);
 
-//        final String target_station_type = bb.getString("target_station_type");
-//        final String target_station_name = bb.getString("target_station_name");
-//        final boolean[] isOn = {bb.getBoolean("isOn")};
-//        final String[] specified_train_direction = {bb.getString("train_direction")};
-//
         intent.addCategory(Intent.CATEGORY_HOME);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);

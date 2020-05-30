@@ -142,7 +142,6 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                 Looper.prepare();
                 while (connect[0]) {
                     try {
-
                         final Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
                         runOnUiThread(new Runnable() {
                             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -151,7 +150,6 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                             public void run() {
                                 final String[] train_list = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
                                 if (train_list.length > 1) {
-
                                     for (String each_train : train_list) {
                                         HashMap<String, String> train_info = chicago_transits.get_train_info(chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_stations), each_train, target_station_name, target_station_type);
                                         int start = 0;

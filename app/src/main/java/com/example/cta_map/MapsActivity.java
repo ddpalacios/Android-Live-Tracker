@@ -88,8 +88,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
             notify.setChecked(isOn[0]);
         }
 
-
-
         hide.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -130,7 +128,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
         assert target_station_type != null;
         final String url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s",  StationTypeKey.get(target_station_type.toLowerCase()));
-        Log.e("url", url);
+        Log.e("map url", url);
         /*
           Everything is being ran within its own thread.
          This allows us to run our continuous web extraction
@@ -143,13 +141,13 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                 Looper.prepare();
                 while (connect[0]){
                     try {
-                        Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
-                        final String[] train_list = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
+                        final Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
                         runOnUiThread(new Runnable() {
                             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                             @SuppressLint({"SetTextI18n", "LongLogTag", "DefaultLocale", "WrongConstant", "ShowToast", "NewApi"})
                             @Override
                             public void run() {
+                                final String[] train_list = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
                                 mMap.clear();
                                 PolylineOptions options = new PolylineOptions().width(15).color(colors.get(target_station_type));
                                 for (String each_stop : stops) {
@@ -164,22 +162,24 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                                 mapMarker.addMarker(target_station_coordinates[0], target_station_coordinates[1], target_station_name, "default", 1f).showInfoWindow();
                                 for (String each_train : train_list) {
                                     // prepare each train as a map
-                                    HashMap<String, String> train_info = chicago_transits.get_train_info(chicago_transits.setup_file_reader(getApplicationContext(),R.raw.train_stations), each_train,target_station_name ,target_station_type);
-                                    int start = 0;
-                                   int end =0;
-                                    if (Objects.equals(train_info.get("train_direction"), specified_train_direction[0])) {
-                                        train_info.put("target_station_lat", target_station_coordinates[0]);
-                                        train_info.put("target_station_lon", target_station_coordinates[1]);
-                                        mapMarker.addMarker(train_info.get("main_lat"), train_info.get("main_lon"),train_info.get("main_station"), "cyan", 1f);
-                                        if (specified_train_direction[0].equals("1")){
-                                            end = stops.indexOf(Objects.requireNonNull(train_info.get("target_station")).replaceAll("[^a-zA-Z0-9]", ""));
+                                    HashMap<String, String> train_info = chicago_transits.get_train_info(chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_stations), each_train, target_station_name, target_station_type);
+                                    if (train_info != null) {
+                                        int start = 0;
+                                        int end = 0;
+                                        if (Objects.equals(train_info.get("train_direction"), specified_train_direction[0])) {
+                                            train_info.put("target_station_lat", target_station_coordinates[0]);
+                                            train_info.put("target_station_lon", target_station_coordinates[1]);
+                                            mapMarker.addMarker(train_info.get("main_lat"), train_info.get("main_lon"), train_info.get("main_station"), "cyan", 1f);
+                                            if (specified_train_direction[0].equals("1")) {
+                                                end = stops.indexOf(Objects.requireNonNull(train_info.get("target_station")).replaceAll("[^a-zA-Z0-9]", ""));
 
-                                        }else if (specified_train_direction[0].equals("5")){
-                                            start = stops.indexOf(Objects.requireNonNull(train_info.get("target_station")).replaceAll("[^a-zA-Z0-9]", "")) + 1;
-                                            end = stops.size();
+                                            } else if (specified_train_direction[0].equals("5")) {
+                                                start = stops.indexOf(Objects.requireNonNull(train_info.get("target_station")).replaceAll("[^a-zA-Z0-9]", "")) + 1;
+                                                end = stops.size();
 
+                                            }
+                                            setup_train_direction(train_info, stops, start, end, Integer.parseInt(specified_train_direction[0]), getApplicationContext());
                                         }
-                                        setup_train_direction(train_info, stops, start, end, Integer.parseInt(specified_train_direction[0]), getApplicationContext());
                                     }
                                 }
                                 Log.d("Update", "DONE.");
@@ -232,13 +232,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
             }
         }).start();
     }
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    @SuppressLint("MissingPermission")
-    private Button initiate_button(int widget) {
-        Button button = findViewById(widget);
-        button.setBackgroundColor(Color.rgb(133, 205, 186));
-        return button;
-    }
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onResume() {

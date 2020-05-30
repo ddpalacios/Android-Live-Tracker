@@ -184,6 +184,9 @@ class Chicago_Transits {
         train_info.put("main_lon", main_station_coordinates[1]);
         train_info.put("target_station", target_name);
 
+        if (train_info.isEmpty()){
+            return null;
+        }
 
 
 
