@@ -92,8 +92,6 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                     Log.e("Tracking", isOn[0]+"");
 
                 }
-
-
             }
         });
 
@@ -145,7 +143,6 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                             @Override
                             public void run() {
                                 final String[] train_list = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
-                                Log.e("tttt", train_list.length+"");
                                 if (train_list.length > 1) {
 
                                     for (String each_train : train_list) {
@@ -163,8 +160,6 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
 
                                             }
                                             setup_train_direction(train_info, stops, start, end, Integer.parseInt(specified_train_direction[0]), getApplicationContext());
-
-
                                         }
                                     }
                                 }else{

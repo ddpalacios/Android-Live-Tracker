@@ -70,10 +70,6 @@ public class UserLocation extends Activity {
                                         Log.e("None", "None");
 
                                     }else {
-
-
-
-
                                         Double distance_from_user_and_target = chicago_transits.calculate_coordinate_distance(
                                                 location.getLatitude(),
                                                 location.getLongitude(),

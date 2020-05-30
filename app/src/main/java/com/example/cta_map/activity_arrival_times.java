@@ -44,7 +44,6 @@ public class activity_arrival_times extends AppCompatActivity {
         Log.e("idx activity", all_stops+"");
 
         if (specified_train_direction.equals("1")){
-
             end = all_stops.indexOf(next_stop.replaceAll("[^a-zA-Z0-9]", ""))+1;
             Log.e("idx activity", start + " "+ end);
 

@@ -78,7 +78,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         final String[] specified_train_direction = {bb.getString("train_direction")};
         BufferedReader train_station_csv_reader = chicago_transits.setup_file_reader(getApplicationContext(),R.raw.train_stations);
         final String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(train_station_csv_reader, target_station_name, target_station_type);
-        final ArrayList<String> stops = chicago_transits.retrieve_line_stations(chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_line_stops), target_station_type, false);
+        final ArrayList<String> stops = chicago_transits.retrieve_line_stations(chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_line_stops), target_station_type, true);
         chicago_transits.ZoomIn(mMap, (float) 13.3, target_station_coordinates);
         Log.e("stops", stops+"");
         final Context context = getApplicationContext();
@@ -162,7 +162,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
                                 }
                                 mMap.addPolyline(options);
-
                                 mapMarker.addMarker(target_station_coordinates[0], target_station_coordinates[1], target_station_name, "default", 1f).showInfoWindow();
                                 for (String each_train : train_list) {
                                     // prepare each train as a map
@@ -283,10 +282,11 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         Time times = new Time();
 
         ignored_stations = stops.subList(start, end);
-        String next_stop = Objects.requireNonNull(current_train_info.get("next_stop"));
+        String next_stop = Objects.requireNonNull(current_train_info.get("next_stop").replaceAll("[^a-zA-Z0-9]", ""));
 
         if (ignored_stations.contains(next_stop)) {
-                 mapMarker.addMarker(current_train_info.get("train_lat"), current_train_info.get("train_lon"), current_train_info.get("next_stop"), current_train_info.get("station_type"), .5f);
+            Log.e("ignored", ignored_stations+" " +next_stop+"");
+            mapMarker.addMarker(current_train_info.get("train_lat"), current_train_info.get("train_lon"), current_train_info.get("next_stop"), current_train_info.get("station_type"), .5f);
 
             }else {
             Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance(Double.parseDouble(Objects.requireNonNull(current_train_info.get("train_lat"))), Double.parseDouble(Objects.requireNonNull(current_train_info.get("train_lon"))), Double.parseDouble(Objects.requireNonNull(current_train_info.get("target_station_lat"))), Double.parseDouble(Objects.requireNonNull(current_train_info.get("target_station_lon"))));
