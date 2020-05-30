@@ -159,7 +159,7 @@ Because of the user's current distance, both trains that are at most `20 minutes
 
 User is late to reach nearest train   |  Blue marker late indications for green line to Ashland
 :-------------------------:|:-------------------------:
-![](images/pic1.png)  |  ![](images/pic2.png)
+![](images/pic1.png)  |  ![](images/pic3.png)
 
 
 
@@ -168,7 +168,7 @@ User is late to reach nearest train   |  Blue marker late indications for green 
 
  User is late to reach the nearest train   |  Blue line transits to O'hare
 :-------------------------:|:-------------------------:
-![](images/pic3.png)  |  ![](images/pic4.png)
+![](images/pic2.png)  |  ![](images/pic4.png)
 
  
  
