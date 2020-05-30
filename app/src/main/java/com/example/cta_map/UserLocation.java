@@ -78,7 +78,7 @@ public class UserLocation extends Activity {
                                                 location.getLatitude(),
                                                 location.getLongitude(),
                                                 Double.parseDouble(train_info.get("target_station_lat")),Double.parseDouble(train_info.get("target_station_lon")));
-                                        int user_to_target_eta = 5;//time.get_estimated_time_arrival((int) 3.1, distance_from_user_and_target);
+                                        int user_to_target_eta = time.get_estimated_time_arrival((int) 3.1, distance_from_user_and_target);
                                         if (inMaps) {
                                             MapMarker mapMarker = new MapMarker(mMap);
                                             mapMarker.display_marker_boundries(inten, context, train_eta, user_to_target_eta, train_info, train_info.get("station_type"), 0, 10);
