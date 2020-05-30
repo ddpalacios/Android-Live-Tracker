@@ -61,7 +61,7 @@ class Chicago_Transits {
 
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    ArrayList<String> retrieve_line_stations(BufferedReader reader, String station_type){
+    ArrayList<String> retrieve_line_stations(BufferedReader reader, String station_type, Boolean remove_char){
         String line;
         ArrayList<String> train_line_stops = new ArrayList<>();
         HashMap<String, String> train_lines = new HashMap<>();
@@ -78,8 +78,11 @@ class Chicago_Transits {
                     train_lines.put("brown", tokens[6]);
                     train_lines.put("purple", tokens[7]);
                     String stops = train_lines.get(station_type);
-                    train_line_stops.add(stops);
-
+                    if (remove_char) {
+                        train_line_stops.add(stops.replaceAll("[^a-zA-Z0-9]", ""));
+                    }else{
+                        train_line_stops.add(stops);
+                    }
                 }else{
                     break;
                 }
@@ -247,18 +250,20 @@ class Chicago_Transits {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public ArrayList<Integer> calculate_station_range_eta(HashMap<String, String> current_train_info, int start, int end,int dir, Context context){
         Time time = new Time();
-        int idx =0;
+        int starting_idx =0;
         ArrayList<Integer> train_stop_etas = new ArrayList<>();
         BufferedReader train_station_stops_reader = setup_file_reader(context, R.raw.train_line_stops);
-        ArrayList<String> all_stops = retrieve_line_stations(train_station_stops_reader, current_train_info.get("station_type"));
-        List<String> all_stops_till_target = all_stops.subList(start , end);
+        ArrayList<String> all_stops = retrieve_line_stations(train_station_stops_reader, current_train_info.get("station_type"), false);
+        Log.e("stops", all_stops+"");
+        List<String> all_stops_till_target = all_stops.subList(start, end);
+        Log.e("all stops", all_stops_till_target+"");
 
         if (dir==1){
-            idx = all_stops_till_target.size() -1;
+            starting_idx = all_stops_till_target.size() -1;
         }
         for (int i=0; i < all_stops_till_target.size(); i++){
             BufferedReader train_station_coordinates_reader = setup_file_reader(context, R.raw.train_stations);
-            String remaining_stop = all_stops_till_target.get(idx);
+            String remaining_stop = all_stops_till_target.get(starting_idx);
             String[] remaining_station_coordinates = retrieve_station_coordinates(train_station_coordinates_reader, remaining_stop, current_train_info.get("station_type"));
             String[] current_train_loc = (current_train_info.get("train_lat") + ","+current_train_info.get("train_lon")).split(",");
             double train_distance_to_next_stop = calculate_coordinate_distance(
@@ -269,10 +274,10 @@ class Chicago_Transits {
 
             int next_stop_eta = time.get_estimated_time_arrival(25, train_distance_to_next_stop);
             if (dir == 1){
-                idx --;
+                starting_idx --;
             }
             else{
-                idx++;
+                starting_idx++;
             }
 
             train_stop_etas.add(next_stop_eta);

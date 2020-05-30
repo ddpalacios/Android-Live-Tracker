@@ -35,45 +35,60 @@ public class MapRelativeListView {
 
     }
 
-    public void add_to_list_view(final ArrayList<Integer> train_etas, final HashMap<String, String> current_train_info, final ArrayList<HashMap> chosen_trains, final boolean[] connect){
+    public void add_to_list_view(final ArrayList<Integer> train_etas, final HashMap<String, String> current_train_info, final ArrayList<HashMap> chosen_trains, final boolean[] connect, String dir){
         this.adapter.clear();
         final Context context = this.context;
-        if (train_etas.size() == 0){
-            this.arrayList.add(0, "No Trains Arriving");
+        if (train_etas.size() == 0 || current_train_info == null){
+            if (dir.equals("1")) {
+                this.arrayList.add(0, "No Trains Available." +" (North Bound)");
+            }
+            else if (dir.equals("5")){
+                this.arrayList.add(0, "No Trains Available." +" (South Bound)");
+
+            }
         }
+        else {
+            if (current_train_info.get("train_direction").equals("1")) {
+                this.arrayList.add(0, current_train_info.get("target_station") +" (North Bound)");
+            }
+           else if (current_train_info.get("train_direction").equals("5")){
+                this.arrayList.add(0, current_train_info.get("target_station") +" (South Bound)");
 
+            }
 
+            for (int current_eta : train_etas) {
+                current_train_info.put(current_train_info.get("train_id"), String.valueOf(current_eta));
+                this.arrayList.add("To " + current_train_info.get("main_station") + ": " + current_eta + " Minutes");
+                this.adapter.notifyDataSetChanged();
 
-        this.arrayList.add(0, current_train_info.get("target_station").toUpperCase());
-        for (int current_eta : train_etas) {
-            current_train_info.put(current_train_info.get("train_id"), String.valueOf(current_eta));
-            this.arrayList.add("To "+current_train_info.get("main_station")+": "+current_eta+" Minutes");
-            this.adapter.notifyDataSetChanged();
-
+            }
         }
-        
 
         this.list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (connect[0]) {
-                    connect[0] = false;
-                    Log.d("Connection Status", "Connection Closed");
-                    Toast.makeText(context, "DISCONNECTED", Toast.LENGTH_SHORT).show();
-
+                if (position == 0 ){
+                    Toast.makeText(context, list.getItemAtPosition(position)+"", Toast.LENGTH_SHORT).show();
                 }
-                String[] list_item = String.valueOf(list.getItemAtPosition(position)).split(":");
-                String key = list_item[1].replaceAll("[^\\d.]", "");
-                for (HashMap<String, String>each_train : chosen_trains){
-                    if (each_train.containsKey(key)) {
-                        Log.e("key", key);
-                        Intent intent = new Intent(context, activity_arrival_times.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        intent.putExtra("current_train_info", each_train);
-                        context.startActivity(intent);
+               else {
+                    if (connect[0]) {
+                        connect[0] = false;
+                        Log.d("Connection Status", "Connection Closed");
+                        Toast.makeText(context, "DISCONNECTED", Toast.LENGTH_SHORT).show();
                     }
+                    String[] list_item = String.valueOf(list.getItemAtPosition(position)).split(":");
+                    String key = list_item[1].replaceAll("[^\\d.]", "");
+                    for (HashMap<String, String> each_train : chosen_trains) {
+                        if (each_train.containsKey(key)) {
+                            Log.e("next ", each_train.get("next_stop") + "");
+                            Intent intent = new Intent(context, activity_arrival_times.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.putExtra("current_train_info", each_train);
+                            context.startActivity(intent);
+                        }
 
+                    }
                 }
             }
         });
