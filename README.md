@@ -122,7 +122,7 @@ As a local in Chicago, we often face the daily hassle of catching the train on t
  <hr>
  
 
- Current HomeScreen   |  Granville Station Transit(s)
+ Current HomeScreen   |  Station Transit(s)
 :-------------------------:|:-------------------------:
 ![](images/pic1.png)  |  ![](images/pic3.png)
 
@@ -134,7 +134,7 @@ As time progresses, the train will get closer to our target location and the cha
 Each color indication is determined by the approximate distance based on the current user location. 
 
 
-User is late to reach nearest train   |  Blue marker late indications for green line to Ashland
+Train Tracking & User Notification   |  Example train ETAs for each station untill arrival to target station
 :-------------------------:|:-------------------------:
 ![](images/pic4.png)  |  ![](images/pic2.png)
 
@@ -143,7 +143,7 @@ User is late to reach nearest train   |  Blue marker late indications for green 
 
 
 
- User is late to reach the nearest train   |  Blue line transits to O'hare
+ Live Mapping & User Notification   |  Blue line transits to Forest Park
 :-------------------------:|:-------------------------:
 ![](images/pic5.png)  |  ![](images/pic7.png)
 
