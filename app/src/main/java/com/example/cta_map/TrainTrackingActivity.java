@@ -55,10 +55,16 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
         final String target_station_name = bb.getString("target_station_name");
         final boolean[] isOn = {bb.getBoolean("isOn")};
         final String[] specified_train_direction = {bb.getString("train_direction")};
+
+        Log.e("ddddd", target_station_name + " "+ target_station_type + " "+ isOn[0]);
+
+
         final Button hide = initiate_button(R.id.show);
         final Button switch_direction = initiate_button(R.id.switch_direction);
         final Button choose_station = initiate_button(R.id.pickStation);
         final Switch notify_switch = (Switch) findViewById(R.id.switch1);
+
+
         Log.e("isON", isOn[0] +"");
         if (isOn[0]){
             notify_switch.setChecked(isOn[0]);
@@ -113,6 +119,7 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                 startActivity(intent);
             }
         });
+
 
 
         BufferedReader train_station_csv_reader = chicago_transits.setup_file_reader(getApplicationContext(),R.raw.train_stations);

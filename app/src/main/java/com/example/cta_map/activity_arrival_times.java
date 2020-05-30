@@ -22,6 +22,11 @@ import java.util.List;
 @SuppressLint("Registered")
 public class activity_arrival_times extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    String station_type;
+    String station_name;
+    String[] train_direction = new String[1];
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     protected void onCreate(Bundle savedInstanceState) {
         // TODO: refresh layout for train updates
         setContentView(R.layout.activity_arrival_times);
@@ -37,6 +42,12 @@ public class activity_arrival_times extends AppCompatActivity {
         final ListView list = (ListView) findViewById(R.id.train_etas);
         list.setAdapter(adapter);
         String specified_train_direction = current_train_info.get("train_direction");
+        station_type = current_train_info.get("station_type");
+        station_name = current_train_info.get("target_station");
+        train_direction[0] = specified_train_direction;
+
+
+
 
         int idx = 0;
         int start = 0;
@@ -91,6 +102,29 @@ public class activity_arrival_times extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    @Override
+    public void onBackPressed() {
+        Log.d("CDA", "onBackPressed Called ");
+        Intent intent = new Intent(activity_arrival_times.this,TrainTrackingActivity.class);
+        Boolean[] isOn = new Boolean[]{false};
+        intent.putExtra("target_station_type", station_type);
+        intent.putExtra("target_station_name", station_name);
+        intent.putExtra("train_direction", train_direction[0]);
+        intent.putExtra("isOn", isOn[0]);
+
+//        final String target_station_type = bb.getString("target_station_type");
+//        final String target_station_name = bb.getString("target_station_name");
+//        final boolean[] isOn = {bb.getBoolean("isOn")};
+//        final String[] specified_train_direction = {bb.getString("train_direction")};
+//
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
 }
