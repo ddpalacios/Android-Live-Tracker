@@ -32,10 +32,10 @@ class Chicago_Transits {
                 if ((line = reader.readLine()) != null) {
                     String[] tokens = line.split(",");
                     String stationCanidate = tokens[0].replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
-//                    Log.e("station", stationCanidate + " "+ station_name);
+                    Log.e("station", stationCanidate + " "+ station_name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase());
                     HashMap<String, String> train_types = GetStation(tokens); //HashMap of All train lines
                     if (stationCanidate.equals(station_name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase()) && Boolean.parseBoolean(train_types.get(station_type))) {
-//                        Log.e("FOUND !!!!!!!!!!!!!!!!!!!!!!! station", stationCanidate + " "+ station_name);
+                        Log.e("FOUND !!!!!!!!!!!!!!!!!!!!!!! station", stationCanidate + " "+ station_name);
 
                         return getCord(tokens);
                     }
@@ -49,6 +49,8 @@ class Chicago_Transits {
             }
 
         }
+
+
         return null;
     }
 
@@ -287,5 +289,29 @@ class Chicago_Transits {
         }
     return train_stop_etas;
     }
+
+
+    public HashMap<String, Integer> train_speed_mapping(){
+        HashMap<String, Integer> train_speeds = new HashMap<>();
+        train_speeds.put("green", 25);
+        train_speeds.put("red", 25);
+        train_speeds.put("blue", 25);
+        train_speeds.put("orange", 25);
+        train_speeds.put("pink", 25);
+        train_speeds.put("purple", 55);
+        train_speeds.put("yellow", 25);
+        train_speeds.put("brown", 25);
+
+
+
+        return train_speeds;
+
+
+
+
+
+
+    }
+
 
 }

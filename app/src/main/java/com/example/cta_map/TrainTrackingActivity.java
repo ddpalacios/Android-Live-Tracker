@@ -124,6 +124,9 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
 
         BufferedReader train_station_csv_reader = chicago_transits.setup_file_reader(getApplicationContext(),R.raw.train_stations);
         final String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(train_station_csv_reader, target_station_name, target_station_type);
+        if (target_station_coordinates == null){
+            Toast.makeText(getApplicationContext(), "No Station Found", Toast.LENGTH_SHORT).show();
+        }
         final ArrayList<String> stops = chicago_transits.retrieve_line_stations(chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_line_stops), target_station_type, true);
         final String url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s",  StationTypeKey.get(target_station_type.toLowerCase()));
         Log.e("url", url);
@@ -250,7 +253,8 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                                                                                                                 Double.parseDouble(current_train_info.get("train_lon")),
                                                                                                                 Double.parseDouble(current_train_info.get("target_station_lat")),
                                                                                                                 Double.parseDouble(current_train_info.get("target_station_lon")));
-            int current_train_eta = times.get_estimated_time_arrival(25, current_train_distance_from_target_station);
+            HashMap<String, Integer> train_speeds = chicago_transits.train_speed_mapping();
+            int current_train_eta = times.get_estimated_time_arrival(train_speeds.get(current_train_info.get("station_type")), current_train_distance_from_target_station);
             train_etas.add(current_train_eta);
             Collections.sort(train_etas);
             chosen_trains.add(current_train_info);
@@ -258,4 +262,7 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
         }
         mapRelativeListView.add_to_list_view(train_etas, current_train_info, chosen_trains, connect, current_train_info.get("train_direction"));
     }
+
+
+
 }
