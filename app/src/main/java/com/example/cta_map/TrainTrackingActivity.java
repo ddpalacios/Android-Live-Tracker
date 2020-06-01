@@ -258,8 +258,4 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
         }
         mapRelativeListView.add_to_list_view(train_etas, current_train_info, chosen_trains, connect, current_train_info.get("train_direction"));
     }
-
-
-
-
 }
