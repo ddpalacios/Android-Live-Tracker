@@ -103,6 +103,10 @@ As a local in Chicago, we often face the daily hassle of catching the train on t
  
  - Give users the option to not have user location if not preferred
  
+ - Create AWS server for user profile and data
+ 
+ - Adjustable Notification for users prefrences
+ 
 
  
  
