@@ -63,7 +63,6 @@ public class MapRelativeListView {
 
             }
         }
-
         this.list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override

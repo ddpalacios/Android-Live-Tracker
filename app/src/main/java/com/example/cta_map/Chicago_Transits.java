@@ -165,29 +165,29 @@ class Chicago_Transits {
         String train_lat = get_xml_tag_value(currTrain, "<lat>", "</lat>");
         String train_lon = get_xml_tag_value(currTrain, "<lon>", "</lon>");
         String train_id = get_xml_tag_value(currTrain, "<rn>", "</rn>");
+        if (isApproaching != null) {
+            train_info.put("isApproaching", isApproaching.replaceAll(" ", ""));
+            train_info.put("isDelayed", isDelayed.replaceAll(" ", ""));
+            String new_main = main_station.substring(2);
+            train_info.put("main_station", new_main);
+            train_info.put("train_id", train_id.replaceAll(" ", ""));
+            String new_stop = next_train_stop.substring(2);
+            train_info.put("next_stop", new_stop);
+            train_info.put("train_direction", train_direction.replaceAll(" ", ""));
+            train_info.put("train_lat", train_lat.replaceAll(" ", ""));
+            train_info.put("train_lon", train_lon.replaceAll(" ", ""));
+            train_info.put("station_type", station_type.replaceAll(" ", ""));
+            String main_station_name = train_info.get("main_station");
 
-        train_info.put("isApproaching", isApproaching.replaceAll(" ", ""));
-        train_info.put("isDelayed", isDelayed.replaceAll(" ", ""));
-        String new_main = main_station.substring(2);
-        train_info.put("main_station", new_main);
-        train_info.put("train_id", train_id.replaceAll(" ", ""));
-        String new_stop = next_train_stop.substring(2);
-        train_info.put("next_stop",new_stop);
-        train_info.put("train_direction", train_direction.replaceAll(" ", ""));
-        train_info.put("train_lat", train_lat.replaceAll(" ", ""));
-        train_info.put("train_lon", train_lon.replaceAll(" ", ""));
-        train_info.put("station_type", station_type.replaceAll(" ", ""));
-        String main_station_name = train_info.get("main_station");
+            String[] main_station_coordinates = retrieve_station_coordinates(reader, main_station_name, station_type);
+            train_info.put("main_lat", main_station_coordinates[0]);
+            train_info.put("main_lon", main_station_coordinates[1]);
+            train_info.put("target_station", target_name);
 
-        String[] main_station_coordinates = retrieve_station_coordinates(reader, main_station_name, station_type);
-        train_info.put("main_lat", main_station_coordinates[0]);
-        train_info.put("main_lon", main_station_coordinates[1]);
-        train_info.put("target_station", target_name);
-
-        if (train_info.isEmpty()){
-            return null;
+            if (train_info.isEmpty()) {
+                return null;
+            }
         }
-
 
 
         return train_info;
