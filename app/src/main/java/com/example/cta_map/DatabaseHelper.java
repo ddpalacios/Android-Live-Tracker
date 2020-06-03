@@ -9,11 +9,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.Nullable;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    public static final String DATABASE_NAME = "Train_Coordinates.db";
-    public static final String TABLE_NAME = "coordinate_table";
-    public static final String COL_1 = "ID";
-    public static final String COL_2 = "LATITUDE";
-    public static final String COL_3 = "LONGITUDE";
+    public static final String DATABASE_NAME = "cta_user_profiles.db";
+    public static final String TABLE_NAME = "profile";
+    public static final String COL_1 = "USERNAME";
+    public static final String COL_2 = "EMAIL";
+    public static final String COL_3 = "PHONE_NUMBER";
 
 
 
@@ -24,7 +24,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table "+ TABLE_NAME + "("+"ID INTEGER PRIMARY KEY AUTOINCREMENT,LATITUDE REAL,LONGITUDE REAL"+")");
+        db.execSQL("CREATE TABLE IF NOT EXISTS "+ TABLE_NAME + "("+"" +
+                "ID INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "USERNAME TEXT," +
+                "EMAIL TEXT," +
+                "PHONE_NUMBER TEXT"+")");
 
     }
 

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/new_user_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:inputType="textPersonName"
+        android:hint="username" />
+
+    <EditText
+        android:id="@+id/new_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:layout_below="@id/new_user_name"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:inputType="textEmailAddress"
+        android:hint="jacksparrow@gmail.com"/>
+
+    <EditText
+        android:id="@+id/new_phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/new_email"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:ems="10"
+        android:hint="xxx-xxx-xxxx"
+        android:inputType="phone" />
+
+    <Button
+        android:id="@+id/create_account_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/new_phone"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:text="Create Account" />
+</RelativeLayout>
