@@ -34,11 +34,22 @@
         android:hint="xxx-xxx-xxxx"
         android:inputType="phone" />
 
+    <EditText
+        android:id="@+id/new_bday"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/new_phone"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:ems="10"
+        android:hint="xx-xx-xx"
+        android:inputType="phone" />
+
     <Button
         android:id="@+id/create_account_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/new_phone"
+        android:layout_below="@id/new_bday"
         android:gravity="center"
         android:layout_centerInParent="true"
         android:text="Create Account" />

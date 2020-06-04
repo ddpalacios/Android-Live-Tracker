@@ -5,72 +5,90 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    public static final String DATABASE_NAME = "Train_Coordinates.db";
-    public static final String TABLE_NAME = "coordinate_table";
-    public static final String COL_1 = "ID";
-    public static final String COL_2 = "LATITUDE";
-    public static final String COL_3 = "LONGITUDE";
+    //information of database
+
+    private static final int DATABASE_VERSION = 2;
+
+    private static final String DATABASE_NAME = "Profile.db";
+
+    public static final String IDENTIFICATION_TABLE = "identification_table";
+    public static final String PROFILE_ID_COL = "profile_id"; // primary
+    public static final String PROFILE_BDAY_COL = "profile_bday";
+    public static final String PROFILE_NAME_COL = "profile_name"; //foriegn key
 
 
+    public static final String CONTACT_TABLE = "contact_table";
+    public static final String PHONE_NUMBER_COL = "phone_number_col";
+    public static final String EMAIL_COL = "email_col";
 
+
+    //initialize the database
 
     public DatabaseHelper(Context context) {
-        super(context,DATABASE_NAME, null, 5);
+
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+
     }
 
     @Override
+
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table "+ TABLE_NAME + "("+"ID INTEGER PRIMARY KEY AUTOINCREMENT,LATITUDE REAL,LONGITUDE REAL"+")");
+
+
+        String identification_table = "CREATE TABLE IF NOT EXISTS " + IDENTIFICATION_TABLE + " ( "
+                + PROFILE_ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + PROFILE_BDAY_COL + " TEXT,"
+                + PROFILE_NAME_COL + " TEXT," +
+                "FOREIGN KEY (" + PROFILE_NAME_COL + ") REFERENCES " + CONTACT_TABLE + " (" + PROFILE_ID_COL + "))";
+
+
+        String contact_table = "CREATE TABLE IF NOT EXISTS " + CONTACT_TABLE + " ( "
+                + PROFILE_ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + PHONE_NUMBER_COL + " TEXT,"
+                + EMAIL_COL + " TEXT)";
+        db.execSQL(contact_table);
+        Log.e("Created", contact_table);
+
+
+        db.execSQL(identification_table);
+        Log.e("Created", identification_table);
+
+
+
+
+
 
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-        onCreate(db);
 
+    public void onUpgrade(SQLiteDatabase db, int i, int i1) {
     }
 
-    public boolean insertData(Double lat, Double lon) {
+    public void add_user(Profile profile){
+        ContentValues profile_values = new ContentValues();
+        profile_values.put(PROFILE_NAME_COL, profile.getName());
+        profile_values.put(PROFILE_BDAY_COL, profile.getBday());
+
+        ContentValues contact_values = new ContentValues();
+        contact_values.put(PHONE_NUMBER_COL, profile.getPhone());
+        contact_values.put(EMAIL_COL, profile.getEmail());
+
         SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(COL_2, lat);
-        contentValues.put(COL_3, lon);
+        db.insert(IDENTIFICATION_TABLE,null,profile_values);
+        db.insert(CONTACT_TABLE, null, contact_values);
+        Log.e("SQLITE", "User: "+ profile.getName() +" was added to your database!");
 
-        long result = db.insert(TABLE_NAME, null, contentValues);
-        if (result == -1)
-            return false;
-        else
-            return true;
-    }
 
-    public Cursor getAllData() {
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("select * from " + TABLE_NAME, null);
-        return res;
     }
 
 
-    public boolean updateData(String id, Double lat, Double lon) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(COL_1, id);
-        contentValues.put(COL_2, lat);
-        contentValues.put(COL_3, lon);
 
-
-        db.update(TABLE_NAME, contentValues, "ID = ?", new String[]{(id)});
-        return true;
-    }
-
-    public Integer deleteData(String id) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete(TABLE_NAME, "ID = ?", new String[]{id});
-    }
 
 
 
