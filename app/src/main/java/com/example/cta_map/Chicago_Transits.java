@@ -32,10 +32,10 @@ class Chicago_Transits {
                 if ((line = reader.readLine()) != null) {
                     String[] tokens = line.split(",");
                     String stationCanidate = tokens[0].replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
-//                    Log.e("station", stationCanidate + " "+ station_name);
+                    Log.e("station", stationCanidate + " "+ station_name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase());
                     HashMap<String, String> train_types = GetStation(tokens); //HashMap of All train lines
-                    if (stationCanidate.equals(station_name.replaceAll("[^a-zA-Z0-9]", "")) && Boolean.parseBoolean(train_types.get(station_type))) {
-//                        Log.e("FOUND !!!!!!!!!!!!!!!!!!!!!!! station", stationCanidate + " "+ station_name);
+                    if (stationCanidate.equals(station_name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase()) && Boolean.parseBoolean(train_types.get(station_type))) {
+                        Log.e("FOUND !!!!!!!!!!!!!!!!!!!!!!! station", stationCanidate + " "+ station_name);
 
                         return getCord(tokens);
                     }
@@ -49,6 +49,8 @@ class Chicago_Transits {
             }
 
         }
+
+
         return null;
     }
 
@@ -61,7 +63,7 @@ class Chicago_Transits {
 
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    ArrayList<String> retrieve_line_stations(BufferedReader reader, String station_type){
+    ArrayList<String> retrieve_line_stations(BufferedReader reader, String station_type, Boolean remove_char){
         String line;
         ArrayList<String> train_line_stops = new ArrayList<>();
         HashMap<String, String> train_lines = new HashMap<>();
@@ -78,8 +80,11 @@ class Chicago_Transits {
                     train_lines.put("brown", tokens[6]);
                     train_lines.put("purple", tokens[7]);
                     String stops = train_lines.get(station_type);
-                    train_line_stops.add(stops.replaceAll("[^a-zA-Z0-9]", "").replaceAll(" ", "").toLowerCase());
-
+                    if (remove_char) {
+                        train_line_stops.add(stops.replaceAll("[^a-zA-Z0-9]", ""));
+                    }else{
+                        train_line_stops.add(stops);
+                    }
                 }else{
                     break;
                 }
@@ -145,9 +150,10 @@ class Chicago_Transits {
         HashMap<String, String> train_info = new HashMap<>();
 
         String currTrain = each_train.replaceAll("\n", "")
-                .replaceAll(" ", "")
+                .replaceAll("\t", "")
                 .replaceAll("<train>", "</train>")
                 .replaceAll("</train>", "");
+
 
         currTrain = currTrain.replaceAll("<nextStaId>[\\s\\S]*?</nextStaId>", "");
         currTrain = currTrain.replaceAll("<nextStpId>[\\s\\S]*?</nextStpId>", "");
@@ -161,24 +167,29 @@ class Chicago_Transits {
         String train_lat = get_xml_tag_value(currTrain, "<lat>", "</lat>");
         String train_lon = get_xml_tag_value(currTrain, "<lon>", "</lon>");
         String train_id = get_xml_tag_value(currTrain, "<rn>", "</rn>");
+        if (isApproaching != null) {
+            train_info.put("isApproaching", isApproaching.replaceAll(" ", ""));
+            train_info.put("isDelayed", isDelayed.replaceAll(" ", ""));
+            String new_main = main_station.substring(2);
+            train_info.put("main_station", new_main);
+            train_info.put("train_id", train_id.replaceAll(" ", ""));
+            String new_stop = next_train_stop.substring(2);
+            train_info.put("next_stop", new_stop);
+            train_info.put("train_direction", train_direction.replaceAll(" ", ""));
+            train_info.put("train_lat", train_lat.replaceAll(" ", ""));
+            train_info.put("train_lon", train_lon.replaceAll(" ", ""));
+            train_info.put("station_type", station_type.replaceAll(" ", ""));
+            String main_station_name = train_info.get("main_station");
 
-        train_info.put("isApproaching", isApproaching);
-        train_info.put("isDelayed", isDelayed);
-        train_info.put("main_station", main_station);
-        train_info.put("train_id", train_id);
-        train_info.put("next_stop", next_train_stop.toLowerCase().replace(" ", ""));
-        train_info.put("train_direction", train_direction);
-        train_info.put("train_lat", train_lat);
-        train_info.put("train_lon", train_lon);
-        train_info.put("station_type", station_type);
-        String main_station_name = train_info.get("main_station");
+            String[] main_station_coordinates = retrieve_station_coordinates(reader, main_station_name, station_type);
+            train_info.put("main_lat", main_station_coordinates[0]);
+            train_info.put("main_lon", main_station_coordinates[1]);
+            train_info.put("target_station", target_name);
 
-        String[] main_station_coordinates = retrieve_station_coordinates(reader, main_station_name.toLowerCase().replace(" ", ""), station_type);
-        train_info.put("main_lat", main_station_coordinates[0]);
-        train_info.put("main_lon", main_station_coordinates[1]);
-        train_info.put("target_station", target_name);
-
-
+            if (train_info.isEmpty()) {
+                return null;
+            }
+        }
 
 
         return train_info;
@@ -244,18 +255,20 @@ class Chicago_Transits {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public ArrayList<Integer> calculate_station_range_eta(HashMap<String, String> current_train_info, int start, int end,int dir, Context context){
         Time time = new Time();
-        int idx =0;
+        int starting_idx =0;
         ArrayList<Integer> train_stop_etas = new ArrayList<>();
         BufferedReader train_station_stops_reader = setup_file_reader(context, R.raw.train_line_stops);
-        ArrayList<String> all_stops = retrieve_line_stations(train_station_stops_reader, current_train_info.get("station_type"));
-        List<String> all_stops_till_target = all_stops.subList(start , end);
+        ArrayList<String> all_stops = retrieve_line_stations(train_station_stops_reader, current_train_info.get("station_type"), false);
+        Log.e("stops", all_stops+"");
+        List<String> all_stops_till_target = all_stops.subList(start, end);
+        Log.e("all stops", all_stops_till_target+"");
 
         if (dir==1){
-            idx = all_stops_till_target.size() -1;
+            starting_idx = all_stops_till_target.size() -1;
         }
         for (int i=0; i < all_stops_till_target.size(); i++){
             BufferedReader train_station_coordinates_reader = setup_file_reader(context, R.raw.train_stations);
-            String remaining_stop = all_stops_till_target.get(idx);
+            String remaining_stop = all_stops_till_target.get(starting_idx);
             String[] remaining_station_coordinates = retrieve_station_coordinates(train_station_coordinates_reader, remaining_stop, current_train_info.get("station_type"));
             String[] current_train_loc = (current_train_info.get("train_lat") + ","+current_train_info.get("train_lon")).split(",");
             double train_distance_to_next_stop = calculate_coordinate_distance(
@@ -266,15 +279,39 @@ class Chicago_Transits {
 
             int next_stop_eta = time.get_estimated_time_arrival(25, train_distance_to_next_stop);
             if (dir == 1){
-                idx --;
+                starting_idx --;
             }
             else{
-                idx++;
+                starting_idx++;
             }
 
             train_stop_etas.add(next_stop_eta);
         }
     return train_stop_etas;
     }
+
+
+    public HashMap<String, Integer> train_speed_mapping(){
+        HashMap<String, Integer> train_speeds = new HashMap<>();
+        train_speeds.put("green", 25);
+        train_speeds.put("red", 25);
+        train_speeds.put("blue", 25);
+        train_speeds.put("orange", 25);
+        train_speeds.put("pink", 25);
+        train_speeds.put("purple", 55);
+        train_speeds.put("yellow", 25);
+        train_speeds.put("brown", 25);
+
+
+
+        return train_speeds;
+
+
+
+
+
+
+    }
+
 
 }

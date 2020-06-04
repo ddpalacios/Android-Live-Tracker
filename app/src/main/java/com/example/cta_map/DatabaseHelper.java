@@ -9,98 +9,69 @@ import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.Nullable;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
+    public static final String DATABASE_NAME = "Train_Coordinates.db";
+    public static final String TABLE_NAME = "coordinate_table";
+    public static final String COL_1 = "ID";
+    public static final String COL_2 = "LATITUDE";
+    public static final String COL_3 = "LONGITUDE";
 
-    private static final int DATABASE_VERSION = 1;
 
-    private static final String DATABASE_NAME = "People.db";
 
-    public static final String TABLE_NAME = "Student";
 
-    public static final String COLUMN_ID = "StudentID";
-
-    public static final String COLUMN_NAME = "StudentName";
-
-    public DatabaseHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, DATABASE_NAME, factory, DATABASE_VERSION);
+    public DatabaseHelper(Context context) {
+        super(context,DATABASE_NAME, null, 5);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + "(" + COLUMN_ID +
-                "INTEGER PRIMARY KEY," + COLUMN_NAME + "TEXT )";
-
-        db.execSQL(CREATE_TABLE);
+        db.execSQL("create table "+ TABLE_NAME + "("+"ID INTEGER PRIMARY KEY AUTOINCREMENT,LATITUDE REAL,LONGITUDE REAL"+")");
 
     }
-
-
-    public boolean updateHandler(int ID, String name) {
-
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues args = new ContentValues();
-
-        args.put(COLUMN_ID, ID);
-
-        args.put(COLUMN_NAME, name);
-
-        return db.update(TABLE_NAME, args, COLUMN_ID + "=" + ID, null) > 0;
-
-    }
-
-
-
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        onCreate(db);
 
     }
 
-    public void addHandler(Student student) {
-
-        ContentValues values = new ContentValues();
-
-        values.put(COLUMN_ID, student.getStudent_id());
-
-        values.put(COLUMN_NAME, student.getStudent_name());
-
+    public boolean insertData(Double lat, Double lon) {
         SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COL_2, lat);
+        contentValues.put(COL_3, lon);
 
-        db.insert(TABLE_NAME, null, values);
-
-        db.close();
-
+        long result = db.insert(TABLE_NAME, null, contentValues);
+        if (result == -1)
+            return false;
+        else
+            return true;
     }
 
-
-    public String loadHandler() {
-
-        String result = "";
-
-        String query = "Select * FROM " + TABLE_NAME;
-
+    public Cursor getAllData() {
         SQLiteDatabase db = this.getWritableDatabase();
-
-        Cursor cursor = db.rawQuery(query, null);
-
-        while (cursor.moveToNext()) {
-
-            int result_0 = cursor.getInt(0);
-
-            String result_1 = cursor.getString(1);
-
-            result += String.valueOf(result_0) + " " + result_1 +
-
-                    System.getProperty("line.separator");
-
-        }
-
-        cursor.close();
-
-        db.close();
-
-        return result;
-
+        Cursor res = db.rawQuery("select * from " + TABLE_NAME, null);
+        return res;
     }
+
+
+    public boolean updateData(String id, Double lat, Double lon) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COL_1, id);
+        contentValues.put(COL_2, lat);
+        contentValues.put(COL_3, lon);
+
+
+        db.update(TABLE_NAME, contentValues, "ID = ?", new String[]{(id)});
+        return true;
+    }
+
+    public Integer deleteData(String id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete(TABLE_NAME, "ID = ?", new String[]{id});
+    }
+
+
 
 }
