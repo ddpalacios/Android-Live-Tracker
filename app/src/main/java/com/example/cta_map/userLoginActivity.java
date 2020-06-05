@@ -2,6 +2,7 @@ package com.example.cta_map;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,21 +38,37 @@ public class userLoginActivity extends AppCompatActivity {
             @SuppressLint({"ShowToast", "WrongConstant"})
             @Override
             public void onClick(View v) {
+                Intent ToStations = new Intent(userLoginActivity.this, mainactivity.class);
+
                 DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
                 String user_name = username.getText().toString();
                 String pass = password.getText().toString();
                 if (sqlite.find_profile(user_name, pass)){
 
+
                     ArrayList<String> record = sqlite.getRecord(user_name, pass);
 
-                    if (record != null) {
-                        Toast.makeText(getApplicationContext(), "Welcome " + record.get(1), 1).show();
-                    }
-                    else{
-                        Toast.makeText(getApplicationContext(), "Welcome " + record.get(1)+"", 1).show();
+                    Toast.makeText(getApplicationContext(), "Welcome " + record.get(1), 1).show();
+
+                    Integer id = Integer.parseInt(record.get(0));
+
+                    SharedPreferences.Editor editor = getSharedPreferences("User_Record", MODE_PRIVATE).edit();
+                    editor.putInt("ProfileID", id);
+                    editor.putString("first_name", record.get(1));
+                    editor.putString("last_name", record.get(2));
+                    editor.putString("user_name", record.get(3));
+                    editor.putString("email", record.get(4));
+                    editor.putString("bday", record.get(5));
+                    editor.putString("phone", record.get(6));
+                    editor.putString("pass", record.get(7));
 
 
-                    }
+
+                    editor.commit();
+
+
+                    startActivity(ToStations);
+
                 }else{
                     Toast.makeText(getApplicationContext(), "No Profile Found", 1).show();
 

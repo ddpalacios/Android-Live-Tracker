@@ -2,6 +2,7 @@ package com.example.cta_map;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
@@ -55,8 +56,9 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
         final String target_station_name = bb.getString("target_station_name");
         final boolean[] isOn = {bb.getBoolean("isOn")};
         final String[] specified_train_direction = {bb.getString("train_direction")};
+        SharedPreferences USER_RECORD = getSharedPreferences("User_Record", MODE_PRIVATE);
+        Integer profileId = USER_RECORD.getInt("ProfileID",0);
 
-        Log.e("ddddd", target_station_name + " "+ target_station_type + " "+ isOn[0]);
 
 
         final Button hide = initiate_button(R.id.show);
@@ -65,7 +67,6 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
         final Switch notify_switch = (Switch) findViewById(R.id.switch1);
 
 
-        Log.e("isON", isOn[0] +"");
         if (isOn[0]){
             notify_switch.setChecked(isOn[0]);
         }
@@ -126,6 +127,13 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
         final String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(train_station_csv_reader, target_station_name, target_station_type);
         final ArrayList<String> stops = chicago_transits.retrieve_line_stations(chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_line_stops), target_station_type, true);
         final String url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s",  StationTypeKey.get(target_station_type.toLowerCase()));
+        DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
+        UserStation userStation = new UserStation(target_station_name, target_station_type);
+        userStation.setTrain_lat(Double.parseDouble(target_station_coordinates[0]));
+        userStation.setTrain_lon(Double.parseDouble(target_station_coordinates[1]));
+        userStation.setID(profileId);
+
+        sqlite.addUserStation(userStation);
         Log.e("url", url);
         /*
 

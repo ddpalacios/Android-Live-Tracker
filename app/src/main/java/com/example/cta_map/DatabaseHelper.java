@@ -104,6 +104,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(query, null);
         cursor.moveToLast();
         Integer auto_id = Integer.parseInt(cursor.getString(0));
+        profile.setID(auto_id);
 
     }
 
@@ -115,12 +116,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         profile_values.put(STATION_TYPE_COL, userStation.getStation_type());
         profile_values.put(STATION_LAT_COL, userStation.getStationLat());
         profile_values.put(STATION_LON_COL, userStation.getStationLon());
-
-
-        db.insert(USER_INFO_TABLE, null, profile_values);
+        db.insert(TRAIN_TABLE, null, profile_values);
         String query = "SELECT * FROM " + TRAIN_TABLE;
         Cursor cursor = db.rawQuery(query, null);
-        cursor.moveToLast();
+        cursor.moveToFirst();
         Integer auto_id = Integer.parseInt(cursor.getString(0));
 
 
@@ -134,7 +133,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + " WHERE " + PROFILE_USERNAME_COL + " = '" + username + "' AND " +
                 PROFILE_PASS_COL + " = '" + toHex(password) + "'";
 
-
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         cursor.moveToFirst();
@@ -144,23 +142,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         Log.e("curdor", cursor.getString(1));
         return userRecord;
-
-
-//        if (cursor.moveToFirst()) {
-//            int i = 0;
-//            while (!cursor.isAfterLast()) {
-//                Log.e("cursor", cursor.getString(i));
-////                userRecord.add(cursor.getString(i));
-////                i++;
-//                cursor.moveToNext();
-//            }
-//            return userRecord;
-
-
-
-//        }else{
-//            return null;
-//        }
     }
 
 
