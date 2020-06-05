@@ -127,13 +127,13 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
         final String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(train_station_csv_reader, target_station_name, target_station_type);
         final ArrayList<String> stops = chicago_transits.retrieve_line_stations(chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_line_stops), target_station_type, true);
         final String url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s",  StationTypeKey.get(target_station_type.toLowerCase()));
-        DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
-        UserStation userStation = new UserStation(target_station_name, target_station_type);
-        userStation.setTrain_lat(Double.parseDouble(target_station_coordinates[0]));
-        userStation.setTrain_lon(Double.parseDouble(target_station_coordinates[1]));
-        userStation.setID(profileId);
-
-        sqlite.addUserStation(userStation);
+//        DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
+//        UserStation userStation = new UserStation(target_station_name, target_station_type);
+//        userStation.setTrain_lat(Double.parseDouble(target_station_coordinates[0]));
+//        userStation.setTrain_lon(Double.parseDouble(target_station_coordinates[1]));
+//        userStation.setID(profileId);
+//
+//        sqlite.addUserStation(userStation);
         Log.e("url", url);
         /*
 

@@ -3,6 +3,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -11,6 +12,8 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.io.BufferedReader;
 import java.util.ArrayList;
 
 public class TrainStationActivity  extends AppCompatActivity {
@@ -21,7 +24,7 @@ public class TrainStationActivity  extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.train_station_activity);
-        Chicago_Transits chicago_transits = new Chicago_Transits();
+        final Chicago_Transits chicago_transits = new Chicago_Transits();
         final ListView list = (ListView) findViewById(R.id.train_stops);
         ArrayList<String> arrayList = new ArrayList<>();
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
@@ -58,6 +61,19 @@ public class TrainStationActivity  extends AppCompatActivity {
 
             if (!urlConnection){
                 Intent intent = new Intent(TrainStationActivity.this,mainactivity.class);
+                SharedPreferences USER_RECORD = getSharedPreferences("User_Record", MODE_PRIVATE);
+                Integer profileId = USER_RECORD.getInt("ProfileID",0);
+                DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
+                BufferedReader train_station_csv_reader = chicago_transits.setup_file_reader(getApplicationContext(),R.raw.train_stations);
+                final String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(train_station_csv_reader, target_station, finalTarget_station_type);
+                UserStation userStation = new UserStation(target_station, finalTarget_station_type);
+                userStation.setTrain_lat(Double.parseDouble(target_station_coordinates[0]));
+                userStation.setTrain_lon(Double.parseDouble(target_station_coordinates[1]));
+                Log.e("PROF ID", profileId+"");
+                userStation.setID(profileId);
+                sqlite.addUserStation(userStation);
+
+
                 Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_SHORT).show();
                 startActivity(intent);
 

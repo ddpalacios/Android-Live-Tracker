@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     //information of database
@@ -124,8 +126,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+    public ArrayList<HashMap> GetTableRecord(Integer id, String table_name) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        ArrayList<HashMap> userRecord = new ArrayList<>();
+        String query = "SELECT * FROM "
+                + table_name
+                + " WHERE " + PROFILE_ID_COL + " = '" + id+"'";
 
-    public ArrayList<String> getRecord(String username, String password) {
+        Cursor cursor = db.rawQuery(query, null);
+        cursor.moveToFirst();
+        if (cursor.getCount() > 0) {
+            while(cursor.moveToNext()) {
+                HashMap<String, String> record = new HashMap<>();
+                for (int i = 0; i < cursor.getColumnCount(); i++) {
+                    record.put(cursor.getColumnName(i), cursor.getString(i));
+                }
+                userRecord.add(record);
+            }
+        }
+
+    return userRecord;
+    }
+
+
+
+
+
+
+    public ArrayList<String> GetProfileRecord(String username, String password) {
         ArrayList<String> userRecord = new ArrayList<>();
         String query = "SELECT * FROM "
                 + USER_INFO_TABLE
@@ -165,6 +193,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+
+    public void deleteRecord(String from_table, String where, String[] args){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.e("delete", args[1]+" "+ args[0] + " "+args[2]);
+        int ds = db.delete(from_table, where, args);
+    }
 
 
 

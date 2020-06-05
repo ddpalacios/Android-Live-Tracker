@@ -12,11 +12,18 @@
     <ListView
         android:id="@+id/station_lines"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-
-
+        android:layout_height=".9in" >
 
     </ListView>
+
+    <ListView
+        android:id="@+id/favorite_lines"
+        android:layout_below="@id/station_lines"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+    </ListView>
+
 
 
 

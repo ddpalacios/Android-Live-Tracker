@@ -46,7 +46,7 @@ public class userLoginActivity extends AppCompatActivity {
                 if (sqlite.find_profile(user_name, pass)){
 
 
-                    ArrayList<String> record = sqlite.getRecord(user_name, pass);
+                    ArrayList<String> record = sqlite.GetProfileRecord(user_name, pass);
 
                     Toast.makeText(getApplicationContext(), "Welcome " + record.get(1), 1).show();
 
