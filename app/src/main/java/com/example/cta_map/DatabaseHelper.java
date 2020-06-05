@@ -17,7 +17,7 @@ import java.util.HashMap;
 public class DatabaseHelper extends SQLiteOpenHelper {
     //information of database
 
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     private static final String DATABASE_NAME = "Profile.db";
 
@@ -38,6 +38,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String STATION_NAME_COL = "station_name";
     public static final String STATION_LAT_COL = "station_lat";
     public static final String STATION_LON_COL = "station_lon";
+    public static final String STATION_DIR_COL = "station_dir";
+
 
 
     //initialize the database
@@ -72,7 +74,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + STATION_NAME_COL + " TEXT, "
                 + STATION_TYPE_COL + " TEXT, "
                 + STATION_LAT_COL + " REAL, "
-                + STATION_LON_COL + " REAL)";
+                + STATION_LON_COL + " REAL, "
+                + STATION_DIR_COL +" INTEGER)";
 
         db.execSQL(train_table);
 
@@ -117,6 +120,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         profile_values.put(STATION_TYPE_COL, userStation.getStation_type());
         profile_values.put(STATION_LAT_COL, userStation.getStationLat());
         profile_values.put(STATION_LON_COL, userStation.getStationLon());
+        profile_values.put(STATION_DIR_COL, userStation.getDirection());
         db.insert(TRAIN_TABLE, null, profile_values);
         String query = "SELECT * FROM " + TRAIN_TABLE;
         Cursor cursor = db.rawQuery(query, null);

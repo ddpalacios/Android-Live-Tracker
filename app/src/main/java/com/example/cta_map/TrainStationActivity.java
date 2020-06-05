@@ -69,6 +69,8 @@ public class TrainStationActivity  extends AppCompatActivity {
                 UserStation userStation = new UserStation(target_station, finalTarget_station_type);
                 userStation.setTrain_lat(Double.parseDouble(target_station_coordinates[0]));
                 userStation.setTrain_lon(Double.parseDouble(target_station_coordinates[1]));
+                userStation.setDirection(Integer.parseInt(finalTrain_direction));
+
                 Log.e("PROF ID", profileId+"");
                 userStation.setID(profileId);
                 sqlite.addUserStation(userStation);

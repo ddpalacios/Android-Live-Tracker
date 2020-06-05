@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -65,16 +64,18 @@ public class mainactivity extends AppCompatActivity {
         }
 
 
-        String[] main_menu = new String[]{"Add Favorite Station", "Find Station"};
+        final String[] main_menu = new String[]{"Add Favorite Station", "Find Station"};
         for (String items : main_menu) {
             arrayList.add(items);
             adapter.notifyDataSetChanged();
         }
 
 
-        favoriteStations.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        favoriteStations.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener(){
+
+
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
                 String station = (String) favoriteStations.getItemAtPosition(position);
                 String[] station_details = station.split(" \\(");
@@ -106,9 +107,53 @@ public class mainactivity extends AppCompatActivity {
 
                     }
                 }
+                return false;
             }
 
         });
+
+        favoriteStations.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(mainactivity.this, TrainTrackingActivity.class);
+                String station = (String) favoriteStations.getItemAtPosition(position);
+                String[] station_details = station.split(" \\(");
+                String station_name = station_details[0];
+                String station_type = station_details[1];
+                DatabaseHelper sqlite = new DatabaseHelper(context);
+                ArrayList<HashMap> record = sqlite.GetTableRecord(profileId, "train_table");
+                SharedPreferences.Editor editor = getSharedPreferences("Train_Record", MODE_PRIVATE).edit();
+                for (HashMap<String, String> rec : record){
+                    if (rec.get("station_name").equals(station_name) && rec.get("station_type").equals(station_type.replaceAll("\\)", ""))){
+                        editor.putInt("RecordID", Integer.parseInt(rec.get("RECORD_ID")));
+                        editor.putInt("ProfileID", Integer.parseInt(rec.get("profile_id")));
+                        editor.putFloat("station_lat", Float.parseFloat(rec.get("station_lat")));
+                        editor.putFloat("station_lon", Float.parseFloat(rec.get("station_lon")));
+                        editor.putString("station_name", rec.get("station_name"));
+                        editor.putString("station_type", rec.get("station_type"));
+                        editor.putInt("station_dir", Integer.parseInt(rec.get("station_dir")));
+                        editor.apply();
+
+
+//                        intent.putExtra("target_station_name", station_name);
+//                        intent.putExtra("target_station_type", station_type);
+//                        intent.putExtra("train_direction", rec.get("station_dir"));
+//
+//
+//
+                        startActivity(intent);
+
+
+                    }
+                }
+
+
+            }
+        });
+
+
+
+
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

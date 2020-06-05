@@ -6,6 +6,7 @@ public class UserStation {
     Double station_lat;
     Double station_lon;
     Integer id;
+    Integer direction;
 
 
     public UserStation(String station_name, String station_type){
@@ -13,10 +14,17 @@ public class UserStation {
         this.station_type = station_type;
         this.station_lat = null;
         this.station_lon = null;
+        this.direction = null;
         this.id = null;
 
     }
+public void setDirection(Integer id){
+        this.direction = id;
+}
 
+public Integer getDirection(){
+        return this.direction;
+}
     public void setID(Integer id){
         this.id = id;
 
