@@ -3,6 +3,30 @@
     android:layout_width="match_parent" android:layout_height="match_parent">
 
     <EditText
+        android:id="@+id/first_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:gravity="center"
+        android:layout_above="@id/last_name"
+        android:layout_centerInParent="true"
+        android:inputType="textPersonName"
+        android:hint="First Name" />
+    <EditText
+        android:id="@+id/last_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:gravity="center"
+        android:layout_above="@+id/new_user_name"
+        android:layout_centerInParent="true"
+        android:inputType="textPersonName"
+        android:hint="Last Name" />
+
+
+
+
+    <EditText
         android:id="@+id/new_user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -27,29 +51,41 @@
         android:id="@+id/new_phone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/new_bday"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:ems="10"
+        android:hint="Phone Number"
+        android:inputType="phone" />
+
+
+    <EditText
+        android:id="@+id/password_input"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@id/new_email"
         android:gravity="center"
         android:layout_centerInParent="true"
         android:ems="10"
-        android:hint="xxx-xxx-xxxx"
-        android:inputType="phone" />
+        android:hint="New Password"
+        android:inputType="textPassword" />
 
     <EditText
         android:id="@+id/new_bday"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/new_phone"
+        android:layout_below="@id/password_input"
         android:gravity="center"
         android:layout_centerInParent="true"
         android:ems="10"
-        android:hint="xx-xx-xx"
+        android:hint="Birthday"
         android:inputType="phone" />
 
     <Button
         android:id="@+id/create_account_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/new_bday"
+        android:layout_below="@id/new_phone"
         android:gravity="center"
         android:layout_centerInParent="true"
         android:text="Create Account" />
