@@ -11,6 +11,7 @@
         android:gravity="center"
         android:layout_above="@+id/UserPassword"
         android:layout_centerInParent="true"
+        android:text="ddpalacios"
         android:hint="username" />
 
 
@@ -19,9 +20,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="textPersonName"
+        android:inputType="textPassword"
         android:gravity="center"
         android:layout_centerInParent="true"
+        android:text="C0d31010"
+
         android:hint="Password" />
 
     <Button
@@ -42,7 +45,6 @@
         android:layout_centerInParent="true"
         android:layout_below="@id/loginbutton"
         android:text="New User?" />
-
 
 
 

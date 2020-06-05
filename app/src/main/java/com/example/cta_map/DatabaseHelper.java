@@ -70,8 +70,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + STATION_NAME_COL + " TEXT, "
                 + STATION_TYPE_COL + " TEXT, "
                 + STATION_LAT_COL + " REAL, "
-                + STATION_LON_COL + " REAL, "
-                + PROFILE_PASS_COL + " TEXT)";
+                + STATION_LON_COL + " REAL)";
 
         db.execSQL(train_table);
 

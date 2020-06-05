@@ -64,7 +64,7 @@ public class userLoginActivity extends AppCompatActivity {
 
 
 
-                    editor.commit();
+                    editor.apply();
 
 
                     startActivity(ToStations);
