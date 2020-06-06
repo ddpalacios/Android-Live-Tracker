@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -66,19 +67,6 @@ public class mainactivity extends AppCompatActivity {
             arrayList.add(items);
             adapter.notifyDataSetChanged();
         }
-
-
-    Chicago_Transits chicago_transits = new Chicago_Transits();
-    chicago_transits.retrieve_station_coordinates(chicago_transits.setup_file_reader(getApplicationContext(),R.raw.train_stations), getApplicationContext());
-
-
-
-
-
-
-
-
-
 
 
         favoriteStations.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener(){

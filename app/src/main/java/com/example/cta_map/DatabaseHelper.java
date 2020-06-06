@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -54,6 +55,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String ORANGE_COL = "orange";
     public static final String LATITUDE_COL = "latitude";
     public static final String LONGITUDE_COL = "longitude";
+
+
+
+    public static final String LINE_STOPS_TABLE = "line_stops_table";
+    public static final String STOP_ID = "STOPID";
+    public static final String GREEN_LINE_COL = "green";
+    public static final String RED_LINE_COL = "red";
+    public static final String BLUE_LINE_COL = "blue";
+    public static final String YELLOW_LINE_COL = "yellow";
+    public static final String PINK_LINE_COL = "pink";
+    public static final String ORANGE_LINE_COL = "orange";
+    public static final String BROWN_LINE_COL = "brown";
+    public static final String PURPLE_LINE_COL = "purple";
 
 
 
@@ -120,6 +134,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.e("Created", TRAIN_STATION_TABLE);
 
 
+        String line_stops_table = "CREATE TABLE IF NOT EXISTS " +LINE_STOPS_TABLE + " ( "
+                + STOP_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + GREEN_LINE_COL + " TEXT, "
+                + RED_LINE_COL + " TEXT, "
+                + BLUE_LINE_COL + " TEXT, "
+                + YELLOW_LINE_COL + " TEXT, "
+                + PINK_LINE_COL +" TEXT, "
+                + ORANGE_LINE_COL + " TEXT, "
+                + BROWN_LINE_COL + " TEXT, "
+                + PURPLE_LINE_COL + " TEXT)";
+
+        db.execSQL(line_stops_table);
+        Log.e("Created", LINE_STOPS_TABLE);
 
 
 
@@ -181,6 +208,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+    public void add_station_lines(CTA_Stations cta_data){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(RED_COL, cta_data.getRed());
+        values.put(BLUE_COL, cta_data.getBlue());
+        values.put(GREEN_COL, cta_data.getGreen());
+        values.put(BROWN_COL, cta_data.getBrown());
+        values.put(PURPLE_COL, cta_data.getPurple());
+        values.put(YELLOW_COL, cta_data.getYellow());
+        values.put(PINK_COL, cta_data.getPink());
+        values.put(ORANGE_COL, cta_data.getOrange());
+        Log.e("APPEND", "To TABLE");
+        db.insert(LINE_STOPS_TABLE, null, values);
+        String query = "SELECT * FROM " + LINE_STOPS_TABLE;
+        Cursor cursor = db.rawQuery(query, null);
+        cursor.moveToFirst();
+        Integer auto_id = Integer.parseInt(cursor.getString(0));
+        db.close();
+
+
+
+    }
+
 
     public void addUserStation(UserStation userStation) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -196,6 +246,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(query, null);
         cursor.moveToFirst();
         Integer auto_id = Integer.parseInt(cursor.getString(0));
+        db.close();
 
 
     }
@@ -221,8 +272,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     return userRecord;
     }
-
-
 
 
 
@@ -274,6 +323,48 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.e("delete", args[1]+" "+ args[0] + " "+args[2]);
         int ds = db.delete(from_table, where, args);
     }
+
+
+
+    public ArrayList<String> getValues(String table_name, String col){
+    SQLiteDatabase db= this.getReadableDatabase();
+    ArrayList<String> values = new ArrayList<>();
+        String query = "SELECT "+col +" FROM "+table_name;
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.moveToFirst()){
+            if (cursor.getCount() > 0) {
+                while(cursor.moveToNext()) {
+                        values.add(cursor.getString(0));
+
+                }
+            }
+
+        }
+        if (values.contains("null")){
+            values.removeAll(Collections.singleton("null"));
+        }
+
+return values;
+
+    }
+
+
+
+    public Double[] FindStationValues(String station_name, String station_type){
+        SQLiteDatabase db= this.getReadableDatabase();
+        String query = "SELECT * FROM "+TRAIN_STATION_TABLE + " WHERE STATION_NAME ='"+station_name+"' AND "+station_type.toLowerCase()+" ='true'";
+        Cursor cursor = db.rawQuery(query, null);
+        if(cursor.moveToFirst()){
+            Double[] values = new Double[]{
+                    Double.parseDouble(cursor.getString(cursor.getColumnCount()-2)),
+                    Double.parseDouble(cursor.getString(cursor.getColumnCount()-1))
+            };
+            return values;
+        }
+return null;
+
+    }
+
 
 
 

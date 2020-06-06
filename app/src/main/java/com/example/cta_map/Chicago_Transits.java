@@ -26,30 +26,104 @@ class Chicago_Transits {
 
 
     @SuppressLint("LongLogTag")
-    String[] retrieve_station_coordinates(BufferedReader reader, Context context) {
+    String[] create_line_stops_table(BufferedReader reader, Context context) {
+        DatabaseHelper sqlite = new DatabaseHelper(context);
 
         String line;
+        int row=0;
         while (true) {
             try {
                 if ((line = reader.readLine()) != null) {
-                    String[] tokens = line.split(",");
-                    String stationCanidate = tokens[0];
-                    CTA_Stations cta_stations = new CTA_Stations(stationCanidate);
+                    if (row == 0){
+                        row++;
+                        continue;
+                    }
+                    String[] tokens = (line.replaceAll("\"","")
+                            .replaceAll(",,",",")).split(",");
+                        int id=0;
+//                    for (String t: tokens){
+//                        Log.e("tt", id+" ="+t);
+//                        id++;
+//                    }
+                    CTA_Stations cta_stations = new CTA_Stations(null);
+                    cta_stations.setGreen(tokens[0]);
                     cta_stations.setRed(tokens[1]);
                     cta_stations.setBlue(tokens[2]);
+                    cta_stations.setYellow(tokens[3]);
+                    cta_stations.setPink(tokens[4]);
+                    cta_stations.setOrange(tokens[5]);
+                    cta_stations.setBrown(tokens[6]);
+                    cta_stations.setPurple(tokens[7]);
+
+
+                    sqlite.add_station_lines(cta_stations);
+                    row++;
+
+
+//                    Log.e("station", stationCanidate + " "+ station_name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase());
+//                    HashMap<String, String> train_types = GetStation(tokens); //HashMap of All train lines
+//                    if (stationCanidate.equals(station_name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase()) && Boolean.parseBoolean(train_types.get(station_type))) {
+////                        Log.e("FOUND !!!!!!!!!!!!!!!!!!!!!!! station", stationCanidate + " "+ station_name);
+//
+//                        return getCord(tokens);
+//                    }
+
+                } else {
+                    break;
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            sqlite.close();
+
+        }
+
+
+        return null;
+    }
+
+
+
+    String[] Create_TrainInfo_table(BufferedReader reader, Context context) {
+        DatabaseHelper sqlite = new DatabaseHelper(context);
+
+        String line;
+        int row=0;
+        while (true) {
+            try {
+                if ((line = reader.readLine()) != null) {
+                    if (row == 0){
+                        row++;
+                        continue;
+                    }
+                    String ROW = line;
+                    String[] tokens = (ROW.replaceAll("\"","")
+                            .replaceAll("\\(", "")
+                            .replaceAll("\\)", "")
+                            .replaceAll(",,",",")).split(",");
+                    int id=0;
+//                    for (String t: tokens){
+//                        Log.e("tt", id+" ="+t);
+//                        id++;
+//                    }
+//                    row++;
+                    CTA_Stations cta_stations = new CTA_Stations(tokens[0]);
                     cta_stations.setGreen(tokens[3]);
-                    cta_stations.setBrown(tokens[4]);
-                    cta_stations.setPurple(tokens[5]);
+                    cta_stations.setRed(tokens[1]);
+                    cta_stations.setBlue(tokens[2]);
                     cta_stations.setYellow(tokens[6]);
                     cta_stations.setPink(tokens[7]);
                     cta_stations.setOrange(tokens[8]);
-                    cta_stations.setLat(tokens[9].replaceAll("\\(", ""));
-                    cta_stations.setLon(tokens[11]);
-                    DatabaseHelper sqlite = new DatabaseHelper(context);
+                    cta_stations.setBrown(tokens[4]);
+                    cta_stations.setPurple(tokens[5]);
+                    cta_stations.setLat(tokens[9]);
+                    cta_stations.setLon(tokens[10]);
+//                    Log.e("cccc", cta_stations.getName());
+
+
 
                     sqlite.add_stations(cta_stations);
-
-
 
 
 //                    Log.e("station", stationCanidate + " "+ station_name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase());
@@ -69,6 +143,8 @@ class Chicago_Transits {
             }
 
         }
+        sqlite.close();
+
 
 
         return null;
@@ -310,7 +386,6 @@ class Chicago_Transits {
 //    return train_stop_etas;
 //    }
 
-
     public HashMap<String, Integer> train_speed_mapping(){
         HashMap<String, Integer> train_speeds = new HashMap<>();
         train_speeds.put("green", 25);
@@ -322,15 +397,7 @@ class Chicago_Transits {
         train_speeds.put("yellow", 25);
         train_speeds.put("brown", 25);
 
-
-
         return train_speeds;
-
-
-
-
-
-
     }
 
 

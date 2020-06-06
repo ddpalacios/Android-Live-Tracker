@@ -40,7 +40,7 @@ public class CTA_Stations {
         this.pink = state;
     }
     public void setOrange(String state){
-        this.orange = orange;
+        this.orange = state;
     }
     public void setLat(String state){
         this.lat= state;
