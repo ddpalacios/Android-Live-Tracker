@@ -331,15 +331,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     ArrayList<String> values = new ArrayList<>();
         String query = "SELECT "+col +" FROM "+table_name;
         Cursor cursor = db.rawQuery(query, null);
-        if (cursor.moveToFirst()){
-            if (cursor.getCount() > 0) {
+            if (cursor.getCount() >= 0) {
                 while(cursor.moveToNext()) {
                         values.add(cursor.getString(0));
 
                 }
             }
 
-        }
         if (values.contains("null")){
             values.removeAll(Collections.singleton("null"));
         }
@@ -352,15 +350,17 @@ return values;
 
     public Double[] FindStationValues(String station_name, String station_type){
         SQLiteDatabase db= this.getReadableDatabase();
-        String query = "SELECT * FROM "+TRAIN_STATION_TABLE + " WHERE STATION_NAME ='"+station_name+"' AND "+station_type.toLowerCase()+" ='true'";
+        Log.e("ddd", station_name+" "+ station_type);
+        String query = "SELECT * FROM "+TRAIN_STATION_TABLE + " WHERE STATION_NAME ='"+station_name.replaceAll(" ", "")+"' AND "+station_type.toLowerCase()+" ='true'";
         Cursor cursor = db.rawQuery(query, null);
-        if(cursor.moveToFirst()){
-            Double[] values = new Double[]{
-                    Double.parseDouble(cursor.getString(cursor.getColumnCount()-2)),
-                    Double.parseDouble(cursor.getString(cursor.getColumnCount()-1))
-            };
-            return values;
-        }
+        Log.e("ddd", cursor.moveToFirst()+"");
+//        if(cursor.moveToFirst()){
+//            Double[] values = new Double[]{
+//                    Double.parseDouble(cursor.getString(cursor.getColumnCount()-2)),
+//                    Double.parseDouble(cursor.getString(cursor.getColumnCount()-1))
+//            };
+//            return values;
+//        }
 return null;
 
     }

@@ -2,6 +2,7 @@ package com.example.cta_map;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Parcelable;
 import android.util.Log;
@@ -35,8 +36,12 @@ public class MapRelativeListView {
 
     }
 
-    public void add_to_list_view(final ArrayList<Integer> train_etas, final HashMap<String, String> current_train_info, final ArrayList<HashMap> chosen_trains, final boolean[] connect, String dir){
+    public void add_to_list_view(final ArrayList<Integer> train_etas, final SharedPreferences TRAIN_RECORD,final HashMap<String, String> current_train_info, final ArrayList<HashMap> chosen_trains, final boolean[] connect, String dir){
         this.adapter.clear();
+        final String[]  specified_train_direction = new String[]{String.valueOf(TRAIN_RECORD.getInt("station_dir", 5))};
+        final String target_station_name = TRAIN_RECORD.getString("station_name", null);
+        final String target_station_type =  TRAIN_RECORD.getString("station_type", null);
+
         final Context context = this.context;
         if (train_etas.size() == 0 || current_train_info == null){
             if (dir.equals("1")) {
@@ -49,15 +54,14 @@ public class MapRelativeListView {
         }
         else {
             if (current_train_info.get("train_direction").equals("1")) {
-                this.arrayList.add(0, current_train_info.get("target_station") +" (North Bound)");
+                this.arrayList.add(0, target_station_name +" (North Bound)");
             }
            else if (current_train_info.get("train_direction").equals("5")){
-                this.arrayList.add(0, current_train_info.get("target_station") +" (South Bound)");
+                this.arrayList.add(0, target_station_name +" (South Bound)");
 
             }
 
             for (int current_eta : train_etas) {
-                current_train_info.put(current_train_info.get("train_id"), String.valueOf(current_eta));
                 this.arrayList.add("To " + current_train_info.get("main_station") + ": " + current_eta + " Minutes");
                 this.adapter.notifyDataSetChanged();
 

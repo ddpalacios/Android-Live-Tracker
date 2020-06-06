@@ -42,6 +42,7 @@ public class TrainStationActivity  extends AppCompatActivity {
 
 
     ArrayList<String> train_stops = db.getValues("line_stops_table", target_station_type.toLowerCase());
+        Log.e("stops", train_stops+"");
     if (target_station_type.equals("purple")){
         train_stops.subList(9,18).clear();
     }
@@ -64,26 +65,26 @@ public class TrainStationActivity  extends AppCompatActivity {
             if (!urlConnection){
                 Intent intent = new Intent(TrainStationActivity.this,mainactivity.class);
                 SharedPreferences USER_RECORD = getSharedPreferences("User_Record", MODE_PRIVATE);
-                Integer profileId = USER_RECORD.getInt("ProfileID",0);
+//                Integer profileId = USER_RECORD.getInt("ProfileID",0);
                 DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
                 Double[] target_station_coordinates = sqlite.FindStationValues(target_station, finalTarget_station_type);
-                Log.e("coord", target_station_coordinates[0]+"");
+//                Log.e("coord", target_station_coordinates[0]+"");
 
 
-
-
-                UserStation userStation = new UserStation(target_station, finalTarget_station_type);
-                userStation.setTrain_lat(target_station_coordinates[0]);
-                userStation.setTrain_lon(target_station_coordinates[1]);
-                userStation.setDirection(Integer.parseInt(finalTrain_direction));
-
-                Log.e("PROF ID", profileId+"");
-                userStation.setID(profileId);
-                sqlite.addUserStation(userStation);
-
-
-                Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_SHORT).show();
-                startActivity(intent);
+//
+//
+//                UserStation userStation = new UserStation(target_station, finalTarget_station_type);
+//                userStation.setTrain_lat(target_station_coordinates[0]);
+//                userStation.setTrain_lon(target_station_coordinates[1]);
+//                userStation.setDirection(Integer.parseInt(finalTrain_direction));
+//
+//                Log.e("PROF ID", profileId+"");
+//                userStation.setID(profileId);
+//                sqlite.addUserStation(userStation);
+//
+//
+//                Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_SHORT).show();
+//                startActivity(intent);
 
             }
 

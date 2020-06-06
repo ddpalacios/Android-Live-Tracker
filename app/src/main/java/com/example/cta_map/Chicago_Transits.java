@@ -40,11 +40,8 @@ class Chicago_Transits {
                     }
                     String[] tokens = (line.replaceAll("\"","")
                             .replaceAll(",,",",")).split(",");
-                        int id=0;
-//                    for (String t: tokens){
-//                        Log.e("tt", id+" ="+t);
-//                        id++;
-//                    }
+
+
                     CTA_Stations cta_stations = new CTA_Stations(null);
                     cta_stations.setGreen(tokens[0]);
                     cta_stations.setRed(tokens[1]);
@@ -59,14 +56,6 @@ class Chicago_Transits {
                     sqlite.add_station_lines(cta_stations);
                     row++;
 
-
-//                    Log.e("station", stationCanidate + " "+ station_name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase());
-//                    HashMap<String, String> train_types = GetStation(tokens); //HashMap of All train lines
-//                    if (stationCanidate.equals(station_name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase()) && Boolean.parseBoolean(train_types.get(station_type))) {
-////                        Log.e("FOUND !!!!!!!!!!!!!!!!!!!!!!! station", stationCanidate + " "+ station_name);
-//
-//                        return getCord(tokens);
-//                    }
 
                 } else {
                     break;
@@ -97,17 +86,11 @@ class Chicago_Transits {
                         row++;
                         continue;
                     }
-                    String ROW = line;
-                    String[] tokens = (ROW.replaceAll("\"","")
-                            .replaceAll("\\(", "")
-                            .replaceAll("\\)", "")
+                    String[] tokens = (line.replaceAll("\"","")
+
+
                             .replaceAll(",,",",")).split(",");
-                    int id=0;
-//                    for (String t: tokens){
-//                        Log.e("tt", id+" ="+t);
-//                        id++;
-//                    }
-//                    row++;
+
                     CTA_Stations cta_stations = new CTA_Stations(tokens[0]);
                     cta_stations.setGreen(tokens[3]);
                     cta_stations.setRed(tokens[1]);
@@ -117,22 +100,19 @@ class Chicago_Transits {
                     cta_stations.setOrange(tokens[8]);
                     cta_stations.setBrown(tokens[4]);
                     cta_stations.setPurple(tokens[5]);
-                    cta_stations.setLat(tokens[9]);
-                    cta_stations.setLon(tokens[10]);
-//                    Log.e("cccc", cta_stations.getName());
+                    cta_stations.setLat(tokens[9]
+                            .replaceAll("\\(", "")
+                            .replaceAll("\\)", "")
+                            .replaceAll(",,",","));
+                    cta_stations.setLon(tokens[10]
+                            .replaceAll("\\(", "")
+                            .replaceAll("\\)", "")
+                            .replaceAll(",,",","));
 
 
 
                     sqlite.add_stations(cta_stations);
-
-
-//                    Log.e("station", stationCanidate + " "+ station_name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase());
-//                    HashMap<String, String> train_types = GetStation(tokens); //HashMap of All train lines
-//                    if (stationCanidate.equals(station_name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase()) && Boolean.parseBoolean(train_types.get(station_type))) {
-////                        Log.e("FOUND !!!!!!!!!!!!!!!!!!!!!!! station", stationCanidate + " "+ station_name);
-//
-//                        return getCord(tokens);
-//                    }
+                    row++;
 
                 } else {
                     break;
@@ -242,7 +222,7 @@ class Chicago_Transits {
     }
 
 
-    public HashMap<String, String> get_train_info(BufferedReader reader, String each_train, String target_name, String station_type) {
+    public HashMap<String, String> get_train_info( String each_train, String station_type) {
         HashMap<String, String> train_info = new HashMap<>();
 
         String currTrain = each_train.replaceAll("\n", "")
@@ -275,12 +255,6 @@ class Chicago_Transits {
             train_info.put("train_lat", train_lat.replaceAll(" ", ""));
             train_info.put("train_lon", train_lon.replaceAll(" ", ""));
             train_info.put("station_type", station_type.replaceAll(" ", ""));
-            String main_station_name = train_info.get("main_station");
-//
-//            String[] main_station_coordinates = retrieve_station_coordinates(reader, main_station_name, station_type);
-//            train_info.put("main_lat", main_station_coordinates[0]);
-//            train_info.put("main_lon", main_station_coordinates[1]);
-//            train_info.put("target_station", target_name);
 
             if (train_info.isEmpty()) {
                 return null;

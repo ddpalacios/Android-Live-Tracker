@@ -39,7 +39,6 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
     Boolean[] green = new Boolean[] {false};
     Boolean[] yellow = new Boolean[] {false};
     Boolean[] pink = new Boolean[] {false};
-    GoogleMap mMap;
 
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -52,14 +51,11 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
         HashMap <String, String> StationTypeKey = chicago_transits.TrainLineKeys(); // Train line key codes
         bb=getIntent().getExtras();
         assert bb != null;
-        SharedPreferences TRAIN_RECORD = getSharedPreferences("Train_Record", MODE_PRIVATE);
+        final SharedPreferences TRAIN_RECORD = getSharedPreferences("Train_Record", MODE_PRIVATE);
         final String[]  specified_train_direction = new String[]{String.valueOf(TRAIN_RECORD.getInt("station_dir", 5))};
         final String target_station_name = TRAIN_RECORD.getString("station_name", null);
         final String target_station_type =  TRAIN_RECORD.getString("station_type", null);
         Log.e("record", TRAIN_RECORD.getFloat("station_lat", 0)+ "");
-
-
-
         final Button hide = initiate_button(R.id.show);
         final Button switch_direction = initiate_button(R.id.switch_direction);
         final Button choose_station = initiate_button(R.id.pickStation);
@@ -89,10 +85,10 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
 
             }
         });
-
-        final ArrayList<String> stops = chicago_transits.retrieve_line_stations(chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_line_stops), TRAIN_RECORD.getString("station_type", null), true);
-        final String url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s",  StationTypeKey.get(TRAIN_RECORD.getString("station_type", null).toLowerCase()));
         DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
+
+        final ArrayList<String> stops = sqlite.getValues("line_stops_table", target_station_type.toLowerCase());
+        final String url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s",  StationTypeKey.get(TRAIN_RECORD.getString("station_type", null).toLowerCase()));
         final String[] target_station_coordinates = new String[]{String.valueOf(TRAIN_RECORD.getFloat("train_lat", 0)), String.valueOf(TRAIN_RECORD.getFloat("train_lon", 0)) };
 
         Log.e("url", url);
@@ -120,31 +116,26 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                                 final String[] train_list = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
                                 if (train_list.length > 1) {
                                     for (String each_train : train_list) {
-                                        HashMap<String, String> train_info = chicago_transits.get_train_info(chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_stations), each_train, target_station_name, target_station_type);
+                                        HashMap<String, String> train_info = chicago_transits.get_train_info(each_train, target_station_type);
                                         int start = 0;
                                         int end = 0;
                                         if (Objects.equals(train_info.get("train_direction"), specified_train_direction[0])) {
                                             train_info.put("target_station_lat", target_station_coordinates[0]);
                                             train_info.put("target_station_lon", target_station_coordinates[1]);
                                             if (specified_train_direction[0].equals("1")) {
-                                                end = stops.indexOf(Objects.requireNonNull(train_info.get("target_station").replaceAll("[^a-zA-Z0-9]", "")));
+                                                end = stops.indexOf(target_station_name.replaceAll("[^a-zA-Z0-9]", ""));
                                             } else if (specified_train_direction[0].equals("5")) {
-                                                start = stops.indexOf(Objects.requireNonNull(train_info.get("target_station").replaceAll("[^a-zA-Z0-9]", ""))) + 1;
+                                                start = stops.indexOf(target_station_name.replaceAll("[^a-zA-Z0-9]", "")) + 1;
                                                 end = stops.size();
 
                                             }
                                             setup_train_direction(train_info, stops, start, end, Integer.parseInt(specified_train_direction[0]), getApplicationContext());
                                         }
                                     }
-                                }else{
-                                    MapRelativeListView mapRelativeListView = new MapRelativeListView(getApplicationContext(),findViewById(R.id.train_layout_arrival_times));
-                                    mapRelativeListView.add_to_list_view(train_etas, null, chosen_trains, connect,specified_train_direction[0]);
-
                                 }
                                 Log.d("Update", "DONE HERE.");
                             }
                         });
-
 
                         switch_direction.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -186,6 +177,7 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void setup_train_direction(HashMap<String, String> current_train_info, ArrayList<String> stops, int start, int end, int dir, Context context) {
         SharedPreferences TRAIN_RECORD = getSharedPreferences("Train_Record", MODE_PRIVATE);
+
         final String[] target_station_coordinates = new String[]{String.valueOf(TRAIN_RECORD.getFloat("station_lat", 0)), String.valueOf(TRAIN_RECORD.getFloat("station_lon", 0))};
         Chicago_Transits chicago_transits = new Chicago_Transits();
         MapRelativeListView mapRelativeListView = new MapRelativeListView(context, findViewById(R.id.train_layout_arrival_times));
@@ -210,7 +202,7 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
             chosen_trains.add(current_train_info);
             current_train_info.put(String.valueOf(current_train_eta), next_stop);
         }
-        mapRelativeListView.add_to_list_view(train_etas, current_train_info, chosen_trains, connect, current_train_info.get("train_direction"));
+        mapRelativeListView.add_to_list_view(train_etas, TRAIN_RECORD, current_train_info,chosen_trains, connect, current_train_info.get("train_direction"));
     }
         }
 
