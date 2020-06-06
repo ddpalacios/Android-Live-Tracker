@@ -8,6 +8,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.SquareCap;
+
 import org.apache.commons.lang3.StringUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,21 +26,39 @@ class Chicago_Transits {
 
 
     @SuppressLint("LongLogTag")
-    String[] retrieve_station_coordinates(BufferedReader reader, String station_name, String station_type) {
+    String[] retrieve_station_coordinates(BufferedReader reader, Context context) {
 
         String line;
         while (true) {
             try {
                 if ((line = reader.readLine()) != null) {
                     String[] tokens = line.split(",");
-                    String stationCanidate = tokens[0].replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
-//                    Log.e("station", stationCanidate + " "+ station_name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase());
-                    HashMap<String, String> train_types = GetStation(tokens); //HashMap of All train lines
-                    if (stationCanidate.equals(station_name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase()) && Boolean.parseBoolean(train_types.get(station_type))) {
-//                        Log.e("FOUND !!!!!!!!!!!!!!!!!!!!!!! station", stationCanidate + " "+ station_name);
+                    String stationCanidate = tokens[0];
+                    CTA_Stations cta_stations = new CTA_Stations(stationCanidate);
+                    cta_stations.setRed(tokens[1]);
+                    cta_stations.setBlue(tokens[2]);
+                    cta_stations.setGreen(tokens[3]);
+                    cta_stations.setBrown(tokens[4]);
+                    cta_stations.setPurple(tokens[5]);
+                    cta_stations.setYellow(tokens[6]);
+                    cta_stations.setPink(tokens[7]);
+                    cta_stations.setOrange(tokens[8]);
+                    cta_stations.setLat(tokens[9].replaceAll("\\(", ""));
+                    cta_stations.setLon(tokens[11]);
+                    DatabaseHelper sqlite = new DatabaseHelper(context);
 
-                        return getCord(tokens);
-                    }
+                    sqlite.add_stations(cta_stations);
+
+
+
+
+//                    Log.e("station", stationCanidate + " "+ station_name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase());
+//                    HashMap<String, String> train_types = GetStation(tokens); //HashMap of All train lines
+//                    if (stationCanidate.equals(station_name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase()) && Boolean.parseBoolean(train_types.get(station_type))) {
+////                        Log.e("FOUND !!!!!!!!!!!!!!!!!!!!!!! station", stationCanidate + " "+ station_name);
+//
+//                        return getCord(tokens);
+//                    }
 
                 } else {
                     break;
@@ -180,11 +200,11 @@ class Chicago_Transits {
             train_info.put("train_lon", train_lon.replaceAll(" ", ""));
             train_info.put("station_type", station_type.replaceAll(" ", ""));
             String main_station_name = train_info.get("main_station");
-
-            String[] main_station_coordinates = retrieve_station_coordinates(reader, main_station_name, station_type);
-            train_info.put("main_lat", main_station_coordinates[0]);
-            train_info.put("main_lon", main_station_coordinates[1]);
-            train_info.put("target_station", target_name);
+//
+//            String[] main_station_coordinates = retrieve_station_coordinates(reader, main_station_name, station_type);
+//            train_info.put("main_lat", main_station_coordinates[0]);
+//            train_info.put("main_lon", main_station_coordinates[1]);
+//            train_info.put("target_station", target_name);
 
             if (train_info.isEmpty()) {
                 return null;
@@ -252,43 +272,43 @@ class Chicago_Transits {
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public ArrayList<Integer> calculate_station_range_eta(HashMap<String, String> current_train_info, int start, int end,int dir, Context context){
-        Time time = new Time();
-        int starting_idx =0;
-        ArrayList<Integer> train_stop_etas = new ArrayList<>();
-        BufferedReader train_station_stops_reader = setup_file_reader(context, R.raw.train_line_stops);
-        ArrayList<String> all_stops = retrieve_line_stations(train_station_stops_reader, current_train_info.get("station_type"), false);
-        Log.e("stops", all_stops+"");
-        List<String> all_stops_till_target = all_stops.subList(start, end);
-        Log.e("all stops", all_stops_till_target+"");
-
-        if (dir==1){
-            starting_idx = all_stops_till_target.size() -1;
-        }
-        for (int i=0; i < all_stops_till_target.size(); i++){
-            BufferedReader train_station_coordinates_reader = setup_file_reader(context, R.raw.train_stations);
-            String remaining_stop = all_stops_till_target.get(starting_idx);
-            String[] remaining_station_coordinates = retrieve_station_coordinates(train_station_coordinates_reader, remaining_stop, current_train_info.get("station_type"));
-            String[] current_train_loc = (current_train_info.get("train_lat") + ","+current_train_info.get("train_lon")).split(",");
-            double train_distance_to_next_stop = calculate_coordinate_distance(
-                    Double.parseDouble(current_train_loc[0]),
-                    Double.parseDouble(current_train_loc[1]),
-                    Double.parseDouble(remaining_station_coordinates[0]),
-                    Double.parseDouble(remaining_station_coordinates[1]));
-
-            int next_stop_eta = time.get_estimated_time_arrival(25, train_distance_to_next_stop);
-            if (dir == 1){
-                starting_idx --;
-            }
-            else{
-                starting_idx++;
-            }
-
-            train_stop_etas.add(next_stop_eta);
-        }
-    return train_stop_etas;
-    }
+//    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+//    public ArrayList<Integer> calculate_station_range_eta(HashMap<String, String> current_train_info, int start, int end,int dir, Context context){
+//        Time time = new Time();
+//        int starting_idx =0;
+//        ArrayList<Integer> train_stop_etas = new ArrayList<>();
+//        BufferedReader train_station_stops_reader = setup_file_reader(context, R.raw.train_line_stops);
+//        ArrayList<String> all_stops = retrieve_line_stations(train_station_stops_reader, current_train_info.get("station_type"), false);
+//        Log.e("stops", all_stops+"");
+//        List<String> all_stops_till_target = all_stops.subList(start, end);
+//        Log.e("all stops", all_stops_till_target+"");
+//
+//        if (dir==1){
+//            starting_idx = all_stops_till_target.size() -1;
+//        }
+//        for (int i=0; i < all_stops_till_target.size(); i++){
+//            BufferedReader train_station_coordinates_reader = setup_file_reader(context, R.raw.train_stations);
+//            String remaining_stop = all_stops_till_target.get(starting_idx);
+////            String[] remaining_station_coordinates = retrieve_station_coordinates(train_station_coordinates_reader, remaining_stop, current_train_info.get("station_type"));
+//            String[] current_train_loc = (current_train_info.get("train_lat") + ","+current_train_info.get("train_lon")).split(",");
+////            double train_distance_to_next_stop = calculate_coordinate_distance(
+////                    Double.parseDouble(current_train_loc[0]),
+////                    Double.parseDouble(current_train_loc[1]),
+////                    Double.parseDouble(remaining_station_coordinates[0]),
+////                    Double.parseDouble(remaining_station_coordinates[1]));
+//
+////            int next_stop_eta = time.get_estimated_time_arrival(25, train_distance_to_next_stop);
+//            if (dir == 1){
+//                starting_idx --;
+//            }
+//            else{
+//                starting_idx++;
+//            }
+//
+//            train_stop_etas.add(next_stop_eta);
+//        }
+//    return train_stop_etas;
+//    }
 
 
     public HashMap<String, Integer> train_speed_mapping(){

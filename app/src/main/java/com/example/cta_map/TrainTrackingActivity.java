@@ -52,20 +52,10 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
         HashMap <String, String> StationTypeKey = chicago_transits.TrainLineKeys(); // Train line key codes
         bb=getIntent().getExtras();
         assert bb != null;
-//        final String target_station_type = bb.getString("target_station_type");
-//        final String target_station_name = bb.getString("target_station_name");
-//        final boolean[] isOn = {bb.getBoolean("isOn")};
-//        Log.e("isOn", isOn[0]+"");
-//        final String[] specified_train_direction = {bb.getString("train_direction")};
-        SharedPreferences USER_RECORD = getSharedPreferences("User_Record", MODE_PRIVATE);
         SharedPreferences TRAIN_RECORD = getSharedPreferences("Train_Record", MODE_PRIVATE);
         final String[]  specified_train_direction = new String[]{String.valueOf(TRAIN_RECORD.getInt("station_dir", 5))};
-
         final String target_station_name = TRAIN_RECORD.getString("station_name", null);
         final String target_station_type =  TRAIN_RECORD.getString("station_type", null);
-
-
-
         Log.e("record", TRAIN_RECORD.getFloat("station_lat", 0)+ "");
 
 
@@ -74,11 +64,6 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
         final Button switch_direction = initiate_button(R.id.switch_direction);
         final Button choose_station = initiate_button(R.id.pickStation);
         final Switch notify_switch = (Switch) findViewById(R.id.switch1);
-
-//
-//        if (isOn[0]){
-//            notify_switch.setChecked(isOn[0]);
-//        }
 
 
         choose_station.setOnClickListener(new View.OnClickListener() {
@@ -94,59 +79,22 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
 
 
 
-//        notify_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                if (isChecked){
-//                    isOn[0] = isChecked;
-//
-//                }else{
-//                    isOn[0] = false;
-//                    green[0] = false;
-//                    yellow[0] =false;
-//                    pink[0] = false;
-//                    Log.e("Tracking", isOn[0]+"");
-//
-//                }
-//            }
-//        });
-
         hide.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
                 connect[0]= false;
-//                Intent intent = new Intent(TrainTrackingActivity.this, MapsActivity.class);
-//                intent.putExtra("isOn", isOn[0]);
-//                intent.putExtra("target_station_type", target_station_type);
-//                intent.putExtra("target_station_name", target_station_name);
-//                intent.putExtra("train_direction", specified_train_direction[0]);
-//                try {
-//                    Thread.sleep(10);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                startActivity(intent);
+                Intent intent = new Intent(TrainTrackingActivity.this, MapsActivity.class);
+                startActivity(intent);
+
             }
         });
 
-
-//        Log.e("Tracking", target_station_name+" "+ target_station_type);
-
-//        BufferedReader train_station_csv_reader = chicago_transits.setup_file_reader(getApplicationContext(),R.raw.train_stations);
-//        final String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(train_station_csv_reader, target_station_name, target_station_type);
         final ArrayList<String> stops = chicago_transits.retrieve_line_stations(chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_line_stops), TRAIN_RECORD.getString("station_type", null), true);
         final String url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s",  StationTypeKey.get(TRAIN_RECORD.getString("station_type", null).toLowerCase()));
         DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
         final String[] target_station_coordinates = new String[]{String.valueOf(TRAIN_RECORD.getFloat("train_lat", 0)), String.valueOf(TRAIN_RECORD.getFloat("train_lon", 0)) };
 
-
-//        UserStation userStation = new UserStation(target_station_name, target_station_type);
-//        userStation.setTrain_lat(Double.parseDouble(target_station_coordinates[0]));
-//        userStation.setTrain_lon(Double.parseDouble(target_station_coordinates[1]));
-//        userStation.setID(profileId);
-//
-//        sqlite.addUserStation(userStation);
         Log.e("url", url);
         /*
 
@@ -197,25 +145,6 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
                             }
                         });
 
-//                        if (isOn[0]){
-//                            if (train_etas.size() != 0){
-//                                Log.e("Tracking", isOn[0]+"");
-//                                Context context = getApplicationContext();
-//                                UserLocation userLocation = new UserLocation(context);
-//                                Intent intent = new Intent(TrainTrackingActivity.this, mainactivity.class);
-//                                int closest_train_eta = train_etas.get(0);
-//                                for (HashMap<String, String>current_train : chosen_trains){
-//                                    if (current_train.containsKey(String.valueOf(closest_train_eta))){
-//                                        userLocation.getLastLocation(intent, getApplicationContext(), current_train, closest_train_eta, green, yellow, pink, mMap, false);
-//                                    }
-//                                }
-//                                if (closest_train_eta == 0){
-//                                    green[0] = false;
-//                                    yellow[0] =false;
-//                                    pink[0] = false;
-//                                }
-//                            }
-//                        }
 
                         switch_direction.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -275,7 +204,6 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
 
 
 
-            Log.e("c", current_train_distance_from_target_station+"");
             int current_train_eta = times.get_estimated_time_arrival(25, current_train_distance_from_target_station);
             train_etas.add(current_train_eta);
             Collections.sort(train_etas);

@@ -56,11 +56,8 @@ public class mainactivity extends AppCompatActivity {
                 favoriteList.add(station_name + " (" + station_type + ")");
                 favoriteadapter.notifyDataSetChanged();
 
-//                favoriteList.add(rec);
-//                favoriteadapter.notifyDataSetChanged();
             }
-//          favoriteList.add(record.get(2) + " ("+record.get(3)+")");
-//          favoriteadapter.notifyDataSetChanged();
+
         }
 
 
@@ -69,6 +66,19 @@ public class mainactivity extends AppCompatActivity {
             arrayList.add(items);
             adapter.notifyDataSetChanged();
         }
+
+
+    Chicago_Transits chicago_transits = new Chicago_Transits();
+    chicago_transits.retrieve_station_coordinates(chicago_transits.setup_file_reader(getApplicationContext(),R.raw.train_stations), getApplicationContext());
+
+
+
+
+
+
+
+
+
 
 
         favoriteStations.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener(){
@@ -134,13 +144,6 @@ public class mainactivity extends AppCompatActivity {
                         editor.putInt("station_dir", Integer.parseInt(rec.get("station_dir")));
                         editor.apply();
 
-
-//                        intent.putExtra("target_station_name", station_name);
-//                        intent.putExtra("target_station_type", station_type);
-//                        intent.putExtra("train_direction", rec.get("station_dir"));
-//
-//
-//
                         startActivity(intent);
 
 

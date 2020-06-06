@@ -1,5 +1,4 @@
 package com.example.cta_map;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -55,6 +54,7 @@ public class UserLocation extends Activity {
             if (isLocationEnabled()) {
                 this.mFusedLocationClient.getLastLocation().addOnCompleteListener(
                         new OnCompleteListener<Location>() {
+                            @RequiresApi(api = Build.VERSION_CODES.O)
                             @SuppressLint("SetTextI18n")
                             @Override
                             public void onComplete(@NonNull Task<Location> task) {
@@ -70,21 +70,16 @@ public class UserLocation extends Activity {
                                         Log.e("None", "None");
 
                                     }else {
-
-
-
-
                                         Double distance_from_user_and_target = chicago_transits.calculate_coordinate_distance(
                                                 location.getLatitude(),
                                                 location.getLongitude(),
                                                 Double.parseDouble(train_info.get("target_station_lat")),Double.parseDouble(train_info.get("target_station_lon")));
                                         int user_to_target_eta = 5;//time.get_estimated_time_arrival((int) 3.1, distance_from_user_and_target);
-                                        Log.e("fff", user_to_target_eta + " "+ train_eta);
                                         if (inMaps) {
                                             MapMarker mapMarker = new MapMarker(mMap);
-                                            mapMarker.display_marker_boundries(inten, context, train_eta, user_to_target_eta, train_info, train_info.get("station_type"), 0, 20);
+                                            mapMarker.display_marker_boundries(inten, context, train_eta, user_to_target_eta, train_info, train_info.get("station_type"), 0, 10);
                                         }else{
-                                        if (user_to_target_eta <= train_eta) {
+                                            if (user_to_target_eta <= train_eta) {
                                                 int minutes_to_spare = train_eta - user_to_target_eta;
                                                 if (!t[0]){
                                                     notificationBuilder.notificationDialog("Train is "+train_eta+" Minutes Away From "+train_info.get("target_station"),
@@ -92,7 +87,7 @@ public class UserLocation extends Activity {
                                                     Log.e("Update", "Green!!!!");
                                                     Log.e("bool", t[0]+"");
                                                     t[0] = true;
-                                                    }
+                                                }
                                                 else{
                                                     Log.e("bool", t[0]+"");
                                                     Log.e("Update", "notified for green");
@@ -133,7 +128,7 @@ public class UserLocation extends Activity {
                                                 }
                                             }
 
-                                    }
+                                        }
                                     }
 
                                 }

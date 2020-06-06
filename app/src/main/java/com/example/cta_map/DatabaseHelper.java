@@ -41,6 +41,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String STATION_DIR_COL = "station_dir";
 
 
+    public static final String TRAIN_STATION_TABLE = "train_station_table";
+    public static final String RECORD_STATION_ID = "RECORD_STATION_ID";
+    public static final String STATION_NAME = "STATION_NAME";
+    public static final String RED_COL = "red";
+    public static final String BLUE_COL = "blue";
+    public static final String GREEN_COL = "green";
+    public static final String BROWN_COL = "brown";
+    public static final String YELLOW_COL = "yellow";
+    public static final String PURPLE_COL = "purple";
+    public static final String PINK_COL = "pink";
+    public static final String ORANGE_COL = "orange";
+    public static final String LATITUDE_COL = "latitude";
+    public static final String LONGITUDE_COL = "longitude";
+
+
+
+
+
+
 
     //initialize the database
     public DatabaseHelper(Context context) {
@@ -82,6 +101,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         Log.e("Created", USER_INFO_TABLE);
 
+
+        String train_station_table = "CREATE TABLE IF NOT EXISTS " + TRAIN_STATION_TABLE + " ( "
+                + RECORD_STATION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + STATION_NAME + " INTEGER, "
+                + RED_COL + " TEXT, "
+                + BLUE_COL + " TEXT, "
+                + GREEN_COL + " TEXT, "
+                + BROWN_COL + " TEXT, "
+                + PURPLE_COL +" TEXT, "
+                + YELLOW_COL + " TEXT, "
+                + PINK_COL + " TEXT, "
+                + ORANGE_COL + " TEXT, "
+                + LATITUDE_COL + " TEXT, "
+                + LONGITUDE_COL + " TEXT)";
+
+        db.execSQL(train_station_table);
+        Log.e("Created", TRAIN_STATION_TABLE);
+
+
+
+
+
+
+
+
+
     }
 
     @Override
@@ -111,6 +156,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         profile.setID(auto_id);
 
     }
+
+    public void add_stations(CTA_Stations cta_data){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(STATION_NAME, cta_data.getName());
+        values.put(RED_COL, cta_data.getRed());
+        values.put(BLUE_COL, cta_data.getBlue());
+        values.put(GREEN_COL, cta_data.getGreen());
+        values.put(BROWN_COL, cta_data.getBrown());
+        values.put(PURPLE_COL, cta_data.getPurple());
+        values.put(YELLOW_COL, cta_data.getYellow());
+        values.put(PINK_COL, cta_data.getPink());
+        values.put(ORANGE_COL, cta_data.getOrange());
+        values.put(LATITUDE_COL, cta_data.getLat());
+        values.put(LONGITUDE_COL, cta_data.getLon());
+
+        db.insert(TRAIN_STATION_TABLE, null, values);
+        String query = "SELECT * FROM " + TRAIN_STATION_TABLE;
+        Cursor cursor = db.rawQuery(query, null);
+        cursor.moveToFirst();
+        Integer auto_id = Integer.parseInt(cursor.getString(0));
+
+
+    }
+
 
     public void addUserStation(UserStation userStation) {
         SQLiteDatabase db = this.getWritableDatabase();
