@@ -1,8 +1,8 @@
 GREEN,RED,BLUE,YELLOW,PINK,ORANGE,BROWN,PURPLE
-Harlem/Lake,Howard,O’Hare,Dempster-Skokie,Washington/Wells,Adams/Wabash,Kimball,Linden
+Harlem/Lake,Howard,OHare,Dempster-Skokie,Washington/Wells,Adams/Wabash,Kimball,Linden
 Oak Park,Jarvis,Rosemont,Oakton-Skokie,Quincy/Wells,Washington/Wabash,Kedzie,Central
 Ridgeland,Morse,Cumberland,Howard,LaSalle/Van Buren,State/Lake,Francisco,Noyes
-Austin,Loyola,Harlem (O’Hare Branch),null,Harold Washington Library-State/Van Buren,Clark/Lake,Rockwell,Foster
+Austin,Loyola,Harlem (OHare Branch),null,Harold Washington Library-State/Van Buren,Clark/Lake,Rockwell,Foster
 Central,Granville,Jefferson Park,null,Adams/Wabash,Washington/Wells,Western,Davis
 Laramie,Thorndale,Montrose,null,Washington/Wabash,Quincy/Wells,Damen,Dempster
 Cicero,Bryn Mawr,Irving Park,null,State/Lake,LaSalle/Van Buren,Montrose,Main
@@ -10,7 +10,7 @@ Pulaski,Berwyn,Addison,null,Clark/Lake,Harold Washington Library-State/Van Buren
 Conservatory,Argyle,Belmont,null,Clinton,Roosevelt,Addison,Howard
 Kedzie,Lawrence,Logan Square,null,Morgan,Halsted,Paulina,Wilson
 California,Wilson,California,null,Ashland,Ashland,South Port,Belmont
-Ashland,Sheridan,Western (O’Hare Branch),null,Polk,35th/Archer,Belmont,Wellington
+Ashland,Sheridan,Western (OHare Branch),null,Polk,35th/Archer,Belmont,Wellington
 Morgan,Addison,Damen,null,18th,Western,Wellington,Diversey
 Clinton,Belmont,Division,null,Damen,Kedzie,Diversey,Fullerton
 Clark/Lake,Fullerton,Chicago,null,Western,Pulaski,Fullerton,Armitage

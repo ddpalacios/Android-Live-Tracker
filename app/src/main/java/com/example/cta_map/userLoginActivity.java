@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.BufferedReader;
 import java.util.ArrayList;
 
 public class userLoginActivity extends AppCompatActivity {
@@ -39,6 +40,11 @@ public class userLoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent ToStations = new Intent(userLoginActivity.this, mainactivity.class);
+                Chicago_Transits chicago_transits = new Chicago_Transits();
+                BufferedReader r = chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_stations);
+                BufferedReader r2 = chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_line_stops);
+                create_tables(r, r2, false);
+
 
                 DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
                 String user_name = username.getText().toString();
@@ -89,6 +95,14 @@ public class userLoginActivity extends AppCompatActivity {
 
 
 
+    }
+
+    public void create_tables(BufferedReader file, BufferedReader file2, boolean create){
+        Chicago_Transits chicago_transits = new Chicago_Transits();
+        if (create) {
+            chicago_transits.Create_TrainInfo_table(file, getApplicationContext());
+            chicago_transits.create_line_stops_table(file2, getApplicationContext());
+        }
     }
 
 }

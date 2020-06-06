@@ -59,36 +59,40 @@ public class TrainStationActivity  extends AppCompatActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             String target_station = String.valueOf(list.getItemAtPosition(position));
             SharedPreferences CONNECTION = getSharedPreferences("CONNECT", MODE_PRIVATE);
-            boolean urlConnection = CONNECTION.getBoolean("connection",true);
-            Toast.makeText(getApplicationContext(), urlConnection+"", Toast.LENGTH_SHORT).show();
+            boolean urlConnection = CONNECTION.getBoolean("connection", true);
+            Toast.makeText(getApplicationContext(), urlConnection + "", Toast.LENGTH_SHORT).show();
 
-            if (!urlConnection){
-                Intent intent = new Intent(TrainStationActivity.this,mainactivity.class);
+            if (!urlConnection) {
+                Intent intent = new Intent(TrainStationActivity.this, mainactivity.class);
                 SharedPreferences USER_RECORD = getSharedPreferences("User_Record", MODE_PRIVATE);
-//                Integer profileId = USER_RECORD.getInt("ProfileID",0);
+                Integer profileId = USER_RECORD.getInt("ProfileID", 0);
                 DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
                 Double[] target_station_coordinates = sqlite.FindStationValues(target_station, finalTarget_station_type);
-//                Log.e("coord", target_station_coordinates[0]+"");
+                if (target_station_coordinates == null) {
+                    Toast.makeText(getApplicationContext(), "No Station Found.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Station Found.", Toast.LENGTH_SHORT).show();
+
+                    Log.e("coord", target_station_coordinates[0] + "");
 
 
-//
-//
-//                UserStation userStation = new UserStation(target_station, finalTarget_station_type);
-//                userStation.setTrain_lat(target_station_coordinates[0]);
-//                userStation.setTrain_lon(target_station_coordinates[1]);
-//                userStation.setDirection(Integer.parseInt(finalTrain_direction));
-//
-//                Log.e("PROF ID", profileId+"");
-//                userStation.setID(profileId);
-//                sqlite.addUserStation(userStation);
-//
-//
-//                Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_SHORT).show();
-//                startActivity(intent);
+                    UserStation userStation = new UserStation(target_station, finalTarget_station_type);
+                    userStation.setTrain_lat(target_station_coordinates[0]);
+                    userStation.setTrain_lon(target_station_coordinates[1]);
+                    userStation.setDirection(Integer.parseInt(finalTrain_direction));
 
-            }
+                    Log.e("PROF ID", profileId + "");
+                    userStation.setID(profileId);
+                    sqlite.addUserStation(userStation);
 
-            else {
+
+                    Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_SHORT).show();
+                    startActivity(intent);
+
+                }
+
+
+            } else {
                 Intent intent = new Intent(TrainStationActivity.this, TrainTrackingActivity.class);
                 intent.putExtra("target_station_type", finalTarget_station_type);
                 intent.putExtra("target_station_name", target_station);

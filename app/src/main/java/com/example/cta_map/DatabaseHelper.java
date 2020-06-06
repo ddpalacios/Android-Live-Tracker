@@ -259,7 +259,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + " WHERE " + PROFILE_ID_COL + " = '" + id+"'";
 
         Cursor cursor = db.rawQuery(query, null);
-        cursor.moveToFirst();
         if (cursor.getCount() > 0) {
             while(cursor.moveToNext()) {
                 HashMap<String, String> record = new HashMap<>();
@@ -350,17 +349,17 @@ return values;
 
     public Double[] FindStationValues(String station_name, String station_type){
         SQLiteDatabase db= this.getReadableDatabase();
-        Log.e("ddd", station_name+" "+ station_type);
-        String query = "SELECT * FROM "+TRAIN_STATION_TABLE + " WHERE STATION_NAME ='"+station_name.replaceAll(" ", "")+"' AND "+station_type.toLowerCase()+" ='true'";
+        Log.e("ddd", station_name.replaceAll("’", "\\'")+" "+ station_type);
+        String query = "SELECT * FROM "+TRAIN_STATION_TABLE + " WHERE STATION_NAME ='"+station_name.replaceAll("’", "\\'")+"' AND "+station_type.toLowerCase()+" ='true'";
         Cursor cursor = db.rawQuery(query, null);
         Log.e("ddd", cursor.moveToFirst()+"");
-//        if(cursor.moveToFirst()){
-//            Double[] values = new Double[]{
-//                    Double.parseDouble(cursor.getString(cursor.getColumnCount()-2)),
-//                    Double.parseDouble(cursor.getString(cursor.getColumnCount()-1))
-//            };
-//            return values;
-//        }
+        if(cursor.moveToFirst()){
+            Double[] values = new Double[]{
+                    Double.parseDouble(cursor.getString(cursor.getColumnCount()-2)),
+                    Double.parseDouble(cursor.getString(cursor.getColumnCount()-1))
+            };
+            return values;
+        }
 return null;
 
     }
