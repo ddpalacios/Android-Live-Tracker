@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class TrainTrackingActivity extends AppCompatActivity implements TrainDirection{
     final boolean[] connect = {true};
@@ -39,34 +40,68 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
         @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
         public void handleMessage(Message msg) {
+            bb=getIntent().getExtras();
+            DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
+            boolean from_sql = bb.getBoolean("from_sql");
+            Time times = new Time();
+            String target_station_type = bb.getString("station_type");
+            String specified_train_direction = bb.getString("station_dir");
+            String target_station_name = bb.getString("station_name");
+            Double target_station_lat = bb.getDouble("station_lat");
+            Double target_station_lon = bb.getDouble("station_lon");
+
+            Bundle bundle = msg.getData();
+            final ArrayList<String> stops = sqlite.getValues("line_stops_table", target_station_type.toLowerCase());
+
             Chicago_Transits chicago_transits = new Chicago_Transits();
             final SharedPreferences USER_RECENT_TRAIN_RECORD = getSharedPreferences("User_Recent_Station_Record", MODE_PRIVATE);
             final SharedPreferences USER_CHOICE_RECORD = getSharedPreferences("User_Choice_Record", MODE_PRIVATE);
-            Bundle bundle = msg.getData();
-            ArrayList<String> train_list =  bundle.getStringArrayList("raw_train_content");
-            assert train_list != null;
-//            for (String s: train_list)
-            Log.e("Recieved: ", train_list+"");
-//            if (train_list.length > 1) {
-//                for (String each_train : train_list) {
-//                    HashMap<String, String> train_info = chicago_transits.get_train_info(each_train, target_station_type);
-//                    int start = 0;
-//                    int end = 0;
-//                    if (Objects.equals(train_info.get("train_direction"), specified_train_direction[0])) {
-//                        train_info.put("target_station_lat", target_station_coordinates[0]);
-//                        train_info.put("target_station_lon", target_station_coordinates[1]);
-//                        if (specified_train_direction[0].equals("1")) {
-//                            end = stops.indexOf(target_station_name.replaceAll("[^a-zA-Z0-9]", ""));
-//                        } else if (specified_train_direction[0].equals("5")) {
-//                            start = stops.indexOf(target_station_name.replaceAll("[^a-zA-Z0-9]", "")) + 1;
-//                            end = stops.size();
-//
-//                        }
-//                        setup_train_direction(train_info, stops, start, end, Integer.parseInt(specified_train_direction[0]), getApplicationContext());
-//                                        }
-//                                    }
-//                                }
+            String[] train_list = bundle.getStringArray("raw_train_content");
+
+            if (train_list.length > 1) {
+                for (String each_train : train_list) {
+                    HashMap<String, String> train_info = chicago_transits.get_train_info(each_train, target_station_type);
+                    int start = 0;
+                    int end = 0;
+                    if (Objects.equals(train_info.get("train_direction"), specified_train_direction)) {
+
+                        if (specified_train_direction.equals("1")) {
+                            end = stops.indexOf(train_info.get("main_station").replaceAll("[^a-zA-Z0-9]", ""));
+                        } else if (specified_train_direction.equals("5")) {
+                            start = stops.indexOf(target_station_name.replaceAll("[^a-zA-Z0-9]", "")) + 1;
+                            end = stops.size();
+
+                        }
+
+                        ignored_stations = stops.subList(start, end);
+                        String next_stop = train_info.get("next_stop").replaceAll("[^a-zA-Z0-9]", "");
+
+                        if (!ignored_stations.contains(next_stop)) {
+                            Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance(
+                                    Double.parseDouble(Objects.requireNonNull(train_info.get("train_lat"))),
+                                    Double.parseDouble(Objects.requireNonNull(train_info.get("train_lon"))),
+                                    target_station_lat,
+                                    target_station_lon);
+
+
+                            int current_train_eta = times.get_estimated_time_arrival(25, current_train_distance_from_target_station);
+                            train_etas.add(current_train_eta);
+                            Collections.sort(train_etas);
+                            Log.e("etas", train_etas+"");
+                            chosen_trains.add(train_info);
+                            train_info.put(String.valueOf(current_train_eta), next_stop);
+
+
+                        }
+//                        setup_train_direction(train_info, stops, start, end, Integer.parseInt(specified_train_direction), getApplicationContext());
+
+                    }
+
+                                    }
+                                }
                                 Log.d("Update", "DONE HERE.");
+                        train_etas.clear();
+                        chosen_trains.clear();
 
                             }
 
@@ -100,20 +135,13 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
             Bundle bundle = new Bundle();
             while (true) {
                 Message msg = handler.obtainMessage();
-
                 try {
-
-
                     Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
                     final String[] train_list = content.select("train").outerHtml().split("</train>");
-                    ArrayList<Object> data = new ArrayList<>();
-                    String[] p = new String[]{String.valueOf(from_sql)};
-                    data.add(train_list);
-                    data.add(p);
 
 
 
-                    bundle.put("raw_train_content", data);
+                    bundle.putStringArray("raw_train_content", train_list);
 
                     msg.setData(bundle);
 

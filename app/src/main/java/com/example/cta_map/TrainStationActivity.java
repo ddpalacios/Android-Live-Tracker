@@ -62,25 +62,26 @@ public class TrainStationActivity  extends AppCompatActivity {
             SharedPreferences CONNECTION = getSharedPreferences("CONNECT", MODE_PRIVATE);
             boolean urlConnection = CONNECTION.getBoolean("connection", true);
             Toast.makeText(getApplicationContext(), urlConnection + "", Toast.LENGTH_SHORT).show();
+            DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
+            Double[] target_station_coordinates = sqlite.FindStationValues(target_station, finalTarget_station_type);
 
             if (!urlConnection) {
                 Intent intent = new Intent(TrainStationActivity.this, mainactivity.class);
                 SharedPreferences USER_RECENT_TRAIN_RECORD = getSharedPreferences("User_Recent_Station_Record", MODE_PRIVATE);
                 Integer profileId = USER_RECENT_TRAIN_RECORD.getInt("ProfileID", 0);
-                DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
-                Double[] target_station_coordinates = sqlite.FindStationValues(target_station, finalTarget_station_type);
                 if (target_station_coordinates == null) {
                     Toast.makeText(getApplicationContext(), "No Station Found.", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getApplicationContext(), "Station Found.", Toast.LENGTH_SHORT).show();
 
-                    Log.e("coord", target_station_coordinates[0] + "");
 
 
                     UserStation userStation = new UserStation(target_station, finalTarget_station_type);
                     userStation.setTrain_lat(target_station_coordinates[0]);
                     userStation.setTrain_lon(target_station_coordinates[1]);
                     userStation.setDirection(Integer.parseInt(finalTrain_direction));
+                    intent.putExtra("station_type", finalTarget_station_type);
+
 
                     Log.e("PROF ID", profileId + "");
                     userStation.setID(profileId);
@@ -102,6 +103,14 @@ public class TrainStationActivity  extends AppCompatActivity {
                 editor.putInt("station_dir", Integer.parseInt(finalTrain_direction));
                 editor.apply();
                 intent.putExtra("from_sql", false);
+                intent.putExtra("station_type", finalTarget_station_type);
+                intent.putExtra("station_dir", finalTrain_direction);
+                intent.putExtra("station_name", target_station);
+                intent.putExtra("station_lat", target_station_coordinates[0]);
+                intent.putExtra("station_lon", target_station_coordinates[1]);
+
+
+
                 startActivity(intent);
             }
         }

@@ -133,6 +133,11 @@ public class mainactivity extends AppCompatActivity {
                         editor.putInt("station_dir", Integer.parseInt(rec.get("station_dir")));
                         editor.apply();
                         intent.putExtra("from_sql", true);
+                        intent.putExtra("station_type", rec.get("station_type"));
+                        intent.putExtra("station_dir", rec.get("station_dir"));
+                        intent.putExtra("station_name",rec.get("station_name"));
+                        intent.putExtra("station_lat", Double.parseDouble(rec.get("station_lat")));
+                        intent.putExtra("station_lon",Double.parseDouble(rec.get("station_lon")));
 
                         startActivity(intent);
 
