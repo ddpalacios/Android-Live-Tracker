@@ -9,6 +9,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -67,30 +68,47 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
 
                         if (specified_train_direction.equals("1")) {
                             end = stops.indexOf(train_info.get("main_station").replaceAll("[^a-zA-Z0-9]", ""));
+                            Log.e("idx"," 1 start "+ start+" "+ end+"");
+
                         } else if (specified_train_direction.equals("5")) {
                             start = stops.indexOf(target_station_name.replaceAll("[^a-zA-Z0-9]", "")) + 1;
                             end = stops.size();
+                            Log.e("idx"," 2 start "+ start+" "+ end+"");
 
                         }
+                        if (start == -1){
+                            Toast.makeText(getApplicationContext(),"Towards 2: "+target_station_name.replaceAll("[^a-zA-Z0-9]", ""), Toast.LENGTH_SHORT ).show();
+                        }else if (end ==-1){
+                            Toast.makeText(getApplicationContext(),"Towards 1: "+target_station_name.replaceAll("[^a-zA-Z0-9]", ""), Toast.LENGTH_SHORT ).show();
 
-                        ignored_stations = stops.subList(start, end);
-                        String next_stop = train_info.get("next_stop").replaceAll("[^a-zA-Z0-9]", "");
+                        }
+                        else{
+                            ignored_stations = stops.subList(start, end);
+                            String next_stop = train_info.get("next_stop").replaceAll("[^a-zA-Z0-9]", "");
 
-                        if (!ignored_stations.contains(next_stop)) {
-                            Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance(
-                                    Double.parseDouble(Objects.requireNonNull(train_info.get("train_lat"))),
-                                    Double.parseDouble(Objects.requireNonNull(train_info.get("train_lon"))),
-                                    target_station_lat,
-                                    target_station_lon);
+                            if (!ignored_stations.contains(next_stop)) {
+                                Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance(
+                                        Double.parseDouble(Objects.requireNonNull(train_info.get("train_lat"))),
+                                        Double.parseDouble(Objects.requireNonNull(train_info.get("train_lon"))),
+                                        target_station_lat,
+                                        target_station_lon);
 
 
-                            int current_train_eta = times.get_estimated_time_arrival(25, current_train_distance_from_target_station);
-                            train_etas.add(current_train_eta);
-                            Collections.sort(train_etas);
-                            Log.e("etas", train_etas+"");
-                            chosen_trains.add(train_info);
-                            train_info.put(String.valueOf(current_train_eta), next_stop);
+                                int current_train_eta = times.get_estimated_time_arrival(25, current_train_distance_from_target_station);
+                                train_etas.add(current_train_eta);
+                                Collections.sort(train_etas);
+                                Log.e("etas", train_etas+"");
+                                chosen_trains.add(train_info);
+                                train_info.put(String.valueOf(current_train_eta), next_stop);
+                                msg = handler.obtainMessage();
+                                bundle.putSerializable("chosen_trains", chosen_trains);
 
+                                msg.setData(bundle);
+
+//                                handler.sendMessage(msg);
+
+
+                        }
 
                         }
 //                        setup_train_direction(train_info, stops, start, end, Integer.parseInt(specified_train_direction), getApplicationContext());
@@ -162,6 +180,7 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         super.onCreate(savedInstanceState);
         new Thread(mMessageSender).start();
+        Log.e("ON MAIN", "ON MAIN THREAD");
 
 
     }
