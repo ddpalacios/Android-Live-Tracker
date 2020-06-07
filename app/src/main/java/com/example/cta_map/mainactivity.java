@@ -32,9 +32,6 @@ public class mainactivity extends AppCompatActivity {
         final Context context = getApplicationContext();
 
 
-
-
-
         final ArrayList<String> favoriteList = new ArrayList<>();
         final ListView favoriteStations = findViewById(R.id.favorite_lines);
         ArrayList<String> arrayList = new ArrayList<>();
@@ -48,10 +45,8 @@ public class mainactivity extends AppCompatActivity {
         SharedPreferences USER_RECORD = getSharedPreferences("User_Record", MODE_PRIVATE);
         final Integer profileId = USER_RECORD.getInt("ProfileID", -1);
         ArrayList<HashMap> record = sqlite.GetTableRecord(profileId, "train_table");
-
-
-
         final String[] main_menu = new String[]{"Add Favorite Station", "Find Station"};
+
         for (String items : main_menu) {
             arrayList.add(items);
             adapter.notifyDataSetChanged();
@@ -59,32 +54,32 @@ public class mainactivity extends AppCompatActivity {
 
 
       fill_list(record, favoriteList, favoriteadapter);
-
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent favorite_station_intent = new Intent(mainactivity.this,ChooseLineActivity.class);
-                Intent browse_station_intent = new Intent(mainactivity.this,ChooseLineActivity.class);
+                Intent intent = new Intent(mainactivity.this,ChooseLineActivity.class);
                 SharedPreferences.Editor connect = getSharedPreferences("CONNECT", MODE_PRIVATE).edit();
 
                 if (position == 0){
                     connect.putBoolean("connection", false);
                     connect.apply();
-                    startActivity(favorite_station_intent);
+                    startActivity(intent);
 
 
                 }
                 if (position == 1){
                     connect.putBoolean("connection", true);
+                    @SuppressLint("CommitPrefEdits") SharedPreferences.Editor editor = getSharedPreferences("User_Choice_Record", MODE_PRIVATE).edit();
+                    editor.putBoolean("connection_to_url", true);
+
+
                     connect.apply();
-                    startActivity(browse_station_intent);
+                    startActivity(intent);
 
                 }
 
             }
         });
-
-
 
         favoriteStations.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener(){
 
@@ -125,9 +120,10 @@ public class mainactivity extends AppCompatActivity {
                 String station_type = station_details[1].replaceAll("\\)", "");
                 DatabaseHelper sqlite = new DatabaseHelper(context);
                 ArrayList<HashMap> record = sqlite.GetTableRecord(profileId, "train_table");
-                SharedPreferences.Editor editor = getSharedPreferences("Train_Record", MODE_PRIVATE).edit();
+                SharedPreferences.Editor editor = getSharedPreferences("User_Recent_Station_Record", MODE_PRIVATE).edit();
                 for (HashMap<String, String> rec : record){
                     if (rec.get("station_name").equals(station_name) && rec.get("station_type").equals(station_type.replaceAll("\\)", ""))){
+                        editor.putBoolean("connection_to_url", true);
                         editor.putInt("RecordID", Integer.parseInt(rec.get("RECORD_ID")));
                         editor.putInt("ProfileID", Integer.parseInt(rec.get("profile_id")));
                         editor.putFloat("station_lat", Float.parseFloat(rec.get("station_lat")));
@@ -136,6 +132,7 @@ public class mainactivity extends AppCompatActivity {
                         editor.putString("station_type", rec.get("station_type"));
                         editor.putInt("station_dir", Integer.parseInt(rec.get("station_dir")));
                         editor.apply();
+                        intent.putExtra("from_sql", true);
 
                         startActivity(intent);
 
@@ -147,13 +144,7 @@ public class mainactivity extends AppCompatActivity {
             }
         });
 
-
-
-
-
     }
-
-
 
     public void fill_list(ArrayList<HashMap> record, ArrayList<String> favoriteList, ArrayAdapter favoriteadapter){
         Log.e("re", record+"");

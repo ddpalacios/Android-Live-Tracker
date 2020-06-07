@@ -31,10 +31,6 @@ public class userLoginActivity extends AppCompatActivity {
         Button login = (Button) findViewById(R.id.loginbutton);
 
 
-
-
-
-
         login.setOnClickListener(new View.OnClickListener() {
             @SuppressLint({"ShowToast", "WrongConstant"})
             @Override

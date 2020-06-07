@@ -1,4 +1,5 @@
 package com.example.cta_map;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -64,8 +65,8 @@ public class TrainStationActivity  extends AppCompatActivity {
 
             if (!urlConnection) {
                 Intent intent = new Intent(TrainStationActivity.this, mainactivity.class);
-                SharedPreferences USER_RECORD = getSharedPreferences("User_Record", MODE_PRIVATE);
-                Integer profileId = USER_RECORD.getInt("ProfileID", 0);
+                SharedPreferences USER_RECENT_TRAIN_RECORD = getSharedPreferences("User_Recent_Station_Record", MODE_PRIVATE);
+                Integer profileId = USER_RECENT_TRAIN_RECORD.getInt("ProfileID", 0);
                 DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
                 Double[] target_station_coordinates = sqlite.FindStationValues(target_station, finalTarget_station_type);
                 if (target_station_coordinates == null) {
@@ -94,9 +95,13 @@ public class TrainStationActivity  extends AppCompatActivity {
 
             } else {
                 Intent intent = new Intent(TrainStationActivity.this, TrainTrackingActivity.class);
-                intent.putExtra("target_station_type", finalTarget_station_type);
-                intent.putExtra("target_station_name", target_station);
-                intent.putExtra("train_direction", finalTrain_direction);
+                @SuppressLint("CommitPrefEdits") SharedPreferences.Editor editor = getSharedPreferences("User_Choice_Record", MODE_PRIVATE).edit();
+                editor.putBoolean("from_sql", false);
+                editor.putString("station_name", target_station);
+                editor.putString("station_type", finalTarget_station_type);
+                editor.putInt("station_dir", Integer.parseInt(finalTrain_direction));
+                editor.apply();
+                intent.putExtra("from_sql", false);
                 startActivity(intent);
             }
         }
