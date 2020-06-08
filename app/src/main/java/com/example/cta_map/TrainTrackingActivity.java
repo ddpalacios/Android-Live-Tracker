@@ -129,50 +129,6 @@ public class TrainTrackingActivity extends AppCompatActivity{
 
 
 
-    private final Runnable mMessageSender = new Runnable() {
-        public void run() {
-            String url;
-            Chicago_Transits chicago_transits = new Chicago_Transits();
-            HashMap <String, String> StationTypeKey = chicago_transits.TrainLineKeys(); // Train line key codes
-            final SharedPreferences USER_RECENT_TRAIN_RECORD = getSharedPreferences("User_Recent_Station_Record", MODE_PRIVATE);
-            final SharedPreferences USER_CHOICE_RECORD = getSharedPreferences("User_Choice_Record", MODE_PRIVATE);
-            bb=getIntent().getExtras();
-            boolean from_sql = bb.getBoolean("from_sql");
-            if (from_sql){
-                url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s",
-                        StationTypeKey.get(USER_RECENT_TRAIN_RECORD.getString("station_type", null).toLowerCase()));
-                Log.e("from sql", url+"");
-
-
-            }else{
-                url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s",
-                        StationTypeKey.get(USER_CHOICE_RECORD.getString("station_type", null).toLowerCase()));
-                Log.e("from sql", url+"");
-
-            }
-
-            Bundle bundle = new Bundle();
-            while (true) {
-                Message msg = handler.obtainMessage();
-                try {
-                    Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
-                    final String[] train_list = content.select("train").outerHtml().split("</train>");
-
-
-
-                    bundle.putStringArray("raw_train_content", train_list);
-
-                    msg.setData(bundle);
-
-                    handler.sendMessage(msg);
-                    Thread.sleep(10000);
-
-                } catch (IOException | InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    };
 
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -185,8 +141,12 @@ public class TrainTrackingActivity extends AppCompatActivity{
 //        Thread2 looperThread2 = new Thread2();
 //        Thread3 looperThread3 = new Thread3();
 //        new Thread(mMessageSender).start();
-          Thread t1 = new Thread(new Thread1());
+        List<Integer> taskQueue = new ArrayList<Integer>();
+        int MAX_CAPACITY = 5;
+          Thread t1 = new Thread(new Thread1(taskQueue, MAX_CAPACITY));
+          Thread t2 = new Thread(new Thread2(taskQueue));
           t1.start();
+          t2.start();
 
 
         try {

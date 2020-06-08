@@ -13,46 +13,119 @@ import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 
-public class Thread1 implements Runnable  {
 
-    Context context;
-    public Looper looper;
+
+public class Thread1 implements Runnable {
+    private final List<Integer> taskQueue;
+    private final int           MAX_CAPACITY;
     ExampleHandler handler = new ExampleHandler();
+    public Thread1(List<Integer> sharedQueue, int size)
+    {
+        this.taskQueue = sharedQueue;
+        this.MAX_CAPACITY = size;
+    }
 
-
-
-
-    public void run() {
+    @Override
+    public void run()
+    {
         String url;
         Chicago_Transits chicago_transits = new Chicago_Transits();
         HashMap <String, String> StationTypeKey = chicago_transits.TrainLineKeys(); // Train line key codes
 
-            url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s",
-                   "red");
+        url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s",
+                "red");
 
 
         Bundle bundle = new Bundle();
         while (true) {
-            Message msg = handler.obtainMessage();
-            try {
-                Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
-                final String[] train_list = content.select("train").outerHtml().split("</train>");
+
+            try
+            {
 
 
 
-                bundle.putStringArray("raw_train_content", train_list);
 
-                msg.setData(bundle);
-
-                handler.sendMessage(msg);
-                Thread.sleep(10000);
-
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
             }
+            catch (InterruptedException ex)
+            {
+                ex.printStackTrace();
+            }
+
+
+//            Message msg = handler.obtainMessage();
+//            try {
+//                Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
+//                final String[] train_list = content.select("train").outerHtml().split("</train>");
+//
+//                bundle.putStringArray("raw_train_content", train_list);
+//
+//                msg.setData(bundle);
+//
+//                handler.sendMessage(msg);
+//                Thread.sleep(10000);
+//
+//            } catch (IOException | InterruptedException e) {
+//                e.printStackTrace();
+//            }
         }
 
+    }
 
+    private void produce(int i) throws InterruptedException
+    {
+        synchronized (taskQueue)
+        {
+            while (taskQueue.size() == MAX_CAPACITY)
+            {
+                System.out.println("Queue is full " + Thread.currentThread().getName() + " is waiting , size: " + taskQueue.size());
+                taskQueue.wait();
+            }
+
+            Thread.sleep(1000);
+            taskQueue.add(i);
+
+
+
+            taskQueue.notifyAll();
+        }
     }
 }
+
+
+
+//public class Thread1 implements Runnable  {
+//    ExampleHandler handler = new ExampleHandler();
+//
+//    public void run() {
+//        String url;
+//        Chicago_Transits chicago_transits = new Chicago_Transits();
+//        HashMap <String, String> StationTypeKey = chicago_transits.TrainLineKeys(); // Train line key codes
+//
+//            url = String.format("https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt=%s",
+//                   "red");
+//
+//
+//        Bundle bundle = new Bundle();
+//        while (true) {
+//            Message msg = handler.obtainMessage();
+//            try {
+//                Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
+//                final String[] train_list = content.select("train").outerHtml().split("</train>");
+//
+//                bundle.putStringArray("raw_train_content", train_list);
+//
+//                msg.setData(bundle);
+//
+//                handler.sendMessage(msg);
+//                Thread.sleep(10000);
+//
+//            } catch (IOException | InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
+
+//
+//    }
+//}
