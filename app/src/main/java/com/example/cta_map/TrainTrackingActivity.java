@@ -141,7 +141,7 @@ public class TrainTrackingActivity extends AppCompatActivity{
 //        Thread2 looperThread2 = new Thread2();
 //        Thread3 looperThread3 = new Thread3();
 //        new Thread(mMessageSender).start();
-        List<Integer> taskQueue = new ArrayList<Integer>();
+        List<String[]> taskQueue = new ArrayList<String[]>();
         int MAX_CAPACITY = 5;
           Thread t1 = new Thread(new Thread1(taskQueue, MAX_CAPACITY));
           Thread t2 = new Thread(new Thread2(taskQueue));

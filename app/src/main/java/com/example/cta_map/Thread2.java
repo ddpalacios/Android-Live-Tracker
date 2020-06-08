@@ -9,9 +9,9 @@ import java.util.List;
 
 class Thread2 implements Runnable
 {
-    private final List<Integer> taskQueue;
+    private final List<String[]> taskQueue;
 
-    public Thread2(List<Integer> sharedQueue)
+    public Thread2(List<String[]> sharedQueue)
     {
         this.taskQueue = sharedQueue;
     }
@@ -41,7 +41,7 @@ class Thread2 implements Runnable
                 taskQueue.wait();
             }
             Thread.sleep(1000);
-            int i = (Integer) taskQueue.remove(0);
+            String[] i =  taskQueue.remove(0);
             System.out.println("Consumed: " + i);
             taskQueue.notifyAll();
         }

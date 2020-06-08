@@ -18,10 +18,10 @@ import java.util.List;
 
 
 public class Thread1 implements Runnable {
-    private final List<Integer> taskQueue;
+    private final List<String[]> taskQueue;
     private final int           MAX_CAPACITY;
     ExampleHandler handler = new ExampleHandler();
-    public Thread1(List<Integer> sharedQueue, int size)
+    public Thread1(List<String[]> sharedQueue, int size)
     {
         this.taskQueue = sharedQueue;
         this.MAX_CAPACITY = size;
@@ -41,14 +41,13 @@ public class Thread1 implements Runnable {
         Bundle bundle = new Bundle();
         while (true) {
 
-            try
-            {
-
-
-
+            try {
+                Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
+                final String[] train_list = content.select("train").outerHtml().split("</train>");
+                produce(train_list);
 
             }
-            catch (InterruptedException ex)
+            catch (InterruptedException | IOException ex)
             {
                 ex.printStackTrace();
             }
@@ -73,7 +72,7 @@ public class Thread1 implements Runnable {
 
     }
 
-    private void produce(int i) throws InterruptedException
+    private void produce(String[] i) throws InterruptedException
     {
         synchronized (taskQueue)
         {
@@ -84,7 +83,11 @@ public class Thread1 implements Runnable {
             }
 
             Thread.sleep(1000);
-            taskQueue.add(i);
+            for (String train: i){
+                taskQueue.add(train);
+
+            }
+
 
 
 
