@@ -1,19 +1,19 @@
 package com.example.cta_map;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
-
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -24,11 +24,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-public class TrainTrackingActivity extends AppCompatActivity implements TrainDirection{
+public class TrainTrackingActivity extends AppCompatActivity{
     final boolean[] connect = {true};
     List<String> ignored_stations;
     ArrayList<Integer> train_etas = new ArrayList<>();
     ArrayList<HashMap> chosen_trains = new ArrayList<>();
+   ExampleHandler handler = new ExampleHandler();
     Bundle bb; // Retrieve data from main screen
     Boolean[] green = new Boolean[] {false};
     Boolean[] yellow = new Boolean[] {false};
@@ -36,95 +37,95 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
 
 
 
-    @SuppressLint("HandlerLeak")
-    private final Handler handler = new Handler() {
-        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-        @Override
-        public void handleMessage(Message msg) {
-            bb=getIntent().getExtras();
-            DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
-            boolean from_sql = bb.getBoolean("from_sql");
-            Time times = new Time();
-            String target_station_type = bb.getString("station_type");
-            String specified_train_direction = bb.getString("station_dir");
-            String target_station_name = bb.getString("station_name");
-            Double target_station_lat = bb.getDouble("station_lat");
-            Double target_station_lon = bb.getDouble("station_lon");
-
-            Bundle bundle = msg.getData();
-            final ArrayList<String> stops = sqlite.getValues("line_stops_table", target_station_type.toLowerCase());
-
-            Chicago_Transits chicago_transits = new Chicago_Transits();
-            final SharedPreferences USER_RECENT_TRAIN_RECORD = getSharedPreferences("User_Recent_Station_Record", MODE_PRIVATE);
-            final SharedPreferences USER_CHOICE_RECORD = getSharedPreferences("User_Choice_Record", MODE_PRIVATE);
-            String[] train_list = bundle.getStringArray("raw_train_content");
-
-            if (train_list.length > 1) {
-                for (String each_train : train_list) {
-                    HashMap<String, String> train_info = chicago_transits.get_train_info(each_train, target_station_type);
-                    int start = 0;
-                    int end = 0;
-                    if (Objects.equals(train_info.get("train_direction"), specified_train_direction)) {
-
-                        if (specified_train_direction.equals("1")) {
-                            end = stops.indexOf(train_info.get("main_station").replaceAll("[^a-zA-Z0-9]", ""));
-                            Log.e("idx"," 1 start "+ start+" "+ end+"");
-
-                        } else if (specified_train_direction.equals("5")) {
-                            start = stops.indexOf(target_station_name.replaceAll("[^a-zA-Z0-9]", "")) + 1;
-                            end = stops.size();
-                            Log.e("idx"," 2 start "+ start+" "+ end+"");
-
-                        }
-                        if (start == -1){
-                            Toast.makeText(getApplicationContext(),"Towards 2: "+target_station_name.replaceAll("[^a-zA-Z0-9]", ""), Toast.LENGTH_SHORT ).show();
-                        }else if (end ==-1){
-                            Toast.makeText(getApplicationContext(),"Towards 1: "+target_station_name.replaceAll("[^a-zA-Z0-9]", ""), Toast.LENGTH_SHORT ).show();
-
-                        }
-                        else{
-                            ignored_stations = stops.subList(start, end);
-                            String next_stop = train_info.get("next_stop").replaceAll("[^a-zA-Z0-9]", "");
-
-                            if (!ignored_stations.contains(next_stop)) {
-                                Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance(
-                                        Double.parseDouble(Objects.requireNonNull(train_info.get("train_lat"))),
-                                        Double.parseDouble(Objects.requireNonNull(train_info.get("train_lon"))),
-                                        target_station_lat,
-                                        target_station_lon);
-
-
-                                int current_train_eta = times.get_estimated_time_arrival(25, current_train_distance_from_target_station);
-                                train_etas.add(current_train_eta);
-                                Collections.sort(train_etas);
-                                Log.e("etas", train_etas+"");
-                                chosen_trains.add(train_info);
-                                train_info.put(String.valueOf(current_train_eta), next_stop);
-                                msg = handler.obtainMessage();
-                                bundle.putSerializable("chosen_trains", chosen_trains);
-
-                                msg.setData(bundle);
-
-//                                handler.sendMessage(msg);
-
-
-                        }
-
-                        }
-//                        setup_train_direction(train_info, stops, start, end, Integer.parseInt(specified_train_direction), getApplicationContext());
-
-                    }
-
-                                    }
-                                }
-                                Log.d("Update", "DONE HERE.");
-                        train_etas.clear();
-                        chosen_trains.clear();
-
-                            }
-
-
-        };
+//    @SuppressLint("HandlerLeak")
+//    private final Handler handler = new Handler() {
+//        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+//        @Override
+//        public void handleMessage(Message msg) {
+//            bb=getIntent().getExtras();
+//            DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
+//            boolean from_sql = bb.getBoolean("from_sql");
+//            Time times = new Time();
+//            String target_station_type = bb.getString("station_type");
+//            String specified_train_direction = bb.getString("station_dir");
+//            String target_station_name = bb.getString("station_name");
+//            Double target_station_lat = bb.getDouble("station_lat");
+//            Double target_station_lon = bb.getDouble("station_lon");
+//
+//            Bundle bundle = msg.getData();
+//            final ArrayList<String> stops = sqlite.getValues("line_stops_table", target_station_type.toLowerCase());
+//
+//            Chicago_Transits chicago_transits = new Chicago_Transits();
+//            final SharedPreferences USER_RECENT_TRAIN_RECORD = getSharedPreferences("User_Recent_Station_Record", MODE_PRIVATE);
+//            final SharedPreferences USER_CHOICE_RECORD = getSharedPreferences("User_Choice_Record", MODE_PRIVATE);
+//            String[] train_list = bundle.getStringArray("raw_train_content");
+//
+//            if (train_list.length > 1) {
+//                for (String each_train : train_list) {
+//                    HashMap<String, String> train_info = chicago_transits.get_train_info(each_train, target_station_type);
+//                    int start = 0;
+//                    int end = 0;
+//                    if (Objects.equals(train_info.get("train_direction"), specified_train_direction)) {
+//
+//                        if (specified_train_direction.equals("1")) {
+//                            end = stops.indexOf(train_info.get("main_station").replaceAll("[^a-zA-Z0-9]", ""));
+//                            Log.e("idx"," 1 start "+ start+" "+ end+"");
+//
+//                        } else if (specified_train_direction.equals("5")) {
+//                            start = stops.indexOf(target_station_name.replaceAll("[^a-zA-Z0-9]", "")) + 1;
+//                            end = stops.size();
+//                            Log.e("idx"," 2 start "+ start+" "+ end+"");
+//
+//                        }
+//                        if (start == -1){
+//                            Toast.makeText(getApplicationContext(),"Towards 2: "+target_station_name.replaceAll("[^a-zA-Z0-9]", ""), Toast.LENGTH_SHORT ).show();
+//                        }else if (end ==-1){
+//                            Toast.makeText(getApplicationContext(),"Towards 1: "+target_station_name.replaceAll("[^a-zA-Z0-9]", ""), Toast.LENGTH_SHORT ).show();
+//
+//                        }
+//                        else{
+//                            ignored_stations = stops.subList(start, end);
+//                            String next_stop = train_info.get("next_stop").replaceAll("[^a-zA-Z0-9]", "");
+//
+//                            if (!ignored_stations.contains(next_stop)) {
+//                                Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance(
+//                                        Double.parseDouble(Objects.requireNonNull(train_info.get("train_lat"))),
+//                                        Double.parseDouble(Objects.requireNonNull(train_info.get("train_lon"))),
+//                                        target_station_lat,
+//                                        target_station_lon);
+//
+//
+//                                int current_train_eta = times.get_estimated_time_arrival(25, current_train_distance_from_target_station);
+//                                train_etas.add(current_train_eta);
+//                                Collections.sort(train_etas);
+//                                Log.e("etas", train_etas+"");
+//                                chosen_trains.add(train_info);
+//                                train_info.put(String.valueOf(current_train_eta), next_stop);
+//                                msg = handler.obtainMessage();
+//                                bundle.putSerializable("chosen_trains", chosen_trains);
+//
+//                                msg.setData(bundle);
+//
+////                                handler.sendMessage(msg);
+//
+//
+//                        }
+//
+//                        }
+////                        setup_train_direction(train_info, stops, start, end, Integer.parseInt(specified_train_direction), getApplicationContext());
+//
+//                    }
+//
+//                                    }
+//                                }
+//                                Log.d("Update", "DONE HERE.");
+//                        train_etas.clear();
+//                        chosen_trains.clear();
+//
+//                            }
+//
+//
+//        };
 
 
 
@@ -176,11 +177,26 @@ public class TrainTrackingActivity extends AppCompatActivity implements TrainDir
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     protected void onCreate(Bundle savedInstanceState) {
+
         setContentView(R.layout.train_tracking_activity);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         super.onCreate(savedInstanceState);
-        new Thread(mMessageSender).start();
-        Log.e("ON MAIN", "ON MAIN THREAD");
+//        Thread1 looperThread = new Thread1();
+//        Thread2 looperThread2 = new Thread2();
+//        Thread3 looperThread3 = new Thread3();
+//        new Thread(mMessageSender).start();
+          Thread t1 = new Thread(new Thread1());
+          t1.start();
+
+
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
+
 
 
     }
