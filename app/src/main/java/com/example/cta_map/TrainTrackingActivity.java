@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.WindowManager;
@@ -137,23 +136,41 @@ public class TrainTrackingActivity extends AppCompatActivity{
         setContentView(R.layout.train_tracking_activity);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         super.onCreate(savedInstanceState);
-//        Thread1 looperThread = new Thread1();
-//        Thread2 looperThread2 = new Thread2();
-//        Thread3 looperThread3 = new Thread3();
-//        new Thread(mMessageSender).start();
-        List<String[]> taskQueue = new ArrayList<String[]>();
-        int MAX_CAPACITY = 5;
-          Thread t1 = new Thread(new Thread1(taskQueue, MAX_CAPACITY));
-          Thread t2 = new Thread(new Thread2(taskQueue));
-          t1.start();
-          t2.start();
+            bb= getIntent().getExtras();
+             DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
+            String target_station_type = bb.getString("station_type");
+            String specified_train_direction = bb.getString("station_dir");
+            String target_station_name = bb.getString("station_name");
+            Double target_station_lat = bb.getDouble("station_lat");
+            Double target_station_lon = bb.getDouble("station_lon");
 
 
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
+        Message message = new Message();
+        Thread t1 = new Thread(new Thread1(message, bb), "API_CALL_Thread");
+        t1.start();
+
+
+
+        Thread t3 = new Thread(new Thread3(message, bb, sqlite), "Content Parser");
+        t3.start();
+
+
+
+
+
+
+        Thread t2 = new Thread(new Thread2(message), "Displayer");
+        t2.start();
+//
+
+
+
+
+
+
+
+
 
 
 

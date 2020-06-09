@@ -2,48 +2,31 @@ package com.example.cta_map;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
 
 import java.util.List;
 
 class Thread2 implements Runnable
 {
-    private final List<String[]> taskQueue;
 
-    public Thread2(List<String[]> sharedQueue)
-    {
-        this.taskQueue = sharedQueue;
-    }
+
+    Message msg;
+    public Thread2(Message msg){
+            this.msg = msg;
+        }
 
     @Override
-    public void run()
-    {
-        while (true)
-        {
-            try
-            {
-                consume();
-            } catch (InterruptedException ex)
-            {
-                ex.printStackTrace();
-            }
-        }
-    }
+    public void run() {
+        synchronized (this.msg){
+//            while (true) {
 
-    private void consume() throws InterruptedException
-    {
-        synchronized (taskQueue)
-        {
-            while (taskQueue.isEmpty())
-            {
-                System.out.println("Queue is empty " + Thread.currentThread().getName() + " is waiting , size: " + taskQueue.size());
-                taskQueue.wait();
-            }
-            Thread.sleep(1000);
-            String[] i =  taskQueue.remove(0);
-            System.out.println("Consumed: " + i);
-            taskQueue.notifyAll();
+//                Log.e(Thread.currentThread().getName(), "Notifying...");
+//                this.msg.notifyAll();
+//            }
+
+
+
         }
+
     }
 }
