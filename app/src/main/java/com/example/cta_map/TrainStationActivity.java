@@ -55,6 +55,7 @@ public class TrainStationActivity  extends AppCompatActivity {
     }
     final String finalTarget_station_type = target_station_type;
     final String finalTrain_direction = train_direction;
+        final String finalTrain_direction_name = train_direction_name;
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -104,6 +105,7 @@ public class TrainStationActivity  extends AppCompatActivity {
                 editor.apply();
                 intent.putExtra("from_sql", false);
                 intent.putExtra("station_type", finalTarget_station_type);
+                intent.putExtra("main_station", finalTrain_direction_name);
                 intent.putExtra("station_dir", finalTrain_direction);
                 intent.putExtra("station_name", target_station);
                 intent.putExtra("station_lat", target_station_coordinates[0]);

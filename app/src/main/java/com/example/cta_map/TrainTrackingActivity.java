@@ -26,13 +26,19 @@ public class TrainTrackingActivity extends AppCompatActivity {
                 Bundle bundle = msg.getData();
                 ArrayList<Integer> etas = bundle.getIntegerArrayList("train_etas");
                 ArrayList<HashMap> chosen_trains = (ArrayList<HashMap>) bundle.getSerializable("chosen_trains");
-                displayResults(etas, chosen_trains);
+
+
+
+            displayResults(etas, chosen_trains);
+
+
         }
     };
 
     public void displayResults(ArrayList<Integer> train_etas, ArrayList<HashMap> chosen_trains){
         String target_station_name = bb.getString("station_name");
         String target_station_type = bb.getString("station_type");
+        String main_station = bb.getString("main_station");
         String target_station_direction = bb.getString("station_dir");
         ArrayList<String> arrayList = new ArrayList<>();
         MapRelativeListView mapRelativeListView = new MapRelativeListView(getApplicationContext(), findViewById(R.id.train_layout_arrival_times));
@@ -56,7 +62,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
             }
 
             for (Integer items : train_etas) {
-                arrayList.add(items + "m");
+                arrayList.add(main_station+" "+items + "m");
                 adapter.notifyDataSetChanged();
             }
 
