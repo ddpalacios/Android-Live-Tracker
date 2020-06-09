@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.logging.Handler;
 
@@ -21,8 +22,6 @@ public class Thread3 implements Runnable {
 
     }
 
-
-
     @Override
     public void run() {
         int i=0;
@@ -30,21 +29,29 @@ public class Thread3 implements Runnable {
             Bundle bundle = new Bundle();
             android.os.Message msg = this.handler.obtainMessage();
 
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); }
             synchronized (this.message) {
 
-                Log.e("train etas", "Notified");
                 ArrayList<Integer> train_etas =this.message.get_train_etas();
                 ArrayList<HashMap> chosen_trains = this.message.get_chosen_trains();
-//                bundle.putIntegerArrayList("train_etas", train_etas);
-//                msg.setData(bundle);
-                this.message.notifyAll();
-//                handler.sendMessage(msg);
-                }
+                bundle.putIntegerArrayList("train_etas", train_etas);
+                msg.setData(bundle);
+
+                Log.e("train etas", "Displaying... "+ train_etas);
+
+                handler.sendMessage(msg);
+
+                this.message.notify();
+                Log.e("train etas", "Notified");
+                try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); }
+
+
+
+
+
+
+            }
+
 
         }
 

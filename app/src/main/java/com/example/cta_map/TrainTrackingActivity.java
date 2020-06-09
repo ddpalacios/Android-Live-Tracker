@@ -19,9 +19,14 @@ public class TrainTrackingActivity extends AppCompatActivity {
         @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
         public void handleMessage(android.os.Message msg) {
-            Bundle bundle = msg.getData();
-            ArrayList<Integer> etas = bundle.getIntegerArrayList("train_etas");
-            Log.e("From handler", etas+"");
+                Bundle bundle = msg.getData();
+                    ArrayList<Integer> etas = bundle.getIntegerArrayList("train_etas");
+
+                    Log.e("etas", etas + "");
+
+
+
+//            Log.e("From handler", etas+"");
 
 
         }

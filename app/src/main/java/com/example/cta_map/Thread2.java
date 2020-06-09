@@ -46,8 +46,8 @@ class Thread2 implements Runnable
 
             Log.d("Thread", "Notifier thread active");
             try {
-
                 synchronized (this.msg) {
+                    Log.e("Sync", "Entered block");
                     Chicago_Transits chicago_transits = new Chicago_Transits();
                     Time times = new Time();
 
@@ -93,7 +93,7 @@ class Thread2 implements Runnable
                         }
                     }
 
-                    Log.e("Thread", Thread.currentThread().getName()+" is Waiting.." );
+                    Log.e("Thread", Thread.currentThread().getName()+" is done parsing the recieved message  and now Waiting..");
                     this.msg.setTrain_etas(train_etas);
                     this.msg.set_chosen_trains(chosen_trains);
                     this.msg.wait();
@@ -104,7 +104,12 @@ class Thread2 implements Runnable
 
 
 
-            Log.e("Thread", Thread.currentThread().getName()+" is Done Waiting.." );
+            Log.e("Thread", Thread.currentThread().getName()+" is parsing info again.." );
+//            try {
+//                Thread.sleep(200);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
 
             train_etas.clear();
             chosen_trains.clear();
