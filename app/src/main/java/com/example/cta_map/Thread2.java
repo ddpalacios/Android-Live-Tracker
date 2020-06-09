@@ -2,8 +2,6 @@ package com.example.cta_map;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
@@ -27,7 +25,6 @@ class Thread2 implements Runnable
 
     }
 
-
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void run() {
@@ -45,6 +42,8 @@ class Thread2 implements Runnable
 
 
         while (true) {
+
+
             Log.d("Thread", "Notifier thread active");
             try {
 
@@ -101,7 +100,7 @@ class Thread2 implements Runnable
                     }
                     train_etas.clear();
                     chosen_trains.clear();
-                    this.msg.notify();
+                    this.msg.wait();
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -109,6 +108,7 @@ class Thread2 implements Runnable
 
 
             Log.d("Thread", " Activated Notifier()" );
+
         }
     }
 }
