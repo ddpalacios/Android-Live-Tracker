@@ -1,14 +1,31 @@
 package com.example.cta_map;
+import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.WindowManager;
-import android.widget.Button;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
 
 public class TrainTrackingActivity extends AppCompatActivity {
 
     Bundle bb; // Retrieve data from main screen
+
+    @SuppressLint("HandlerLeak")
+    private final Handler handler = new Handler() {
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+        @Override
+        public void handleMessage(android.os.Message msg) {
+            Bundle bundle = msg.getData();
+            ArrayList<Integer> etas = bundle.getIntegerArrayList("train_etas");
+            Log.e("From handler", etas+"");
+
+
+        }
+    };
 
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -25,16 +42,12 @@ public class TrainTrackingActivity extends AppCompatActivity {
         t1.start();
         Thread t2 = new Thread(new Thread2(message, bb, sqlite), "Content Parser");
         t2.start();
-        Thread t3 = new Thread(new Thread3(message), "Displayer");
+        Thread t3 = new Thread(new Thread3(message, handler), "Displayer");
         t3.start();
 
 
     }
 
 
-    private Button initiate_button(int widget) {
-        Button button = findViewById(widget);
-        return button;
-    }
 //        mapRelativeListView.add_to_list_view(train_etas, TRAIN_RECORD, current_train_info,chosen_trains, connect, current_train_info.get("train_direction"));
 }

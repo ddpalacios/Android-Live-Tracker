@@ -48,7 +48,6 @@ class Thread2 implements Runnable
             try {
 
                 synchronized (this.msg) {
-                    Thread.sleep(1000);
                     Chicago_Transits chicago_transits = new Chicago_Transits();
                     Time times = new Time();
 
@@ -93,15 +92,10 @@ class Thread2 implements Runnable
                             }
                         }
                     }
-                    for (HashMap f: chosen_trains){
-                        Log.e("trains", f + "");
 
-
-                    }
                     Log.e("Thread", Thread.currentThread().getName()+" is Waiting.." );
-
-                    train_etas.clear();
-                    chosen_trains.clear();
+                    this.msg.setTrain_etas(train_etas);
+                    this.msg.set_chosen_trains(chosen_trains);
                     this.msg.wait();
                 }
             } catch (InterruptedException e) {
@@ -109,8 +103,11 @@ class Thread2 implements Runnable
             }
 
 
-            Log.d("Thread", " Activated Notifier()" );
 
+            Log.e("Thread", Thread.currentThread().getName()+" is Done Waiting.." );
+
+            train_etas.clear();
+            chosen_trains.clear();
         }
     }
 }
