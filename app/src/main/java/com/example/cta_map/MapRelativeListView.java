@@ -36,7 +36,12 @@ public class MapRelativeListView {
 
     }
 
-    public void add_to_list_view(final ArrayList<Integer> train_etas, final SharedPreferences TRAIN_RECORD,final HashMap<String, String> current_train_info, final ArrayList<HashMap> chosen_trains, final boolean[] connect, String dir){
+    public void add_to_list_view(final ArrayList<Integer> train_etas,
+                                 final SharedPreferences TRAIN_RECORD,
+                                 final HashMap<String, String> current_train_info,
+                                 final ArrayList<HashMap> chosen_trains,
+                                 final boolean[] connect,
+                                 String dir){
         this.adapter.clear();
         final String[]  specified_train_direction = new String[]{String.valueOf(TRAIN_RECORD.getInt("station_dir", 5))};
         final String target_station_name = TRAIN_RECORD.getString("station_name", null);

@@ -101,16 +101,7 @@ class Thread2 implements Runnable
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-
-
             Log.e("Thread", Thread.currentThread().getName()+" is parsing info again.." );
-//            try {
-//                Thread.sleep(200);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-
             train_etas.clear();
             chosen_trains.clear();
         }

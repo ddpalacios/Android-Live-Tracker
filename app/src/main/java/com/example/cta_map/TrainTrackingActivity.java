@@ -5,10 +5,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class TrainTrackingActivity extends AppCompatActivity {
 
@@ -20,18 +24,44 @@ public class TrainTrackingActivity extends AppCompatActivity {
         @Override
         public void handleMessage(android.os.Message msg) {
                 Bundle bundle = msg.getData();
-                    ArrayList<Integer> etas = bundle.getIntegerArrayList("train_etas");
-
-                    Log.e("etas", etas + "");
-
-
-
-//            Log.e("From handler", etas+"");
-
-
+                ArrayList<Integer> etas = bundle.getIntegerArrayList("train_etas");
+                ArrayList<HashMap> chosen_trains = (ArrayList<HashMap>) bundle.getSerializable("chosen_trains");
+                displayResults(etas, chosen_trains);
         }
     };
 
+    public void displayResults(ArrayList<Integer> train_etas, ArrayList<HashMap> chosen_trains){
+        String target_station_name = bb.getString("station_name");
+        String target_station_type = bb.getString("station_type");
+        String target_station_direction = bb.getString("station_dir");
+        ArrayList<String> arrayList = new ArrayList<>();
+        MapRelativeListView mapRelativeListView = new MapRelativeListView(getApplicationContext(), findViewById(R.id.train_layout_arrival_times));
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
+        final ListView list = findViewById(R.id.train_layout_arrival_times);
+        list.setAdapter(adapter);
+
+        if (train_etas.size() == 0 ){
+            if (target_station_direction.equals("1")) {
+                arrayList.add(0, "No Trains Available." +" (North Bound)");
+            }
+            else if (target_station_direction.equals("5")){
+                arrayList.add(0, "No Trains Available." +" (South Bound)");
+
+            }
+        }else {
+            if (target_station_direction.equals("1")) {
+                arrayList.add(0, target_station_name + " (North Bound)");
+            } else if (target_station_direction.equals("5")) {
+                arrayList.add(0, target_station_name + " (South Bound)");
+            }
+
+            for (Integer items : train_etas) {
+                arrayList.add(items + "m");
+                adapter.notifyDataSetChanged();
+            }
+
+        }
+}
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     protected void onCreate(Bundle savedInstanceState) {

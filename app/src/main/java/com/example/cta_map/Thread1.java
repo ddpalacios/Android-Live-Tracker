@@ -41,11 +41,7 @@ public class Thread1 implements Runnable {
                     e.printStackTrace();
                 }
                     Log.e("mes", Thread.currentThread().getName()+ " is done waiting...");
-//                    try {
-//                        Thread.sleep(2000);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
+
                 }
 
         }
