@@ -104,7 +104,7 @@ public class Thread3 implements Runnable {
             }
 
 
-            Log.d("Thread", " Activated Notifier()");
+            Log.d("Thread", " Activated Notifier()" );
         }
     }
 }
