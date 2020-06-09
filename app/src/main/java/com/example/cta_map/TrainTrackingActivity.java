@@ -25,8 +25,6 @@ public class TrainTrackingActivity extends AppCompatActivity {
         t1.start();
         Thread t2 = new Thread(new Thread2(message, bb, sqlite), "Content Parser");
         t2.start();
-
-
         Thread t3 = new Thread(new Thread3(message), "Displayer");
         t3.start();
 

@@ -15,7 +15,7 @@ import java.util.Objects;
 class Thread2 implements Runnable
 {
 
-    Message msg;
+    final Message msg;
     Bundle bb;
     DatabaseHelper sqlite;
     public Thread2 (Message msg, Bundle bb, DatabaseHelper sqlite){
@@ -98,6 +98,8 @@ class Thread2 implements Runnable
 
 
                     }
+                    Log.e("Thread", Thread.currentThread().getName()+" is Waiting.." );
+
                     train_etas.clear();
                     chosen_trains.clear();
                     this.msg.wait();

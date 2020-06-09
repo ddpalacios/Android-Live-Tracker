@@ -1,9 +1,8 @@
 package com.example.cta_map;
 
-import android.util.Log;
 
 public class Thread3 implements Runnable {
-    Message message;
+    final Message message;
 
     public Thread3(Message message){
         this.message = message;
@@ -14,8 +13,10 @@ public class Thread3 implements Runnable {
     @Override
     public void run() {
         int i=0;
-            synchronized (this.message) {
-
+                while (true) {
+                    synchronized (this.message) {
+                        this.message.notifyAll();
+                }
 
         }
 

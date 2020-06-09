@@ -36,7 +36,7 @@ public class Thread1 implements Runnable {
                     final Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
                     final String[] train_list = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
                     this.msg.setMsg(train_list);
-                    Log.e("mes", Thread.currentThread().getName()+ " has set the message and is waiting...");
+//                    Log.e("mes", Thread.currentThread().getName()+ " has set the message and is waiting...");
                     this.msg.wait();
 
                 } catch (IOException | InterruptedException e) {
