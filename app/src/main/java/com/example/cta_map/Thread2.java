@@ -41,9 +41,9 @@ class Thread2 implements Runnable
         ArrayList<HashMap> chosen_trains = new ArrayList<>();
 
         final ArrayList<String> stops = sqlite.getValues("line_stops_table", target_station_type.toLowerCase());
+        synchronized (this.msg) {
 
-        while (true) {
-            synchronized (this.msg) {
+        while (this.msg.IsSending()) {
                 if (this.msg.getDir() != null) {
                     target_station_direction = this.msg.getDir();
                 }

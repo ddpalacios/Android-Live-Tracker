@@ -8,6 +8,7 @@ public class Message {
     String dir;
     ArrayList<Integer> train_etas;
     boolean t;
+    boolean x;
     ArrayList<HashMap> chosen_trains;
 
     public String[] getMsg(){
@@ -45,6 +46,13 @@ public class Message {
     public String getDir(){
         return this.dir;
 
+    }
+    public void keepSending(boolean x){
+        this.x = x;
+
+    }
+    public boolean IsSending(){
+        return this.x;
     }
 
     public boolean getClicked(){

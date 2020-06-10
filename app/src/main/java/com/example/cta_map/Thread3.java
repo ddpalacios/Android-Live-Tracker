@@ -24,6 +24,8 @@ public class Thread3 implements Runnable {
     public void run() {
         int i=0;
         while (true) {
+
+
             Bundle bundle = new Bundle();
 
             android.os.Message msg = this.handler.obtainMessage();
@@ -33,6 +35,9 @@ public class Thread3 implements Runnable {
             try { Thread.sleep(700); } catch (InterruptedException e) { e.printStackTrace(); }
 
             synchronized (this.message) {
+                if(!this.message.IsSending()){
+                    break;
+                }
 
                 ArrayList<Integer> train_etas =this.message.get_train_etas();
                 ArrayList<HashMap> chosen_trains = this.message.get_chosen_trains();
@@ -46,8 +51,12 @@ public class Thread3 implements Runnable {
                 handler.sendMessage(msg);
 
 //           //                Log.e("train etas", "Notified");
+                this.message.notify();
 
-                Log.e(Thread.currentThread().getName(), this.message.getClicked()+"");
+
+
+
+//                Log.e(Thread.currentThread().getName(), this.message.getClicked()+"");
 
                 if (!this.message.getClicked()) {
                     try {

@@ -1,7 +1,9 @@
 package com.example.cta_map;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.widget.Toast;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
@@ -40,7 +42,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
         String target_station_name = bb.getString("station_name");
         String target_station_type = bb.getString("station_type");
         String main_station = bb.getString("main_station");
-        Log.e("New ", train_dir+"");
+//        Log.e("New ", train_dir+"");
 
         final String[] target_station_direction = new String[]{bb.getString("station_dir")};
         ArrayList<String> arrayList = new ArrayList<>();
@@ -63,7 +65,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
         }else {
 
             if (train_dir.equals("1")) {
-                Log.e("station", "upadting title: ");
+//                Log.e("station", "upadting title: ");
                 arrayList.add(target_station_name + " (North Bound)");
             } else if (train_dir.equals("5")) {
                 arrayList.add(target_station_name + " (South Bound)");
@@ -88,8 +90,11 @@ public class TrainTrackingActivity extends AppCompatActivity {
         final String[] target_station_direction = new String[]{bb.getString("station_dir")};
         final Message message = new Message();
         message.setClicked(false);
+        message.keepSending(true);
         DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
         final Button switch_direction = (Button) findViewById(R.id.switch_direction);
+        final Button choose_station = (Button) findViewById(R.id.pickStation);
+
 
 
 
@@ -100,7 +105,20 @@ public class TrainTrackingActivity extends AppCompatActivity {
         final Thread t3 = new Thread(new Thread3(message, handler), "Displayer");
         t3.start();
 
+        choose_station.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                android.widget.Toast.makeText(getApplicationContext(), "Clicked", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(TrainTrackingActivity.this, mainactivity.class);
+                synchronized (message){
+                    message.keepSending(false);
 
+                }
+                startActivity(intent);
+
+
+            }
+        });
 
 
         switch_direction.setOnClickListener(new View.OnClickListener() {
@@ -117,8 +135,6 @@ public class TrainTrackingActivity extends AppCompatActivity {
                         try{
                             t3.interrupt();
                         }catch(Exception e){Log.e("fff","Exception handled "+e);}
-
-
                     }
 
                 }else {
@@ -131,8 +147,6 @@ public class TrainTrackingActivity extends AppCompatActivity {
                             t3.interrupt();
 
                         }catch(Exception e){Log.e("fff","Exception handled "+e);}
-
-
                     }
 
                 }
