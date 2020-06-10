@@ -25,12 +25,13 @@ public class Thread3 implements Runnable {
         int i=0;
         while (true) {
             Bundle bundle = new Bundle();
+
             android.os.Message msg = this.handler.obtainMessage();
 
 
 
+            try { Thread.sleep(2000); } catch (InterruptedException e) { e.printStackTrace(); }
 
-            try { Thread.sleep(100); } catch (InterruptedException e) { e.printStackTrace(); }
             synchronized (this.message) {
 
                 ArrayList<Integer> train_etas =this.message.get_train_etas();
@@ -43,9 +44,20 @@ public class Thread3 implements Runnable {
 
                 handler.sendMessage(msg);
 
-                this.message.notify();
 //           //                Log.e("train etas", "Notified");
-                try { Thread.sleep(2000); } catch (InterruptedException e) { e.printStackTrace(); }
+
+                Log.e(Thread.currentThread().getName(), this.message.getClicked()+"");
+
+                if (!this.message.getClicked()) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        Log.e(Thread.currentThread().getName(), "Intrrupted");
+                    }
+                }
+                else{
+                    this.message.setClicked(false);
+                }
 
 
             }

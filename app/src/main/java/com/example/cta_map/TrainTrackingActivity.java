@@ -82,24 +82,19 @@ public class TrainTrackingActivity extends AppCompatActivity {
         bb = getIntent().getExtras();
         final String[] target_station_direction = new String[]{bb.getString("station_dir")};
         final Message message = new Message();
+        message.setClicked(false);
         DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
         final Button switch_direction = (Button) findViewById(R.id.switch_direction);
 
 
-        final PipedReader r = new PipedReader();
-        final PipedWriter w = new PipedWriter();
-        try {
-            r.connect(w);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         final Thread t1 = new Thread(new Thread1(message, bb), "API_CALL_Thread");
         t1.start();
-        final Thread t2 = new Thread(new Thread2(message, bb, sqlite, r), "Content Parser");
+        final Thread t2 = new Thread(new Thread2(message, bb, sqlite), "Content Parser");
         t2.start();
         final Thread t3 = new Thread(new Thread3(message, handler), "Displayer");
         t3.start();
+//        t3.interrupt();
 
 
 
@@ -113,21 +108,24 @@ public class TrainTrackingActivity extends AppCompatActivity {
                     target_station_direction[0] = "5";
                     synchronized (message){
                         message.setDir(target_station_direction[0]);
+                        message.setClicked(true);
                         message.notifyAll();
                         try{
-                            t1.interrupt();
                             t3.interrupt();
                         }catch(Exception e){Log.e("fff","Exception handled "+e);}
+
+
                     }
 
                 }else {
                     target_station_direction[0] = "1";
                     synchronized (message){
                         message.setDir(target_station_direction[0]);
+                        message.setClicked(true);
                         message.notifyAll();
                         try{
-                            t1.interrupt();
                             t3.interrupt();
+
                         }catch(Exception e){Log.e("fff","Exception handled "+e);}
 
 

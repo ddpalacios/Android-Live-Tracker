@@ -7,6 +7,7 @@ public class Message {
     String[] msg;
     String dir;
     ArrayList<Integer> train_etas;
+    boolean t;
     ArrayList<HashMap> chosen_trains;
 
     public String[] getMsg(){
@@ -43,6 +44,14 @@ public class Message {
     }
     public String getDir(){
         return this.dir;
+
+    }
+
+    public boolean getClicked(){
+        return this.t;
+
+    }  public void setClicked(boolean t){
+        this.t = t;
 
     }
 
