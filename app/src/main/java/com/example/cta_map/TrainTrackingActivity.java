@@ -28,17 +28,20 @@ public class TrainTrackingActivity extends AppCompatActivity {
         public void handleMessage(android.os.Message msg) {
                 Bundle bundle = msg.getData();
                 ArrayList<Integer> etas = bundle.getIntegerArrayList("train_etas");
+                String train_dir = bundle.getString("train_dir");
                 ArrayList<HashMap> chosen_trains = (ArrayList<HashMap>) bundle.getSerializable("chosen_trains");
 
 
-            displayResults(etas, chosen_trains);
+            displayResults(etas, chosen_trains, train_dir);
         }
     };
 
-    public void displayResults(ArrayList<Integer> train_etas, ArrayList<HashMap> chosen_trains){
+    public void displayResults(ArrayList<Integer> train_etas, ArrayList<HashMap> chosen_trains, String train_dir){
         String target_station_name = bb.getString("station_name");
         String target_station_type = bb.getString("station_type");
         String main_station = bb.getString("main_station");
+        Log.e("New ", train_dir+"");
+
         final String[] target_station_direction = new String[]{bb.getString("station_dir")};
         ArrayList<String> arrayList = new ArrayList<>();
         MapRelativeListView mapRelativeListView = new MapRelativeListView(getApplicationContext(), findViewById(R.id.train_layout_arrival_times));
@@ -50,18 +53,20 @@ public class TrainTrackingActivity extends AppCompatActivity {
 
 
         if (train_etas.size() == 0 ){
-            if (target_station_direction.equals("1")) {
+            if (train_dir.equals("1")) {
                 arrayList.add(0, "No Trains Available." +" (North Bound)");
             }
-            else if (target_station_direction.equals("5")){
+            else if (train_dir.equals("5")){
                 arrayList.add(0, "No Trains Available." +" (South Bound)");
 
             }
         }else {
-            if (target_station_direction.equals("1")) {
-                arrayList.add(0, target_station_name + " (North Bound)");
-            } else if (target_station_direction.equals("5")) {
-                arrayList.add(0, target_station_name + " (South Bound)");
+
+            if (train_dir.equals("1")) {
+                Log.e("station", "upadting title: ");
+                arrayList.add(target_station_name + " (North Bound)");
+            } else if (train_dir.equals("5")) {
+                arrayList.add(target_station_name + " (South Bound)");
             }
 
             for (Integer items : train_etas) {
@@ -94,7 +99,6 @@ public class TrainTrackingActivity extends AppCompatActivity {
         t2.start();
         final Thread t3 = new Thread(new Thread3(message, handler), "Displayer");
         t3.start();
-//        t3.interrupt();
 
 
 
@@ -132,7 +136,6 @@ public class TrainTrackingActivity extends AppCompatActivity {
                     }
 
                 }
-                Log.e("New ", target_station_direction[0]+"");
 
             }
         });

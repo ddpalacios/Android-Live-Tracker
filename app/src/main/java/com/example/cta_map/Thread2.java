@@ -44,8 +44,7 @@ class Thread2 implements Runnable
 
         while (true) {
             synchronized (this.msg) {
-                String new_dir = this.msg.getDir();
-                if (new_dir != null) {
+                if (this.msg.getDir() != null) {
                     target_station_direction = this.msg.getDir();
                 }
 
@@ -57,7 +56,7 @@ class Thread2 implements Runnable
                     HashMap<String, String> train_info = chicago_transits.get_train_info(each_train, target_station_type);
                     int start = 0;
                     int end = 0;
-//                        Log.e("Sync", "Going: "+ target_station_direction);
+                        this.msg.setDir(target_station_direction);
                     if (Objects.equals(train_info.get("train_direction"), target_station_direction)) {
 
                         if (target_station_direction.equals("1")) {
@@ -90,7 +89,6 @@ class Thread2 implements Runnable
                                 Collections.sort(train_etas);
 
                             }
-
                         }
                     }
                 }
@@ -106,9 +104,6 @@ class Thread2 implements Runnable
                 train_etas.clear();
                 chosen_trains.clear();
                 Log.e("update", Thread.currentThread().getName() + " is done waiting");
-
-
-
             }
 
         }

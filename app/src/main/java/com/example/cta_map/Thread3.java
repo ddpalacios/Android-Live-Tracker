@@ -30,7 +30,7 @@ public class Thread3 implements Runnable {
 
 
 
-            try { Thread.sleep(2000); } catch (InterruptedException e) { e.printStackTrace(); }
+            try { Thread.sleep(700); } catch (InterruptedException e) { e.printStackTrace(); }
 
             synchronized (this.message) {
 
@@ -38,6 +38,7 @@ public class Thread3 implements Runnable {
                 ArrayList<HashMap> chosen_trains = this.message.get_chosen_trains();
                 bundle.putIntegerArrayList("train_etas", train_etas);
                 bundle.putSerializable("chosen_trains", chosen_trains);
+                bundle.putString("train_dir", this.message.getDir());
                 msg.setData(bundle);
 
                 Log.e("train etas", "Sending to UI...");
