@@ -41,7 +41,8 @@ public class Thread3 implements Runnable {
 
                 this.message.notify();
 //                Log.e("train etas", "Notified");
-                try { Thread.sleep(200); } catch (InterruptedException e) { e.printStackTrace(); }
+                try { Thread.sleep(2000); } catch (InterruptedException e) { e.printStackTrace(); }
+
 
             }
 

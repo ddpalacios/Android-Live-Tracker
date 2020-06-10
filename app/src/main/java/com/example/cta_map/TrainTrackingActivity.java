@@ -32,6 +32,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
                 ArrayList<Integer> etas = bundle.getIntegerArrayList("train_etas");
                 ArrayList<HashMap> chosen_trains = (ArrayList<HashMap>) bundle.getSerializable("chosen_trains");
 
+
             displayResults(etas, chosen_trains);
         }
     };
@@ -69,6 +70,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
                 arrayList.add(main_station+" "+items + "m");
                 adapter.notifyDataSetChanged();
             }
+
 
         }
 }
@@ -114,6 +116,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
                     target_station_direction[0] = "5";
                     synchronized (message){
                         message.setDir(target_station_direction[0]);
+                        message.notifyAll();
 
                     }
 
@@ -121,6 +124,8 @@ public class TrainTrackingActivity extends AppCompatActivity {
                     target_station_direction[0] = "1";
                     synchronized (message){
                         message.setDir(target_station_direction[0]);
+                        message.notifyAll();
+
                     }
 
                 }
