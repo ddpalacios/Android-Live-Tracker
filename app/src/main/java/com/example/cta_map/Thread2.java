@@ -6,6 +6,8 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import java.io.IOException;
+import java.io.PipedReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,10 +20,12 @@ class Thread2 implements Runnable
     final Message msg;
     Bundle bb;
     DatabaseHelper sqlite;
-    public Thread2 (Message msg, Bundle bb, DatabaseHelper sqlite){
+    PipedReader r;
+    public Thread2 (Message msg, Bundle bb, DatabaseHelper sqlite, PipedReader r){
         this.msg = msg;
         this.bb = bb;
         this.sqlite = sqlite;
+        this.r = r;
 
     }
 
@@ -40,14 +44,14 @@ class Thread2 implements Runnable
 
         final ArrayList<String> stops = sqlite.getValues("line_stops_table", target_station_type.toLowerCase());
 
-
         while (true) {
-
-
-            Log.d("Thread", "Notifier thread active");
             try {
                 synchronized (this.msg) {
-                    Log.e("Sync", "Entered block");
+                    String new_dir = this.msg.getDir();
+                    if (new_dir != null){
+                        target_station_direction = this.msg.getDir();
+                    }
+
                     Chicago_Transits chicago_transits = new Chicago_Transits();
                     Time times = new Time();
 
@@ -56,6 +60,7 @@ class Thread2 implements Runnable
                         HashMap<String, String> train_info = chicago_transits.get_train_info(each_train, target_station_type);
                         int start = 0;
                         int end = 0;
+                        Log.e("Sync", "Going: "+ this.msg.getDir());
                         if (Objects.equals(train_info.get("train_direction"), target_station_direction)) {
 
                             if (target_station_direction.equals("1")) {
@@ -93,15 +98,17 @@ class Thread2 implements Runnable
                         }
                     }
 
-                    Log.e("Thread", Thread.currentThread().getName()+" is done parsing the recieved message  and now Waiting..");
+
+
+
                     this.msg.setTrain_etas(train_etas);
                     this.msg.set_chosen_trains(chosen_trains);
                     this.msg.wait();
+
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            Log.e("Thread", Thread.currentThread().getName()+" is parsing info again.." );
             train_etas.clear();
             chosen_trains.clear();
         }

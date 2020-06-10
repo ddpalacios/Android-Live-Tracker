@@ -3,12 +3,9 @@ package com.example.cta_map;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
-import java.util.logging.Handler;
 
 
 public class Thread3 implements Runnable {
@@ -29,7 +26,7 @@ public class Thread3 implements Runnable {
             Bundle bundle = new Bundle();
             android.os.Message msg = this.handler.obtainMessage();
 
-            try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); }
+            try { Thread.sleep(100); } catch (InterruptedException e) { e.printStackTrace(); }
             synchronized (this.message) {
 
                 ArrayList<Integer> train_etas =this.message.get_train_etas();
@@ -38,13 +35,13 @@ public class Thread3 implements Runnable {
                 bundle.putSerializable("chosen_trains", chosen_trains);
                 msg.setData(bundle);
 
-                Log.e("train etas", "Sending to UI...");
+//                Log.e("train etas", "Sending to UI...");
 
                 handler.sendMessage(msg);
 
                 this.message.notify();
-                Log.e("train etas", "Notified");
-                try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); }
+//                Log.e("train etas", "Notified");
+                try { Thread.sleep(200); } catch (InterruptedException e) { e.printStackTrace(); }
 
             }
 

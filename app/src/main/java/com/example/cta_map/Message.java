@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 public class Message {
     String[] msg;
+    String dir;
     ArrayList<Integer> train_etas;
     ArrayList<HashMap> chosen_trains;
 
@@ -33,6 +34,15 @@ public class Message {
 
     public void setMsg(String[] object){
         this.msg = object;
+
+    }
+
+    public void setDir(String object){
+        this.dir = object;
+
+    }
+    public String getDir(){
+        return this.dir;
 
     }
 
