@@ -9,10 +9,8 @@ import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-
 import java.io.IOException;
 import java.io.PipedReader;
 import java.io.PipedWriter;
@@ -84,6 +82,8 @@ public class TrainTrackingActivity extends AppCompatActivity {
         bb = getIntent().getExtras();
         final String[] target_station_direction = new String[]{bb.getString("station_dir")};
         final Message message = new Message();
+        DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
+        final Button switch_direction = (Button) findViewById(R.id.switch_direction);
 
 
         final PipedReader r = new PipedReader();
@@ -94,18 +94,15 @@ public class TrainTrackingActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-//        // write something
-//        try {
-//            Log.e("debug", "first data");
-//            w.write(target_station_direction[0]);
-//            w.flush();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        final Thread t1 = new Thread(new Thread1(message, bb), "API_CALL_Thread");
+        t1.start();
+        final Thread t2 = new Thread(new Thread2(message, bb, sqlite, r), "Content Parser");
+        t2.start();
+        final Thread t3 = new Thread(new Thread3(message, handler), "Displayer");
+        t3.start();
 
 
-        DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
-        final Button switch_direction = (Button) findViewById(R.id.switch_direction);
+
 
         switch_direction.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,7 +114,10 @@ public class TrainTrackingActivity extends AppCompatActivity {
                     synchronized (message){
                         message.setDir(target_station_direction[0]);
                         message.notifyAll();
-
+                        try{
+                            t1.interrupt();
+                            t3.interrupt();
+                        }catch(Exception e){Log.e("fff","Exception handled "+e);}
                     }
 
                 }else {
@@ -125,6 +125,11 @@ public class TrainTrackingActivity extends AppCompatActivity {
                     synchronized (message){
                         message.setDir(target_station_direction[0]);
                         message.notifyAll();
+                        try{
+                            t1.interrupt();
+                            t3.interrupt();
+                        }catch(Exception e){Log.e("fff","Exception handled "+e);}
+
 
                     }
 
@@ -134,20 +139,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
             }
         });
 
-
-
-
-
-        Thread t1 = new Thread(new Thread1(message, bb), "API_CALL_Thread");
-        t1.start();
-        Thread t2 = new Thread(new Thread2(message, bb, sqlite, r), "Content Parser");
-        t2.start();
-        Thread t3 = new Thread(new Thread3(message, handler), "Displayer");
-        t3.start();
-
-
     }
 
 
-//        mapRelativeListView.add_to_list_view(train_etas, TRAIN_RECORD, current_train_info,chosen_trains, connect, current_train_info.get("train_direction"));
 }

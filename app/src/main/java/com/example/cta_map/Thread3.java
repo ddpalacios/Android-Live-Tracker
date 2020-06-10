@@ -3,6 +3,7 @@ package com.example.cta_map;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +27,9 @@ public class Thread3 implements Runnable {
             Bundle bundle = new Bundle();
             android.os.Message msg = this.handler.obtainMessage();
 
+
+
+
             try { Thread.sleep(100); } catch (InterruptedException e) { e.printStackTrace(); }
             synchronized (this.message) {
 
@@ -35,12 +39,12 @@ public class Thread3 implements Runnable {
                 bundle.putSerializable("chosen_trains", chosen_trains);
                 msg.setData(bundle);
 
-//                Log.e("train etas", "Sending to UI...");
+                Log.e("train etas", "Sending to UI...");
 
                 handler.sendMessage(msg);
 
                 this.message.notify();
-//                Log.e("train etas", "Notified");
+//           //                Log.e("train etas", "Notified");
                 try { Thread.sleep(2000); } catch (InterruptedException e) { e.printStackTrace(); }
 
 

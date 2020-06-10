@@ -36,6 +36,9 @@ public class Thread1 implements Runnable {
                     this.msg.setMsg(train_list);
 //                    Log.e("mes", Thread.currentThread().getName()+ " has set the message and is waiting...");
                     this.msg.wait();
+                    Log.e("update",Thread.currentThread().getName()+" is done waiting");
+
+
 
                 } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
