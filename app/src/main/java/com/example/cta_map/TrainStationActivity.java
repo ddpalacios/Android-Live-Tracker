@@ -20,17 +20,48 @@ import java.util.ArrayList;
 public class TrainStationActivity  extends AppCompatActivity {
     Bundle bb; // Retrieve data from main screen
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.train_station_activity);
-        final Chicago_Transits chicago_transits = new Chicago_Transits();
+        DatabaseHelper db = new DatabaseHelper(getApplicationContext());
+
+
+
+
+
+
         final ListView list = (ListView) findViewById(R.id.train_stops);
         ArrayList<String> arrayList = new ArrayList<>();
-        DatabaseHelper db = new DatabaseHelper(getApplicationContext());
-    ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
         list.setAdapter(adapter);
+
+
+
+
     Intent intent = this.getIntent();
     String train_direction = null;
     String train_direction_name = null;
@@ -42,7 +73,7 @@ public class TrainStationActivity  extends AppCompatActivity {
     }
 
 
-    ArrayList<String> train_stops = db.getValues("line_stops_table", target_station_type.toLowerCase());
+    ArrayList<String> train_stops = db.get_column_values("line_stops_table", target_station_type.toLowerCase());
         Log.e("stops", train_stops+"");
     if (target_station_type.equals("purple")){
         train_stops.subList(9,18).clear();

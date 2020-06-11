@@ -40,7 +40,7 @@ class Thread2 implements Runnable
         ArrayList<Integer> train_etas = new ArrayList<>();
         ArrayList<HashMap> chosen_trains = new ArrayList<>();
 
-        final ArrayList<String> stops = sqlite.getValues("line_stops_table", target_station_type.toLowerCase());
+        final ArrayList<String> stops = sqlite.get_column_values("line_stops_table", target_station_type.toLowerCase());
         synchronized (this.msg) {
 
         while (this.msg.IsSending()) {

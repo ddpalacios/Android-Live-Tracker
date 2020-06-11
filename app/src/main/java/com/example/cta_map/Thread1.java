@@ -20,8 +20,6 @@ public class Thread1 implements Runnable {
     public Thread1(Message msg, Bundle bb){
         this.msg = msg;
         this.bb = bb;
-
-
     }
     @Override
     public void run() {

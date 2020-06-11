@@ -41,7 +41,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
     public void displayResults(ArrayList<Integer> train_etas, ArrayList<HashMap> chosen_trains, String train_dir){
         String target_station_name = bb.getString("station_name");
         String target_station_type = bb.getString("station_type");
-        String main_station = bb.getString("main_station");
+        String main_station;
 //        Log.e("New ", train_dir+"");
 
         final String[] target_station_direction = new String[]{bb.getString("station_dir")};
@@ -50,6 +50,10 @@ public class TrainTrackingActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
         final ListView list = findViewById(R.id.train_layout_arrival_times);
         list.setAdapter(adapter);
+        DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
+
+        ArrayList<String> table_record = sqlite.get_table_record("main_stations_table",
+                "WHERE train_line = '"+target_station_type.replaceAll("\\)", "'")+"'");
 
 
 
@@ -72,6 +76,16 @@ public class TrainTrackingActivity extends AppCompatActivity {
             }
 
             for (Integer items : train_etas) {
+
+                if (train_dir.equals("1")){
+                    main_station = table_record.get(2);
+                }
+
+                else  {
+                    main_station = table_record.get(3);
+                }
+
+
                 arrayList.add(main_station+" "+items + "m");
                 adapter.notifyDataSetChanged();
             }
@@ -94,6 +108,10 @@ public class TrainTrackingActivity extends AppCompatActivity {
         DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
         final Button switch_direction = (Button) findViewById(R.id.switch_direction);
         final Button choose_station = (Button) findViewById(R.id.pickStation);
+        final Button toMaps = (Button) findViewById(R.id.show);
+
+
+
 
 
 
@@ -102,8 +120,20 @@ public class TrainTrackingActivity extends AppCompatActivity {
         t1.start();
         final Thread t2 = new Thread(new Thread2(message, bb, sqlite), "Content Parser");
         t2.start();
-        final Thread t3 = new Thread(new Thread3(message, handler), "Displayer");
+        final Thread t3 = new Thread(new Thread3(message, handler, getApplicationContext()), "Displayer");
         t3.start();
+
+
+
+        toMaps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TrainTrackingActivity.this, MapsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
 
         choose_station.setOnClickListener(new View.OnClickListener() {
             @Override

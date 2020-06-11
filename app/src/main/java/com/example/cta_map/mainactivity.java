@@ -32,6 +32,8 @@ public class mainactivity extends AppCompatActivity {
         final Context context = getApplicationContext();
 
 
+
+
         final ArrayList<String> favoriteList = new ArrayList<>();
         final ListView favoriteStations = findViewById(R.id.favorite_lines);
         ArrayList<String> arrayList = new ArrayList<>();
@@ -115,6 +117,7 @@ public class mainactivity extends AppCompatActivity {
                 Intent intent = new Intent(mainactivity.this, TrainTrackingActivity.class);
                 String station = (String) favoriteStations.getItemAtPosition(position);
                 String[] station_details = station.split("-\\(");
+                String main_station;
 
                 String station_name = station_details[0];
                 String station_type = station_details[1].replaceAll("\\)", "");
@@ -133,8 +136,23 @@ public class mainactivity extends AppCompatActivity {
                         editor.putInt("station_dir", Integer.parseInt(rec.get("station_dir")));
                         editor.apply();
                         intent.putExtra("from_sql", true);
+                        ArrayList<String> table_record = sqlite.get_table_record("main_stations_table",
+                                "WHERE train_line = '"+station_type.replaceAll("\\)", "'")+"'");
+                        if (rec.get("station_dir").equals("1")){
+
+
+                            main_station = table_record.get(2);
+
+
+                        }else {
+                            main_station = table_record.get(3);
+                        }
+
+
                         intent.putExtra("station_type", rec.get("station_type"));
                         intent.putExtra("station_dir", rec.get("station_dir"));
+                        intent.putExtra("main_station", main_station);
+
                         intent.putExtra("station_name",rec.get("station_name"));
                         intent.putExtra("station_lat", Double.parseDouble(rec.get("station_lat")));
                         intent.putExtra("station_lon",Double.parseDouble(rec.get("station_lon")));

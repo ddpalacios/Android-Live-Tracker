@@ -14,9 +14,10 @@ public class Thread3 implements Runnable {
     Context context;
     android.os.Handler handler;
 
-    public Thread3(Message message, android.os.Handler handler){
+    public Thread3(Message message, android.os.Handler handler, Context context){
         this.message = message;
         this.handler = handler;
+        this.context = context;
 
     }
 
@@ -38,19 +39,24 @@ public class Thread3 implements Runnable {
                 if(!this.message.IsSending()){
                     break;
                 }
-
                 ArrayList<Integer> train_etas =this.message.get_train_etas();
                 ArrayList<HashMap> chosen_trains = this.message.get_chosen_trains();
                 bundle.putIntegerArrayList("train_etas", train_etas);
                 bundle.putSerializable("chosen_trains", chosen_trains);
                 bundle.putString("train_dir", this.message.getDir());
+
+
+
+
+
+
                 msg.setData(bundle);
 
                 Log.e("train etas", "Sending to UI...");
 
                 handler.sendMessage(msg);
 
-//           //                Log.e("train etas", "Notified");
+           //                Log.e("train etas", "Notified");
                 this.message.notify();
 
 

@@ -69,6 +69,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String BROWN_LINE_COL = "brown";
     public static final String PURPLE_LINE_COL = "purple";
 
+    public static final String MAIN_STATIONS = "main_stations_table";
+    public static final String MAIN_STATION_ID = "Main_stationID";
+    public static final String TRAIN_LINE = "train_line";
+    public static final String NORTHBOUND_COL = "northbound";
+    public static final String SOUTHBOUND_COL = "southbound";
 
 
 
@@ -149,8 +154,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.e("Created", LINE_STOPS_TABLE);
 
 
+        String main_stations_table = "CREATE TABLE IF NOT EXISTS "+ MAIN_STATIONS
+                + " ( "+ MAIN_STATION_ID + " INTEGER PRIMARY KEY  AUTOINCREMENT,"
+                + TRAIN_LINE + " TEXT, "
+                + NORTHBOUND_COL+ " TEXT, "
+                + SOUTHBOUND_COL+ " TEXT)";
 
 
+
+        db.execSQL(main_stations_table);
+        Log.e("Created", main_stations_table);
 
 
 
@@ -160,6 +173,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
     }
+
+
+
+
 
     public void add_user(Profile profile) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -231,6 +248,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+    public void addMainStations(MainStation mainStation){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(TRAIN_LINE, mainStation.getTrainLine());
+        values.put(NORTHBOUND_COL, mainStation.getNorthBound());
+        values.put(SOUTHBOUND_COL, mainStation.getSouthBound());
+        db.insert(MAIN_STATIONS, null, values);
+        String query = "SELECT * FROM " + MAIN_STATIONS;
+        Cursor cursor = db.rawQuery(query, null);
+        cursor.moveToFirst();
+        Integer auto_id = Integer.parseInt(cursor.getString(0));
+        db.close();
+    }
 
     public void addUserStation(UserStation userStation) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -250,7 +281,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     }
-
     public ArrayList<HashMap> GetTableRecord(Integer id, String table_name) {
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<HashMap> userRecord = new ArrayList<>();
@@ -268,9 +298,49 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 userRecord.add(record);
             }
         }
-
     return userRecord;
     }
+
+    public ArrayList<String> get_table_value(String table_name, String condition) {
+        ArrayList<String> userRecord = new ArrayList<>();
+        String query = "SELECT * FROM "
+                + table_name
+                + condition;
+
+//                " WHERE " + PROFILE_USERNAME_COL + " = '" + username + "' AND " +
+//                PROFILE_PASS_COL + " = '" + toHex(password) + "'";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        cursor.moveToFirst();
+//        for (int i=0;i<cursor.getColumnCount();i++ ){
+//            userRecord.add(cursor.getString(i));
+//        }
+//        Log.e("cursor", cursor.getString(1));
+        return userRecord;
+    }
+
+
+    public ArrayList<String> get_table_record(String table_name, String condition){
+        ArrayList<String> userRecord = new ArrayList<>();
+
+        String query = "SELECT * FROM "
+                + table_name
+                + " "+condition;
+
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        cursor.moveToFirst();
+        for (int i=0;i<cursor.getColumnCount();i++ ){
+            userRecord.add(cursor.getString(i));
+        }
+        Log.e("cursor", cursor.getString(1));
+        return userRecord;
+
+    }
+
+
 
 
 
@@ -289,7 +359,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             userRecord.add(cursor.getString(i));
 
         }
-        Log.e("curdor", cursor.getString(1));
+        Log.e("cursor", cursor.getString(1));
         return userRecord;
     }
 
@@ -325,7 +395,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
 
-    public ArrayList<String> getValues(String table_name, String col){
+    public ArrayList<String> get_column_values(String table_name, String col){
     SQLiteDatabase db= this.getReadableDatabase();
     ArrayList<String> values = new ArrayList<>();
         String query = "SELECT "+col +" FROM "+table_name;
@@ -337,9 +407,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 }
             }
 
-        if (values.contains("null")){
-            values.removeAll(Collections.singleton("null"));
-        }
+
 
 return values;
 

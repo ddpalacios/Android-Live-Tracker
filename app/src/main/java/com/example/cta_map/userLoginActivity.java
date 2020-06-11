@@ -39,7 +39,9 @@ public class userLoginActivity extends AppCompatActivity {
                 Chicago_Transits chicago_transits = new Chicago_Transits();
                 BufferedReader r = chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_stations);
                 BufferedReader r2 = chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_line_stops);
-                create_tables(r, r2, false);
+                BufferedReader r3 = chicago_transits.setup_file_reader(getApplicationContext(), R.raw.main_stations);
+
+                create_tables(r, r2, r3,false);
 
 
                 DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
@@ -93,11 +95,12 @@ public class userLoginActivity extends AppCompatActivity {
 
     }
 
-    public void create_tables(BufferedReader file, BufferedReader file2, boolean create){
+    public void create_tables(BufferedReader file, BufferedReader file2,BufferedReader file3, boolean create){
         Chicago_Transits chicago_transits = new Chicago_Transits();
         if (create) {
             chicago_transits.Create_TrainInfo_table(file, getApplicationContext());
             chicago_transits.create_line_stops_table(file2, getApplicationContext());
+            chicago_transits.create_main_station_table(file3, getApplicationContext());
         }
     }
 

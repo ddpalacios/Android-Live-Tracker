@@ -24,9 +24,48 @@ import java.util.List;
 
 class Chicago_Transits {
 
+    void create_main_station_table(BufferedReader reader, Context context){
+        DatabaseHelper sqlite = new DatabaseHelper(context);
+
+        String line;
+        int row=0;
+        while (true) {
+            try {
+                if ((line = reader.readLine()) != null) {
+                    if (row == 0){
+                        row++;
+                        continue;
+                    }
+                    String[] tokens = (line.replaceAll("\"","")
+                            .replaceAll(",,",",")).split(",");
+                    MainStation mainStation = new MainStation(tokens[0].toLowerCase(), tokens[1], tokens[2]);
+                    sqlite.addMainStations(mainStation);
+                    row++;
+
+                } else {
+                    break;
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            sqlite.close();
+
+        }
+
+
+
+
+
+
+    }
+
+
+
+
 
     @SuppressLint("LongLogTag")
-    String[] create_line_stops_table(BufferedReader reader, Context context) {
+    void create_line_stops_table(BufferedReader reader, Context context) {
         DatabaseHelper sqlite = new DatabaseHelper(context);
 
         String line;
@@ -69,12 +108,11 @@ class Chicago_Transits {
         }
 
 
-        return null;
     }
 
 
 
-    String[] Create_TrainInfo_table(BufferedReader reader, Context context) {
+    void Create_TrainInfo_table(BufferedReader reader, Context context) {
         DatabaseHelper sqlite = new DatabaseHelper(context);
 
         String line;
@@ -127,7 +165,7 @@ class Chicago_Transits {
 
 
 
-        return null;
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
