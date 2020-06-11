@@ -118,7 +118,7 @@ public class mainactivity extends AppCompatActivity {
         favoriteStations.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(mainactivity.this, TrainTrackingActivity.class);
+                Intent intent = new Intent(mainactivity.this, activity_arrival_times.class);
                 String station = (String) favoriteStations.getItemAtPosition(position);
                 String[] station_details = station.split("-\\(");
                 String main_station;

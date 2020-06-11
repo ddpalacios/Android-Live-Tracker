@@ -27,7 +27,7 @@ public class activity_arrival_times extends AppCompatActivity {
     String station_name;
     String[] train_direction = new String[1];
     Bundle bb;
-    final Message message = new Message();
+    Message message = new Message();
 
 
     @SuppressLint("HandlerLeak")
@@ -39,7 +39,7 @@ public class activity_arrival_times extends AppCompatActivity {
             ArrayList<Integer> etas = bundle.getIntegerArrayList("train_etas");
             String train_dir = bundle.getString("train_dir");
             ArrayList<HashMap> chosen_trains = (ArrayList<HashMap>) bundle.getSerializable("chosen_trains");
-
+            Log.e("ddd", chosen_trains+"");
 
 //            displayResults(etas, chosen_trains, train_dir);
         }
@@ -55,19 +55,21 @@ public class activity_arrival_times extends AppCompatActivity {
         bb=getIntent().getExtras();
         DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
         final HashMap<String, String> current_train_info = (HashMap<String, String>) getIntent().getExtras().get("current_train_info");
-        station_type = current_train_info.get("station_type");
-        message.keepSending(true);
-        final Thread t1 = new Thread(new Thread1(message, station_type), "API_CALL_Thread");
+        String target_station_type = "red";//current_train_info.get("station_type");
+
+        synchronized (message) {
+            message.keepSending(true);
+        }
+        final Thread t1 = new Thread(new Thread1(message, target_station_type), "API_CALL_Thread");
         t1.start();
+        final Thread t4 = new Thread(new Thread4(message, target_station_type), "Content Parser");
+        t4.start();
+        final Thread t5 = new Thread(new Thread5(message), "Displayer");
+        t5.start();
 
-
-
-
-
-//        final Thread t3 = new Thread(new Thread3(message, handler, getApplicationContext()), "Displayer");
-//        t3.start();
-
-
+//synchronized (message){
+//    message.notifyAll();
+//}
 //        Log.e("message", message.getDir());
 
 

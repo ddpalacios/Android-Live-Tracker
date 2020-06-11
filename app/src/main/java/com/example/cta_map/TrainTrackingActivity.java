@@ -184,6 +184,9 @@ public class TrainTrackingActivity extends AppCompatActivity {
             public void onClick(View v) {
                 android.widget.Toast.makeText(getApplicationContext(), "Clicked", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(TrainTrackingActivity.this, mainactivity.class);
+                synchronized (message){
+                    message.keepSending(false);
+                }
 
                 startActivity(intent);
 

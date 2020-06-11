@@ -26,16 +26,14 @@ public class Thread4 implements Runnable {
                     final String[] train_list = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
                     this.msg.setMsg(train_list);
                     Log.e(Thread.currentThread().getName(), Thread.currentThread().getName()+ " has set the message and is waiting...");
-                    Log.e("Update", "START "+ this.msg.IsSending());
+                    this.msg.setDir("1");
                     this.msg.wait();
                     Log.e("update",Thread.currentThread().getName()+" is done waiting");
-
 
 
                 } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
                 }
-//                    Log.e("mes", Thread.currentThread().getName()+ " is done waiting...");
 
             }
 

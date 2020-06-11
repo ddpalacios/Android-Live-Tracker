@@ -26,15 +26,17 @@ public class Thread1 implements Runnable {
     @Override
     public void run() {
         String url = "https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt="+type;
-        synchronized (this.msg){
+        synchronized (msg){
+            int i =0;
             while (this.msg.IsSending()) {
-
+                Log.e("respnse", String.valueOf(i));
+                i++;
                 try {
                     final Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
                     final String[] train_list = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
                     this.msg.setMsg(train_list);
-                    Log.e(Thread.currentThread().getName(), Thread.currentThread().getName()+ " has set the message and is waiting...");
-                    Log.e("Update", "START "+ this.msg.IsSending());
+                    Log.e(Thread.currentThread().getName(), train_list+ " has set the message and is waiting...");
+//                    Log.e("Update", "START "+ this.msg.IsSending());
                     this.msg.wait();
                     Log.e("update",Thread.currentThread().getName()+" is done waiting");
 
