@@ -10,6 +10,7 @@ public class Message {
     boolean t;
     boolean x;
     String next_stop;
+
     ArrayList<HashMap> chosen_trains;
     String coord;
 

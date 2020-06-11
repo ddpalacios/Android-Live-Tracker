@@ -42,8 +42,24 @@ public class activity_arrival_times extends AppCompatActivity {
 
             assert train_coordinates != null;
             Log.e("Recived", train_coordinates);
+            display_results();
+
+
+
+
         }
     };
+
+    public void display_results(){
+        DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
+        final HashMap<String, String> current_train_info = (HashMap<String, String>) getIntent().getExtras().get("current_train_info");
+
+        ArrayList<String> train_stops = sqlite.get_column_values("line_stops_table", current_train_info.get("station_type").toLowerCase());
+        Log.e("all_stops", train_stops+"");
+
+
+
+    }
 
 
 
@@ -53,7 +69,6 @@ public class activity_arrival_times extends AppCompatActivity {
         setContentView(R.layout.activity_arrival_times);
         super.onCreate(savedInstanceState);
         bb=getIntent().getExtras();
-        DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
         final HashMap<String, String> current_train_info = (HashMap<String, String>) getIntent().getExtras().get("current_train_info");
         String target_station_type = current_train_info.get("station_type");
         Log.e("Picked", current_train_info+"");
