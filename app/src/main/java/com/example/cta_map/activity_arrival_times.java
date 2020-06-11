@@ -42,7 +42,7 @@ public class activity_arrival_times extends AppCompatActivity {
 
             assert train_coordinates != null;
             Log.e("Recived", train_coordinates);
-            display_results();
+            display_results(train_next_stop, train_dir);
 
 
 
@@ -50,12 +50,45 @@ public class activity_arrival_times extends AppCompatActivity {
         }
     };
 
-    public void display_results(){
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public void display_results(String next_stop, String train_dir){
+        int start = 0;
+        int end = 0;
+        Chicago_Transits chicago_transits = new Chicago_Transits();
         DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
         final HashMap<String, String> current_train_info = (HashMap<String, String>) getIntent().getExtras().get("current_train_info");
-
         ArrayList<String> train_stops = sqlite.get_column_values("line_stops_table", current_train_info.get("station_type").toLowerCase());
-        Log.e("all_stops", train_stops+"");
+
+        if (train_dir.equals("1")){
+            end = train_stops.indexOf(next_stop)+1;
+            if (end == -1){
+                Log.e("END 1", next_stop);
+            }
+
+
+        }if (train_dir.equals("5")) {
+            start = train_stops.indexOf(next_stop);
+            end = train_stops.size();
+
+            if (start == -1){
+                Log.e("START 5", next_stop);
+            }
+
+
+        }
+
+        Log.e("all stops", train_stops+"");
+//     List<String> all_stops_till_target = train_stops.subList(start , end);
+//        for (int i=0;  i<all_stops_till_target.size(); i++){
+//            String[] coord = chicago_transits.retrieve_station_coordinates(sqlite, train_stops.get(i), current_train_info.get("station_type").toLowerCase());
+//            Log.e("Station Coordinates", coord[0]+", "+coord[1]);
+//
+//
+//        }
+
+
+
+
 
 
 
@@ -104,8 +137,7 @@ public class activity_arrival_times extends AppCompatActivity {
 //
 //
 //        int idx = 0;
-//        int start = 0;
-//        int end = 0;
+
 //        Log.e("idx activity", train_stops+"");
 //
 //        if (specified_train_direction.equals("1")){
@@ -161,7 +193,7 @@ public class activity_arrival_times extends AppCompatActivity {
 //            Log.e("idx activity", start + " "+ end);
 //
 //        }
-//
+
 ////        ArrayList<Integer> range_of_eta = chicago_transits.calculate_station_range_eta(current_train_info, start, end, Integer.parseInt(specified_train_direction), context);
 //        BufferedReader train_station_stops_read = chicago_transits.setup_file_reader(context, R.raw.train_line_stops);
 //        ArrayList<String> all_stop = chicago_transits.retrieve_line_stations(train_station_stops_read, current_train_info.get("station_type"), false);

@@ -168,6 +168,19 @@ class Chicago_Transits {
 
     }
 
+    String[] retrieve_station_coordinates(DatabaseHelper sqlite, String station_name, String station_type) {
+        ArrayList<String> record = sqlite.get_table_record("train_station_table", "WHERE STATION_NAME ='"+station_name+"'"
+                +" AND "+station_type+" = 'true'");
+
+        sqlite.close();
+
+        return new String[]{record.get(10), record.get(11)};
+    }
+
+
+
+
+
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public BufferedReader setup_file_reader(Context context, int file){
         InputStream CSVfile = context.getResources().openRawResource(file);

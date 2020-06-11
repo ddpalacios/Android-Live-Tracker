@@ -32,6 +32,8 @@ public class Thread4 implements Runnable {
                         String train_lon = train_info.get("train_lon");
                         String train_next_stop = train_info.get("next_stop");
                         String train_direction = train_info.get("train_direction");
+                        Log.e("NEXT", train_next_stop);
+
 
 
 
