@@ -30,6 +30,7 @@ public class mainactivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         super.onCreate(savedInstanceState);
         final Context context = getApplicationContext();
+        final DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
 
 
 
@@ -43,7 +44,6 @@ public class mainactivity extends AppCompatActivity {
         list.setAdapter(adapter);
 
         favoriteStations.setAdapter(favoriteadapter);
-        DatabaseHelper sqlite = new DatabaseHelper(context);
         SharedPreferences USER_RECORD = getSharedPreferences("User_Record", MODE_PRIVATE);
         final Integer profileId = USER_RECORD.getInt("ProfileID", -1);
         ArrayList<HashMap> record = sqlite.GetTableRecord(profileId, "train_table");
@@ -65,7 +65,6 @@ public class mainactivity extends AppCompatActivity {
                 if (position == 0){
                     connect.putBoolean("connection", false);
                     connect.apply();
-                    startActivity(intent);
 
 
                 }
@@ -76,9 +75,13 @@ public class mainactivity extends AppCompatActivity {
 
 
                     connect.apply();
-                    startActivity(intent);
+
 
                 }
+
+                sqlite.close();
+                startActivity(intent);
+
 
             }
         });
@@ -105,6 +108,7 @@ public class mainactivity extends AppCompatActivity {
                 ArrayList<HashMap> record = sqlite.GetTableRecord(profileId, "train_table");
                 Log.e("trains", record + "");
                 fill_list(record, favoriteList, favoriteadapter);
+                sqlite.close();
 
                 return false;
             }
@@ -156,7 +160,7 @@ public class mainactivity extends AppCompatActivity {
                         intent.putExtra("station_name",rec.get("station_name"));
                         intent.putExtra("station_lat", Double.parseDouble(rec.get("station_lat")));
                         intent.putExtra("station_lon",Double.parseDouble(rec.get("station_lon")));
-
+                        sqlite.close();
                         startActivity(intent);
 
 

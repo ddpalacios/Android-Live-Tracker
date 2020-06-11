@@ -59,8 +59,11 @@ public class activity_arrival_times extends AppCompatActivity {
         message.keepSending(true);
         final Thread t1 = new Thread(new Thread1(message, station_type), "API_CALL_Thread");
         t1.start();
-//        final Thread t2 = new Thread(new Thread2(message, bb, sqlite), "Content Parser");
-//        t2.start();
+
+
+
+
+
 //        final Thread t3 = new Thread(new Thread3(message, handler, getApplicationContext()), "Displayer");
 //        t3.start();
 

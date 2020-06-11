@@ -96,6 +96,7 @@ class Thread2 implements Runnable
 
 
                 this.msg.setTrain_etas(train_etas);
+                sqlite.close();
                 this.msg.set_chosen_trains(chosen_trains);
                 try {
                     this.msg.wait();

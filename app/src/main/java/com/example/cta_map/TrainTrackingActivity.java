@@ -95,6 +95,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
 
 
         }
+        sqlite.close();
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

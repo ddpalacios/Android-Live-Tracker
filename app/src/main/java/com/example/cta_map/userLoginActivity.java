@@ -70,7 +70,7 @@ public class userLoginActivity extends AppCompatActivity {
 
                     editor.apply();
 
-
+                    sqlite.close();
                     startActivity(ToStations);
 
                 }else{
