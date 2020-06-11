@@ -335,7 +335,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         for (int i=0;i<cursor.getColumnCount();i++ ){
             userRecord.add(cursor.getString(i));
         }
-        Log.e("cursor", cursor.getString(1));
+//        Log.e("cursor", cursor.getString(1));
         return userRecord;
 
     }

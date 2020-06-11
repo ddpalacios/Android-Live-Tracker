@@ -27,7 +27,7 @@ public class activity_arrival_times extends AppCompatActivity {
     String station_name;
     String[] train_direction = new String[1];
     Bundle bb;
-    Message message = new Message();
+    final Message message = new Message();
 
 
     @SuppressLint("HandlerLeak")
@@ -36,12 +36,12 @@ public class activity_arrival_times extends AppCompatActivity {
         @Override
         public void handleMessage(android.os.Message msg) {
             Bundle bundle = msg.getData();
-            ArrayList<Integer> etas = bundle.getIntegerArrayList("train_etas");
             String train_dir = bundle.getString("train_dir");
-            ArrayList<HashMap> chosen_trains = (ArrayList<HashMap>) bundle.getSerializable("chosen_trains");
-            Log.e("ddd", chosen_trains+"");
+            String train_coordinates = bundle.getString("train_coordinates");
+            String train_next_stop = bundle.getString("train_next_stop");
 
-//            displayResults(etas, chosen_trains, train_dir);
+            assert train_coordinates != null;
+            Log.e("Recived", train_coordinates);
         }
     };
 
@@ -55,22 +55,18 @@ public class activity_arrival_times extends AppCompatActivity {
         bb=getIntent().getExtras();
         DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
         final HashMap<String, String> current_train_info = (HashMap<String, String>) getIntent().getExtras().get("current_train_info");
-        String target_station_type = "red";//current_train_info.get("station_type");
+        String target_station_type = current_train_info.get("station_type");
+        Log.e("Picked", current_train_info+"");
 
         synchronized (message) {
             message.keepSending(true);
         }
-        final Thread t1 = new Thread(new Thread1(message, target_station_type), "API_CALL_Thread");
+        final Thread t1 = new Thread(new Thread1(message, target_station_type), "NEW API_CALL_Thread");
         t1.start();
-        final Thread t4 = new Thread(new Thread4(message, target_station_type), "Content Parser");
+        final Thread t4 = new Thread(new Thread4(message, target_station_type, current_train_info.get("train_id")), " NEW Content Parser");
         t4.start();
-        final Thread t5 = new Thread(new Thread5(message), "Displayer");
+        final Thread t5 = new Thread(new Thread5(message, handler), "NEW Displayer");
         t5.start();
-
-//synchronized (message){
-//    message.notifyAll();
-//}
-//        Log.e("message", message.getDir());
 
 
 

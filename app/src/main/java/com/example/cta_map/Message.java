@@ -9,7 +9,9 @@ public class Message {
     ArrayList<Integer> train_etas;
     boolean t;
     boolean x;
+    String next_stop;
     ArrayList<HashMap> chosen_trains;
+    String coord;
 
     public String[] getMsg(){
         return this.msg;
@@ -38,6 +40,21 @@ public class Message {
         this.msg = object;
 
     }
+    public void setNextStop(String stop){
+        this.next_stop = stop;
+    }
+
+    public String getNextStop(){
+        return this.next_stop;
+    }
+
+    public void setCoord(String lat, String lon){
+        this.coord = lat +","+lon;
+
+    }    public String getCoord(){
+        return this.coord;
+    }
+
 
     public void setDir(String object){
         this.dir = object;

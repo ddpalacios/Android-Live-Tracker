@@ -23,7 +23,6 @@ public class Thread3 implements Runnable {
 
     @Override
     public void run() {
-        int i=0;
         while (true) {
 
 

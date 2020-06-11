@@ -16,10 +16,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import java.io.IOException;
-import java.io.PipedReader;
-import java.io.PipedWriter;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -110,21 +106,16 @@ public class TrainTrackingActivity extends AppCompatActivity {
                     String[] list_item = String.valueOf(list.getItemAtPosition(position)).split(":");
                     String key = list_item[1].replaceAll("[^\\d.]", "");
                     for (HashMap<String, String> each_train : chosen_trains) {
-//                        Log.e("train", each_train+"");
                         String train_eta = each_train.get("train_eta");
                         if (train_eta.equals(key)){
-                            Log.e("next ", each_train.get("next_stop") + "");
+                            Log.e("next ", "TRAIN ID: " +each_train.get("train_id") + "");
                             intent.putExtra("current_train_info", each_train);
-//                                intent.putExtra("message", (Serializable) message);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             synchronized (message){
                                 message.keepSending(false);
                             }
-
                             startActivity(intent);
-
                         }
-
                     }
                 }
 

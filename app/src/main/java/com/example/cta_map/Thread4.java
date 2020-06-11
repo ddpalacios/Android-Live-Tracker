@@ -6,34 +6,47 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 
 public class Thread4 implements Runnable {
     final Message msg;
     String type;
-    public Thread4(Message msg, String type){
+    String id;
+    public Thread4(Message msg, String type, String id){
         this.msg = msg;
         this.type = type;
+        this.id = id;
     }
     @Override
     public void run() {
-        String url = "https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt="+type;
         synchronized (this.msg){
-            while (true) {
+            while (this.msg.IsSending()) {
+                Chicago_Transits chicago_transits = new Chicago_Transits();
+                Time times = new Time();
+                String[] content = this.msg.getMsg();
+                for (String each_train : content) {
+                    HashMap<String, String> train_info = chicago_transits.get_train_info(each_train, this.type);
+                    if (train_info.get("train_id").equals(id)) {
+                        String train_lat = train_info.get("train_lat");
+                        String train_lon = train_info.get("train_lon");
+                        String train_next_stop = train_info.get("next_stop");
+                        String train_direction = train_info.get("train_direction");
+                        this.msg.setDir(train_direction);
+                        this.msg.setCoord(train_lat, train_lon);
+                        this.msg.setNextStop(train_next_stop);
 
-                try {
-                    final Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
-                    final String[] train_list = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
-                    this.msg.setMsg(train_list);
-                    Log.e(Thread.currentThread().getName(), Thread.currentThread().getName()+ " has set the message and is waiting...");
-                    this.msg.setDir("1");
+
+//                        Log.e("FOUND", train_info + "");
+
+                    }
+                }
+                    try {
                     this.msg.wait();
-                    Log.e("update",Thread.currentThread().getName()+" is done waiting");
-
-
-                } catch (IOException | InterruptedException e) {
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+//                Log.e(Thread.currentThread().getName(), "Done waiting");
 
             }
 

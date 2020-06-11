@@ -51,7 +51,7 @@ class Thread2 implements Runnable
                 Chicago_Transits chicago_transits = new Chicago_Transits();
                 Time times = new Time();
 
-                String[] content = msg.getMsg();
+                String[] content = this.msg.getMsg();
                 for (String each_train : content) {
                     HashMap<String, String> train_info = chicago_transits.get_train_info(each_train, target_station_type);
                     int start = 0;
@@ -105,7 +105,7 @@ class Thread2 implements Runnable
                 }
                 train_etas.clear();
                 chosen_trains.clear();
-                Log.e("update", Thread.currentThread().getName() + " is done waiting");
+//                Log.e("update", Thread.currentThread().getName() + " is done waiting");
             }
 
         }

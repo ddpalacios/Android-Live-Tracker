@@ -1,37 +1,82 @@
 package com.example.cta_map;
 
+import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class Thread5 implements Runnable {
-    Message msg;
+    Message message;
+    Handler handler;
 
 
-    public Thread5(Message msg){
-        this.msg = msg;
+    public Thread5(Message msg, Handler handler){
+        this.handler = handler;
+
+        this.message = msg;
     }
 
-
+    @Override
     public void run(){
+        while (true){
+            Bundle bundle = new Bundle();
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-            while (true) {
-                synchronized (this.msg) {
+            android.os.Message msg = this.handler.obtainMessage();
 
-
-                    this.msg.notify();
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            try { Thread.sleep(700); } catch (InterruptedException e) { e.printStackTrace(); }
+            synchronized (this.message){
+                if(!this.message.IsSending()){
+                    break;
                 }
+
+                bundle.putString("train_dir", this.message.getDir());
+                bundle.putString("train_coordinates", this.message.getCoord());
+                bundle.putString("train_next_stop", this.message.getNextStop());
+
+
+                msg.setData(bundle);
+
+//                Log.e("train etas", "Sending to UI...");
+
+                handler.sendMessage(msg);
+
+                this.message.notify();
+                try { Thread.sleep(700); } catch (InterruptedException e) { e.printStackTrace(); }
 
 
             }
+
+
+
         }
 
 
 
+
+
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//            while (true) {
+//                synchronized (this.msg) {
+//
+//
+//                    this.msg.notify();
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//
+//
+//            }
+//        }
+//
+//
+//
     }
 }
