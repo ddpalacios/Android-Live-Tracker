@@ -84,6 +84,7 @@ class Thread2 implements Runnable
                                         target_station_lat,
                                         target_station_lon);
                                 int current_train_eta = times.get_estimated_time_arrival(25, current_train_distance_from_target_station);
+                                train_info.put("train_eta", String.valueOf(current_train_eta));
                                 train_etas.add(current_train_eta);
                                 chosen_trains.add(train_info);
                                 Collections.sort(train_etas);

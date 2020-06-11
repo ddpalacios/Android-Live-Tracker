@@ -1,8 +1,11 @@
 package com.example.cta_map;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.widget.AdapterView;
 import android.widget.Toast;
 import android.os.Handler;
 import android.util.Log;
@@ -16,12 +19,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.IOException;
 import java.io.PipedReader;
 import java.io.PipedWriter;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TrainTrackingActivity extends AppCompatActivity {
 
     Bundle bb; // Retrieve data from main screen
+    final Message message = new Message();
+
 
     @SuppressLint("HandlerLeak")
     private final Handler handler = new Handler() {
@@ -38,7 +44,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
         }
     };
 
-    public void displayResults(ArrayList<Integer> train_etas, ArrayList<HashMap> chosen_trains, String train_dir){
+    public void displayResults(ArrayList<Integer> train_etas, final ArrayList<HashMap> chosen_trains, String train_dir){
         String target_station_name = bb.getString("station_name");
         String target_station_type = bb.getString("station_type");
         String main_station;
@@ -54,9 +60,6 @@ public class TrainTrackingActivity extends AppCompatActivity {
 
         ArrayList<String> table_record = sqlite.get_table_record("main_stations_table",
                 "WHERE train_line = '"+target_station_type.replaceAll("\\)", "'")+"'");
-
-
-
 
         if (train_etas.size() == 0 ){
             if (train_dir.equals("1")) {
@@ -86,12 +89,52 @@ public class TrainTrackingActivity extends AppCompatActivity {
                 }
 
 
-                arrayList.add(main_station+" "+items + "m");
+                arrayList.add(main_station+": "+items + "m");
                 adapter.notifyDataSetChanged();
             }
 
 
         }
+
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Context context = getApplicationContext();
+                Intent intent = new Intent(TrainTrackingActivity.this, activity_arrival_times.class);
+                if (position == 0 ){
+                    Toast.makeText(context, list.getItemAtPosition(position)+"", Toast.LENGTH_SHORT).show();
+                }
+                else {
+
+                    String[] list_item = String.valueOf(list.getItemAtPosition(position)).split(":");
+                    String key = list_item[1].replaceAll("[^\\d.]", "");
+                    for (HashMap<String, String> each_train : chosen_trains) {
+//                        Log.e("train", each_train+"");
+                        String train_eta = each_train.get("train_eta");
+                        if (train_eta.equals(key)){
+                            Log.e("next ", each_train.get("next_stop") + "");
+                            intent.putExtra("current_train_info", each_train);
+//                                intent.putExtra("message", (Serializable) message);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            synchronized (message){
+                                message.keepSending(false);
+                            }
+
+                            startActivity(intent);
+
+                        }
+
+                    }
+                }
+
+
+            }
+        });
+
+
+
+
+
 }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -102,13 +145,13 @@ public class TrainTrackingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         bb = getIntent().getExtras();
         final String[] target_station_direction = new String[]{bb.getString("station_dir")};
-        final Message message = new Message();
         message.setClicked(false);
         message.keepSending(true);
         DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
         final Button switch_direction = (Button) findViewById(R.id.switch_direction);
         final Button choose_station = (Button) findViewById(R.id.pickStation);
         final Button toMaps = (Button) findViewById(R.id.show);
+        String target_station_type = bb.getString("station_type");
 
 
 
@@ -116,7 +159,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
 
 
 
-        final Thread t1 = new Thread(new Thread1(message, bb), "API_CALL_Thread");
+        final Thread t1 = new Thread(new Thread1(message, target_station_type), "API_CALL_Thread");
         t1.start();
         final Thread t2 = new Thread(new Thread2(message, bb, sqlite), "Content Parser");
         t2.start();
@@ -140,10 +183,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
             public void onClick(View v) {
                 android.widget.Toast.makeText(getApplicationContext(), "Clicked", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(TrainTrackingActivity.this, mainactivity.class);
-                synchronized (message){
-                    message.keepSending(false);
 
-                }
                 startActivity(intent);
 
 

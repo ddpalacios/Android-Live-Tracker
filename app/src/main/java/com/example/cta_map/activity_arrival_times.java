@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -25,14 +26,91 @@ public class activity_arrival_times extends AppCompatActivity {
     String station_type;
     String station_name;
     String[] train_direction = new String[1];
+    Bundle bb;
+    final Message message = new Message();
+
+
+    @SuppressLint("HandlerLeak")
+    private final Handler handler = new Handler() {
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+        @Override
+        public void handleMessage(android.os.Message msg) {
+            Bundle bundle = msg.getData();
+            ArrayList<Integer> etas = bundle.getIntegerArrayList("train_etas");
+            String train_dir = bundle.getString("train_dir");
+            ArrayList<HashMap> chosen_trains = (ArrayList<HashMap>) bundle.getSerializable("chosen_trains");
+
+
+//            displayResults(etas, chosen_trains, train_dir);
+        }
+    };
+
+
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     protected void onCreate(Bundle savedInstanceState) {
         // TODO: refresh layout for train updates
         setContentView(R.layout.activity_arrival_times);
         super.onCreate(savedInstanceState);
+        bb=getIntent().getExtras();
+        DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
+        final HashMap<String, String> current_train_info = (HashMap<String, String>) getIntent().getExtras().get("current_train_info");
+        station_type = current_train_info.get("station_type");
+        message.keepSending(true);
+        final Thread t1 = new Thread(new Thread1(message, station_type), "API_CALL_Thread");
+        t1.start();
+//        final Thread t2 = new Thread(new Thread2(message, bb, sqlite), "Content Parser");
+//        t2.start();
+//        final Thread t3 = new Thread(new Thread3(message, handler, getApplicationContext()), "Displayer");
+//        t3.start();
+
+
+//        Log.e("message", message.getDir());
+
+
+
+
+
+
+//        ArrayList<String> train_stops = sqlite.get_column_values("line_stops_table", current_train_info.get("station_type").toLowerCase());
+//        final String next_stop = current_train_info.get("next_stop");
+//        String specified_train_direction = current_train_info.get("train_direction");
+//        station_type = current_train_info.get("station_type");
+//        station_name = current_train_info.get("target_station");
+//        train_direction[0] = specified_train_direction;
+//
+//
+//
+//        ArrayList<String> arrayList = new ArrayList<>();
+//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
+//        final ListView list = (ListView) findViewById(R.id.train_etas);
+//        list.setAdapter(adapter);
+//
+//
+//        int idx = 0;
+//        int start = 0;
+//        int end = 0;
+//        Log.e("idx activity", train_stops+"");
+//
+//        if (specified_train_direction.equals("1")){
+//            end = train_stops.indexOf(next_stop.replaceAll("[^a-zA-Z0-9]", ""))+1;
+//            Log.e("idx activity", start + " "+ end);
+//
+//
+//        }if (specified_train_direction.equals("5")){
+//            Log.e("idx activity", specified_train_direction);
+//            start = train_stops.indexOf(next_stop.replaceAll("[^a-zA-Z0-9]", ""));
+//            end = train_stops.size();
+//
+//            Log.e("idx activity", start + " "+ end);
+//
+//        }
+//
+//
+
+    }
+
 //        Context context = getApplicationContext();
-//        final HashMap<String, String> current_train_info = (HashMap<String, String>) getIntent().getExtras().get("current_train_info");
 //        Chicago_Transits chicago_transits = new Chicago_Transits();
 //        BufferedReader train_station_stops_reader = chicago_transits.setup_file_reader(context, R.raw.train_line_stops);
 //        ArrayList<String> all_stops = chicago_transits.retrieve_line_stations(train_station_stops_reader, current_train_info.get("station_type"), true);
@@ -102,7 +180,6 @@ public class activity_arrival_times extends AppCompatActivity {
 //                startActivity(intent);
 //            }
 //        });
-    }
 
 
 

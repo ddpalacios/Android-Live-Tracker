@@ -50,6 +50,8 @@ public class Message {
     public void keepSending(boolean x){
         this.x = x;
 
+
+
     }
     public boolean IsSending(){
         return this.x;

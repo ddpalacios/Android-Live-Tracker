@@ -359,7 +359,7 @@ class Chicago_Transits {
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
-
+//
 //    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
 //    public ArrayList<Integer> calculate_station_range_eta(HashMap<String, String> current_train_info, int start, int end,int dir, Context context){
 //        Time time = new Time();
@@ -377,15 +377,15 @@ class Chicago_Transits {
 //        for (int i=0; i < all_stops_till_target.size(); i++){
 //            BufferedReader train_station_coordinates_reader = setup_file_reader(context, R.raw.train_stations);
 //            String remaining_stop = all_stops_till_target.get(starting_idx);
-////            String[] remaining_station_coordinates = retrieve_station_coordinates(train_station_coordinates_reader, remaining_stop, current_train_info.get("station_type"));
+//            String[] remaining_station_coordinates = retrieve_station_coordinates(train_station_coordinates_reader, remaining_stop, current_train_info.get("station_type"));
 //            String[] current_train_loc = (current_train_info.get("train_lat") + ","+current_train_info.get("train_lon")).split(",");
-////            double train_distance_to_next_stop = calculate_coordinate_distance(
-////                    Double.parseDouble(current_train_loc[0]),
-////                    Double.parseDouble(current_train_loc[1]),
-////                    Double.parseDouble(remaining_station_coordinates[0]),
-////                    Double.parseDouble(remaining_station_coordinates[1]));
+//            double train_distance_to_next_stop = calculate_coordinate_distance(
+//                    Double.parseDouble(current_train_loc[0]),
+//                    Double.parseDouble(current_train_loc[1]),
+//                    Double.parseDouble(remaining_station_coordinates[0]),
+//                    Double.parseDouble(remaining_station_coordinates[1]));
 //
-////            int next_stop_eta = time.get_estimated_time_arrival(25, train_distance_to_next_stop);
+//            int next_stop_eta = time.get_estimated_time_arrival(25, train_distance_to_next_stop);
 //            if (dir == 1){
 //                starting_idx --;
 //            }

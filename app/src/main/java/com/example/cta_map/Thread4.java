@@ -2,43 +2,44 @@ package com.example.cta_map;
 
 import android.util.Log;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import java.io.IOException;
-import java.io.PipedReader;
-import java.io.PipedWriter;
-import java.util.ArrayList;
+
 
 public class Thread4 implements Runnable {
-    PipedReader r;
-    PipedWriter w;
-    public Thread4(PipedReader r, PipedWriter w){
-        this.r = r;
-        this.w = w;
+    final Message msg;
+    String type;
+    public Thread4(Message msg, String type){
+        this.msg = msg;
+        this.type = type;
     }
-
     @Override
     public void run() {
-        ArrayList<String> f = new ArrayList<>();
+        String url = "https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt="+type;
+        synchronized (this.msg){
+            while (true) {
 
-        boolean connection = true;
+                try {
+                    final Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
+                    final String[] train_list = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
+                    this.msg.setMsg(train_list);
+                    Log.e(Thread.currentThread().getName(), Thread.currentThread().getName()+ " has set the message and is waiting...");
+                    Log.e("Update", "START "+ this.msg.IsSending());
+                    this.msg.wait();
+                    Log.e("update",Thread.currentThread().getName()+" is done waiting");
 
 
 
-            try {
-                Log.e("dddd", r.ready()+"'");
-                if (this.r.ready()) {
-                    // print the char array
-                    f.add((char) r.read() + "");
-                    Log.e("size", "" + f);
-                    
-
-
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
                 }
+//                    Log.e("mes", Thread.currentThread().getName()+ " is done waiting...");
 
-                } catch (IOException e) {
-                e.printStackTrace();
             }
 
-
+        }
 
 
 
