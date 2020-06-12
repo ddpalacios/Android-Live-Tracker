@@ -16,13 +16,11 @@ import android.widget.ListView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.DataBase.DatabaseHelper;
 import com.example.cta_map.R;
 import com.example.cta_map.Threading.Message;
-import com.example.cta_map.Threading.Thread1;
-import com.example.cta_map.Threading.Thread2;
-import com.example.cta_map.Threading.Thread3;
+import com.example.cta_map.Threading.API_Caller_Thread;
+import com.example.cta_map.Threading.Content_Parser_Thread;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -152,90 +150,90 @@ public class TrainTrackingActivity extends AppCompatActivity {
         final String target_station_name = bb.getString("station_name");
         final String station_dir = bb.getString("station_dir");
 
-        final Thread t1 = new Thread(new Thread1(message, target_station_type), "API_CALL_Thread");
-        t1.start();
-        final Thread t2 = new Thread(new Thread2(message, bb, sqlite), "Content Parser");
+        final Thread api_call_thread = new Thread(new API_Caller_Thread(message, target_station_type, true), "API_CALL_Thread");
+        api_call_thread.start();
+        final Thread t2 = new Thread(new Content_Parser_Thread(message, bb, sqlite, true), "Content Parser");
         t2.start();
-        final Thread t3 = new Thread(new Thread3(message, handler, getApplicationContext()), "Displayer");
-        t3.start();
-
-
-
-        toMaps.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                t3.interrupt();
-                Intent intent = new Intent(TrainTrackingActivity.this, MapsActivity.class);
-                Chicago_Transits chicago_transits = new Chicago_Transits();
-                String[] target_station_coordinates =  chicago_transits.retrieve_station_coordinates(sqlite, target_station_name, target_station_type);
-                intent.putExtra("target_station_coordinates", target_station_coordinates );
-                intent.putExtra("station_name", target_station_name);
-                intent.putExtra("station_lat", Double.parseDouble(target_station_coordinates[0]));
-                intent.putExtra("station_lon", Double.parseDouble(target_station_coordinates[1]));
-                intent.putExtra("station_type", target_station_type);
-                intent.putExtra("station_dir", station_dir);
-                synchronized (message){
-                    message.keepSending(false);
-                }
-
-
-                startActivity(intent);
-            }
-        });
-
-
-
-        choose_station.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                t3.interrupt();
-                android.widget.Toast.makeText(getApplicationContext(), "Clicked", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(TrainTrackingActivity.this, mainactivity.class);
-                synchronized (message){
-                    message.keepSending(false);
-                }
-
-                startActivity(intent);
-
-
-            }
-        });
-
-
-        switch_direction.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e("Original ", target_station_direction[0]+"");
-                t3.interrupt();
-
-                if (target_station_direction[0].equals("1")){
-                    target_station_direction[0] = "5";
-                    synchronized (message){
-                        message.setDir(target_station_direction[0]);
-                        message.setClicked(true);
-                        message.notifyAll();
-                        try{
-                            t3.interrupt();
-                        }catch(Exception e){Log.e("fff","Exception handled "+e);}
-                    }
-
-                }else {
-                    target_station_direction[0] = "1";
-                    synchronized (message){
-                        message.setDir(target_station_direction[0]);
-                        message.setClicked(true);
-                        message.notifyAll();
-                        try{
-                            t3.interrupt();
-
-                        }catch(Exception e){Log.e("fff","Exception handled "+e);}
-                    }
-
-                }
-
-            }
-        });
-
+//        final Thread t3 = new Thread(new Thread3(message, handler, getApplicationContext()), "Displayer");
+//        t3.start();
+//
+//
+//
+//        toMaps.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                t3.interrupt();
+//                Intent intent = new Intent(TrainTrackingActivity.this, MapsActivity.class);
+//                Chicago_Transits chicago_transits = new Chicago_Transits();
+//                String[] target_station_coordinates =  chicago_transits.retrieve_station_coordinates(sqlite, target_station_name, target_station_type);
+//                intent.putExtra("target_station_coordinates", target_station_coordinates );
+//                intent.putExtra("station_name", target_station_name);
+//                intent.putExtra("station_lat", Double.parseDouble(target_station_coordinates[0]));
+//                intent.putExtra("station_lon", Double.parseDouble(target_station_coordinates[1]));
+//                intent.putExtra("station_type", target_station_type);
+//                intent.putExtra("station_dir", station_dir);
+//                synchronized (message){
+//                    message.keepSending(false);
+//                }
+//
+//
+//                startActivity(intent);
+//            }
+//        });
+//
+//
+//
+//        choose_station.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                t3.interrupt();
+//                android.widget.Toast.makeText(getApplicationContext(), "Clicked", Toast.LENGTH_SHORT).show();
+//                Intent intent = new Intent(TrainTrackingActivity.this, mainactivity.class);
+//                synchronized (message){
+//                    message.keepSending(false);
+//                }
+//
+//                startActivity(intent);
+//
+//
+//            }
+//        });
+//
+//
+//        switch_direction.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.e("Original ", target_station_direction[0]+"");
+//                t3.interrupt();
+//
+//                if (target_station_direction[0].equals("1")){
+//                    target_station_direction[0] = "5";
+//                    synchronized (message){
+//                        message.setDir(target_station_direction[0]);
+//                        message.setClicked(true);
+//                        message.notifyAll();
+//                        try{
+//                            t3.interrupt();
+//                        }catch(Exception e){Log.e("fff","Exception handled "+e);}
+//                    }
+//
+//                }else {
+//                    target_station_direction[0] = "1";
+//                    synchronized (message){
+//                        message.setDir(target_station_direction[0]);
+//                        message.setClicked(true);
+//                        message.notifyAll();
+//                        try{
+//                            t3.interrupt();
+//
+//                        }catch(Exception e){Log.e("fff","Exception handled "+e);}
+//                    }
+//
+//                }
+//
+//            }
+//        });
+//
     }
 
 

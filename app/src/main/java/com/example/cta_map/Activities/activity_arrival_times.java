@@ -19,7 +19,7 @@ import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.DataBase.DatabaseHelper;
 import com.example.cta_map.R;
 import com.example.cta_map.Threading.Message;
-import com.example.cta_map.Threading.Thread1;
+import com.example.cta_map.Threading.API_Caller_Thread;
 import com.example.cta_map.Threading.Thread4;
 import com.example.cta_map.Threading.Thread5;
 import com.example.cta_map.Displayers.Time;
@@ -188,7 +188,7 @@ public class activity_arrival_times extends AppCompatActivity {
         String target_station_type = current_train_info.get("station_type");
         Log.e("Picked", current_train_info+"");
         message.keepSending(true);
-        final Thread t1 = new Thread(new Thread1(message, target_station_type), "NEW API_CALL_Thread");
+        final Thread t1 = new Thread(new API_Caller_Thread(message, target_station_type, true), "NEW API_CALL_Thread");
         t1.start();
         final Thread t4 = new Thread(new Thread4(message, target_station_type, current_train_info.get("train_id")), " NEW Content Parser");
         t4.start();

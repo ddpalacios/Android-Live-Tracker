@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -277,7 +278,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     }
-    public ArrayList<HashMap> GetTableRecord(Integer id, String table_name) {
+    public ArrayList<HashMap> GetTableRecordByID(Integer id, String table_name) {
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<HashMap> userRecord = new ArrayList<>();
         String query = "SELECT * FROM "
@@ -300,7 +301,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             cursor.close();
         }else{
             Log.e("NULL CURSOR FROM ", query);
-
+            return null;
         }
 
     return userRecord;
@@ -427,7 +428,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         }
 
-
+        if (values.contains("null")){
+            values.removeAll(Collections.singleton("null"));
+        }
 return values;
 
     }

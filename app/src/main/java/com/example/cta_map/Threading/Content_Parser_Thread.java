@@ -16,17 +16,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-public class Thread2 implements Runnable
+public class Content_Parser_Thread implements Runnable
 {
 
     final Message msg;
     Bundle bb;
     DatabaseHelper sqlite;
-    public Thread2 (Message msg, Bundle bb, DatabaseHelper sqlite){
+    boolean willCommunicate;
+    public Content_Parser_Thread(Message msg, Bundle bb, DatabaseHelper sqlite, boolean willCommunicate){
         this.msg = msg;
         this.bb = bb;
         this.sqlite = sqlite;
-
+        this.willCommunicate = willCommunicate;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)

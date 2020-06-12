@@ -52,11 +52,6 @@ public class TrainStationActivity  extends AppCompatActivity {
         setContentView(R.layout.train_station_activity);
         DatabaseHelper db = new DatabaseHelper(getApplicationContext());
 
-
-
-
-
-
         final ListView list = (ListView) findViewById(R.id.train_stops);
         ArrayList<String> arrayList = new ArrayList<>();
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
@@ -65,15 +60,15 @@ public class TrainStationActivity  extends AppCompatActivity {
 
 
 
-    Intent intent = this.getIntent();
-    String train_direction = null;
-    String train_direction_name = null;
-    String target_station_type = null;
-        if (intent != null) {
-        target_station_type = intent.getStringExtra("target_station_type");
-        train_direction_name = intent.getStringExtra("train_direction_name");
-        train_direction = intent.getStringExtra("train_direction");
-    }
+        Intent intent = this.getIntent();
+        String train_direction = null;
+        String train_direction_name = null;
+        String target_station_type = null;
+            if (intent != null) {
+            target_station_type = intent.getStringExtra("target_station_type");
+            train_direction_name = intent.getStringExtra("train_direction_name");
+            train_direction = intent.getStringExtra("train_direction");
+        }
 
 
     ArrayList<String> train_stops = db.get_column_values("line_stops_table", target_station_type.toLowerCase());
@@ -83,6 +78,9 @@ public class TrainStationActivity  extends AppCompatActivity {
     }
 
     for (String each_stop: train_stops){
+        if (each_stop == null){
+            continue;
+        }
         arrayList.add(each_stop);
         adapter.notifyDataSetChanged();
 
@@ -131,13 +129,6 @@ public class TrainStationActivity  extends AppCompatActivity {
 
             } else {
                 Intent intent = new Intent(TrainStationActivity.this, TrainTrackingActivity.class);
-                @SuppressLint("CommitPrefEdits") SharedPreferences.Editor editor = getSharedPreferences("User_Choice_Record", MODE_PRIVATE).edit();
-                editor.putBoolean("from_sql", false);
-                editor.putString("station_name", target_station);
-                editor.putString("station_type", finalTarget_station_type);
-                editor.putInt("station_dir", Integer.parseInt(finalTrain_direction));
-                editor.apply();
-                intent.putExtra("from_sql", false);
                 intent.putExtra("station_type", finalTarget_station_type);
                 intent.putExtra("main_station", finalTrain_direction_name);
                 intent.putExtra("station_dir", finalTrain_direction);

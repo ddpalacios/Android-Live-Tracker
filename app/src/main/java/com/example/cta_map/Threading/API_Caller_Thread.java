@@ -9,18 +9,22 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 
 
-public class Thread1 implements Runnable {
+public class API_Caller_Thread implements Runnable {
     Message msg;
     String type;
-    public Thread1(Message msg, String type){
+    boolean willCommunicate;
+    public API_Caller_Thread(Message msg, String type, boolean willCommunicate){
         this.msg = msg;
         this.type = type;
+        this.willCommunicate = willCommunicate;
     }
     @Override
     public void run() {
         Chicago_Transits chicago_transits = new Chicago_Transits();
         String url = "https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt="+chicago_transits.TrainLineKeys(this.type);
-        Log.e(Thread.currentThread().getName(), url+ " ");
+        if (this.willCommunicate) {
+            Log.e(Thread.currentThread().getName(), "Sending..." + url);
+        }
         synchronized (this.msg){
             int i =0;
             while (this.msg.IsSending()) {
@@ -29,9 +33,17 @@ public class Thread1 implements Runnable {
                     final Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
                     final String[] train_list = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
                     this.msg.setMsg(train_list);
-                    Log.e(Thread.currentThread().getName(), train_list+ " has set the message and is waiting...");
+                    if (this.willCommunicate){
+                        Log.e(Thread.currentThread().getName(), train_list+ " has set the message and is waiting...");
+
+                    }
                     this.msg.wait();
-                    Log.e("update",Thread.currentThread().getName()+" is done waiting");
+
+                    if (this.willCommunicate) {
+                        Log.e("update", Thread.currentThread().getName() + " is done waiting");
+                    }
+
+
                 } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
                 }

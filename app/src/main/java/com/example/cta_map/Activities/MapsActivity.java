@@ -16,9 +16,6 @@ import com.example.cta_map.DataBase.DatabaseHelper;
 import com.example.cta_map.Displayers.MapMarker;
 import com.example.cta_map.R;
 import com.example.cta_map.Threading.Message;
-import com.example.cta_map.Threading.Thread1;
-import com.example.cta_map.Threading.Thread2;
-import com.example.cta_map.Threading.Thread3;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -165,14 +162,14 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         message.keepSending(true);
 
 
-        Thread t1 = new Thread(new Thread1(message, station_type), "Map API caller");
-        t1.start();
-
-        Thread t2 = new Thread(new Thread2(message, bb, sqlite),"MAP CONTENT PARSER");
-        t2.start();
-
-        Thread t3 = new Thread(new Thread3(message, handler, getApplicationContext()),"MAP Handler sender");
-        t3.start();
+//        Thread t1 = new Thread(new Thread1(message, station_type), "Map API caller");
+//        t1.start();
+//
+//        Thread t2 = new Thread(new Thread2(message, bb, sqlite),"MAP CONTENT PARSER");
+//        t2.start();
+//
+//        Thread t3 = new Thread(new Thread3(message, handler, getApplicationContext()),"MAP Handler sender");
+//        t3.start();
 
 
     }
