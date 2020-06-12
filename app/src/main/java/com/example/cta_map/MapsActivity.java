@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -36,8 +37,91 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
     final boolean[] connect = {true};
     private GoogleMap mMap;
     List<String> ignored_stations;
+    Message message = new Message();
     ArrayList<Integer> train_etas = new ArrayList<>();
     ArrayList<HashMap> chosen_trains = new ArrayList<>();
+    Bundle bb;
+
+
+    @SuppressLint("HandlerLeak")
+    private final Handler handler = new Handler() {
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+        @Override
+        public void handleMessage(android.os.Message msg) {
+            Bundle bundle = msg.getData();
+            ArrayList<Integer> etas = bundle.getIntegerArrayList("train_etas");
+            String train_dir = bundle.getString("train_dir");
+            ArrayList<HashMap> chosen_trains = (ArrayList<HashMap>) bundle.getSerializable("chosen_trains");
+            ArrayList<HashMap> ignored_trains = (ArrayList<HashMap>) bundle.getSerializable("ignored_trains");
+
+
+
+            displayResults(chosen_trains, ignored_trains);
+        }
+    };
+
+
+    public void displayResults(ArrayList<HashMap> chosen_trains, ArrayList<HashMap> ignored_stations){
+        mMap.clear();
+        MapMarker mapMarker = new MapMarker(mMap);
+        DatabaseHelper sqlite= new DatabaseHelper(getApplicationContext());
+        String target_station_name = bb.getString("station_name");
+        String target_station_type = bb.getString("station_type");
+        String main_station = null;
+        Chicago_Transits chicago_transits = new Chicago_Transits();
+        String[] target_station_coordinates = bb.getStringArray("target_station_coordinates");
+        String station_dir = bb.getString("station_dir");
+        ArrayList<String> main_station_record = sqlite.get_table_record("main_stations_table", "WHERE train_line ='"+target_station_type+"'");
+
+
+        if (station_dir.equals("1")){
+            main_station = main_station_record.get(2);
+
+        }else if (station_dir.equals("5")){
+            main_station = main_station_record.get(3);
+        }
+
+        String[] main_station_coordinates = chicago_transits.retrieve_station_coordinates(sqlite, main_station, target_station_type);
+
+
+        Marker target_marker = mapMarker.addMarker(target_station_coordinates[0], target_station_coordinates[1], target_station_name, "default", (float) 1.0);
+        Marker main_marker = mapMarker.addMarker(main_station_coordinates[0], main_station_coordinates[1], main_station, "cyan", (float) 1.0);
+        for (int i=0; i < chosen_trains.size(); i++){
+
+            HashMap<String, String> current_train = chosen_trains.get(i);
+
+            String station_lat = current_train.get("train_lat");
+            String station_lon = current_train.get("train_lon");
+
+
+            Log.e("recived", "Chosen: "+ station_lat+" "+station_lon);
+            mapMarker.addMarker(station_lat, station_lon, current_train.get("next_stop"), target_station_type, (float) 1f);
+
+
+
+        }
+
+        for (int i=0; i < ignored_stations.size(); i++){
+
+            HashMap<String, String> current_train = ignored_stations.get(i);
+
+            String station_lat = current_train.get("train_lat");
+            String station_lon = current_train.get("train_lon");
+
+
+            mapMarker.addMarker(station_lat, station_lon, current_train.get("next_stop"), target_station_type, .5f);
+
+
+
+        }
+
+
+
+
+
+    }
+
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -61,7 +145,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         mMap = googleMap;
         Chicago_Transits chicago_transits = new Chicago_Transits();
         MapMarker mapMarker = new MapMarker(mMap);
-        Bundle bb = getIntent().getExtras();
+        bb = getIntent().getExtras();
         mMap.setMyLocationEnabled(true); // Enable user location permission
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMyLocationClickListener(this);
@@ -81,19 +165,21 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         String[] main_station_coordinates = chicago_transits.retrieve_station_coordinates(sqlite, main_station, station_type);
 
 
-
-
-
-
         chicago_transits.ZoomIn(mMap, (float) 13.3, target_station_coordinates);
-        Marker target_marker = mapMarker.addMarker(target_station_coordinates[0], target_station_coordinates[1], station_name, "default", (float) 1.0);
-        Marker main_marker = mapMarker.addMarker(main_station_coordinates[0], main_station_coordinates[1], main_station, "cyan", (float) 1.0);
-
+        Marker target_marker = mapMarker.addMarker(target_station_coordinates[0], target_station_coordinates[1], station_name, "default", 1f);
+        Marker main_marker = mapMarker.addMarker(main_station_coordinates[0], main_station_coordinates[1], main_station, "cyan", 1f);
+        message.keepSending(true);
         target_marker.showInfoWindow();
 
 
+        Thread t1 = new Thread(new Thread1(message, station_type), "Map API caller");
+        t1.start();
 
+        Thread t2 = new Thread(new Thread2(message, bb, sqlite),"MAP CONTENT PARSER");
+        t2.start();
 
+        Thread t3 = new Thread(new Thread3(message, handler, getApplicationContext()),"MAP Handler sender");
+        t3.start();
 
 
     }

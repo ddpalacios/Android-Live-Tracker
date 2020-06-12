@@ -35,9 +35,9 @@ public class Thread1 implements Runnable {
                     final Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
                     final String[] train_list = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
                     this.msg.setMsg(train_list);
-//                    Log.e(Thread.currentThread().getName(), train_list+ " has set the message and is waiting...");
+                    Log.e(Thread.currentThread().getName(), train_list+ " has set the message and is waiting...");
                     this.msg.wait();
-//                    Log.e("update",Thread.currentThread().getName()+" is done waiting");
+                    Log.e("update",Thread.currentThread().getName()+" is done waiting");
 
                 } catch (IOException | InterruptedException e) {
                     e.printStackTrace();

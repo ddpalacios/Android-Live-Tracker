@@ -40,8 +40,11 @@ public class Thread3 implements Runnable {
                 }
                 ArrayList<Integer> train_etas =this.message.get_train_etas();
                 ArrayList<HashMap> chosen_trains = this.message.get_chosen_trains();
+                ArrayList<HashMap> ignored_trains = this.message.getIgnored();
+
                 bundle.putIntegerArrayList("train_etas", train_etas);
                 bundle.putSerializable("chosen_trains", chosen_trains);
+                bundle.putSerializable("ignored_trains", ignored_trains);
                 bundle.putString("train_dir", this.message.getDir());
 
 
@@ -51,9 +54,11 @@ public class Thread3 implements Runnable {
 
                 msg.setData(bundle);
 
-                Log.e("train etas", "Sending to UI...");
+
+//                Log.e("train etas", "Sending to UI...");
 
                 handler.sendMessage(msg);
+
 
            //                Log.e("train etas", "Notified");
                 this.message.notify();
@@ -65,7 +70,7 @@ public class Thread3 implements Runnable {
 
                 if (!this.message.getClicked()) {
                     try {
-                        Thread.sleep(50);
+                        Thread.sleep(5000);
                     } catch (InterruptedException e) {
                         Log.e(Thread.currentThread().getName(), "Intrrupted");
                     }

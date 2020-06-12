@@ -9,6 +9,7 @@ public class Message {
     ArrayList<Integer> train_etas;
     boolean t;
     boolean x;
+    ArrayList<HashMap> ignored;
     String next_stop;
 
     ArrayList<HashMap> chosen_trains;
@@ -41,6 +42,15 @@ public class Message {
         this.msg = object;
 
     }
+
+    public void setIgnored(ArrayList<HashMap> ignored){
+        this.ignored = ignored;
+    }
+
+    public ArrayList<HashMap> getIgnored(){
+        return this.ignored;
+    }
+
     public void setNextStop(String stop){
         this.next_stop = stop;
     }

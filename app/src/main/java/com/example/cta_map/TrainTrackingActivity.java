@@ -164,13 +164,21 @@ public class TrainTrackingActivity extends AppCompatActivity {
         toMaps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                t3.interrupt();
                 Intent intent = new Intent(TrainTrackingActivity.this, MapsActivity.class);
                 Chicago_Transits chicago_transits = new Chicago_Transits();
                 String[] target_station_coordinates =  chicago_transits.retrieve_station_coordinates(sqlite, target_station_name, target_station_type);
                 intent.putExtra("target_station_coordinates", target_station_coordinates );
                 intent.putExtra("station_name", target_station_name);
+                intent.putExtra("station_lat", Double.parseDouble(target_station_coordinates[0]));
+                intent.putExtra("station_lon", Double.parseDouble(target_station_coordinates[1]));
                 intent.putExtra("station_type", target_station_type);
                 intent.putExtra("station_dir", station_dir);
+                synchronized (message){
+                    message.keepSending(false);
+                }
+
+
                 startActivity(intent);
             }
         });
@@ -180,6 +188,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
         choose_station.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                t3.interrupt();
                 android.widget.Toast.makeText(getApplicationContext(), "Clicked", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(TrainTrackingActivity.this, mainactivity.class);
                 synchronized (message){
@@ -197,6 +206,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.e("Original ", target_station_direction[0]+"");
+                t3.interrupt();
 
                 if (target_station_direction[0].equals("1")){
                     target_station_direction[0] = "5";

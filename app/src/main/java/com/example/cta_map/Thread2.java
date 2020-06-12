@@ -39,6 +39,8 @@ class Thread2 implements Runnable
         List<String> ignored_stations;
         ArrayList<Integer> train_etas = new ArrayList<>();
         ArrayList<HashMap> chosen_trains = new ArrayList<>();
+        ArrayList<HashMap> ignored_station = new ArrayList<>();
+
 
         final ArrayList<String> stops = sqlite.get_column_values("line_stops_table", target_station_type.toLowerCase());
         synchronized (this.msg) {
@@ -89,6 +91,9 @@ class Thread2 implements Runnable
                                 chosen_trains.add(train_info);
                                 Collections.sort(train_etas);
 
+                            }else{
+                                ignored_station.add(train_info);
+
                             }
                         }
                     }
@@ -96,9 +101,11 @@ class Thread2 implements Runnable
 
 
                 this.msg.setTrain_etas(train_etas);
+                this.msg.setIgnored(ignored_station);
                 sqlite.close();
                 this.msg.set_chosen_trains(chosen_trains);
                 try {
+//                    Log.e("update", Thread.currentThread().getName() + " is waiting");
                     this.msg.wait();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
