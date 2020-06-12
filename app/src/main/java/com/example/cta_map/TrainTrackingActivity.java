@@ -136,11 +136,15 @@ public class TrainTrackingActivity extends AppCompatActivity {
         final String[] target_station_direction = new String[]{bb.getString("station_dir")};
         message.setClicked(false);
         message.keepSending(true);
-        DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
+        final DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
         final Button switch_direction = (Button) findViewById(R.id.switch_direction);
         final Button choose_station = (Button) findViewById(R.id.pickStation);
         final Button toMaps = (Button) findViewById(R.id.show);
-        String target_station_type = bb.getString("station_type");
+        final String target_station_type = bb.getString("station_type");
+        final String target_station_name = bb.getString("station_name");
+        final String station_dir = bb.getString("station_dir");
+
+
 
 
 
@@ -161,6 +165,12 @@ public class TrainTrackingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(TrainTrackingActivity.this, MapsActivity.class);
+                Chicago_Transits chicago_transits = new Chicago_Transits();
+                String[] target_station_coordinates =  chicago_transits.retrieve_station_coordinates(sqlite, target_station_name, target_station_type);
+                intent.putExtra("target_station_coordinates", target_station_coordinates );
+                intent.putExtra("station_name", target_station_name);
+                intent.putExtra("station_type", target_station_type);
+                intent.putExtra("station_dir", station_dir);
                 startActivity(intent);
             }
         });

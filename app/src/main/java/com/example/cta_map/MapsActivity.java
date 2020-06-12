@@ -19,6 +19,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.PolylineOptions;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -57,13 +58,47 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        Chicago_Transits chicago_transits = new Chicago_Transits();
+        MapMarker mapMarker = new MapMarker(mMap);
+        Bundle bb = getIntent().getExtras();
+        mMap.setMyLocationEnabled(true); // Enable user location permission
+        mMap.setOnMyLocationButtonClickListener(this);
+        mMap.setOnMyLocationClickListener(this);
+        String[] target_station_coordinates = bb.getStringArray("target_station_coordinates");
+        String station_name = bb.getString("station_name");
+        String station_type = bb.getString("station_type");
+        String station_dir = bb.getString("station_dir");
+        DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
+        ArrayList<String> main_station_record = sqlite.get_table_record("main_stations_table", "WHERE train_line ='"+station_type+"'");
+        String main_station = null;
+        if (station_dir.equals("1")){
+            main_station = main_station_record.get(2);
+
+        }else if (station_dir.equals("5")){
+            main_station = main_station_record.get(3);
+        }
+        String[] main_station_coordinates = chicago_transits.retrieve_station_coordinates(sqlite, main_station, station_type);
+
+
+
+
+
+
+        chicago_transits.ZoomIn(mMap, (float) 13.3, target_station_coordinates);
+        Marker target_marker = mapMarker.addMarker(target_station_coordinates[0], target_station_coordinates[1], station_name, "default", (float) 1.0);
+        Marker main_marker = mapMarker.addMarker(main_station_coordinates[0], main_station_coordinates[1], main_station, "cyan", (float) 1.0);
+
+        target_marker.showInfoWindow();
+
+
+
+
 
 
     }
 
-    public void setup_train_direction(HashMap<String, String> current_train_info, ArrayList<String> stops, int start, int end, int dir, Context context) {
 
-    }
 
     @Override
     public boolean onMyLocationButtonClick() {
