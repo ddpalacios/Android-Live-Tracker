@@ -258,6 +258,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert(MAIN_STATIONS, null, values);
         String query = "SELECT * FROM " + MAIN_STATIONS;
         Cursor cursor = db.rawQuery(query, null);
+
         cursor.moveToFirst();
         Integer auto_id = Integer.parseInt(cursor.getString(0));
         db.close();
@@ -289,15 +290,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + " WHERE " + PROFILE_ID_COL + " = '" + id+"'";
 
         Cursor cursor = db.rawQuery(query, null);
-        if (cursor.getCount() > 0) {
-            while(cursor.moveToNext()) {
-                HashMap<String, String> record = new HashMap<>();
-                for (int i = 0; i < cursor.getColumnCount(); i++) {
-                    record.put(cursor.getColumnName(i), cursor.getString(i));
+        if( cursor != null && cursor.moveToFirst() ){
+
+            if (cursor.getCount() > 0) {
+                while(cursor.moveToNext()) {
+                    HashMap<String, String> record = new HashMap<>();
+                    for (int i = 0; i < cursor.getColumnCount(); i++) {
+                        record.put(cursor.getColumnName(i), cursor.getString(i));
+                    }
+                    userRecord.add(record);
                 }
-                userRecord.add(record);
             }
+
+            cursor.close();
+        }else{
+            Log.e("NULL CURSOR FROM ", query);
+
         }
+
     return userRecord;
     }
 
@@ -331,9 +341,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
-        cursor.moveToFirst();
-        for (int i=0;i<cursor.getColumnCount();i++ ){
-            userRecord.add(cursor.getString(i));
+        if( cursor != null && cursor.moveToFirst() ) {
+            for (int i = 0; i < cursor.getColumnCount(); i++) {
+                userRecord.add(cursor.getString(i));
+            }
+        }else{        Log.e("NULL CURSOR FROM ", query);
         }
 //        Log.e("cursor", cursor.getString(1));
         return userRecord;
@@ -354,12 +366,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
-        cursor.moveToFirst();
-        for (int i=0;i<8;i++ ){
-            userRecord.add(cursor.getString(i));
+        if( cursor != null && cursor.moveToFirst() ) {
+            for (int i = 0; i < 8; i++) {
+                userRecord.add(cursor.getString(i));
+
+            }
+            Log.e("cursor", cursor.getString(1));
+        }else{
+            Log.e("NULL CURSOR FROM ", query);
 
         }
-        Log.e("cursor", cursor.getString(1));
+
+
+
+
         return userRecord;
     }
 
@@ -374,7 +394,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
-        Log.e("FOUND STATUS", cursor.moveToFirst()+"");
 
         if (cursor.moveToFirst()){
             return true;
@@ -400,13 +419,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     ArrayList<String> values = new ArrayList<>();
         String query = "SELECT "+col +" FROM "+table_name;
         Cursor cursor = db.rawQuery(query, null);
+        if( cursor != null && cursor.moveToFirst() ) {
+
             if (cursor.getCount() >= 0) {
-                while(cursor.moveToNext()) {
-                        values.add(cursor.getString(0));
+                while (cursor.moveToNext()) {
+                    values.add(cursor.getString(0));
 
                 }
             }
+        }else{
+            Log.e("NULL CURSOR FROM ", query);
 
+        }
 
 
 return values;
@@ -420,13 +444,17 @@ return values;
         Log.e("ddd", station_name.replaceAll("’", "\\'")+" "+ station_type);
         String query = "SELECT * FROM "+TRAIN_STATION_TABLE + " WHERE STATION_NAME ='"+station_name.replaceAll("’", "\\'")+"' AND "+station_type.toLowerCase()+" ='true'";
         Cursor cursor = db.rawQuery(query, null);
-        Log.e("ddd", cursor.moveToFirst()+"");
-        if(cursor.moveToFirst()){
-            Double[] values = new Double[]{
-                    Double.parseDouble(cursor.getString(cursor.getColumnCount()-2)),
-                    Double.parseDouble(cursor.getString(cursor.getColumnCount()-1))
-            };
-            return values;
+        if( cursor != null && cursor.moveToFirst() ) {
+            if (cursor.moveToFirst()) {
+                Double[] values = new Double[]{
+                        Double.parseDouble(cursor.getString(cursor.getColumnCount() - 2)),
+                        Double.parseDouble(cursor.getString(cursor.getColumnCount() - 1))
+                };
+                return values;
+            }
+        }else{
+            Log.e("NULL CURSOR FROM ", query);
+
         }
 return null;
 

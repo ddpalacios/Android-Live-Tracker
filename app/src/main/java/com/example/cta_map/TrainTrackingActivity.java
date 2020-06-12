@@ -48,7 +48,6 @@ public class TrainTrackingActivity extends AppCompatActivity {
 
         final String[] target_station_direction = new String[]{bb.getString("station_dir")};
         ArrayList<String> arrayList = new ArrayList<>();
-        MapRelativeListView mapRelativeListView = new MapRelativeListView(getApplicationContext(), findViewById(R.id.train_layout_arrival_times));
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
         final ListView list = findViewById(R.id.train_layout_arrival_times);
         list.setAdapter(adapter);
