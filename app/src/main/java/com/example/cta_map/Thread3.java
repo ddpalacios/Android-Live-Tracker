@@ -32,7 +32,7 @@ public class Thread3 implements Runnable {
 
 
 
-            try { Thread.sleep(700); } catch (InterruptedException e) { e.printStackTrace(); }
+            try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
 
             synchronized (this.message) {
                 if(!this.message.IsSending()){
@@ -65,7 +65,7 @@ public class Thread3 implements Runnable {
 
                 if (!this.message.getClicked()) {
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(50);
                     } catch (InterruptedException e) {
                         Log.e(Thread.currentThread().getName(), "Intrrupted");
                     }

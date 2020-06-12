@@ -52,17 +52,7 @@ class Chicago_Transits {
             sqlite.close();
 
         }
-
-
-
-
-
-
     }
-
-
-
-
 
     @SuppressLint("LongLogTag")
     void create_line_stops_table(BufferedReader reader, Context context) {
@@ -106,8 +96,6 @@ class Chicago_Transits {
             sqlite.close();
 
         }
-
-
     }
 
 
@@ -311,10 +299,7 @@ class Chicago_Transits {
                 return null;
             }
         }
-
-
         return train_info;
-
     }
 
 

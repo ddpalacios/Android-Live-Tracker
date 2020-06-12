@@ -110,9 +110,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
                             Log.e("next ", "TRAIN ID: " +each_train.get("train_id") + "");
                             intent.putExtra("current_train_info", each_train);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            synchronized (message){
                                 message.keepSending(false);
-                            }
                             startActivity(intent);
                         }
                     }
