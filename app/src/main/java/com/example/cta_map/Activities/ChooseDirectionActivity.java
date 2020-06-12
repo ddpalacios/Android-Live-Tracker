@@ -1,19 +1,19 @@
-package com.example.cta_map;
+package com.example.cta_map.Activities;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import java.io.BufferedReader;
-import java.io.IOException;
+
+import com.example.cta_map.DataBase.DatabaseHelper;
+import com.example.cta_map.R;
+
 import java.util.ArrayList;
 
 @SuppressLint("Registered")
@@ -49,7 +49,7 @@ public class ChooseDirectionActivity  extends AppCompatActivity {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(ChooseDirectionActivity.this,TrainStationActivity.class);
+                Intent intent = new Intent(ChooseDirectionActivity.this, TrainStationActivity.class);
                 if (position == 0){
 
 

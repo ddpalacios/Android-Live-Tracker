@@ -37,7 +37,7 @@
 
 
         <activity
-            android:name=".userLoginActivity">
+            android:name=".Activities.userLoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -47,7 +47,7 @@
 
 
         <activity
-            android:name=".ChooseLineActivity">
+            android:name=".Activities.ChooseLineActivity">
             <intent-filter>
                 <!--                <action android:name="android.intent.action.MAIN" />-->
 
@@ -58,7 +58,7 @@
 
 
         <activity
-            android:name=".newUserActivity">
+            android:name=".Activities.newUserActivity">
             <intent-filter>
 <!--                <action android:name="android.intent.action.MAIN" />-->
 
@@ -67,7 +67,7 @@
         </activity>
 
         <activity
-            android:name=".mainactivity">
+            android:name=".Activities.mainactivity">
             <intent-filter>
 <!--                <action android:name="android.intent.action.MAIN" />-->
 
@@ -76,7 +76,7 @@
             </intent-filter>
         </activity>
                 <activity
-                    android:name=".ChooseDirectionActivity"
+                    android:name=".Activities.ChooseDirectionActivity"
                     android:label="@string/title_activity_maps">
                     <intent-filter>
 <!--                        <action android:name="android.intent.action.MAIN" />-->
@@ -87,7 +87,7 @@
                     </intent-filter>
                 </activity>
                 <activity
-                    android:name=".TrainStationActivity"
+                    android:name=".Activities.TrainStationActivity"
                     android:label="@string/title_activity_maps">
                     <intent-filter>
 <!--                        <action android:name="android.intent.action.MAIN" />-->
@@ -100,7 +100,7 @@
 
 
         <activity
-            android:name=".MapsActivity"
+            android:name=".Activities.MapsActivity"
             android:label="@string/title_activity_maps">
             <intent-filter>
 <!--                <action android:name="android.intent.action.MAIN" />-->
@@ -111,7 +111,7 @@
         </activity>
 
         <activity
-            android:name=".activity_arrival_times"
+            android:name=".Activities.activity_arrival_times"
             android:label="@string/title_activity_maps">
             <intent-filter>
 <!--                <action android:name="android.intent.action.MAIN" />-->
@@ -128,7 +128,7 @@
 
 
         <activity
-            android:name=".TrainTrackingActivity"
+            android:name=".Activities.TrainTrackingActivity"
             android:label="@string/title_activity_maps">
             <intent-filter>
 <!--                <action android:name="android.intent.action.MAIN" />-->

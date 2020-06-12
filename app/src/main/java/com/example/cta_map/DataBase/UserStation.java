@@ -1,4 +1,4 @@
-package com.example.cta_map;
+package com.example.cta_map.DataBase;
 
 public class UserStation {
     String station_name;

@@ -1,10 +1,9 @@
-package com.example.cta_map;
+package com.example.cta_map.Activities;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.widget.AdapterView;
 import android.widget.Toast;
 import android.os.Handler;
@@ -16,6 +15,15 @@ import android.widget.Button;
 import android.widget.ListView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.cta_map.Displayers.Chicago_Transits;
+import com.example.cta_map.DataBase.DatabaseHelper;
+import com.example.cta_map.R;
+import com.example.cta_map.Threading.Message;
+import com.example.cta_map.Threading.Thread1;
+import com.example.cta_map.Threading.Thread2;
+import com.example.cta_map.Threading.Thread3;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -143,14 +151,6 @@ public class TrainTrackingActivity extends AppCompatActivity {
         final String target_station_type = bb.getString("station_type");
         final String target_station_name = bb.getString("station_name");
         final String station_dir = bb.getString("station_dir");
-
-
-
-
-
-
-
-
 
         final Thread t1 = new Thread(new Thread1(message, target_station_type), "API_CALL_Thread");
         t1.start();

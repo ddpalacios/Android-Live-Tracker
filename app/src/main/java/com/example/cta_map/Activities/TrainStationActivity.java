@@ -1,4 +1,4 @@
-package com.example.cta_map;
+package com.example.cta_map.Activities;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,7 +14,10 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.BufferedReader;
+import com.example.cta_map.DataBase.DatabaseHelper;
+import com.example.cta_map.R;
+import com.example.cta_map.DataBase.UserStation;
+
 import java.util.ArrayList;
 
 public class TrainStationActivity  extends AppCompatActivity {

@@ -1,11 +1,7 @@
-package com.example.cta_map;
+package com.example.cta_map.Threading;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Thread5 implements Runnable {
     Message message;

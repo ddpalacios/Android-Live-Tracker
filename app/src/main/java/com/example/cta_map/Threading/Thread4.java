@@ -1,11 +1,9 @@
-package com.example.cta_map;
+package com.example.cta_map.Threading;
 
 import android.util.Log;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import com.example.cta_map.Displayers.Chicago_Transits;
 
-import java.io.IOException;
 import java.util.HashMap;
 
 

@@ -1,10 +1,9 @@
-package com.example.cta_map;
+package com.example.cta_map.Activities;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,11 +11,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
+
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.BufferedReader;
+import com.example.cta_map.DataBase.DatabaseHelper;
+import com.example.cta_map.R;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -59,7 +60,7 @@ public class mainactivity extends AppCompatActivity {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(mainactivity.this,ChooseLineActivity.class);
+                Intent intent = new Intent(mainactivity.this, ChooseLineActivity.class);
                 SharedPreferences.Editor connect = getSharedPreferences("CONNECT", MODE_PRIVATE).edit();
 
                 if (position == 0){
@@ -143,11 +144,7 @@ public class mainactivity extends AppCompatActivity {
                         ArrayList<String> table_record = sqlite.get_table_record("main_stations_table",
                                 "WHERE train_line = '"+station_type.replaceAll("\\)", "'")+"'");
                         if (rec.get("station_dir").equals("1")){
-
-
                             main_station = table_record.get(2);
-
-
                         }else {
                             main_station = table_record.get(3);
                         }

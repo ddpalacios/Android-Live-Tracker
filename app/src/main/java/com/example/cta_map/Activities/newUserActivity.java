@@ -1,4 +1,4 @@
-package com.example.cta_map;
+package com.example.cta_map.Activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -11,6 +11,10 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.cta_map.DataBase.DatabaseHelper;
+import com.example.cta_map.DataBase.Profile;
+import com.example.cta_map.R;
 
 public class newUserActivity extends AppCompatActivity {
     @SuppressLint({"WrongConstant", "ShowToast"})

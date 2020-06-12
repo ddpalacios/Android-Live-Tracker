@@ -1,4 +1,4 @@
-package com.example.cta_map;
+package com.example.cta_map.Displayers;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
@@ -12,6 +12,8 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
+
+import com.example.cta_map.R;
 
 public class NotificationBuilder {
     Context context;

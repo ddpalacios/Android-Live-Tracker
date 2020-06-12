@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:id="@+id/framelayout"
     android:layout_height="match_parent"
-    tools:context=".MapsActivity" >
+    tools:context=".Activities.MapsActivity" >
 
 
     <fragment
@@ -15,7 +15,7 @@
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="2dp"
-        tools:context=".MapsActivity" />
+        tools:context=".Activities.MapsActivity" />
 
 
 

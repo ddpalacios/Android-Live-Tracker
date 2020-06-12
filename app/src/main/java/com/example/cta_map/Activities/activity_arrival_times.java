@@ -1,7 +1,6 @@
-package com.example.cta_map;
+package com.example.cta_map.Activities;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,7 +15,15 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.BufferedReader;
+import com.example.cta_map.Displayers.Chicago_Transits;
+import com.example.cta_map.DataBase.DatabaseHelper;
+import com.example.cta_map.R;
+import com.example.cta_map.Threading.Message;
+import com.example.cta_map.Threading.Thread1;
+import com.example.cta_map.Threading.Thread4;
+import com.example.cta_map.Threading.Thread5;
+import com.example.cta_map.Displayers.Time;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

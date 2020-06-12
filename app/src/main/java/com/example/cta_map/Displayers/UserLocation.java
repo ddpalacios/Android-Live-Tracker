@@ -1,4 +1,4 @@
-package com.example.cta_map;
+package com.example.cta_map.Displayers;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -23,7 +23,6 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 

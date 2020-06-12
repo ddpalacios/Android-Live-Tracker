@@ -1,19 +1,12 @@
-package com.example.cta_map;
+package com.example.cta_map.Threading;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
+
+import com.example.cta_map.Displayers.Chicago_Transits;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import java.io.IOException;
-import java.util.Currency;
-import java.util.HashMap;
-import java.util.List;
-
 
 
 public class Thread1 implements Runnable {
@@ -25,11 +18,12 @@ public class Thread1 implements Runnable {
     }
     @Override
     public void run() {
-        String url = "https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt="+this.type;
+        Chicago_Transits chicago_transits = new Chicago_Transits();
+        String url = "https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt="+chicago_transits.TrainLineKeys(this.type);
+        Log.e(Thread.currentThread().getName(), url+ " ");
         synchronized (this.msg){
             int i =0;
             while (this.msg.IsSending()) {
-//                Log.e("respnse", String.valueOf(i));
                 i++;
                 try {
                     final Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
@@ -38,7 +32,6 @@ public class Thread1 implements Runnable {
                     Log.e(Thread.currentThread().getName(), train_list+ " has set the message and is waiting...");
                     this.msg.wait();
                     Log.e("update",Thread.currentThread().getName()+" is done waiting");
-
                 } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
                 }

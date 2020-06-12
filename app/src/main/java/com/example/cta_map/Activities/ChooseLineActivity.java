@@ -1,4 +1,4 @@
-package com.example.cta_map;
+package com.example.cta_map.Activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -12,6 +12,8 @@ import android.widget.ListView;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.cta_map.R;
 
 import java.util.ArrayList;
 
@@ -38,7 +40,7 @@ public class ChooseLineActivity extends AppCompatActivity {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(ChooseLineActivity.this,ChooseDirectionActivity.class);
+                Intent intent = new Intent(ChooseLineActivity.this, ChooseDirectionActivity.class);
                 intent.putExtra("target_station_type", String.valueOf(list.getItemAtPosition(position)));
                 startActivity(intent);
             }

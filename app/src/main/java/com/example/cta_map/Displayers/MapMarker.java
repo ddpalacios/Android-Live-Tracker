@@ -1,4 +1,4 @@
-package com.example.cta_map;
+package com.example.cta_map.Displayers;
 
 import android.content.Context;
 import android.content.Intent;

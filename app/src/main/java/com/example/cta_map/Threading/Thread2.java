@@ -1,4 +1,4 @@
-package com.example.cta_map;
+package com.example.cta_map.Threading;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -6,15 +6,17 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
-import java.io.IOException;
-import java.io.PipedReader;
+import com.example.cta_map.Displayers.Chicago_Transits;
+import com.example.cta_map.DataBase.DatabaseHelper;
+import com.example.cta_map.Displayers.Time;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-class Thread2 implements Runnable
+public class Thread2 implements Runnable
 {
 
     final Message msg;

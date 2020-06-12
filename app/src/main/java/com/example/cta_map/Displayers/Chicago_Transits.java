@@ -1,14 +1,17 @@
-package com.example.cta_map;
+package com.example.cta_map.Displayers;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
-import android.util.Log;
+
 import androidx.annotation.RequiresApi;
+
+import com.example.cta_map.DataBase.CTA_Stations;
+import com.example.cta_map.DataBase.DatabaseHelper;
+import com.example.cta_map.DataBase.MainStation;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.SquareCap;
 
 import org.apache.commons.lang3.StringUtils;
 import java.io.BufferedReader;
@@ -19,12 +22,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 
 
-class Chicago_Transits {
+public class Chicago_Transits {
 
-    void create_main_station_table(BufferedReader reader, Context context){
+    public void create_main_station_table(BufferedReader reader, Context context){
         DatabaseHelper sqlite = new DatabaseHelper(context);
 
         String line;
@@ -55,7 +57,7 @@ class Chicago_Transits {
     }
 
     @SuppressLint("LongLogTag")
-    void create_line_stops_table(BufferedReader reader, Context context) {
+    public void create_line_stops_table(BufferedReader reader, Context context) {
         DatabaseHelper sqlite = new DatabaseHelper(context);
 
         String line;
@@ -100,7 +102,7 @@ class Chicago_Transits {
 
 
 
-    void Create_TrainInfo_table(BufferedReader reader, Context context) {
+    public void Create_TrainInfo_table(BufferedReader reader, Context context) {
         DatabaseHelper sqlite = new DatabaseHelper(context);
 
         String line;
@@ -156,7 +158,7 @@ class Chicago_Transits {
 
     }
 
-    String[] retrieve_station_coordinates(DatabaseHelper sqlite, String station_name, String station_type) {
+    public String[] retrieve_station_coordinates(DatabaseHelper sqlite, String station_name, String station_type) {
         ArrayList<String> record = sqlite.get_table_record("train_station_table", "WHERE STATION_NAME ='"+station_name+"'"
                 +" AND "+station_type+" = 'true'");
 
@@ -330,7 +332,7 @@ class Chicago_Transits {
         return value * Math.PI / 180;
     }
 
-    public HashMap<String, String> TrainLineKeys(){
+    public String TrainLineKeys(String station_type){
         HashMap<String, String> TrainLineKeyCodes  = new HashMap<>();
         TrainLineKeyCodes.put("red", "red");
         TrainLineKeyCodes.put("blue", "blue");
@@ -341,7 +343,7 @@ class Chicago_Transits {
         TrainLineKeyCodes.put("purple", "p");
         TrainLineKeyCodes.put("yellow", "y");
 
-        return TrainLineKeyCodes;
+        return TrainLineKeyCodes.get(station_type);
     }
 
 

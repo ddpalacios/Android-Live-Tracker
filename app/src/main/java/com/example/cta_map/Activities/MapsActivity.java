@@ -1,37 +1,32 @@
-package com.example.cta_map;
+package com.example.cta_map.Activities;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.FragmentActivity;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.Toast;
+
+import com.example.cta_map.Displayers.Chicago_Transits;
+import com.example.cta_map.DataBase.DatabaseHelper;
+import com.example.cta_map.Displayers.MapMarker;
+import com.example.cta_map.R;
+import com.example.cta_map.Threading.Message;
+import com.example.cta_map.Threading.Thread1;
+import com.example.cta_map.Threading.Thread2;
+import com.example.cta_map.Threading.Thread3;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.PolylineOptions;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback{
     final boolean[] connect = {true};
@@ -62,12 +57,13 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
 
     public void displayResults(ArrayList<HashMap> chosen_trains, ArrayList<HashMap> ignored_stations){
-        mMap.clear();
         MapMarker mapMarker = new MapMarker(mMap);
         DatabaseHelper sqlite= new DatabaseHelper(getApplicationContext());
         String target_station_name = bb.getString("station_name");
         String target_station_type = bb.getString("station_type");
         String main_station = null;
+        mMap.clear();
+
         Chicago_Transits chicago_transits = new Chicago_Transits();
         String[] target_station_coordinates = bb.getStringArray("target_station_coordinates");
         String station_dir = bb.getString("station_dir");
@@ -166,10 +162,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
 
         chicago_transits.ZoomIn(mMap, (float) 13.3, target_station_coordinates);
-        Marker target_marker = mapMarker.addMarker(target_station_coordinates[0], target_station_coordinates[1], station_name, "default", 1f);
-        Marker main_marker = mapMarker.addMarker(main_station_coordinates[0], main_station_coordinates[1], main_station, "cyan", 1f);
         message.keepSending(true);
-        target_marker.showInfoWindow();
 
 
         Thread t1 = new Thread(new Thread1(message, station_type), "Map API caller");
