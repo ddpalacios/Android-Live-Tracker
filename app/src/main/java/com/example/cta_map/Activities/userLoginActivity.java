@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,10 +28,8 @@ public class userLoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.user_login_activity);
         super.onCreate(savedInstanceState);
-
         final EditText username = (EditText) findViewById(R.id.username);
         final EditText password = (EditText) findViewById(R.id.UserPassword);
-
         Button login = (Button) findViewById(R.id.loginbutton);
 
 
@@ -43,35 +42,15 @@ public class userLoginActivity extends AppCompatActivity {
                 BufferedReader r = chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_stations);
                 BufferedReader r2 = chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_line_stops);
                 BufferedReader r3 = chicago_transits.setup_file_reader(getApplicationContext(), R.raw.main_stations);
-
                 create_tables(r, r2, r3,false);
-
-
                 DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
                 String user_name = username.getText().toString();
                 String pass = password.getText().toString();
                 if (sqlite.find_profile(user_name, pass)){
-
-
-                    ArrayList<String> record = sqlite.GetProfileRecord(user_name, pass);
-
+                    ArrayList<String> record = sqlite.get_table_record("User_info", "WHERE user_name = '"+user_name+"' AND password = '"+toHex(pass)+"'");
                     Toast.makeText(getApplicationContext(), "Welcome " + record.get(1), 1).show();
-
-                    Integer id = Integer.parseInt(record.get(0));
-
-                    SharedPreferences.Editor editor = getSharedPreferences("User_Record", MODE_PRIVATE).edit();
-                    editor.putInt("ProfileID", id);
-                    editor.putString("first_name", record.get(1));
-                    editor.putString("last_name", record.get(2));
-                    editor.putString("user_name", record.get(3));
-                    editor.putString("email", record.get(4));
-                    editor.putString("bday", record.get(5));
-                    editor.putString("phone", record.get(6));
-                    editor.putString("pass", record.get(7));
-
-
-
-                    editor.apply();
+                    ToStations.putExtra("username",user_name);
+                    ToStations.putExtra("pass",toHex(pass));
 
                     sqlite.close();
                     startActivity(ToStations);
@@ -105,6 +84,18 @@ public class userLoginActivity extends AppCompatActivity {
             chicago_transits.create_line_stops_table(file2, getApplicationContext());
             chicago_transits.create_main_station_table(file3, getApplicationContext());
         }
+    }
+
+
+    private String toHex(String s){
+        char[] ch = s.toCharArray();
+        StringBuilder sb = new StringBuilder();
+
+        for (char c : ch) {
+            String hexString = Integer.toHexString(c);
+            sb.append(hexString);
+        }
+        return sb.toString();
     }
 
 }

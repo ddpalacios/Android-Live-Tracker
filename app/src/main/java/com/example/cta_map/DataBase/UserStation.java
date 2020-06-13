@@ -7,6 +7,7 @@ public class UserStation {
     Double station_lon;
     Integer id;
     Integer direction;
+    String main;
 
 
     public UserStation(String station_name, String station_type){
@@ -55,6 +56,11 @@ public Integer getDirection(){
     public Double getStationLon(){
         return this.station_lon;
     }
-
+    public String get_main(){
+        return this.main;
+    }
+    public void set_main(String name){
+        this.main = name;
+    }
 
 }

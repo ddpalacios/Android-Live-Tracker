@@ -36,6 +36,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String STATION_LAT_COL = "station_lat";
     public static final String STATION_LON_COL = "station_lon";
     public static final String STATION_DIR_COL = "station_dir";
+    public static final String MAIN_STATION_COL = "main_station_name";
 
 
     public static final String TRAIN_STATION_TABLE = "train_station_table";
@@ -109,7 +110,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + STATION_TYPE_COL + " TEXT, "
                 + STATION_LAT_COL + " REAL, "
                 + STATION_LON_COL + " REAL, "
-                + STATION_DIR_COL +" INTEGER)";
+                + STATION_DIR_COL +" INTEGER, "
+                + MAIN_STATION_COL+ " TEXT)";
 
         db.execSQL(train_table);
 
@@ -269,6 +271,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         profile_values.put(STATION_LAT_COL, userStation.getStationLat());
         profile_values.put(STATION_LON_COL, userStation.getStationLon());
         profile_values.put(STATION_DIR_COL, userStation.getDirection());
+        profile_values.put(MAIN_STATION_COL, userStation.get_main());
         db.insert(TRAIN_TABLE, null, profile_values);
         String query = "SELECT * FROM " + TRAIN_TABLE;
         Cursor cursor = db.rawQuery(query, null);
@@ -286,7 +289,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + " WHERE " + PROFILE_ID_COL + " = '" + id+"'";
 
         Cursor cursor = db.rawQuery(query, null);
-        if( cursor != null && cursor.moveToFirst() ){
+        if( cursor != null ){
 
             if (cursor.getCount() > 0) {
                 while(cursor.moveToNext()) {
@@ -301,8 +304,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             cursor.close();
         }else{
             Log.e("NULL CURSOR FROM ", query);
-            return null;
+
         }
+
 
     return userRecord;
     }
@@ -341,7 +345,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             for (int i = 0; i < cursor.getColumnCount(); i++) {
                 userRecord.add(cursor.getString(i));
             }
-        }else{        Log.e("NULL CURSOR FROM ", query);
+        }else{
+            Log.e("NULL CURSOR FROM ", query);
         }
 //        Log.e("cursor", cursor.getString(1));
         return userRecord;
@@ -415,7 +420,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     ArrayList<String> values = new ArrayList<>();
         String query = "SELECT "+col +" FROM "+table_name;
         Cursor cursor = db.rawQuery(query, null);
-        if( cursor != null && cursor.moveToFirst() ) {
+        if( cursor != null ) {
 
             if (cursor.getCount() >= 0) {
                 while (cursor.moveToNext()) {

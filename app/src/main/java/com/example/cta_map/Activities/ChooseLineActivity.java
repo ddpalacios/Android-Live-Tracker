@@ -25,7 +25,6 @@ public class ChooseLineActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_choose_line);
         super.onCreate(savedInstanceState);
-        @SuppressLint("CommitPrefEdits") final SharedPreferences.Editor TRAIN_SELECTION_VALUES =  getSharedPreferences("Train_Selection_Values", MODE_PRIVATE).edit();
         ArrayList<String> arrayList = new ArrayList<>();
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
         final ListView list = (ListView) findViewById(R.id.station_lines);
