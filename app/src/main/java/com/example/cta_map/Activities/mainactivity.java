@@ -37,9 +37,14 @@ public class mainactivity extends AppCompatActivity {
         bb = getIntent().getExtras();
         String username = bb.getString("username");
         String pass = bb.getString("pass");
-
         final ArrayList<String> user_record = sqlite.get_table_record("User_info", "WHERE user_name = '"+username+"' AND password = '"+pass+"'");
+
         final String profile_id = user_record.get(0);
+
+        ArrayList<HashMap> table_record = sqlite.GetTableRecordByID(Integer.parseInt(profile_id), "train_table");
+        if (table_record.isEmpty()){
+            favoriteList.add("No Favorite Stations.");
+        }
 
 
 
