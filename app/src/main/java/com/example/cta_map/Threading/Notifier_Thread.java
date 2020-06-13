@@ -42,28 +42,15 @@ public class Notifier_Thread implements Runnable {
                 bundle.putSerializable("chosen_trains", chosen_trains);
                 bundle.putSerializable("ignored_trains", ignored_trains);
 //                bundle.putString("train_dir", this.message.getDir());
-
-
-
-
-
-
-//                msg.setData(bundle);
+                msg.setData(bundle);
 
 
                 Log.e(Thread.currentThread().getName(), "Sending to UI...");
 
-//                handler.sendMessage(msg);
+                handler.sendMessage(msg);
 
 
-           //                Log.e("train etas", "Notified");
                 this.message.notifyAll();
-
-
-
-
-//                Log.e(Thread.currentThread().getName(), this.message.getClicked()+"");
-
                 if (!this.message.getClicked()) {
                     try {
                         Thread.sleep(5000);

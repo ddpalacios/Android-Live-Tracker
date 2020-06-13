@@ -39,11 +39,11 @@ public class TrainTrackingActivity extends AppCompatActivity {
         public void handleMessage(android.os.Message msg) {
                 Bundle bundle = msg.getData();
                 ArrayList<Integer> etas = bundle.getIntegerArrayList("train_etas");
-                String train_dir = bundle.getString("train_dir");
+//                String train_dir = bundle.getString("train_dir");
                 ArrayList<HashMap> chosen_trains = (ArrayList<HashMap>) bundle.getSerializable("chosen_trains");
 
 
-            displayResults(etas, chosen_trains, train_dir);
+//            displayResults(etas, chosen_trains, train_dir);
         }
     };
 
@@ -151,15 +151,17 @@ public class TrainTrackingActivity extends AppCompatActivity {
         message.setClicked(false);
         message.keepSending(true);
         message.setTargetContent(tracking_record);
+        final Button switch_direction = (Button) findViewById(R.id.switch_direction);
+
         final Button choose_station = (Button) findViewById(R.id.pickStation);
         final Button toMaps = (Button) findViewById(R.id.show);
 
-        final Thread api_call_thread = new Thread(new API_Caller_Thread(message, tracking_record, true), "API_CALL_Thread");
+        final Thread api_call_thread = new Thread(new API_Caller_Thread(message, tracking_record, false), "API_CALL_Thread");
         api_call_thread.start();
-        final Thread t2 = new Thread(new Content_Parser_Thread(message, tracking_record, sqlite, true), "Content Parser");
+        final Thread t2 = new Thread(new Content_Parser_Thread(message, tracking_record, sqlite, false), "Content Parser");
         t2.start();
 
-        final Thread t3 = new Thread(new Train_Estimations_Thread(message, true), "Estimation Thread");
+        final Thread t3 = new Thread(new Train_Estimations_Thread(message, false), "Estimation Thread");
         t3.start();
 
         final Thread t4 = new Thread(new Notifier_Thread(message, handler, getApplicationContext()), "Notifier Thread");
@@ -210,7 +212,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
         choose_station.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                t3.interrupt();
+                t4.interrupt();
                 Intent intent = new Intent(TrainTrackingActivity.this, mainactivity.class);
                 Integer profile_id = Integer.parseInt(tracking_record.get("profile_id"));
                 final ArrayList<String> user_record = sqlite.get_table_record("User_info", "WHERE profile_id = '"+profile_id+"'");
@@ -225,40 +227,39 @@ public class TrainTrackingActivity extends AppCompatActivity {
             }
         });
 
-//
-//        switch_direction.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.e("Original ", target_station_direction[0]+"");
-//                t3.interrupt();
-//
-//                if (target_station_direction[0].equals("1")){
-//                    target_station_direction[0] = "5";
-//                    synchronized (message){
-//                        message.setDir(target_station_direction[0]);
-//                        message.setClicked(true);
-//                        message.notifyAll();
-//                        try{
-//                            t3.interrupt();
-//                        }catch(Exception e){Log.e("fff","Exception handled "+e);}
-//                    }
-//
-//                }else {
-//                    target_station_direction[0] = "1";
-//                    synchronized (message){
-//                        message.setDir(target_station_direction[0]);
-//                        message.setClicked(true);
-//                        message.notifyAll();
-//                        try{
-//                            t3.interrupt();
-//
-//                        }catch(Exception e){Log.e("fff","Exception handled "+e);}
-//                    }
-//
-//                }
-//
-//            }
-//        });
+
+        switch_direction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String target_station_direction;
+                if (message.getDir() ==null) {
+                    target_station_direction = tracking_record.get("station_dir");
+                }else{
+                        target_station_direction = message.getDir();
+
+                }
+
+                t4.interrupt();
+                if (target_station_direction.equals("1")){
+                    target_station_direction = "5";
+                    synchronized (message){
+                        message.setDir(target_station_direction);
+                        message.setClicked(true);
+                        message.notifyAll();
+                    }
+
+                }else {
+                    target_station_direction = "1";
+                    synchronized (message){
+                        message.setDir(target_station_direction);
+                        message.setClicked(true);
+                        message.notifyAll();
+                    }
+
+                }
+
+            }
+        });
 //
     }
 
