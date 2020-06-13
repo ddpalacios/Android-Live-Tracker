@@ -44,6 +44,8 @@ public class mainactivity extends AppCompatActivity {
         ArrayList<HashMap> table_record = sqlite.GetTableRecordByID(Integer.parseInt(profile_id), "train_table");
         if (table_record.isEmpty()){
             favoriteList.add("No Favorite Stations.");
+        }else{
+            favoriteList.add(0, "Favorite Stations.");
         }
 
 
