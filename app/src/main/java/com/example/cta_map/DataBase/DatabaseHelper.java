@@ -3,6 +3,7 @@ package com.example.cta_map.DataBase;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -71,6 +72,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TRAIN_LINE = "train_line";
     public static final String NORTHBOUND_COL = "northbound";
     public static final String SOUTHBOUND_COL = "southbound";
+
+    public static final String TRACKING_TABLE = "tracking_table";
+    public static final String TRACKING_ID = "TRACKING_ID";
+    public static final String TRACKING_TYPE_COL = "station_type";
+    public static final String TRACKING_NAME_COL = "station_name";
+    public static final String TRACKING_LAT_COL = "station_lat";
+    public static final String TRACKING_LON_COL = "station_lon";
+    public static final String TRACKING_DIR_COL = "station_dir";
+    public static final String TRACKING_MAIN_COL = "main_station_name";
 
 
 
@@ -162,6 +172,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.execSQL(main_stations_table);
         Log.e("Created", main_stations_table);
+
+
+
+        String tracking_table = "CREATE TABLE IF NOT EXISTS " + TRACKING_TABLE + " ( "
+                + TRACKING_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + TRACKING_NAME_COL + " TEXT, "
+                + TRACKING_TYPE_COL + " TEXT, "
+                + TRACKING_LAT_COL + " REAL, "
+                + TRACKING_LON_COL + " REAL, "
+                + TRACKING_DIR_COL +" INTEGER, "
+                + TRACKING_MAIN_COL+ " TEXT)";
+
+        db.execSQL(tracking_table);
+        Log.e("Created",tracking_table);
 
 
 
@@ -311,24 +335,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     return userRecord;
     }
 
-    public ArrayList<String> get_table_value(String table_name, String condition) {
-        ArrayList<String> userRecord = new ArrayList<>();
-        String query = "SELECT * FROM "
-                + table_name
-                + condition;
+  public void add_train_tracker(ArrayList<String> record){
+      SQLiteDatabase db = this.getWritableDatabase();
+      ContentValues values = new ContentValues();
+      if (record.isEmpty()){
+          Log.e("INDEX ERROR", "RECORD IS EMPTY");
+          return;
+      }
+      values.put(TRACKING_NAME_COL, record.get(0));
+      values.put(TRACKING_TYPE_COL, record.get(1));
+      values.put(TRACKING_LAT_COL, record.get(2));
+      values.put(TRACKING_LON_COL, record.get(3));
+      values.put(TRACKING_DIR_COL, record.get(4));
+      values.put(TRACKING_MAIN_COL, record.get(5));
 
-//                " WHERE " + PROFILE_USERNAME_COL + " = '" + username + "' AND " +
-//                PROFILE_PASS_COL + " = '" + toHex(password) + "'";
+        db.insert(TRACKING_TABLE , null, values);
+      db.close();
 
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
-        cursor.moveToFirst();
-//        for (int i=0;i<cursor.getColumnCount();i++ ){
-//            userRecord.add(cursor.getString(i));
-//        }
-//        Log.e("cursor", cursor.getString(1));
-        return userRecord;
-    }
+  }
 
 
     public ArrayList<String> get_table_record(String table_name, String condition){
@@ -351,6 +375,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //        Log.e("cursor", cursor.getString(1));
         return userRecord;
 
+    }
+
+
+    public boolean isEmpty(String TableName){
+
+        SQLiteDatabase database = this.getReadableDatabase();
+        int NoOfRows = (int) DatabaseUtils.queryNumEntries(database,TableName);
+
+        if (NoOfRows == 0){
+            return true;
+        }else {
+            Log.e("num rows", NoOfRows+"");
+            return false;
+        }
     }
 
 
@@ -403,6 +441,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return false;
         }
 
+    }
+
+
+    public boolean deleteAll(String table_name){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("delete from "+ table_name);
+
+        return isEmpty(table_name);
     }
 
 
