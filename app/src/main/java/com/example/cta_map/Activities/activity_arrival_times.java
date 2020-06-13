@@ -188,12 +188,12 @@ public class activity_arrival_times extends AppCompatActivity {
         String target_station_type = current_train_info.get("station_type");
         Log.e("Picked", current_train_info+"");
         message.keepSending(true);
-        final Thread t1 = new Thread(new API_Caller_Thread(message, target_station_type, true), "NEW API_CALL_Thread");
-        t1.start();
-        final Thread t4 = new Thread(new Thread4(message, target_station_type, current_train_info.get("train_id")), " NEW Content Parser");
-        t4.start();
-        final Thread t5 = new Thread(new Thread5(message, handler), "NEW Displayer");
-        t5.start();
+//        final Thread t1 = new Thread(new API_Caller_Thread(message, target_station_type, true), "NEW API_CALL_Thread");
+//        t1.start();
+//        final Thread t4 = new Thread(new Thread4(message, target_station_type, current_train_info.get("train_id")), " NEW Content Parser");
+//        t4.start();
+//        final Thread t5 = new Thread(new Thread5(message, handler), "NEW Displayer");
+//        t5.start();
 
 
 

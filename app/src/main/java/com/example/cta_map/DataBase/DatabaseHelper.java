@@ -177,6 +177,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         String tracking_table = "CREATE TABLE IF NOT EXISTS " + TRACKING_TABLE + " ( "
                 + TRACKING_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + PROFILE_ID_COL+ " INTEGER, "
                 + TRACKING_NAME_COL + " TEXT, "
                 + TRACKING_TYPE_COL + " TEXT, "
                 + TRACKING_LAT_COL + " REAL, "
@@ -335,6 +336,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     return userRecord;
     }
 
+    public HashMap<String, String> getAllRecord(String table_name){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM "+ table_name;
+        Cursor cursor = db.rawQuery(query, null);
+        HashMap<String, String> record = new HashMap<>();
+
+        if( cursor != null ){
+            if (cursor.getCount() > 0) {
+                while(cursor.moveToNext()) {
+                    for (int i = 0; i < cursor.getColumnCount(); i++) {
+                        record.put(cursor.getColumnName(i), cursor.getString(i));
+                    }
+                }
+            }
+
+            cursor.close();
+
+
+
+        }else{
+            Log.e("NULL CURSOR FROM ", query);
+            return null;
+        }
+
+        return record;
+
+    }
+
   public void add_train_tracker(ArrayList<String> record){
       SQLiteDatabase db = this.getWritableDatabase();
       ContentValues values = new ContentValues();
@@ -342,14 +371,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
           Log.e("INDEX ERROR", "RECORD IS EMPTY");
           return;
       }
-      values.put(TRACKING_NAME_COL, record.get(0));
-      values.put(TRACKING_TYPE_COL, record.get(1));
-      values.put(TRACKING_LAT_COL, record.get(2));
-      values.put(TRACKING_LON_COL, record.get(3));
-      values.put(TRACKING_DIR_COL, record.get(4));
-      values.put(TRACKING_MAIN_COL, record.get(5));
+      values.put(PROFILE_ID_COL, record.get(0));
+      values.put(TRACKING_NAME_COL, record.get(1));
 
-        db.insert(TRACKING_TABLE , null, values);
+      values.put(TRACKING_TYPE_COL, record.get(2));
+      values.put(TRACKING_LAT_COL, record.get(3));
+      values.put(TRACKING_LON_COL, record.get(4));
+      values.put(TRACKING_DIR_COL, record.get(5));
+      values.put(TRACKING_MAIN_COL, record.get(6));
+      db.insert(TRACKING_TABLE , null, values);
       db.close();
 
   }

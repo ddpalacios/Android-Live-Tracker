@@ -89,6 +89,25 @@ public class TrainStationActivity  extends AppCompatActivity {
 
 
                 }else{
+                    Intent intent = new Intent(TrainStationActivity.this, TrainTrackingActivity.class);
+                    String[] target_station_coordinates = chicago_transits.retrieve_station_coordinates(sqlite,target_station, station_type );
+                    ArrayList<String> tracking_record = new ArrayList<>();
+                    tracking_record.add(String.valueOf(ProfileID));
+                    tracking_record.add(target_station);
+                    tracking_record.add(station_type);
+                    tracking_record.add(target_station_coordinates[0]);
+                    tracking_record.add(target_station_coordinates[1]);
+                    tracking_record.add(station_direction);
+                    tracking_record.add(main_station);
+                    sqlite.add_train_tracker(tracking_record);
+                    sqlite.close();
+                    startActivity(intent);
+
+
+
+
+
+
 
                 }
 

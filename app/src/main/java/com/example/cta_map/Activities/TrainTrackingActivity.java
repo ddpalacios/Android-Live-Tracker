@@ -138,22 +138,36 @@ public class TrainTrackingActivity extends AppCompatActivity {
         setContentView(R.layout.train_tracking_activity);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         super.onCreate(savedInstanceState);
-        bb = getIntent().getExtras();
-        final String[] target_station_direction = new String[]{bb.getString("station_dir")};
+        final DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
+        HashMap<String, String> tracking_record = sqlite.getAllRecord("tracking_table");
+        if (tracking_record == null){
+            Toast.makeText(getApplicationContext(), "No Tracking Station Found in DB!", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        Log.e("record", tracking_record+"");
         message.setClicked(false);
         message.keepSending(true);
-        final DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
-        final Button switch_direction = (Button) findViewById(R.id.switch_direction);
         final Button choose_station = (Button) findViewById(R.id.pickStation);
         final Button toMaps = (Button) findViewById(R.id.show);
-        final String target_station_type = bb.getString("station_type");
-        final String target_station_name = bb.getString("station_name");
-        final String station_dir = bb.getString("station_dir");
 
-        final Thread api_call_thread = new Thread(new API_Caller_Thread(message, target_station_type, true), "API_CALL_Thread");
+        final Thread api_call_thread = new Thread(new API_Caller_Thread(message, tracking_record, true), "API_CALL_Thread");
         api_call_thread.start();
-        final Thread t2 = new Thread(new Content_Parser_Thread(message, bb, sqlite, true), "Content Parser");
-        t2.start();
+
+
+
+
+//        bb = getIntent().getExtras();
+//        final String[] target_station_direction = new String[]{bb.getString("station_dir")};
+//        final Button switch_direction = (Button) findViewById(R.id.switch_direction);
+
+//        final String target_station_type = bb.getString("station_type");
+//        final String target_station_name = bb.getString("station_name");
+//        final String station_dir = bb.getString("station_dir");
+
+
+//        final Thread t2 = new Thread(new Content_Parser_Thread(message, bb, sqlite, true), "Content Parser");
+//        t2.start();
 //        final Thread t3 = new Thread(new Thread3(message, handler, getApplicationContext()), "Displayer");
 //        t3.start();
 //
@@ -183,22 +197,22 @@ public class TrainTrackingActivity extends AppCompatActivity {
 //
 //
 //
-//        choose_station.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
+        choose_station.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 //                t3.interrupt();
 //                android.widget.Toast.makeText(getApplicationContext(), "Clicked", Toast.LENGTH_SHORT).show();
-//                Intent intent = new Intent(TrainTrackingActivity.this, mainactivity.class);
-//                synchronized (message){
-//                    message.keepSending(false);
-//                }
-//
-//                startActivity(intent);
-//
-//
-//            }
-//        });
-//
+                Intent intent = new Intent(TrainTrackingActivity.this, mainactivity.class);
+                synchronized (message){
+                    message.keepSending(false);
+                }
+
+                startActivity(intent);
+
+
+            }
+        });
+
 //
 //        switch_direction.setOnClickListener(new View.OnClickListener() {
 //            @Override

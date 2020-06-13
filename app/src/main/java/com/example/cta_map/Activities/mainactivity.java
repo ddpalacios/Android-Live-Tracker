@@ -39,25 +39,18 @@ public class mainactivity extends AppCompatActivity {
         String pass = bb.getString("pass");
         if (!sqlite.isEmpty("tracking_table")){
             boolean isempty = sqlite.deleteAll("tracking_table");
-            Log.e("is empty", isempty+"");
+            Log.e("TRACKING TABLE IS EMPTY", isempty+"");
 
         }
 
-
-
         final ArrayList<String> user_record = sqlite.get_table_record("User_info", "WHERE user_name = '"+username+"' AND password = '"+pass+"'");
-
         final String profile_id = user_record.get(0);
-
         final ArrayList<HashMap> table_record = sqlite.GetTableRecordByID(Integer.parseInt(profile_id), "train_table");
         if (table_record.isEmpty()){
             favoriteList.add("No Favorite Stations.");
         }else{
             favoriteList.add(0, "Favorite Stations:");
         }
-
-
-
         Log.e("record", user_record+"");
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
@@ -137,17 +130,13 @@ public class mainactivity extends AppCompatActivity {
                 String[] station_details = station.split("-\\(");
                 String station_name = station_details[0];
                 String station_type = station_details[1].replaceAll("\\)", "");
-
-
-
                 ArrayList<String> target_station_record = sqlite.get_table_record("train_table",
                         "WHERE profile_id = '"+profile_id+"' AND station_name = '"+station_name+"' AND station_type = '"+station_type+"'");
-
                 Toast.makeText(getApplicationContext(), target_station_record+"", Toast.LENGTH_LONG).show();
-                ArrayList<String> tracking_record = new ArrayList<>(target_station_record.subList(2, target_station_record.size()));
-
-
+                ArrayList<String> tracking_record = new ArrayList<>(target_station_record.subList(1, target_station_record.size()));
                 sqlite.add_train_tracker(tracking_record);
+
+                startActivity(intent);
 
 
 
