@@ -2,6 +2,7 @@ package com.example.cta_map.Displayers;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
@@ -301,6 +302,7 @@ public class Chicago_Transits {
                 return null;
             }
         }
+
         return train_info;
     }
 

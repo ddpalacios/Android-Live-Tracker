@@ -9,12 +9,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class Thread3 implements Runnable {
+public class Notifier_Thread implements Runnable {
     final Message message;
     Context context;
     android.os.Handler handler;
 
-    public Thread3(Message message, android.os.Handler handler, Context context){
+    public Notifier_Thread(Message message, android.os.Handler handler, Context context){
         this.message = message;
         this.handler = handler;
         this.context = context;
@@ -24,44 +24,40 @@ public class Thread3 implements Runnable {
     @Override
     public void run() {
         while (true) {
-
-
             Bundle bundle = new Bundle();
-
             android.os.Message msg = this.handler.obtainMessage();
 
 
 
-            try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
+            try { Thread.sleep(300); } catch (InterruptedException e) { e.printStackTrace(); }
 
             synchronized (this.message) {
                 if(!this.message.IsSending()){
                     break;
                 }
-                ArrayList<Integer> train_etas =this.message.get_train_etas();
                 ArrayList<HashMap> chosen_trains = this.message.get_chosen_trains();
                 ArrayList<HashMap> ignored_trains = this.message.getIgnored();
+                Log.e("notifier", "Recieved "+ chosen_trains+"");
 
-                bundle.putIntegerArrayList("train_etas", train_etas);
                 bundle.putSerializable("chosen_trains", chosen_trains);
                 bundle.putSerializable("ignored_trains", ignored_trains);
-                bundle.putString("train_dir", this.message.getDir());
+//                bundle.putString("train_dir", this.message.getDir());
 
 
 
 
 
 
-                msg.setData(bundle);
+//                msg.setData(bundle);
 
 
-//                Log.e("train etas", "Sending to UI...");
+                Log.e(Thread.currentThread().getName(), "Sending to UI...");
 
-                handler.sendMessage(msg);
+//                handler.sendMessage(msg);
 
 
            //                Log.e("train etas", "Notified");
-                this.message.notify();
+                this.message.notifyAll();
 
 
 

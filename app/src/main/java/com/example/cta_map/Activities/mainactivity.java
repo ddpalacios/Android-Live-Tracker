@@ -35,23 +35,18 @@ public class mainactivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         final DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
         bb = getIntent().getExtras();
-        String username = bb.getString("username");
-        String pass = bb.getString("pass");
+        final String profile_id= bb.getString("profile_id");
         if (!sqlite.isEmpty("tracking_table")){
             boolean isempty = sqlite.deleteAll("tracking_table");
             Log.e("TRACKING TABLE IS EMPTY", isempty+"");
 
         }
-
-        final ArrayList<String> user_record = sqlite.get_table_record("User_info", "WHERE user_name = '"+username+"' AND password = '"+pass+"'");
-        final String profile_id = user_record.get(0);
         final ArrayList<HashMap> table_record = sqlite.GetTableRecordByID(Integer.parseInt(profile_id), "train_table");
         if (table_record.isEmpty()){
             favoriteList.add("No Favorite Stations.");
         }else{
             favoriteList.add(0, "Favorite Stations:");
         }
-        Log.e("record", user_record+"");
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
         final ListView list = findViewById(R.id.station_lines);
@@ -71,7 +66,7 @@ public class mainactivity extends AppCompatActivity {
         }
 
         for (HashMap train_record: table_record){
-            Log.e("rec", train_record+"");
+//            Log.e("rec", train_record+"");
             favoriteList.add(train_record.get("station_name")+"-("+train_record.get("station_type")+")");
             favoriteadapter.notifyDataSetChanged();
 
@@ -85,6 +80,9 @@ public class mainactivity extends AppCompatActivity {
 
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0){
+                    return false;
+                }
 
                 String station = (String) favoriteStations.getItemAtPosition(position);
                 String[] station_details = station.split("-\\(");
@@ -124,6 +122,9 @@ public class mainactivity extends AppCompatActivity {
         favoriteStations.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(position == 0){
+                    return;
+                }
                 Intent intent = new Intent(mainactivity.this, TrainTrackingActivity.class);
 
                 String station = (String) favoriteStations.getItemAtPosition(position);
@@ -163,7 +164,7 @@ public class mainactivity extends AppCompatActivity {
                     connect.putBoolean("connection", true);
                     connect.apply();
                 }
-                connect.putInt("ProfileID", Integer.parseInt(user_record.get(0)));
+                connect.putInt("ProfileID", Integer.parseInt(profile_id));
                 connect.apply();
 
                 sqlite.close();

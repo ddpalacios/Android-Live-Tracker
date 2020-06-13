@@ -15,12 +15,13 @@ import android.widget.Button;
 import android.widget.ListView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.cta_map.DataBase.DatabaseHelper;
 import com.example.cta_map.R;
 import com.example.cta_map.Threading.Message;
 import com.example.cta_map.Threading.API_Caller_Thread;
 import com.example.cta_map.Threading.Content_Parser_Thread;
+import com.example.cta_map.Threading.Notifier_Thread;
+import com.example.cta_map.Threading.Train_Estimations_Thread;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -139,8 +140,9 @@ public class TrainTrackingActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         super.onCreate(savedInstanceState);
         final DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
-        HashMap<String, String> tracking_record = sqlite.getAllRecord("tracking_table");
-        if (tracking_record == null){
+        final HashMap<String, String> tracking_record = sqlite.getAllRecord("tracking_table");
+
+        if (tracking_record == null || tracking_record.isEmpty()){
             Toast.makeText(getApplicationContext(), "No Tracking Station Found in DB!", Toast.LENGTH_LONG).show();
             return;
         }
@@ -148,11 +150,20 @@ public class TrainTrackingActivity extends AppCompatActivity {
         Log.e("record", tracking_record+"");
         message.setClicked(false);
         message.keepSending(true);
+        message.setTargetContent(tracking_record);
         final Button choose_station = (Button) findViewById(R.id.pickStation);
         final Button toMaps = (Button) findViewById(R.id.show);
 
         final Thread api_call_thread = new Thread(new API_Caller_Thread(message, tracking_record, true), "API_CALL_Thread");
         api_call_thread.start();
+        final Thread t2 = new Thread(new Content_Parser_Thread(message, tracking_record, sqlite, true), "Content Parser");
+        t2.start();
+
+        final Thread t3 = new Thread(new Train_Estimations_Thread(message, true), "Estimation Thread");
+        t3.start();
+
+        final Thread t4 = new Thread(new Notifier_Thread(message, handler, getApplicationContext()), "Notifier Thread");
+        t4.start();
 
 
 
@@ -166,8 +177,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
 //        final String station_dir = bb.getString("station_dir");
 
 
-//        final Thread t2 = new Thread(new Content_Parser_Thread(message, bb, sqlite, true), "Content Parser");
-//        t2.start();
+
 //        final Thread t3 = new Thread(new Thread3(message, handler, getApplicationContext()), "Displayer");
 //        t3.start();
 //
@@ -201,8 +211,10 @@ public class TrainTrackingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 //                t3.interrupt();
-//                android.widget.Toast.makeText(getApplicationContext(), "Clicked", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(TrainTrackingActivity.this, mainactivity.class);
+                Integer profile_id = Integer.parseInt(tracking_record.get("profile_id"));
+                final ArrayList<String> user_record = sqlite.get_table_record("User_info", "WHERE profile_id = '"+profile_id+"'");
+                intent.putExtra("profile_id", user_record.get(0));
                 synchronized (message){
                     message.keepSending(false);
                 }

@@ -49,8 +49,7 @@ public class userLoginActivity extends AppCompatActivity {
                 if (sqlite.find_profile(user_name, pass)){
                     ArrayList<String> record = sqlite.get_table_record("User_info", "WHERE user_name = '"+user_name+"' AND password = '"+toHex(pass)+"'");
                     Toast.makeText(getApplicationContext(), "Welcome " + record.get(1), 1).show();
-                    ToStations.putExtra("username",user_name);
-                    ToStations.putExtra("pass",toHex(pass));
+                    ToStations.putExtra("profile_id", record.get(0));
 
                     sqlite.close();
                     startActivity(ToStations);

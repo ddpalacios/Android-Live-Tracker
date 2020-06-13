@@ -9,6 +9,7 @@ public class Message {
     ArrayList<Integer> train_etas;
     boolean t;
     boolean x;
+    HashMap<String, String> train_content;
     ArrayList<HashMap> ignored;
     String next_stop;
 
@@ -18,6 +19,13 @@ public class Message {
     public String[] getMsg(){
         return this.msg;
 
+    }
+
+    public HashMap<String, String> getTargetContent(){
+        return this.train_content;
+    }
+    public void setTargetContent(HashMap<String, String> content){
+        this.train_content = content;
     }
 
     public void setTrain_etas(ArrayList<Integer> train_etas){

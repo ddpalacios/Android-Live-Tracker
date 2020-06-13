@@ -82,8 +82,7 @@ public class TrainStationActivity  extends AppCompatActivity {
 
                     sqlite.addUserStation(userStation);
                     Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_SHORT).show();
-                    intent.putExtra("username", user_record.get(3));
-                    intent.putExtra("pass", user_record.get(7));
+                    intent.putExtra("profile_id",user_record.get(0));
 
                     startActivity(intent);
 

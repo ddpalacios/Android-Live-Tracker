@@ -23,21 +23,21 @@ public class API_Caller_Thread implements Runnable {
     public void run() {
         Chicago_Transits chicago_transits = new Chicago_Transits();
         String url = "https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt="+chicago_transits.TrainLineKeys(this.record.get("station_type"));
-        if (this.willCommunicate) {
-            Log.e(Thread.currentThread().getName(), "Sending..." + url);
-        }
         synchronized (this.msg){
-            int i =0;
             while (this.msg.IsSending()) {
-                i++;
                 try {
                     final Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
                     final String[] train_list = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
+
                     this.msg.setMsg(train_list);
+
                     if (this.willCommunicate){
-                        Log.e(Thread.currentThread().getName(), train_list+ " has set the message and is waiting...");
+                        Log.e("Url", url);
+                        Log.e("Sending", train_list.length +" Trains.");
+                        Log.e(Thread.currentThread().getName(),  "is waiting... ");
 
                     }
+
                     this.msg.wait();
 
                     if (this.willCommunicate) {
