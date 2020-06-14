@@ -39,94 +39,111 @@ public class TrainTrackingActivity extends AppCompatActivity {
         @Override
         public void handleMessage(android.os.Message msg) {
                 Bundle bundle = msg.getData();
-                ArrayList<Integer> etas = bundle.getIntegerArrayList("train_etas");
-//                String train_dir = bundle.getString("train_dir");
-                ArrayList<HashMap> chosen_trains = (ArrayList<HashMap>) bundle.getSerializable("chosen_trains");
 
 
-//            displayResults(etas, chosen_trains, train_dir);
+            displayResults(bundle);
         }
     };
 
-    public void displayResults(ArrayList<Integer> train_etas, final ArrayList<HashMap> chosen_trains, String train_dir){
-        String target_station_name = bb.getString("station_name");
-        String target_station_type = bb.getString("station_type");
-        String main_station;
-//        Log.e("New ", train_dir+"");
+    public void displayResults(Bundle bundle){
+        if (bundle.getBoolean("No_Trains")){ Log.e("No trains", bundle.getBoolean("No_Trains")+"");return; }
 
-        final String[] target_station_direction = new String[]{bb.getString("station_dir")};
+        ArrayList<HashMap> chosen_trains = (ArrayList<HashMap>) bundle.getSerializable("chosen_trains");
+        DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
+        final HashMap<String, String> tracking_record = sqlite.getAllRecord("tracking_table");
+        String main_station = bundle.getString("main_station");
+        if (main_station == null) { main_station = tracking_record.get("main_station_name"); }
         ArrayList<String> arrayList = new ArrayList<>();
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
         final ListView list = findViewById(R.id.train_layout_arrival_times);
         list.setAdapter(adapter);
-        DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
-
-        ArrayList<String> table_record = sqlite.get_table_record("main_stations_table",
-                "WHERE train_line = '"+target_station_type.replaceAll("\\)", "'")+"'");
-
-        if (train_etas.size() == 0 ){
-            if (train_dir.equals("1")) {
-                arrayList.add(0, "No Trains Available." +" (North Bound)");
-            }
-            else if (train_dir.equals("5")){
-                arrayList.add(0, "No Trains Available." +" (South Bound)");
-
-            }
-        }else {
-
-            if (train_dir.equals("1")) {
-//                Log.e("station", "upadting title: ");
-                arrayList.add(target_station_name + " (North Bound)");
-            } else if (train_dir.equals("5")) {
-                arrayList.add(target_station_name + " (South Bound)");
-            }
-
-            for (Integer items : train_etas) {
-
-                if (train_dir.equals("1")){
-                    main_station = table_record.get(2);
-                }
-
-                else  {
-                    main_station = table_record.get(3);
-                }
-
-
-                arrayList.add(main_station+": "+items + "m");
-                adapter.notifyDataSetChanged();
-            }
-
-
+        arrayList.add(0, tracking_record.get("station_name")+" ("+tracking_record.get("station_type")+")");
+        for (HashMap<String, String> train: chosen_trains){
+            Log.e("rrr", String.valueOf(train.get("train_eta"))+"");
+            arrayList.add(main_station+": "+String.valueOf(train.get("train_eta"))+"m");
+            adapter.notifyDataSetChanged();
         }
-        sqlite.close();
 
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Context context = getApplicationContext();
-                Intent intent = new Intent(TrainTrackingActivity.this, activity_arrival_times.class);
-                if (position == 0 ){
-                    Toast.makeText(context, list.getItemAtPosition(position)+"", Toast.LENGTH_SHORT).show();
-                }
-                else {
-
-                    String[] list_item = String.valueOf(list.getItemAtPosition(position)).split(":");
-                    String key = list_item[1].replaceAll("[^\\d.]", "");
-                    for (HashMap<String, String> each_train : chosen_trains) {
-                        String train_eta = each_train.get("train_eta");
-                        if (train_eta.equals(key)){
-                            Log.e("next ", "TRAIN ID: " +each_train.get("train_id") + "");
-                            intent.putExtra("current_train_info", each_train);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                message.keepSending(false);
-                            startActivity(intent);
-                        }
-                    }
-                }
+sqlite.close();
 
 
-            }
-        });
+
+
+//        String target_station_type = bb.getString("station_type");
+//        String main_station;
+////        Log.e("New ", train_dir+"");
+//
+//        final String[] target_station_direction = new String[]{bb.getString("station_dir")};
+
+
+
+//
+//        ArrayList<String> table_record = sqlite.get_table_record("main_stations_table",
+//                "WHERE train_line = '"+target_station_type.replaceAll("\\)", "'")+"'");
+//
+//        if (train_etas.size() == 0 ){
+//            if (train_dir.equals("1")) {
+//                arrayList.add(0, "No Trains Available." +" (North Bound)");
+//            }
+//            else if (train_dir.equals("5")){
+//                arrayList.add(0, "No Trains Available." +" (South Bound)");
+//
+//            }
+//        }else {
+//
+//            if (train_dir.equals("1")) {
+////                Log.e("station", "upadting title: ");
+//                arrayList.add(target_station_name + " (North Bound)");
+//            } else if (train_dir.equals("5")) {
+//                arrayList.add(target_station_name + " (South Bound)");
+//            }
+//
+//            for (Integer items : train_etas) {
+//
+//                if (train_dir.equals("1")){
+//                    main_station = table_record.get(2);
+//                }
+//
+//                else  {
+//                    main_station = table_record.get(3);
+//                }
+//
+//
+//                arrayList.add(main_station+": "+items + "m");
+//                adapter.notifyDataSetChanged();
+//            }
+//
+//
+//        }
+//        sqlite.close();
+//
+//        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Context context = getApplicationContext();
+//                Intent intent = new Intent(TrainTrackingActivity.this, activity_arrival_times.class);
+//                if (position == 0 ){
+//                    Toast.makeText(context, list.getItemAtPosition(position)+"", Toast.LENGTH_SHORT).show();
+//                }
+//                else {
+//
+//                    String[] list_item = String.valueOf(list.getItemAtPosition(position)).split(":");
+//                    String key = list_item[1].replaceAll("[^\\d.]", "");
+//                    for (HashMap<String, String> each_train : chosen_trains) {
+//                        String train_eta = each_train.get("train_eta");
+//                        if (train_eta.equals(key)){
+//                            Log.e("next ", "TRAIN ID: " +each_train.get("train_id") + "");
+//                            intent.putExtra("current_train_info", each_train);
+//                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                                message.keepSending(false);
+//                            startActivity(intent);
+//                        }
+//                    }
+//                }
+//
+//
+//            }
+//        });
 
 
 
@@ -158,19 +175,19 @@ public class TrainTrackingActivity extends AppCompatActivity {
         final Button choose_station = (Button) findViewById(R.id.pickStation);
         final Button toMaps = (Button) findViewById(R.id.show);
 
-        final Thread api_call_thread = new Thread(new API_Caller_Thread(message, tracking_record, false), "API_CALL_Thread");
+        final Thread api_call_thread = new Thread(new API_Caller_Thread(message, tracking_record, handler,true), "API_CALL_Thread");
         api_call_thread.start();
-        final Thread t2 = new Thread(new Content_Parser_Thread(message, tracking_record, sqlite, false), "Content Parser");
+        final Thread t2 = new Thread(new Content_Parser_Thread(message, tracking_record, sqlite, true), "Content Parser");
         t2.start();
-        final Thread t3 = new Thread(new Train_Estimations_Thread(message, false), "Estimation Thread");
+        final Thread t3 = new Thread(new Train_Estimations_Thread(message, true), "Estimation Thread");
         t3.start();
-//        final Thread t4 = new Thread(new Notifier_Thread(message, handler, getApplicationContext(), true), "Notifier Thread");
-//        t4.start();
+        final Thread t4 = new Thread(new Notifier_Thread(message, handler, getApplicationContext(), true), "Notifier Thread");
+        t4.start();
 
         toMaps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                t4.interrupt();
+                t4.interrupt();
                 Intent intent = new Intent(TrainTrackingActivity.this, MapsActivity.class);
 
 
@@ -188,7 +205,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
         choose_station.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                t4.interrupt();
+                t4.interrupt();
                 Intent intent = new Intent(TrainTrackingActivity.this, mainactivity.class);
                 Integer profile_id = Integer.parseInt(tracking_record.get("profile_id"));
                 final ArrayList<String> user_record = sqlite.get_table_record("User_info", "WHERE profile_id = '"+profile_id+"'");
@@ -214,14 +231,14 @@ public class TrainTrackingActivity extends AppCompatActivity {
                         target_station_direction = message.getDir();
 
                 }
+                t4.interrupt();
 
-//                t4.interrupt();
                 if (target_station_direction.equals("1")){
                     target_station_direction = "5";
                     synchronized (message){
                         message.setDir(target_station_direction);
                         message.setClicked(true);
-                        message.notifyAll();
+                        message.notify();
                     }
 
                 }else {
@@ -229,7 +246,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
                     synchronized (message){
                         message.setDir(target_station_direction);
                         message.setClicked(true);
-                        message.notifyAll();
+                        message.notify();
                     }
 
                 }

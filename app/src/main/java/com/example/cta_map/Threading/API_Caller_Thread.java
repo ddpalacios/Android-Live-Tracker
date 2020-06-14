@@ -1,5 +1,6 @@
 package com.example.cta_map.Threading;
 
+import android.os.Bundle;
 import android.util.Log;
 
 import com.example.cta_map.Displayers.Chicago_Transits;
@@ -8,16 +9,19 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.logging.Handler;
 
 
 public class API_Caller_Thread implements Runnable {
     Message msg;
     HashMap<String, String> record;
     boolean willCommunicate;
-    public API_Caller_Thread(Message msg, HashMap<String, String> record, boolean willCommunicate){
+    android.os.Handler handler;
+    public API_Caller_Thread(Message msg, HashMap<String, String> record,  android.os.Handler handler, boolean willCommunicate){
         this.msg = msg;
         this.record = record;
         this.willCommunicate = willCommunicate;
+        this.handler = handler;
     }
     @Override
     public void run() {
@@ -28,6 +32,15 @@ public class API_Caller_Thread implements Runnable {
                 try {
                     final Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
                     final String[] train_list = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
+                    if (train_list.length ==1 && train_list[0] == ""){
+                        Bundle bundle = new Bundle();
+                        android.os.Message msg = this.handler.obtainMessage();
+                        bundle.putBoolean("No_Trains", true);
+                        msg.setData(bundle);
+                        handler.sendMessage(msg);
+//                        this.msg.wait();
+                        continue;
+                    }
 
                     this.msg.setMsg(train_list);
 
