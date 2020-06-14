@@ -61,15 +61,22 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
     public void displayResults(ArrayList<HashMap> chosen_trains, ArrayList<HashMap> ignored_stations){
                 MapMarker mapMarker = new MapMarker(mMap);
+                Chicago_Transits chicago_transits = new Chicago_Transits();
                 DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
                 final HashMap<String, String> tracking_record = sqlite.getAllRecord("tracking_table");
+//                String main_station = (String) chosen_trains.get(0).get("main_station");//tracking_record.get("main_station_name").replaceAll("To ", "");
+//                String[] main_station_coordinates = chicago_transits.retrieve_station_coordinates(sqlite, main_station, tracking_record.get("station_type"));
+
 
 
 
                 mMap.clear();
 
-                Marker target_station = mapMarker.addMarker(tracking_record.get("station_lat"), tracking_record.get("station_lon"), tracking_record.get("station_name"), "default", 1f);
-                target_station.showInfoWindow();
+                Marker target_station_marker = mapMarker.addMarker(tracking_record.get("station_lat"), tracking_record.get("station_lon"), tracking_record.get("station_name"), "default", 1f);
+                target_station_marker.showInfoWindow();
+//                Marker main_station_marker = mapMarker.addMarker(main_station_coordinates[0],
+//                                                                main_station_coordinates[1],
+//                                                                    main_station, "rose", 1f);
 
 //                for (HashMap<String, String> train: ignored_stations){
 //                    String train_lat = train.get("train_lat");
@@ -82,7 +89,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                 for (HashMap<String, String> train: chosen_trains){
                     String train_lat = train.get("train_lat");
                     String train_lon = train.get("train_lon");
-                    mapMarker.addMarker(train_lat, train_lon, train.get("next_stop"), train.get("station_type"), .4f);
+                    mapMarker.addMarker(train_lat, train_lon, train.get("next_stop"), train.get("station_type"), 1f);
 
                 }
 
@@ -204,17 +211,17 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
 
 
-        Thread api_call = new Thread(new API_Caller_Thread(message, tracking_record, false), "api caller");
+        Thread api_call = new Thread(new API_Caller_Thread(message, tracking_record, true), "api caller");
         api_call.start();
 
-        Thread content_parser = new Thread(new Content_Parser_Thread(message, tracking_record, sqlite, false), "parser");
+        Thread content_parser = new Thread(new Content_Parser_Thread(message, tracking_record, sqlite, true), "parser");
         content_parser.start();
 
 
         Thread train_estimations = new Thread(new Train_Estimations_Thread(message, false), "estimations");
         train_estimations.start();
 
-        final Thread notifier = new Thread(new Notifier_Thread(message, handler, getApplicationContext(), true), "notifier");
+        final Thread notifier = new Thread(new Notifier_Thread(message, handler, getApplicationContext(), false), "notifier");
         notifier.start();
 
 

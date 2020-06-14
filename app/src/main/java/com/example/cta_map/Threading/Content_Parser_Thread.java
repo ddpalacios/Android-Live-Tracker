@@ -48,17 +48,22 @@ public class Content_Parser_Thread implements Runnable
 
         synchronized (this.msg){
 
-            if (station_direction.equals("1")){
-                modified_valid_stations = modified_stops.subList(modified_stops.indexOf(target_station), modified_stops.size());
-            }else{
-                modified_valid_stations =modified_stops.subList(0, modified_stops.indexOf(target_station)+1);
-            }
+
+
             while (this.msg.IsSending()){
                 ArrayList<HashMap> chosen_trains = new ArrayList<>();
                 ArrayList<HashMap> ignored_trains = new ArrayList<>();
-
                 if (this.msg.getDir() != null) {
                     station_direction = this.msg.getDir();
+                    Log.e("CHANGE", "Switched Direction. NEW: "+station_direction);
+
+                }
+
+                if (station_direction.equals("1")){
+                    modified_valid_stations = modified_stops.subList(modified_stops.indexOf(target_station), modified_stops.size());
+                    Log.e("valid", modified_valid_stations+"");
+                }else{
+                    modified_valid_stations =modified_stops.subList(0, modified_stops.indexOf(target_station)+1);
                 }
 
                 String[] content = this.msg.getMsg();
@@ -68,19 +73,24 @@ public class Content_Parser_Thread implements Runnable
                 }
 
                 for (String raw_content : content){
-
                     HashMap<String, String> current_train_info = chicago_transits.get_train_info(raw_content, record.get("station_type"));
-                    this.msg.setDir(station_direction);
                     String modified_next_stop = current_train_info.get("next_stop").replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
                     if (current_train_info.get("train_direction").equals(station_direction) && modified_valid_stations.contains(modified_next_stop)){
+                        Log.e("CHOSEN TRAIN", current_train_info+"");
+
+
+
                         chosen_trains.add(current_train_info);
                     }else{
+                        Log.e("IGNORED TRAIN", current_train_info+"");
+
                         ignored_trains.add(current_train_info);
                     }
                 }
                 this.msg.set_chosen_trains(chosen_trains);
                 this.msg.setIgnored(ignored_trains);
                 if (this.willCommunicate){
+                    Log.e(Thread.currentThread().getName(), "Parsed "+ content.length);
                     Log.e(Thread.currentThread().getName(), " Is waiting...");
                 }
                 try {
