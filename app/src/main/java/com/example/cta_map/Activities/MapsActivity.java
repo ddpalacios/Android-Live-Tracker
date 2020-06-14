@@ -78,12 +78,12 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 //                                                                main_station_coordinates[1],
 //                                                                    main_station, "rose", 1f);
 
-//                for (HashMap<String, String> train: ignored_stations){
-//                    String train_lat = train.get("train_lat");
-//                    String train_lon = train.get("train_lon");
-//                    mapMarker.addMarker(train_lat, train_lon, train.get("next_stop"), train.get("station_type"), 1f);
-//
-//                }
+                for (HashMap<String, String> train: ignored_stations){
+                    String train_lat = train.get("train_lat");
+                    String train_lon = train.get("train_lon");
+                    mapMarker.addMarker(train_lat, train_lon, train.get("next_stop"), train.get("station_type"), .5f);
+
+                }
 
 
                 for (HashMap<String, String> train: chosen_trains){

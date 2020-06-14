@@ -49,7 +49,6 @@ public class Content_Parser_Thread implements Runnable
         synchronized (this.msg){
 
 
-
             while (this.msg.IsSending()){
                 ArrayList<HashMap> chosen_trains = new ArrayList<>();
                 ArrayList<HashMap> ignored_trains = new ArrayList<>();
@@ -81,7 +80,7 @@ public class Content_Parser_Thread implements Runnable
 
 
                         chosen_trains.add(current_train_info);
-                    }else{
+                    }if (!modified_valid_stations.contains(modified_next_stop) && current_train_info.get("train_direction").equals(station_direction) ){
                         Log.e("IGNORED TRAIN", current_train_info+"");
 
                         ignored_trains.add(current_train_info);
