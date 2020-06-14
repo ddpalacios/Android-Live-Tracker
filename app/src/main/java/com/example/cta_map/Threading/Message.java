@@ -12,7 +12,7 @@ public class Message {
     HashMap<String, String> train_content;
     ArrayList<HashMap> ignored;
     String next_stop;
-
+    String main;
     ArrayList<HashMap> chosen_trains;
     String coord;
 
@@ -32,6 +32,14 @@ public class Message {
         this.train_etas = train_etas;
 
     }
+
+    public void setMainStation(String main){
+        this.main = main;
+    }
+    public String getMainStation(){
+        return this.main;
+    }
+
 
     public void set_chosen_trains(ArrayList<HashMap> chosen_trains){
         this.chosen_trains = chosen_trains;

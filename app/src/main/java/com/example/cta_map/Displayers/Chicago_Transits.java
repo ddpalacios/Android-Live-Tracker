@@ -160,12 +160,17 @@ public class Chicago_Transits {
     }
 
     public String[] retrieve_station_coordinates(DatabaseHelper sqlite, String station_name, String station_type) {
-        ArrayList<String> record = sqlite.get_table_record("train_station_table", "WHERE STATION_NAME ='"+station_name+"'"
-                +" AND "+station_type+" = 'true'");
 
-        sqlite.close();
+        try {
+            ArrayList<String> record = sqlite.get_table_record("train_station_table", "WHERE STATION_NAME ='" + station_name + "'"
+                    + " AND " + station_type + " = 'true'");
+            return new String[]{record.get(10), record.get(11)};
 
-        return new String[]{record.get(10), record.get(11)};
+
+        }catch (Exception e){
+            Log.e("SQLITE ERROR", "COULD NOT FIND '"+station_name +"' STATION IN DATABASE!");
+        }
+        return null;
     }
 
 

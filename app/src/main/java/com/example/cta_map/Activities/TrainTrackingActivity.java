@@ -164,13 +164,13 @@ public class TrainTrackingActivity extends AppCompatActivity {
         t2.start();
         final Thread t3 = new Thread(new Train_Estimations_Thread(message, false), "Estimation Thread");
         t3.start();
-        final Thread t4 = new Thread(new Notifier_Thread(message, handler, getApplicationContext(), true), "Notifier Thread");
-        t4.start();
+//        final Thread t4 = new Thread(new Notifier_Thread(message, handler, getApplicationContext(), true), "Notifier Thread");
+//        t4.start();
 
         toMaps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t4.interrupt();
+//                t4.interrupt();
                 Intent intent = new Intent(TrainTrackingActivity.this, MapsActivity.class);
 
 
@@ -188,7 +188,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
         choose_station.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t4.interrupt();
+//                t4.interrupt();
                 Intent intent = new Intent(TrainTrackingActivity.this, mainactivity.class);
                 Integer profile_id = Integer.parseInt(tracking_record.get("profile_id"));
                 final ArrayList<String> user_record = sqlite.get_table_record("User_info", "WHERE profile_id = '"+profile_id+"'");
@@ -215,7 +215,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
 
                 }
 
-                t4.interrupt();
+//                t4.interrupt();
                 if (target_station_direction.equals("1")){
                     target_station_direction = "5";
                     synchronized (message){

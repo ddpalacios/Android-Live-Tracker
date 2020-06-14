@@ -34,13 +34,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback{
-    final boolean[] connect = {true};
     private GoogleMap mMap;
-    List<String> ignored_stations;
     Message message = new Message();
-    ArrayList<Integer> train_etas = new ArrayList<>();
-    ArrayList<HashMap> chosen_trains = new ArrayList<>();
-    Bundle bb;
 
 
     @SuppressLint("HandlerLeak")
@@ -51,32 +46,36 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
             Bundle bundle = msg.getData();
             ArrayList<HashMap> chosen_trains = (ArrayList<HashMap>) bundle.getSerializable("chosen_trains");
             ArrayList<HashMap> ignored_trains = (ArrayList<HashMap>) bundle.getSerializable("ignored_trains");
+            String main_station = bundle.getString("main_station");
 
 
 
-            displayResults(chosen_trains, ignored_trains);
+            displayResults(chosen_trains, ignored_trains, main_station);
         }
     };
 
 
-    public void displayResults(ArrayList<HashMap> chosen_trains, ArrayList<HashMap> ignored_stations){
-                MapMarker mapMarker = new MapMarker(mMap);
-                Chicago_Transits chicago_transits = new Chicago_Transits();
-                DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
-                final HashMap<String, String> tracking_record = sqlite.getAllRecord("tracking_table");
-//                String main_station = (String) chosen_trains.get(0).get("main_station");//tracking_record.get("main_station_name").replaceAll("To ", "");
-//                String[] main_station_coordinates = chicago_transits.retrieve_station_coordinates(sqlite, main_station, tracking_record.get("station_type"));
+    public void displayResults(ArrayList<HashMap> chosen_trains, ArrayList<HashMap> ignored_stations, String main_station){
+        DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
+        final HashMap<String, String> tracking_record = sqlite.getAllRecord("tracking_table");
+            if (main_station == null){ main_station = tracking_record.get("main_station_name"); }
+            MapMarker mapMarker = new MapMarker(mMap);
+            mMap.clear();
+            Chicago_Transits chicago_transits = new Chicago_Transits();
+            String[] main_station_coordinates = chicago_transits.retrieve_station_coordinates(sqlite, main_station.replace("To ", "").replaceAll("’", ""), tracking_record.get("station_type"));
+            if (main_station_coordinates == null){
+                Toast.makeText(getApplicationContext(), "COULD NOT FIND MAIN STATION", Toast.LENGTH_SHORT).show();
+            }else{
+                Marker main_station_marker = mapMarker.addMarker(main_station_coordinates[0],
+                        main_station_coordinates[1],
+                        main_station, "cyan", 1f);
+            }
 
 
-
-
-                mMap.clear();
 
                 Marker target_station_marker = mapMarker.addMarker(tracking_record.get("station_lat"), tracking_record.get("station_lon"), tracking_record.get("station_name"), "default", 1f);
                 target_station_marker.showInfoWindow();
-//                Marker main_station_marker = mapMarker.addMarker(main_station_coordinates[0],
-//                                                                main_station_coordinates[1],
-//                                                                    main_station, "rose", 1f);
+
 
                 for (HashMap<String, String> train: ignored_stations){
                     String train_lat = train.get("train_lat");
@@ -211,10 +210,10 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
 
 
-        Thread api_call = new Thread(new API_Caller_Thread(message, tracking_record, true), "api caller");
+        Thread api_call = new Thread(new API_Caller_Thread(message, tracking_record, false), "api caller");
         api_call.start();
 
-        Thread content_parser = new Thread(new Content_Parser_Thread(message, tracking_record, sqlite, true), "parser");
+        Thread content_parser = new Thread(new Content_Parser_Thread(message, tracking_record, sqlite, false), "parser");
         content_parser.start();
 
 
@@ -267,26 +266,44 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
             @Override
             public void onClick(View v) {
                 String target_station_direction;
+                String main_station;
                 if (message.getDir() ==null) {
                     target_station_direction = tracking_record.get("station_dir");
+                    main_station = tracking_record.get("main_station_name");
+
+
                 }else{
                     target_station_direction = message.getDir();
+                    main_station = message.getMainStation();
 
                 }
 
                 notifier.interrupt();
                 if (target_station_direction.equals("1")){
                     target_station_direction = "5";
+                    main_station = sqlite.get_table_record("main_stations_table",
+                            "WHERE train_line = '"+
+                                    tracking_record.get("station_type") + "'").get(3);
+
+
+//                    Log.e("NEW MAIN STATION", main_station);
                     synchronized (message){
                         message.setDir(target_station_direction);
+                        message.setMainStation(main_station);
                         message.setClicked(true);
                         message.notifyAll();
                     }
 
                 }else {
                     target_station_direction = "1";
+                    main_station = sqlite.get_table_record("main_stations_table",
+                            "WHERE train_line = '"+
+                                    tracking_record.get("station_type") + "'").get(2);
+//                    Log.e("NEW MAIN STATION", main_station);
+
                     synchronized (message){
                         message.setDir(target_station_direction);
+                        message.setMainStation(main_station);
                         message.setClicked(true);
                         message.notifyAll();
                     }
