@@ -136,7 +136,6 @@ public class mainactivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), target_station_record+"", Toast.LENGTH_LONG).show();
                 ArrayList<String> tracking_record = new ArrayList<>(target_station_record.subList(1, target_station_record.size()));
                 sqlite.add_train_tracker(tracking_record);
-
                 startActivity(intent);
 
 

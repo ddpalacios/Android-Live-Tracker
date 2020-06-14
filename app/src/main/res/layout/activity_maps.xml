@@ -20,35 +20,65 @@
 
 
 
+<!--    <Button-->
+<!--        android:id="@+id/show"-->
+
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="bottom |left"-->
+<!--        android:layout_marginBottom="5dp"-->
+
+<!--        android:layout_marginLeft="1dp"-->
+<!--        android:text="arrival times"-->
+<!--        />-->
     <Button
         android:id="@+id/show"
 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom |left"
-        android:layout_marginBottom="5dp"
-
-        android:layout_marginLeft="1dp"
-        android:text="arrival times"
+        android:layout_gravity="bottom"
+        android:text="View ETA"
         />
-
-
-
-
-
-
 
     <Button
         android:id="@+id/pickStation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="5dp"
-        android:layout_gravity="bottom|right"
-        android:layout_marginBottom="5dp"
-
+        android:layout_gravity="center |bottom"
 
         android:text="Choose Station"
         />
+
+    <Button
+        android:id="@+id/switch_direction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@id/pickStation"
+        android:layout_gravity="right |bottom"
+
+
+
+        android:text="switch" />
+
+
+
+
+
+
+
+<!--    <Button-->
+<!--        android:id="@+id/pickStation"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginRight="5dp"-->
+<!--        android:layout_gravity="bottom|right"-->
+<!--        android:layout_marginBottom="5dp"-->
+
+
+<!--        android:text="Choose Station"-->
+<!--        />-->
 
     <Switch
         android:id="@+id/switch2"

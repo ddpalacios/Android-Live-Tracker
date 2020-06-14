@@ -13,11 +13,12 @@ public class Notifier_Thread implements Runnable {
     final Message message;
     Context context;
     android.os.Handler handler;
-
-    public Notifier_Thread(Message message, android.os.Handler handler, Context context){
+    boolean willCommunicate;
+    public Notifier_Thread(Message message, android.os.Handler handler, Context context, boolean willCommunicate){
         this.message = message;
         this.handler = handler;
         this.context = context;
+        this.willCommunicate = willCommunicate;
 
     }
 
@@ -27,8 +28,6 @@ public class Notifier_Thread implements Runnable {
             Bundle bundle = new Bundle();
             android.os.Message msg = this.handler.obtainMessage();
 
-
-
             try { Thread.sleep(300); } catch (InterruptedException e) { e.printStackTrace(); }
 
             synchronized (this.message) {
@@ -37,20 +36,18 @@ public class Notifier_Thread implements Runnable {
                 }
                 ArrayList<HashMap> chosen_trains = this.message.get_chosen_trains();
                 ArrayList<HashMap> ignored_trains = this.message.getIgnored();
-                Log.e("notifier", "Recieved "+ chosen_trains+"");
-
+                if (this.willCommunicate){
+                    Log.e("notifier", "Recieved "+ chosen_trains+"");
+                    Log.e("notifier", "Recieved "+ chosen_trains.size()+" Are Displaying.");
+                    Log.e(Thread.currentThread().getName(), "Sending to UI...");
+                }
                 bundle.putSerializable("chosen_trains", chosen_trains);
                 bundle.putSerializable("ignored_trains", ignored_trains);
-//                bundle.putString("train_dir", this.message.getDir());
                 msg.setData(bundle);
-
-
-                Log.e(Thread.currentThread().getName(), "Sending to UI...");
 
                 handler.sendMessage(msg);
 
-
-                this.message.notifyAll();
+                this.message.notify();
                 if (!this.message.getClicked()) {
                     try {
                         Thread.sleep(5000);

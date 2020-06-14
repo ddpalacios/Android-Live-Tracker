@@ -4,18 +4,26 @@ import androidx.annotation.RequiresApi;
 import androidx.fragment.app.FragmentActivity;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.DataBase.DatabaseHelper;
 import com.example.cta_map.Displayers.MapMarker;
 import com.example.cta_map.R;
+import com.example.cta_map.Threading.API_Caller_Thread;
+import com.example.cta_map.Threading.Content_Parser_Thread;
 import com.example.cta_map.Threading.Message;
+import com.example.cta_map.Threading.Notifier_Thread;
+import com.example.cta_map.Threading.Train_Estimations_Thread;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -41,8 +49,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         @Override
         public void handleMessage(android.os.Message msg) {
             Bundle bundle = msg.getData();
-            ArrayList<Integer> etas = bundle.getIntegerArrayList("train_etas");
-            String train_dir = bundle.getString("train_dir");
             ArrayList<HashMap> chosen_trains = (ArrayList<HashMap>) bundle.getSerializable("chosen_trains");
             ArrayList<HashMap> ignored_trains = (ArrayList<HashMap>) bundle.getSerializable("ignored_trains");
 
@@ -54,62 +60,94 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
 
     public void displayResults(ArrayList<HashMap> chosen_trains, ArrayList<HashMap> ignored_stations){
-        MapMarker mapMarker = new MapMarker(mMap);
-        DatabaseHelper sqlite= new DatabaseHelper(getApplicationContext());
-        String target_station_name = bb.getString("station_name");
-        String target_station_type = bb.getString("station_type");
-        String main_station = null;
-        mMap.clear();
-
-        Chicago_Transits chicago_transits = new Chicago_Transits();
-        String[] target_station_coordinates = bb.getStringArray("target_station_coordinates");
-        String station_dir = bb.getString("station_dir");
-        ArrayList<String> main_station_record = sqlite.get_table_record("main_stations_table", "WHERE train_line ='"+target_station_type+"'");
-
-
-        if (station_dir.equals("1")){
-            main_station = main_station_record.get(2);
-
-        }else if (station_dir.equals("5")){
-            main_station = main_station_record.get(3);
-        }
-
-        String[] main_station_coordinates = chicago_transits.retrieve_station_coordinates(sqlite, main_station, target_station_type);
-
-
-        Marker target_marker = mapMarker.addMarker(target_station_coordinates[0], target_station_coordinates[1], target_station_name, "default", (float) 1.0);
-        Marker main_marker = mapMarker.addMarker(main_station_coordinates[0], main_station_coordinates[1], main_station, "cyan", (float) 1.0);
-        for (int i=0; i < chosen_trains.size(); i++){
-
-            HashMap<String, String> current_train = chosen_trains.get(i);
-
-            String station_lat = current_train.get("train_lat");
-            String station_lon = current_train.get("train_lon");
-
-
-            Log.e("recived", "Chosen: "+ station_lat+" "+station_lon);
-            mapMarker.addMarker(station_lat, station_lon, current_train.get("next_stop"), target_station_type, (float) 1f);
+                MapMarker mapMarker = new MapMarker(mMap);
+                DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
+                final HashMap<String, String> tracking_record = sqlite.getAllRecord("tracking_table");
 
 
 
-        }
+                mMap.clear();
 
-        for (int i=0; i < ignored_stations.size(); i++){
+                Marker target_station = mapMarker.addMarker(tracking_record.get("station_lat"), tracking_record.get("station_lon"), tracking_record.get("station_name"), "default", 1f);
+                target_station.showInfoWindow();
 
-            HashMap<String, String> current_train = ignored_stations.get(i);
-
-            String station_lat = current_train.get("train_lat");
-            String station_lon = current_train.get("train_lon");
-
-
-            mapMarker.addMarker(station_lat, station_lon, current_train.get("next_stop"), target_station_type, .5f);
-
-
-
-        }
+//                for (HashMap<String, String> train: ignored_stations){
+//                    String train_lat = train.get("train_lat");
+//                    String train_lon = train.get("train_lon");
+//                    mapMarker.addMarker(train_lat, train_lon, train.get("next_stop"), train.get("station_type"), 1f);
+//
+//                }
 
 
+                for (HashMap<String, String> train: chosen_trains){
+                    String train_lat = train.get("train_lat");
+                    String train_lon = train.get("train_lon");
+                    mapMarker.addMarker(train_lat, train_lon, train.get("next_stop"), train.get("station_type"), .4f);
 
+                }
+
+
+        sqlite.close();
+
+
+
+
+//        MapMarker mapMarker = new MapMarker(mMap);
+//        DatabaseHelper sqlite= new DatabaseHelper(getApplicationContext());
+//        String target_station_name = bb.getString("station_name");
+//        String target_station_type = bb.getString("station_type");
+//        String main_station = null;
+//        mMap.clear();
+//
+//        Chicago_Transits chicago_transits = new Chicago_Transits();
+//        String[] target_station_coordinates = bb.getStringArray("target_station_coordinates");
+//        String station_dir = bb.getString("station_dir");
+//        ArrayList<String> main_station_record = sqlite.get_table_record("main_stations_table", "WHERE train_line ='"+target_station_type+"'");
+//
+//
+//        if (station_dir.equals("1")){
+//            main_station = main_station_record.get(2);
+//
+//        }else if (station_dir.equals("5")){
+//            main_station = main_station_record.get(3);
+//        }
+//
+//        String[] main_station_coordinates = chicago_transits.retrieve_station_coordinates(sqlite, main_station, target_station_type);
+//
+//
+//        Marker target_marker = mapMarker.addMarker(target_station_coordinates[0], target_station_coordinates[1], target_station_name, "default", (float) 1.0);
+//        Marker main_marker = mapMarker.addMarker(main_station_coordinates[0], main_station_coordinates[1], main_station, "cyan", (float) 1.0);
+//        for (int i=0; i < chosen_trains.size(); i++){
+//
+//            HashMap<String, String> current_train = chosen_trains.get(i);
+//
+//            String station_lat = current_train.get("train_lat");
+//            String station_lon = current_train.get("train_lon");
+//
+//
+//            Log.e("recived", "Chosen: "+ station_lat+" "+station_lon);
+//            mapMarker.addMarker(station_lat, station_lon, current_train.get("next_stop"), target_station_type, (float) 1f);
+//
+//
+//
+//        }
+//
+//        for (int i=0; i < ignored_stations.size(); i++){
+//
+//            HashMap<String, String> current_train = ignored_stations.get(i);
+//
+//            String station_lat = current_train.get("train_lat");
+//            String station_lon = current_train.get("train_lon");
+//
+//
+//            mapMarker.addMarker(station_lat, station_lon, current_train.get("next_stop"), target_station_type, .5f);
+//
+//
+//
+//        }
+//
+//
+//
 
 
     }
@@ -138,43 +176,119 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         mMap = googleMap;
         Chicago_Transits chicago_transits = new Chicago_Transits();
         MapMarker mapMarker = new MapMarker(mMap);
-        bb = getIntent().getExtras();
         mMap.setMyLocationEnabled(true); // Enable user location permission
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMyLocationClickListener(this);
-        String[] target_station_coordinates = bb.getStringArray("target_station_coordinates");
-        String station_name = bb.getString("station_name");
-        String station_type = bb.getString("station_type");
-        String station_dir = bb.getString("station_dir");
-        DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
-        ArrayList<String> main_station_record = sqlite.get_table_record("main_stations_table", "WHERE train_line ='"+station_type+"'");
-        String main_station = null;
-        if (station_dir.equals("1")){
-            main_station = main_station_record.get(2);
-
-        }else if (station_dir.equals("5")){
-            main_station = main_station_record.get(3);
-        }
-        String[] main_station_coordinates = chicago_transits.retrieve_station_coordinates(sqlite, main_station, station_type);
-
-
-        chicago_transits.ZoomIn(mMap, (float) 13.3, target_station_coordinates);
         message.keepSending(true);
+        message.setClicked(false);
+
+        final DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
+        final HashMap<String, String> tracking_record = sqlite.getAllRecord("tracking_table");
+        message.setTargetContent(tracking_record);
+        String[] target_coordinates = new String[]{tracking_record.get("station_lat"),tracking_record.get("station_lon") };
+        chicago_transits.ZoomIn(mMap, (float) 13.3, target_coordinates);
+        if (tracking_record == null || tracking_record.isEmpty()){
+            Toast.makeText(getApplicationContext(), "No Tracking Station Found in DB!", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        Log.e("record", tracking_record+"");
+        message.setClicked(false);
+        message.keepSending(true);
+        message.setTargetContent(tracking_record);
+        final Button switch_direction = (Button) findViewById(R.id.switch_direction);
+
+        final Button choose_station = (Button) findViewById(R.id.pickStation);
+        final Button toArrival = (Button) findViewById(R.id.show);
 
 
-//        Thread t1 = new Thread(new Thread1(message, station_type), "Map API caller");
-//        t1.start();
-//
-//        Thread t2 = new Thread(new Thread2(message, bb, sqlite),"MAP CONTENT PARSER");
-//        t2.start();
-//
-//        Thread t3 = new Thread(new Thread3(message, handler, getApplicationContext()),"MAP Handler sender");
-//        t3.start();
 
 
+        Thread api_call = new Thread(new API_Caller_Thread(message, tracking_record, false), "api caller");
+        api_call.start();
+
+        Thread content_parser = new Thread(new Content_Parser_Thread(message, tracking_record, sqlite, false), "parser");
+        content_parser.start();
+
+
+        Thread train_estimations = new Thread(new Train_Estimations_Thread(message, false), "estimations");
+        train_estimations.start();
+
+        final Thread notifier = new Thread(new Notifier_Thread(message, handler, getApplicationContext(), true), "notifier");
+        notifier.start();
+
+
+
+        toArrival.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                notifier.interrupt();
+                Intent intent = new Intent(MapsActivity.this, TrainTrackingActivity.class);
+
+
+                synchronized (message){
+                    message.keepSending(false);
+                }
+
+
+                startActivity(intent);
+            }
+        });
+
+
+
+        choose_station.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                notifier.interrupt();
+                Intent intent = new Intent(MapsActivity.this, mainactivity.class);
+                Integer profile_id = Integer.parseInt(tracking_record.get("profile_id"));
+                final ArrayList<String> user_record = sqlite.get_table_record("User_info", "WHERE profile_id = '"+profile_id+"'");
+                intent.putExtra("profile_id", user_record.get(0));
+                synchronized (message){
+                    message.keepSending(false);
+                }
+
+                startActivity(intent);
+
+
+            }
+        });
+
+
+        switch_direction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String target_station_direction;
+                if (message.getDir() ==null) {
+                    target_station_direction = tracking_record.get("station_dir");
+                }else{
+                    target_station_direction = message.getDir();
+
+                }
+
+                notifier.interrupt();
+                if (target_station_direction.equals("1")){
+                    target_station_direction = "5";
+                    synchronized (message){
+                        message.setDir(target_station_direction);
+                        message.setClicked(true);
+                        message.notifyAll();
+                    }
+
+                }else {
+                    target_station_direction = "1";
+                    synchronized (message){
+                        message.setDir(target_station_direction);
+                        message.setClicked(true);
+                        message.notifyAll();
+                    }
+
+                }
+
+            }
+        });
     }
-
-
 
     @Override
     public boolean onMyLocationButtonClick() {

@@ -16,6 +16,7 @@ import android.widget.ListView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.cta_map.DataBase.DatabaseHelper;
+import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.R;
 import com.example.cta_map.Threading.Message;
 import com.example.cta_map.Threading.API_Caller_Thread;
@@ -147,6 +148,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
             return;
         }
 
+
         Log.e("record", tracking_record+"");
         message.setClicked(false);
         message.keepSending(true);
@@ -160,55 +162,29 @@ public class TrainTrackingActivity extends AppCompatActivity {
         api_call_thread.start();
         final Thread t2 = new Thread(new Content_Parser_Thread(message, tracking_record, sqlite, false), "Content Parser");
         t2.start();
-
         final Thread t3 = new Thread(new Train_Estimations_Thread(message, false), "Estimation Thread");
         t3.start();
-
-        final Thread t4 = new Thread(new Notifier_Thread(message, handler, getApplicationContext()), "Notifier Thread");
+        final Thread t4 = new Thread(new Notifier_Thread(message, handler, getApplicationContext(), true), "Notifier Thread");
         t4.start();
 
+        toMaps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                t4.interrupt();
+                Intent intent = new Intent(TrainTrackingActivity.this, MapsActivity.class);
+
+
+                synchronized (message){
+                    message.keepSending(false);
+                }
+
+
+                startActivity(intent);
+            }
+        });
 
 
 
-//        bb = getIntent().getExtras();
-//        final String[] target_station_direction = new String[]{bb.getString("station_dir")};
-//        final Button switch_direction = (Button) findViewById(R.id.switch_direction);
-
-//        final String target_station_type = bb.getString("station_type");
-//        final String target_station_name = bb.getString("station_name");
-//        final String station_dir = bb.getString("station_dir");
-
-
-
-//        final Thread t3 = new Thread(new Thread3(message, handler, getApplicationContext()), "Displayer");
-//        t3.start();
-//
-//
-//
-//        toMaps.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                t3.interrupt();
-//                Intent intent = new Intent(TrainTrackingActivity.this, MapsActivity.class);
-//                Chicago_Transits chicago_transits = new Chicago_Transits();
-//                String[] target_station_coordinates =  chicago_transits.retrieve_station_coordinates(sqlite, target_station_name, target_station_type);
-//                intent.putExtra("target_station_coordinates", target_station_coordinates );
-//                intent.putExtra("station_name", target_station_name);
-//                intent.putExtra("station_lat", Double.parseDouble(target_station_coordinates[0]));
-//                intent.putExtra("station_lon", Double.parseDouble(target_station_coordinates[1]));
-//                intent.putExtra("station_type", target_station_type);
-//                intent.putExtra("station_dir", station_dir);
-//                synchronized (message){
-//                    message.keepSending(false);
-//                }
-//
-//
-//                startActivity(intent);
-//            }
-//        });
-//
-//
-//
         choose_station.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
