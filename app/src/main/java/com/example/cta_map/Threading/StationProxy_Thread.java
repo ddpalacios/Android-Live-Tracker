@@ -57,6 +57,7 @@ public class StationProxy_Thread implements Runnable {
                 if (tracking_train == null){ Log.e(Thread.currentThread().getName(), "Data is Null");return; }
                 Double tracking_lat = Double.parseDouble(tracking_train.get("train_lat"));
                 Double tracking_lon = Double.parseDouble(tracking_train.get("train_lon"));
+                Log.e(Thread.currentThread().getName(), "Sub is "+ sub_stations.size());
 
                 for (String station : sub_stations){
                     String[] stationLatLon = chicago_transits.retrieve_station_coordinates(this.sqlite, station, this.record.get("station_type"));
@@ -66,12 +67,9 @@ public class StationProxy_Thread implements Runnable {
                     Double distance = chicago_transits.calculate_coordinate_distance(tracking_lat, tracking_lon, station_lat, station_lon);
                     Integer current_eta = time.get_estimated_time_arrival(25, distance);
                     AllEtas.put(station, current_eta);
-                    all_etas.add(AllEtas);
-                    Log.e(Thread.currentThread().getName(), "Data is "+ all_etas);
-
                 }
-
-                this.msg.setTrain_etas(all_etas);
+                Log.e(Thread.currentThread().getName(), "Data is "+ AllEtas.size());
+                this.msg.setTrain_etas(AllEtas);
                 if (this.willComunicate) {
                     Log.e(Thread.currentThread().getName(), sub_stations + "");
                     Log.e(Thread.currentThread().getName(),"is Waiting...");

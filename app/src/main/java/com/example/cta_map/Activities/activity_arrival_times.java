@@ -8,7 +8,9 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
@@ -24,7 +26,13 @@ import com.example.cta_map.Threading.StationProxy_Thread;
 import com.example.cta_map.Threading.Station_Range_Estimation_Thread;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @SuppressLint("Registered")
 public class activity_arrival_times extends AppCompatActivity {
@@ -49,7 +57,51 @@ public class activity_arrival_times extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void display_results(Bundle bundle) {
         if (bundle.getSerializable("station_range_eta") !=null){
-            Log.e(Thread.currentThread().getName(), "Recieved "+bundle.getSerializable("station_range_eta")  );
+            LinkedHashMap<String, Integer> sortedMap = new LinkedHashMap<>();
+            ArrayList<Integer> list = new ArrayList<>();
+            HashMap<String, Integer> station_etas = (HashMap<String, Integer>) bundle.getSerializable("station_range_eta");
+            ArrayList<String> arrayList = new ArrayList<>();
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
+            final ListView listView = findViewById(R.id.train_etas);
+            listView.setAdapter(adapter);
+            for (Map.Entry<String, Integer> entry : station_etas.entrySet()) {
+                list.add(entry.getValue());
+            }
+            Collections.sort(list, new Comparator<Integer>() {
+                @Override
+                public int compare(Integer o1, Integer o2) {
+                    return (o1).compareTo(o2);
+                }
+            });
+            for (Integer str : list) {
+                for (Map.Entry<String, Integer> entry : station_etas.entrySet()) {
+                    if (entry.getValue().equals(str)) {
+                        sortedMap.put(entry.getKey(), str);
+                    }
+                }
+            }
+            int idx =0;
+            List sorted_etas = new ArrayList( sortedMap.values());
+            for (String station_name: sortedMap.keySet()){
+                arrayList.add("To: "+station_name+": "+sorted_etas.get(idx)+"m");
+                adapter.notifyDataSetChanged();
+                idx++;
+            }
+
+
+
+//            Log.e(Thread.currentThread().getName(), "Recieved "+station_etas);
+//            Log.e(Thread.currentThread().getName(), "Recieved "+ station_etas.values());
+//            Log.e(Thread.currentThread().getName(), "Recieved "+ station_etas.keySet());
+
+
+
+
+
+
+
+
+
         }
 
     }

@@ -38,7 +38,7 @@ public class Notifier_Thread implements Runnable {
                 ArrayList<HashMap> ignored_trains = this.message.getIgnored();
 
                 if (this.message.get_train_etas() !=null){
-                    ArrayList<HashMap> train_etas= this.message.get_train_etas();
+                    HashMap train_etas= this.message.get_train_etas();
                     bundle.putSerializable("station_range_eta", train_etas);
                 }
 

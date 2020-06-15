@@ -7,7 +7,7 @@ import java.util.List;
 public class Message {
     String[] msg;
     String dir;
-    ArrayList<HashMap> train_etas;
+    HashMap train_etas;
     boolean t;
     boolean x;
     HashMap<String, String> train_content;
@@ -33,7 +33,7 @@ public class Message {
         this.train_content = content;
     }
 
-    public void setTrain_etas(ArrayList<HashMap> train_etas){
+    public void setTrain_etas(HashMap train_etas){
         this.train_etas = train_etas;
 
     }
@@ -55,7 +55,7 @@ public class Message {
                 return this.chosen_trains;
     }
 
-    public ArrayList<HashMap> get_train_etas(){
+    public HashMap get_train_etas(){
         return this.train_etas;
     }
 
