@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -24,6 +25,8 @@ import com.example.cta_map.Threading.API_Caller_Thread;
 import com.example.cta_map.Threading.Notifier_Thread;
 import com.example.cta_map.Threading.StationProxy_Thread;
 import com.example.cta_map.Threading.Station_Range_Estimation_Thread;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -89,10 +92,14 @@ public class activity_arrival_times extends AppCompatActivity {
             }
 
 
-
-//            Log.e(Thread.currentThread().getName(), "Recieved "+station_etas);
-//            Log.e(Thread.currentThread().getName(), "Recieved "+ station_etas.values());
-//            Log.e(Thread.currentThread().getName(), "Recieved "+ station_etas.keySet());
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String train_item = (String) listView.getItemAtPosition(position).toString();
+                    String name = StringUtils.substringBetween(train_item, "To: ", ":");
+                    Log.e("name", name);
+                }
+            });
 
 
 
