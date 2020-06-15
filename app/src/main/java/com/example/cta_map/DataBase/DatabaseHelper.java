@@ -6,8 +6,14 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -174,7 +180,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.e("Created", main_stations_table);
 
 
-
         String tracking_table = "CREATE TABLE IF NOT EXISTS " + TRACKING_TABLE + " ( "
                 + TRACKING_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + PROFILE_ID_COL+ " INTEGER, "
@@ -196,6 +201,42 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
     }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public void update_tracking_record(String id, String table_name,String name, String type, String lat, String lon) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+        cv.put("profile_id",id);
+        cv.put("station_name", name);
+        cv.put("station_type",type);
+        cv.put("station_lat",lat);
+        cv.put("station_lon",lon);
+
+        db.update(table_name, cv, "profile_id = ?", new String[]{id});
+        db.close();
+
+
+    }
+
+    public void update_value(String id, String table_name,String col, String value){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("profile_id", id);
+        cv.put(col, value);
+        try {
+            db.update(table_name, cv, "profile_id = ?", new String[]{id});
+        }catch (Exception e){
+            Log.e("ERROR", "ERROR IN UPDATING: "+ value +" IN "+ table_name);
+        }
+        db.close();
+        Log.e("Update", "Update success!");
+
+
+    }
+
+
 
 
 

@@ -18,6 +18,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cta_map.DataBase.DatabaseHelper;
+import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.R;
 import com.example.cta_map.Threading.Content_Parser_Thread;
 import com.example.cta_map.Threading.Message;
@@ -95,9 +96,27 @@ public class activity_arrival_times extends AppCompatActivity {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent = new Intent(activity_arrival_times.this, TrainTrackingActivity.class);
+                    DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
+                    Chicago_Transits chicago_transits = new Chicago_Transits();
+                    final HashMap<String, String> tracking_record = sqlite.getAllRecord("tracking_table");
                     String train_item = (String) listView.getItemAtPosition(position).toString();
-                    String name = StringUtils.substringBetween(train_item, "To: ", ":");
-                    Log.e("name", name);
+                    String station_name = StringUtils.substringBetween(train_item, "To: ", ":");
+                    String station_type = tracking_record.get("station_type");
+                    String profile_id = tracking_record.get("profile_id");
+                    String[] new_tracking_coordinates =chicago_transits.retrieve_station_coordinates(sqlite, station_name, station_type);
+                    sqlite.update_tracking_record(profile_id, "tracking_table",station_name, station_type, new_tracking_coordinates[0], new_tracking_coordinates[1]);
+                    sqlite.close();
+                    message.keepSending(false);
+                    startActivity(intent);
+
+
+
+
+
+
+
+
                 }
             });
 
@@ -110,7 +129,6 @@ public class activity_arrival_times extends AppCompatActivity {
 
 
         }
-
     }
 
 

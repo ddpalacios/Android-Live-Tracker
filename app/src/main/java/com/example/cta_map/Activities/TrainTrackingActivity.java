@@ -176,12 +176,11 @@ public class TrainTrackingActivity extends AppCompatActivity {
                 t4.interrupt();
                 if (target_station_direction.equals("1")){
                     target_station_direction = "5";
-                    main_station = sqlite.get_table_record("main_stations_table",
-                            "WHERE train_line = '"+
-                                    tracking_record.get("station_type") + "'").get(3);
+                    main_station = sqlite.get_table_record("main_stations_table", "WHERE train_line = '"+ tracking_record.get("station_type") + "'").get(3);
 
+                    sqlite.update_value(tracking_record.get("profile_id"), "tracking_table", "station_dir", target_station_direction);
+                    sqlite.update_value(tracking_record.get("profile_id"), "tracking_table", "main_station_name", main_station);
 
-//                    Log.e("NEW MAIN STATION", main_station);
                     synchronized (message){
                         message.setDir(target_station_direction);
                         message.setMainStation(main_station);
@@ -191,10 +190,11 @@ public class TrainTrackingActivity extends AppCompatActivity {
 
                 }else {
                     target_station_direction = "1";
+                    sqlite.update_value(tracking_record.get("profile_id"), "tracking_table", "station_dir", target_station_direction);
                     main_station = sqlite.get_table_record("main_stations_table",
                             "WHERE train_line = '"+
                                     tracking_record.get("station_type") + "'").get(2);
-//                    Log.e("NEW MAIN STATION", main_station);
+                    sqlite.update_value(tracking_record.get("profile_id"), "tracking_table", "main_station_name", main_station);
 
                     synchronized (message){
                         message.setDir(target_station_direction);
