@@ -20,6 +20,7 @@ import com.example.cta_map.Threading.Content_Parser_Thread;
 import com.example.cta_map.Threading.Message;
 import com.example.cta_map.Threading.API_Caller_Thread;
 import com.example.cta_map.Threading.Notifier_Thread;
+import com.example.cta_map.Threading.StationProxy_Thread;
 import com.example.cta_map.Threading.Station_Range_Estimation_Thread;
 
 import java.util.ArrayList;
@@ -41,132 +42,18 @@ public class activity_arrival_times extends AppCompatActivity {
         @Override
         public void handleMessage(android.os.Message msg) {
             Bundle bundle = msg.getData();
-//            String train_dir = bundle.getString("train_dir");
-//            String train_coordinates = bundle.getString("train_coordinates");
-//            String train_next_stop = bundle.getString("train_next_stop");
-//            assert train_coordinates != null;
-////            Log.e("Recived", train_coordinates);
-//            display_results(train_next_stop, train_dir,train_coordinates);
+            display_results(bundle);
         }
     };
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public void display_results(String next_stop, final String train_dir, String train_coordinates){
-//        int idx =0;
-//        int start = 0;
-//        int end = 0;
-//        ArrayList<String> arrayList = new ArrayList<>();
-//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
-//        final ListView list = findViewById(R.id.train_etas);
-//        list.setAdapter(adapter);
-//        Time time = new Time();
-//        String[] TrainlatLong = train_coordinates.split(",");
-//        Log.e("COORD", TrainlatLong[0]+","+TrainlatLong[1]);
-//        Chicago_Transits chicago_transits = new Chicago_Transits();
-//        final DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
-//        final HashMap<String, String> current_train_info = (HashMap<String, String>) getIntent().getExtras().get("current_train_info");
-//        ArrayList<String> train_stops = sqlite.get_column_values("line_stops_table", current_train_info.get("station_type").toLowerCase());
-//        ArrayList<String> modified_train_stops = new ArrayList<>();
-//        ArrayList<Integer> all_eta = new ArrayList<>();
-//        for (String noCharStops: train_stops){
-//            modified_train_stops.add(noCharStops.replaceAll("[^a-zA-Z0-9]", "").toLowerCase());
-//
-//        }
-//
-//        if (train_dir.equals("1")){
-//            end = modified_train_stops.indexOf(next_stop.replaceAll("[^a-zA-Z0-9]", "").replaceAll(" ", "").toLowerCase())+1;
-//            if (end == -1){
-//                Log.e("END 1", next_stop.replaceAll("[^a-zA-Z0-9]", "").toLowerCase());
-//            }
-//
-//
-//        }if (train_dir.equals("5")) {
-//            start = modified_train_stops.indexOf(next_stop.replaceAll("[^a-zA-Z0-9]", "").replaceAll(" ", "").toLowerCase());
-//            end = train_stops.size();
-//
-//            if (start == -1){
-//
-//                Log.e("START 5",next_stop.replaceAll("[^a-zA-Z0-9]", "").toLowerCase());
-//            }
-//        }
-//
-//        if (start ==-1 || end == -1){
-//            Toast.makeText(getApplicationContext(), "No Station Found: "+start+" or "+end, Toast.LENGTH_LONG).show();
-//        }else {
-//
-//            List<String> all_stops_till_target = train_stops.subList(start, end);
-//            for (int i = 0; i < all_stops_till_target.size(); i++) {
-//                String[] stationLatLng = chicago_transits.retrieve_station_coordinates(sqlite, train_stops.get(i), current_train_info.get("station_type").toLowerCase());
-//                Double distance = chicago_transits.calculate_coordinate_distance(
-//                        Double.parseDouble(TrainlatLong[0]),
-//                        Double.parseDouble(TrainlatLong[1]),
-//                        Double.parseDouble(stationLatLng[0]),
-//                        Double.parseDouble(stationLatLng[1])
-//                );
-//                Integer current_eta = time.get_estimated_time_arrival(25, distance);
-//                all_eta.add(current_eta);
-//            }
-//
-//            if (train_dir.equals("1")) {
-//                idx = all_stops_till_target.size() - 1;
-//            }
-//
-//
-//            for (int i = 0; i < all_stops_till_target.size(); i++) {
-//
-//                arrayList.add("Station: " + all_stops_till_target.get(idx) + ": " + all_eta.get(idx));
-//                adapter.notifyDataSetChanged();
-//
-//
-//                Log.e("status", "Done");
-//                if (train_dir.equals("1")) {
-//                    idx--;
-//                } else {
-//                    idx++;
-//                }
-//
-//            }
-//        }
-
-//        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Chicago_Transits chicago_transits = new Chicago_Transits();
-//                String main_station;
-//                String[] list_item = String.valueOf(list.getItemAtPosition(position)).replaceAll("\t", "").split(":"); //.replaceAll("[^\\d.]", "");
-//                String target_station_name = list_item[0];
-//                Intent intent = new Intent(activity_arrival_times.this, TrainTrackingActivity.class);
-//                intent.putExtra("target_station_name", target_station_name);
-//                intent.putExtra("target_station_type", current_train_info.get("station_type"));
-//                intent.putExtra("train_direction", current_train_info.get("train_direction"));
-//                ArrayList<String> main_stations = sqlite.get_table_record("main_stations_table", "WHERE train_line = '"+current_train_info.get("station_type").toUpperCase()+"'");
-//                if (train_dir.equals("1")){
-//                    main_station = main_stations.get(2);
-//                }else{
-//                    main_station = main_stations.get(3);
-//                }
-//                intent.putExtra("main_station", main_station);
-//                String[] stationLatLng = chicago_transits.retrieve_station_coordinates(sqlite, target_station_name, current_train_info.get("station_type").toLowerCase());
-//                intent.putExtra("station_lat", stationLatLng[0]);
-//                intent.putExtra("station_lon", stationLatLng[1]);
-//                synchronized (message){
-//                    message.keepSending(false);
-//                }
-//
-//
-//
-//
-//
-//                startActivity(intent);
-
-
-//
-//            }
-//        });
-
-//            sqlite.close();
+    public void display_results(Bundle bundle) {
+        if (bundle.getSerializable("station_range_eta") !=null){
+            Log.e(Thread.currentThread().getName(), "Recieved "+bundle.getSerializable("station_range_eta")  );
+        }
 
     }
+
 
 
 
@@ -207,19 +94,20 @@ public class activity_arrival_times extends AppCompatActivity {
         api_call_thread.start();
         final Thread t2 = new Thread(new Content_Parser_Thread(message, tracking_record, sqlite, false), "Content Parser");
         t2.start();
-        final Thread t3 = new Thread(new Station_Range_Estimation_Thread(message, train_id, sqlite, tracking_record ,true), "Station_Range_Estimation_Thread");
+        final Thread t3 = new Thread(new Station_Range_Estimation_Thread(message, train_id, sqlite, tracking_record ,false), "Station_Range_Estimation_Thread");
         t3.start();
 
-
-        final Thread t4 = new Thread(new Notifier_Thread(message, handler, getApplicationContext(), false), "Notifier Thread");
+        final Thread t4 = new Thread(new StationProxy_Thread(message, sqlite, tracking_record, train_id,true), "Station prox Thread");
         t4.start();
+
+        final Thread t5 = new Thread(new Notifier_Thread(message, handler, getApplicationContext(), false), "Notifier Thread");
+        t5.start();
 
         toMaps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t4.interrupt();
+                t5.interrupt();
                 Intent intent = new Intent(activity_arrival_times.this, MapsActivity.class);
-
 
                 synchronized (message){
                     message.keepSending(false);
@@ -243,7 +131,7 @@ public class activity_arrival_times extends AppCompatActivity {
         choose_station.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t4.interrupt();
+                t5.interrupt();
                 Intent intent = new Intent(activity_arrival_times.this, mainactivity.class);
                 Integer profile_id = Integer.parseInt(tracking_record.get("profile_id"));
                 final ArrayList<String> user_record = sqlite.get_table_record("User_info", "WHERE profile_id = '"+profile_id+"'");

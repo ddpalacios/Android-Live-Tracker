@@ -38,7 +38,6 @@ public class Station_Range_Estimation_Thread implements Runnable {
             final ArrayList<String> stops = this.sqlite.get_column_values("line_stops_table", this.record.get("station_type").toLowerCase());
             final ArrayList<String> modified_stops = new ArrayList<>();
             for (String each_stop: stops){ modified_stops.add(each_stop.replaceAll("[^a-zA-Z0-9]", "").toLowerCase()); }
-            Chicago_Transits chicago_transits = new Chicago_Transits();
             while (this.msg.IsSending()) {
                 ArrayList<HashMap> chosen_trains = this.msg.get_chosen_trains();
                 for (HashMap<String, String> train : chosen_trains){

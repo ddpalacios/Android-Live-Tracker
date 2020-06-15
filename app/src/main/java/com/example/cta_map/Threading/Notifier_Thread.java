@@ -36,6 +36,13 @@ public class Notifier_Thread implements Runnable {
                 }
                 ArrayList<HashMap> chosen_trains = this.message.get_chosen_trains();
                 ArrayList<HashMap> ignored_trains = this.message.getIgnored();
+
+                if (this.message.get_train_etas() !=null){
+                    ArrayList<HashMap> train_etas= this.message.get_train_etas();
+                    bundle.putSerializable("station_range_eta", train_etas);
+                }
+
+
                 String main_station = this.message.getMainStation();
                 if (this.willCommunicate){
                     Log.e("notifier", "Recieved "+ chosen_trains+"");

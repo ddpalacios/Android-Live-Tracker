@@ -112,13 +112,13 @@ public class TrainTrackingActivity extends AppCompatActivity {
         final Button choose_station = (Button) findViewById(R.id.pickStation);
         final Button toMaps = (Button) findViewById(R.id.show);
 
-        final Thread api_call_thread = new Thread(new API_Caller_Thread(message, tracking_record, handler,true), "API_CALL_Thread");
+        final Thread api_call_thread = new Thread(new API_Caller_Thread(message, tracking_record, handler,false), "API_CALL_Thread");
         api_call_thread.start();
-        final Thread t2 = new Thread(new Content_Parser_Thread(message, tracking_record, sqlite, true), "Content Parser");
+        final Thread t2 = new Thread(new Content_Parser_Thread(message, tracking_record, sqlite, false), "Content Parser");
         t2.start();
-        final Thread t3 = new Thread(new Train_Estimations_Thread(message, true), "Estimation Thread");
+        final Thread t3 = new Thread(new Train_Estimations_Thread(message, false), "Estimation Thread");
         t3.start();
-        final Thread t4 = new Thread(new Notifier_Thread(message, handler, getApplicationContext(), true), "Notifier Thread");
+        final Thread t4 = new Thread(new Notifier_Thread(message, handler, getApplicationContext(), false), "Notifier Thread");
         t4.start();
 
         toMaps.setOnClickListener(new View.OnClickListener() {
