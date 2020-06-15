@@ -48,7 +48,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
     public void displayResults(Bundle bundle){
         if (bundle.getBoolean("No_Trains")){ Log.e("No trains", bundle.getBoolean("No_Trains")+"");return; }
 
-        ArrayList<HashMap> chosen_trains = (ArrayList<HashMap>) bundle.getSerializable("chosen_trains");
+        final ArrayList<HashMap> chosen_trains = (ArrayList<HashMap>) bundle.getSerializable("chosen_trains");
         DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
         final HashMap<String, String> tracking_record = sqlite.getAllRecord("tracking_table");
         String main_station = bundle.getString("main_station");
@@ -59,92 +59,29 @@ public class TrainTrackingActivity extends AppCompatActivity {
         list.setAdapter(adapter);
         arrayList.add(0, tracking_record.get("station_name")+" ("+tracking_record.get("station_type")+")");
         for (HashMap<String, String> train: chosen_trains){
-            Log.e("rrr", String.valueOf(train.get("train_eta"))+"");
-            arrayList.add(main_station+": "+String.valueOf(train.get("train_eta"))+"m");
+            arrayList.add("Train #"+train.get("train_id")+". "+main_station+": "+String.valueOf(train.get("train_eta"))+"m");
             adapter.notifyDataSetChanged();
         }
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(TrainTrackingActivity.this, activity_arrival_times.class);
+                String train_item = (String) list.getItemAtPosition(position).toString().substring(7,10);
+                for (HashMap<String, String> train: chosen_trains){
+                    if (train.get("train_id").equals(train_item)){
+                        Toast.makeText(getApplicationContext(), "Found: "+train, 1).show();
+                            message.keepSending(false);
+                            intent.putExtra("chosen_train", train);
+                        startActivity(intent);
+                    }
+                }
 
-sqlite.close();
 
 
+            }
+        });
 
-
-//        String target_station_type = bb.getString("station_type");
-//        String main_station;
-////        Log.e("New ", train_dir+"");
-//
-//        final String[] target_station_direction = new String[]{bb.getString("station_dir")};
-
-
-
-//
-//        ArrayList<String> table_record = sqlite.get_table_record("main_stations_table",
-//                "WHERE train_line = '"+target_station_type.replaceAll("\\)", "'")+"'");
-//
-//        if (train_etas.size() == 0 ){
-//            if (train_dir.equals("1")) {
-//                arrayList.add(0, "No Trains Available." +" (North Bound)");
-//            }
-//            else if (train_dir.equals("5")){
-//                arrayList.add(0, "No Trains Available." +" (South Bound)");
-//
-//            }
-//        }else {
-//
-//            if (train_dir.equals("1")) {
-////                Log.e("station", "upadting title: ");
-//                arrayList.add(target_station_name + " (North Bound)");
-//            } else if (train_dir.equals("5")) {
-//                arrayList.add(target_station_name + " (South Bound)");
-//            }
-//
-//            for (Integer items : train_etas) {
-//
-//                if (train_dir.equals("1")){
-//                    main_station = table_record.get(2);
-//                }
-//
-//                else  {
-//                    main_station = table_record.get(3);
-//                }
-//
-//
-//                arrayList.add(main_station+": "+items + "m");
-//                adapter.notifyDataSetChanged();
-//            }
-//
-//
-//        }
-//        sqlite.close();
-//
-//        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Context context = getApplicationContext();
-//                Intent intent = new Intent(TrainTrackingActivity.this, activity_arrival_times.class);
-//                if (position == 0 ){
-//                    Toast.makeText(context, list.getItemAtPosition(position)+"", Toast.LENGTH_SHORT).show();
-//                }
-//                else {
-//
-//                    String[] list_item = String.valueOf(list.getItemAtPosition(position)).split(":");
-//                    String key = list_item[1].replaceAll("[^\\d.]", "");
-//                    for (HashMap<String, String> each_train : chosen_trains) {
-//                        String train_eta = each_train.get("train_eta");
-//                        if (train_eta.equals(key)){
-//                            Log.e("next ", "TRAIN ID: " +each_train.get("train_id") + "");
-//                            intent.putExtra("current_train_info", each_train);
-//                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                                message.keepSending(false);
-//                            startActivity(intent);
-//                        }
-//                    }
-//                }
-//
-//
-//            }
-//        });
-
+        sqlite.close();
 
 
 
@@ -201,7 +138,6 @@ sqlite.close();
         });
 
 
-
         choose_station.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -225,35 +161,52 @@ sqlite.close();
             @Override
             public void onClick(View v) {
                 String target_station_direction;
+                String main_station;
                 if (message.getDir() ==null) {
                     target_station_direction = tracking_record.get("station_dir");
+                    main_station = tracking_record.get("main_station_name");
+
+
                 }else{
-                        target_station_direction = message.getDir();
+                    target_station_direction = message.getDir();
+                    main_station = message.getMainStation();
 
                 }
-                t4.interrupt();
 
+                t4.interrupt();
                 if (target_station_direction.equals("1")){
                     target_station_direction = "5";
+                    main_station = sqlite.get_table_record("main_stations_table",
+                            "WHERE train_line = '"+
+                                    tracking_record.get("station_type") + "'").get(3);
+
+
+//                    Log.e("NEW MAIN STATION", main_station);
                     synchronized (message){
                         message.setDir(target_station_direction);
+                        message.setMainStation(main_station);
                         message.setClicked(true);
-                        message.notify();
+                        message.notifyAll();
                     }
 
                 }else {
                     target_station_direction = "1";
+                    main_station = sqlite.get_table_record("main_stations_table",
+                            "WHERE train_line = '"+
+                                    tracking_record.get("station_type") + "'").get(2);
+//                    Log.e("NEW MAIN STATION", main_station);
+
                     synchronized (message){
                         message.setDir(target_station_direction);
+                        message.setMainStation(main_station);
                         message.setClicked(true);
-                        message.notify();
+                        message.notifyAll();
                     }
 
                 }
 
             }
         });
-//
     }
 
 

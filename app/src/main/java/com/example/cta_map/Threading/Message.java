@@ -2,6 +2,7 @@ package com.example.cta_map.Threading;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class Message {
     String[] msg;
@@ -15,11 +16,15 @@ public class Message {
     String main;
     ArrayList<HashMap> chosen_trains;
     String coord;
-
+    List<String> sub;
     public String[] getMsg(){
         return this.msg;
 
     }
+
+    public void setSubStations(List<String> sub){this.sub = sub;}
+    public List<String> getSubStations(){return this.sub;}
+
 
     public HashMap<String, String> getTargetContent(){
         return this.train_content;

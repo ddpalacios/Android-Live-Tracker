@@ -12,9 +12,39 @@
 
 
 
+    <Button
+        android:id="@+id/show"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom= "true"
 
 
+        android:text="View Map"
+        />
 
+    <Button
+        android:id="@+id/pickStation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@id/show"
+
+
+        android:text="Choose Station"
+        />
+
+
+    <Button
+        android:id="@+id/BackToETA"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@id/pickStation"
+
+
+        android:text="Back To ETA"
+        />
 
 
 </RelativeLayout>
