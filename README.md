@@ -109,6 +109,10 @@ As a local in Chicago, we often face the daily hassle of catching the train on t
  
  - Adjustable Notification for users prefrences
  
+# SQLite Database Design Diagram
+
+![](images/TransitDB.png) 
+
 
  
  
