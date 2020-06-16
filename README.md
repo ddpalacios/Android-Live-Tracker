@@ -29,6 +29,8 @@ As a local in Chicago, we often face the daily hassle of catching the train on t
  
  - SQLite
  
+ - AWS Cloud Computing
+ 
  - Google Maps Android API v2
  
  - Google play-services-location:17.0.0'
@@ -107,6 +109,10 @@ As a local in Chicago, we often face the daily hassle of catching the train on t
  
  - Adjustable Notification for users prefrences
  
+# SQLite Database Design Diagram
+
+![](images/TransitDB.png) 
+
 
  
  
