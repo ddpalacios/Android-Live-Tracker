@@ -111,24 +111,23 @@ As a local in Chicago, we often face the daily hassle of catching the train on t
  
 # SQLite Database Design Diagram
 
-SQLite Diagram Consists of Tables. Each Table is monitored and extracted between each activity. User manually inputs new data and manipulates our current live tracking station and user's "favorite station" prefrences. 
+`SQLite` Diagram Consists of `6 Tables`. Each Table is monitored and extracted between each activity. The user manually inputs new data and manipulates our current live tracking station and user's "favorite station" preferences.
 
 Information between each train and station is found between each table. (i.e. All Stops, Main Stations, Station Coordinates).
-
 ![](images/TransitDB.png) 
 
 
 # Multi-Threading Backend Design
 
-Multi-Threading allows the incoming API calls to be managable in terms of manipulation and normalization of its incoming data inbetween each core processing thread. 
+`Multi-Threading` allows the incoming API calls to be managable in terms of manipulation and normalization of its incoming data inbetween each core processing thread. 
 
-Thread1 - API-Caller: calls the url API -- Returns Raw XML Document
+`Thread1` - API-Caller: calls the url API -- Returns Raw XML Document
 
-Thread2 - Content Parser: is synchronized with its incoming message object and parsers the XML data and picks out its respective train
+`Thread2` - Content Parser: is synchronized with its incoming message object and parsers the XML data and picks out its respective train
 
-Thread3 - Estimatations: Calculates Estimated Time Arrivals for each chosen train
+`Thread3` - Estimatations: Calculates Estimated Time Arrivals for each chosen train
 
-Thread4 - Notifier: Finalizes data and sends to Handler which is then sent to the main UI Thread. Then, Notifies each thread  and repeat untill Thread dies.
+`Thread4` - Notifier: Finalizes data and sends to Handler which is then sent to the main UI Thread. Then, Notifies each thread  and repeat untill Thread dies.
 
 ![](images/Multi-Threading.png)
  
