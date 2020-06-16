@@ -41,10 +41,6 @@ import java.util.Map;
 @SuppressLint("Registered")
 public class activity_arrival_times extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    String station_type;
-    String station_name;
-    String[] train_direction = new String[1];
-    Bundle bb;
     final Message message = new Message();
 
 
@@ -91,8 +87,6 @@ public class activity_arrival_times extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
                 idx++;
             }
-
-
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -109,30 +103,11 @@ public class activity_arrival_times extends AppCompatActivity {
                     sqlite.close();
                     message.keepSending(false);
                     startActivity(intent);
-
-
-
-
-
-
-
-
                 }
             });
 
-
-
-
-
-
-
-
-
         }
     }
-
-
-
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,14 +120,6 @@ public class activity_arrival_times extends AppCompatActivity {
         final DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
         final HashMap<String, String> tracking_record = sqlite.getAllRecord("tracking_table");
 
-
-        String chosen_train_next_stop = chosen_train.get("next_stop");
-        String train_direction = chosen_train.get("train_direction");
-        String target_station_name = tracking_record.get("station_name");
-
-
-
-
         if (tracking_record == null || tracking_record.isEmpty()){
             Toast.makeText(getApplicationContext(), "No Tracking Station Found in DB!", Toast.LENGTH_LONG).show();
             return;
@@ -162,11 +129,9 @@ public class activity_arrival_times extends AppCompatActivity {
         message.setClicked(false);
         message.keepSending(true);
         message.setTargetContent(tracking_record);
-        final Button switch_direction = (Button) findViewById(R.id.switch_direction);
         final Button backToEta = (Button) findViewById(R.id.BackToETA);
         final Button choose_station = (Button) findViewById(R.id.pickStation);
         final Button toMaps = (Button) findViewById(R.id.show);
-
         final Thread api_call_thread = new Thread(new API_Caller_Thread(message, tracking_record, handler,false), "API_CALL_Thread");
         api_call_thread.start();
         final Thread t2 = new Thread(new Content_Parser_Thread(message, tracking_record, sqlite, false), "Content Parser");
@@ -226,9 +191,5 @@ public class activity_arrival_times extends AppCompatActivity {
 
 
     }
-
-
-
-
 
 }

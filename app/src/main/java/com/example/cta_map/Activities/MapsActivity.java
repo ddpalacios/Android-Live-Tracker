@@ -244,6 +244,8 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                             "WHERE train_line = '"+
                                     tracking_record.get("station_type") + "'").get(3);
 
+                    sqlite.update_value(tracking_record.get("profile_id"), "tracking_table", "station_dir", target_station_direction);
+                    sqlite.update_value(tracking_record.get("profile_id"), "tracking_table", "main_station_name", main_station);
 
 //                    Log.e("NEW MAIN STATION", main_station);
                     synchronized (message){
@@ -259,6 +261,8 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                             "WHERE train_line = '"+
                                     tracking_record.get("station_type") + "'").get(2);
 //                    Log.e("NEW MAIN STATION", main_station);
+                    sqlite.update_value(tracking_record.get("profile_id"), "tracking_table", "station_dir", target_station_direction);
+                    sqlite.update_value(tracking_record.get("profile_id"), "tracking_table", "main_station_name", main_station);
 
                     synchronized (message){
                         message.setDir(target_station_direction);

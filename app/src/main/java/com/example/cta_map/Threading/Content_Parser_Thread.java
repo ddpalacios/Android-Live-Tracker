@@ -33,11 +33,7 @@ public class Content_Parser_Thread implements Runnable
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void run() {
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        try { Thread.sleep(100); } catch (InterruptedException e) { e.printStackTrace(); }
         Chicago_Transits chicago_transits = new Chicago_Transits();
         String target_station = this.record.get("station_name").replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
         String main_station = this.record.get("main_station_name");
@@ -56,8 +52,6 @@ public class Content_Parser_Thread implements Runnable
                     station_direction = this.msg.getDir();
 
                 }
-
-
                 if (station_direction.equals("1")) {
                     modified_valid_stations = modified_stops.subList(modified_stops.indexOf(target_station), modified_stops.size());
                 } else {
