@@ -103,7 +103,7 @@ As a local in Chicago, we often face the daily hassle of catching the train on t
  
  - Have a flexible user interface when choosing which line and station to track
  
- - Give users the option to not have user location if not preferred
+ - Create multi-core software to handle notification data and increase efficiency with backend
  
  - Create AWS server for user profile and data
  
