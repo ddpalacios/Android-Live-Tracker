@@ -58,6 +58,7 @@ public class Train_Estimations_Thread implements Runnable {
                                 Double.parseDouble(target_station_lat),
                                 Double.parseDouble(target_station_lon));
                         int current_train_eta = time.get_estimated_time_arrival(25, current_train_distance_from_target_station);
+                        Log.e("cccc", current_train_eta+"");
                         valid_trains.put("train_eta", current_train_eta);
                     }
 

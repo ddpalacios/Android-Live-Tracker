@@ -49,6 +49,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
         if (bundle.getBoolean("No_Trains")){ Log.e("No trains", bundle.getBoolean("No_Trains")+"");return; }
 
         final ArrayList<HashMap> chosen_trains = (ArrayList<HashMap>) bundle.getSerializable("chosen_trains");
+        Log.e("train", chosen_trains+"");
         DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
         final HashMap<String, String> tracking_record = sqlite.getAllRecord("tracking_table");
         String main_station = bundle.getString("main_station");
@@ -59,6 +60,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
         list.setAdapter(adapter);
         arrayList.add(0, tracking_record.get("station_name")+" ("+tracking_record.get("station_type")+")");
         for (HashMap<String, String> train: chosen_trains){
+
             arrayList.add("Train #"+train.get("train_id")+". "+main_station+": "+String.valueOf(train.get("train_eta"))+"m");
             adapter.notifyDataSetChanged();
         }
@@ -142,6 +144,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 t4.interrupt();
+
                 Intent intent = new Intent(TrainTrackingActivity.this, mainactivity.class);
                 Integer profile_id = Integer.parseInt(tracking_record.get("profile_id"));
                 final ArrayList<String> user_record = sqlite.get_table_record("User_info", "WHERE profile_id = '"+profile_id+"'");

@@ -104,13 +104,15 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                 String train_lon = train.get("train_lon");
                 mapMarker.addMarker(train_lat, train_lon, train.get("next_stop"), train.get("station_type"), .5f);
             }
-
+            int idx = 0;
+            Log.e("Current train", chosen_trains+"");
             for (HashMap<String, String> train : chosen_trains) {
                 String train_lat = train.get("train_lat");
                 String train_lon = train.get("train_lon");
-                mapMarker.addMarker(train_lat, train_lon, train.get("next_stop"), train.get("station_type"), 1f);
-
+                mapMarker.addMarker(train_lat, train_lon, String.valueOf(idx), train.get("station_type"), 1f);
+                idx++;
             }
+
         }
 
         sqlite.close();

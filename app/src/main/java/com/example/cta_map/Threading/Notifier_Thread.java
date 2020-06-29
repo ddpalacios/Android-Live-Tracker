@@ -44,8 +44,9 @@ public class Notifier_Thread implements Runnable {
 
 
                 String main_station = this.message.getMainStation();
+
                 if (this.willCommunicate){
-                    Log.e("notifier", "Recieved "+ chosen_trains+"");
+                    Log.e("notifier", "Recieved "+ chosen_trains.get(0).get("train_eta")+"");
                     Log.e("notifier", "Recieved "+ chosen_trains.size()+" Are Displaying.");
                     Log.e(Thread.currentThread().getName(), "Sending to UI...");
                 }
@@ -56,7 +57,7 @@ public class Notifier_Thread implements Runnable {
 
                 handler.sendMessage(msg);
 
-                this.message.notify();
+                this.message.notifyAll();
                 if (!this.message.getClicked()) {
                     try {
                         Thread.sleep(5000);
