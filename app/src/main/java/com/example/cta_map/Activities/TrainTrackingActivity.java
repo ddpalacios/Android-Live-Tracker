@@ -17,6 +17,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.cta_map.DataBase.DatabaseHelper;
 import com.example.cta_map.Displayers.Chicago_Transits;
+import com.example.cta_map.Displayers.UserLocation;
 import com.example.cta_map.R;
 import com.example.cta_map.Threading.Message;
 import com.example.cta_map.Threading.API_Caller_Thread;
@@ -113,12 +114,14 @@ public class TrainTrackingActivity extends AppCompatActivity {
 
         final Button choose_station = (Button) findViewById(R.id.pickStation);
         final Button toMaps = (Button) findViewById(R.id.show);
+        UserLocation userLocation = new UserLocation(this);
+        userLocation.getLastLocation(getApplicationContext());
 
         final Thread api_call_thread = new Thread(new API_Caller_Thread(message, tracking_record, handler,false), "API_CALL_Thread");
         api_call_thread.start();
         final Thread t2 = new Thread(new Content_Parser_Thread(message, tracking_record, sqlite, false), "Content Parser");
         t2.start();
-        final Thread t3 = new Thread(new Train_Estimations_Thread(message, false), "Estimation Thread");
+        final Thread t3 = new Thread(new Train_Estimations_Thread(message, userLocation,getApplicationContext(), false), "Estimation Thread");
         t3.start();
         final Thread t4 = new Thread(new Notifier_Thread(message, handler, getApplicationContext(), false), "Notifier Thread");
         t4.start();

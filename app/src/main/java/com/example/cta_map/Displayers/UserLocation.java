@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 
+import com.example.cta_map.DataBase.DatabaseHelper;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -40,15 +41,7 @@ public class UserLocation extends Activity {
 
     }
 
-    public void getLastLocation( final Intent inten,
-                                 final Context context,
-                                 final HashMap<String, String>train_info,
-                                 final Integer train_eta,
-                                 final Boolean[] t,
-                                 final Boolean[] yel,
-                                 final Boolean[] pink,
-                                 final GoogleMap mMap,
-                                 final Boolean inMaps){
+    public void getLastLocation(final Context ctx){
         if (checkPermissions()) {
             if (isLocationEnabled()) {
                 this.mFusedLocationClient.getLastLocation().addOnCompleteListener(
@@ -58,77 +51,24 @@ public class UserLocation extends Activity {
                             @Override
                             public void onComplete(@NonNull Task<Location> task) {
                                 Time time = new Time();
-                                NotificationBuilder notificationBuilder = new NotificationBuilder(context, inten);
+                                DatabaseHelper sqlite = new DatabaseHelper(ctx);
+//                                NotificationBuilder notificationBuilder = new NotificationBuilder(context, inten);
 
                                 Chicago_Transits chicago_transits = new Chicago_Transits();
                                 Location location = task.getResult();
                                 if (location == null) {
                                     requestNewLocationData();
                                 }else{
-                                    if (train_info ==null ){
-                                        Log.e("None", "None");
-
-                                    }else {
-                                        Double distance_from_user_and_target = chicago_transits.calculate_coordinate_distance(
-                                                location.getLatitude(),
-                                                location.getLongitude(),
-                                                Double.parseDouble(train_info.get("target_station_lat")),Double.parseDouble(train_info.get("target_station_lon")));
-                                        int user_to_target_eta = 5;//time.get_estimated_time_arrival((int) 3.1, distance_from_user_and_target);
-                                        if (inMaps) {
-                                            MapMarker mapMarker = new MapMarker(mMap);
-                                            mapMarker.display_marker_boundries(inten, context, train_eta, user_to_target_eta, train_info, train_info.get("station_type"), 0, 10);
-                                        }else{
-                                            if (user_to_target_eta <= train_eta) {
-                                                int minutes_to_spare = train_eta - user_to_target_eta;
-                                                if (!t[0]){
-                                                    notificationBuilder.notificationDialog("Train is "+train_eta+" Minutes Away From "+train_info.get("target_station"),
-                                                            "You Have "+minutes_to_spare+" Minutes To Spare.");
-                                                    Log.e("Update", "Green!!!!");
-                                                    Log.e("bool", t[0]+"");
-                                                    t[0] = true;
-                                                }
-                                                else{
-                                                    Log.e("bool", t[0]+"");
-                                                    Log.e("Update", "notified for green");
-
-                                                }
-                                            }else if (user_to_target_eta > train_eta){
-                                                int late_amount = user_to_target_eta - train_eta;
-                                                if (late_amount >=0 && late_amount <4 ){
-
-                                                    if (!yel[0]){
-                                                        notificationBuilder.notificationDialog("Train is "+train_eta+" Minutes Away From "+train_info.get("target_station"),
-                                                                "You are "+late_amount+" Minutes Late.");
-                                                        Log.e("Update", "Yellow!!!!");
-                                                        Log.e("bool", yel[0]+"");
-                                                        yel[0] = true;
-                                                    }
-                                                    else{
-                                                        Log.e("bool", yel[0]+"");
-                                                        Log.e("Update", "notified for yellow");
-
-                                                    }
-
-
-                                                }else if (late_amount >=4){
-
-                                                    if (!pink[0] && train_eta!=0){
-                                                        notificationBuilder.notificationDialog("Train is "+train_eta+" Minutes Away From "+train_info.get("target_station"),
-                                                                "You are "+late_amount+" Minutes Late. You May Miss this Train!");
-                                                        Log.e("Update", "Pink!!!!");
-                                                        Log.e("bool", pink[0]+"");
-                                                        pink[0] = true;
-                                                    }
-                                                    else{
-                                                        Log.e("bool", pink[0]+"");
-                                                        Log.e("Update", "notified for Pink");
-
-                                                    }
-                                                }
-                                            }
-
-                                        }
+                                    Log.e("LOCATION", location.getLatitude()+"" + " "+location.getLongitude());
+                                    if (sqlite.isEmpty("userLocation_table")){
+                                        sqlite.addLocation(location.getLatitude(), location.getLongitude());
+                                        Log.e("Sqlite", "Added New Location!");
+                                    }else{
+                                        sqlite.update_location("1", "userLocation_table", location.getLatitude(), location.getLongitude());
+                                        Log.e("Sqlite", "Updated Location!");
                                     }
+
+                                    sqlite.close();
 
                                 }
                             }

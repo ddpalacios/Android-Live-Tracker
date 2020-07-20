@@ -89,6 +89,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TRACKING_MAIN_COL = "main_station_name";
 
 
+    public static final String USERLOCATION  = "userLocation_table";
+    public static final String LOCATION_ID = "location_id";
+    public static final String USERLAT = "user_lat";
+    public static final String USERLOT = "user_lon";
+
+
 
 
 
@@ -102,6 +108,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void onCreate(SQLiteDatabase db) {
 
+
+        String userLocationTable = "CREATE TABLE IF NOT EXISTS "+USERLOCATION+" ( "
+                +LOCATION_ID+" INTEGER PRIMARY KEY AUTOINCREMENT,"
+                +USERLAT + " REAL, "
+                +USERLOT + " REAL)";
+
+
+        db.execSQL(userLocationTable);
+
+
+
         String user_info_table = "CREATE TABLE IF NOT EXISTS " + USER_INFO_TABLE + " ( "
                 + PROFILE_ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + PROFILE_FIRSTNAME_COL + " TEXT, "
@@ -111,7 +128,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + PROFILE_BIRTHDAY_COL + " TEXT, "
                 + PROFILE_PHONE_COL + " TEXT, "
                 + PROFILE_PASS_COL + " TEXT, " +
-                "FOREIGN KEY (" + PROFILE_ID_COL + ") REFERENCES " + TRAIN_TABLE + " (" + PROFILE_ID_COL + "))";
+                "FOREIGN KEY (" + PROFILE_ID_COL + ") REFERENCES " + USERLOCATION + " (" + LOCATION_ID + "))";
 
         db.execSQL(user_info_table);
 
@@ -216,6 +233,43 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.update(table_name, cv, "profile_id = ?", new String[]{id});
         db.close();
+
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public void update_location(String id, String table_name,Double lat, Double lon) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+        cv.put("location_id",id);
+        cv.put("user_lat",lat);
+        cv.put("user_lon",lon);
+
+        db.update(table_name, cv, "location_id = ?", new String[]{id});
+        db.close();
+
+
+    }
+
+
+
+    public void addLocation(Double lat, Double lon){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("user_lat", lat);
+        cv.put("user_lon", lon);
+
+        String query = "SELECT * FROM " + USERLOCATION;
+        db.insert(USERLOCATION, null, cv);
+        Cursor cursor = db.rawQuery(query, null);
+        cursor.moveToFirst();
+        Integer auto_id = Integer.parseInt(cursor.getString(0));
+
+
+
+
+
 
 
     }

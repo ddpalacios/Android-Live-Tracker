@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.DataBase.DatabaseHelper;
 import com.example.cta_map.Displayers.MapMarker;
+import com.example.cta_map.Displayers.UserLocation;
 import com.example.cta_map.R;
 import com.example.cta_map.Threading.API_Caller_Thread;
 import com.example.cta_map.Threading.Content_Parser_Thread;
@@ -168,7 +169,8 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         final Button choose_station = (Button) findViewById(R.id.pickStation);
         final Button toArrival = (Button) findViewById(R.id.show);
 
-
+        UserLocation userLocation = new UserLocation(this);
+        userLocation.getLastLocation(getApplicationContext());
 
 
         Thread api_call = new Thread(new API_Caller_Thread(message, tracking_record, handler, false), "api caller");
@@ -178,7 +180,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         content_parser.start();
 
 
-        Thread train_estimations = new Thread(new Train_Estimations_Thread(message, false), "estimations");
+        Thread train_estimations = new Thread(new Train_Estimations_Thread(message,userLocation, getBaseContext(), false), "estimations");
         train_estimations.start();
 
         final Thread notifier = new Thread(new Notifier_Thread(message, handler, getApplicationContext(), false), "notifier");
