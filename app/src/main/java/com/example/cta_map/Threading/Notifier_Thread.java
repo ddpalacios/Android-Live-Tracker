@@ -35,6 +35,13 @@ public class Notifier_Thread implements Runnable {
                     break;
                 }
                 ArrayList<HashMap> chosen_trains = this.message.get_chosen_trains();
+                for (HashMap t: chosen_trains){
+                    Log.e(Thread.currentThread().getName(), t+"");
+                    if (t.get("train_eta")== null){
+                        this.message.notifyAll();
+
+                    }
+                }
                 ArrayList<HashMap> ignored_trains = this.message.getIgnored();
 
                 if (this.message.get_train_etas() !=null){
@@ -50,14 +57,21 @@ public class Notifier_Thread implements Runnable {
                     Log.e("notifier", "Recieved "+ chosen_trains.size()+" Are Displaying.");
                     Log.e(Thread.currentThread().getName(), "Sending to UI...");
                 }
-                bundle.putSerializable("chosen_trains", chosen_trains);
-                bundle.putSerializable("ignored_trains", ignored_trains);
-                bundle.putString("main_station", main_station);
-                msg.setData(bundle);
 
-                handler.sendMessage(msg);
+                if (chosen_trains.get(0).get("train_eta")!= null) {
 
-                this.message.notifyAll();
+
+                    bundle.putSerializable("chosen_trains", chosen_trains);
+                    bundle.putSerializable("ignored_trains", ignored_trains);
+                    bundle.putString("main_station", main_station);
+                    msg.setData(bundle);
+                    handler.sendMessage(msg);
+                    this.message.notifyAll();
+
+                }else{
+                    this.message.notifyAll();
+                }
+
                 if (!this.message.getClicked()) {
                     try {
                         Thread.sleep(5000);

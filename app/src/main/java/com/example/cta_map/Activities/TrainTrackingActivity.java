@@ -50,7 +50,6 @@ public class TrainTrackingActivity extends AppCompatActivity {
         if (bundle.getBoolean("No_Trains")){ Log.e("No trains", bundle.getBoolean("No_Trains")+"");return; }
 
         final ArrayList<HashMap> chosen_trains = (ArrayList<HashMap>) bundle.getSerializable("chosen_trains");
-        Log.e("train", chosen_trains+"");
         DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
         final HashMap<String, String> tracking_record = sqlite.getAllRecord("tracking_table");
         String main_station = bundle.getString("main_station");
@@ -66,6 +65,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
             adapter.notifyDataSetChanged();
         }
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @SuppressLint("WrongConstant")
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(TrainTrackingActivity.this, activity_arrival_times.class);

@@ -59,13 +59,10 @@ public class UserLocation extends Activity {
                                 if (location == null) {
                                     requestNewLocationData();
                                 }else{
-                                    Log.e("LOCATION", location.getLatitude()+"" + " "+location.getLongitude());
                                     if (sqlite.isEmpty("userLocation_table")){
                                         sqlite.addLocation(location.getLatitude(), location.getLongitude());
-                                        Log.e("Sqlite", "Added New Location!");
                                     }else{
                                         sqlite.update_location("1", "userLocation_table", location.getLatitude(), location.getLongitude());
-                                        Log.e("Sqlite", "Updated Location!");
                                     }
 
                                     sqlite.close();

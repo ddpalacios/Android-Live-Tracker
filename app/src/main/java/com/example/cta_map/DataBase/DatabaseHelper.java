@@ -112,7 +112,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String userLocationTable = "CREATE TABLE IF NOT EXISTS "+USERLOCATION+" ( "
                 +LOCATION_ID+" INTEGER PRIMARY KEY AUTOINCREMENT,"
                 +USERLAT + " REAL, "
-                +USERLOT + " REAL)";
+                +USERLOT + " REAL," +
+                ")";
 
 
         db.execSQL(userLocationTable);
@@ -265,6 +266,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(query, null);
         cursor.moveToFirst();
         Integer auto_id = Integer.parseInt(cursor.getString(0));
+        db.close();
 
 
 
@@ -287,6 +289,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         Log.e("Update", "Update success!");
 
+        db.close();
 
     }
 
@@ -354,7 +357,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(YELLOW_COL, cta_data.getYellow());
         values.put(PINK_COL, cta_data.getPink());
         values.put(ORANGE_COL, cta_data.getOrange());
-        Log.e("APPEND", "To TABLE");
         db.insert(LINE_STOPS_TABLE, null, values);
         String query = "SELECT * FROM " + LINE_STOPS_TABLE;
         Cursor cursor = db.rawQuery(query, null);
@@ -535,7 +537,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 userRecord.add(cursor.getString(i));
 
             }
-            Log.e("cursor", cursor.getString(1));
         }else{
             Log.e("NULL CURSOR FROM ", query);
 
@@ -615,7 +616,6 @@ return values;
 
     public Double[] FindStationValues(String station_name, String station_type){
         SQLiteDatabase db= this.getReadableDatabase();
-        Log.e("ddd", station_name.replaceAll("’", "\\'")+" "+ station_type);
         String query = "SELECT * FROM "+TRAIN_STATION_TABLE + " WHERE STATION_NAME ='"+station_name.replaceAll("’", "\\'")+"' AND "+station_type.toLowerCase()+" ='true'";
         Cursor cursor = db.rawQuery(query, null);
         if( cursor != null && cursor.moveToFirst() ) {

@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.IntegerRes;
 import androidx.annotation.RequiresApi;
 
 import com.example.cta_map.DataBase.DatabaseHelper;
@@ -42,6 +43,7 @@ public class Train_Estimations_Thread implements Runnable {
         }
         try {
             synchronized (this.msg) {
+
                 HashMap<String, String> target_station_record = this.msg.getTargetContent();
                 String target_station_lat = target_station_record.get("station_lat");
                 String target_station_lon = target_station_record.get("station_lon");
@@ -54,6 +56,8 @@ public class Train_Estimations_Thread implements Runnable {
 
 
                 while (this.msg.IsSending()) {
+                    ArrayList<Integer> sortedTrains = new ArrayList<>();
+                    HashMap<String, String> nearest_train = null;
                     if (this.msg.get_chosen_trains() == null || this.msg.getIgnored() == null || this.msg.getTargetContent() == null) {
                         Log.e(Thread.currentThread().getName(), "Data is NULL");
                         return;
@@ -62,17 +66,14 @@ public class Train_Estimations_Thread implements Runnable {
                         Log.e("No trains", "No Trains Available");
                     }
 
+                    Double current_user_distance_from_target_station = chicago_transits.calculate_coordinate_distance(
+                            Double.parseDouble(record.get("user_lat")),
+                            Double.parseDouble(record.get("user_lon")),
+                            Double.parseDouble(target_station_lat),
+                            Double.parseDouble(target_station_lon));
+                    int current_user_eta = time.get_estimated_time_arrival(3, current_user_distance_from_target_station);
 
                     for (HashMap valid_trains : this.msg.get_chosen_trains()) {
-
-                        Double current_user_distance_from_target_station = chicago_transits.calculate_coordinate_distance(
-                                Double.parseDouble(record.get("user_lat")),
-                                Double.parseDouble(record.get("user_lon")),
-                                Double.parseDouble(target_station_lat),
-                                Double.parseDouble(target_station_lon));
-                        int current_user_eta = time.get_estimated_time_arrival(3, current_user_distance_from_target_station);
-
-
 
                         Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance(
                                 Double.parseDouble((String) valid_trains.get("train_lat")),
@@ -82,16 +83,35 @@ public class Train_Estimations_Thread implements Runnable {
                         int current_train_eta = time.get_estimated_time_arrival(25, current_train_distance_from_target_station);
                         valid_trains.put("train_eta", current_train_eta);
 
-                        Log.e("ETA", current_user_eta + " "+ current_train_eta);
 
-
-
-                        if (current_train_distance_from_target_station > current_user_distance_from_target_station){
-
-
-                        }
+                        sortedTrains.add(current_train_eta);
 
                     }
+
+
+                    Collections.sort(sortedTrains);
+                    for (HashMap<String,String> train : this.msg.get_chosen_trains()){
+                        if (train.containsValue(sortedTrains.get(0))){
+                            nearest_train = train;
+                            break;
+                        }
+                    }
+                    Log.e("VALID",nearest_train+"");
+
+//                  if (Integer.parseInt(nearest_train.get("train_eta")) > 10){
+//                      Log.e("TRAIN UPDATE", "TRAIN > 10");
+//                      int time_to_spare = Integer.parseInt(nearest_train.get("train_eta")) - 10;
+//                      Log.e("TRAIN UPDATE", "TIME TO SPARE: "+ time_to_spare );
+//
+//                      if (time_to_spare < 1){
+//                          Log.e("TRAIN UPDATE", "LATE FOR: "+time_to_spare);
+//
+//                      }
+//                  }
+
+
+
+
 
 
                     if (this.willCommunicate) {
