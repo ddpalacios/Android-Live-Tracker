@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 
+import com.example.cta_map.DataBase.Database2;
 import com.example.cta_map.DataBase.DatabaseHelper;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -51,7 +52,7 @@ public class UserLocation extends Activity {
                             @Override
                             public void onComplete(@NonNull Task<Location> task) {
                                 Time time = new Time();
-                                DatabaseHelper sqlite = new DatabaseHelper(ctx);
+                                Database2 sqlite = new Database2(ctx);
 //                                NotificationBuilder notificationBuilder = new NotificationBuilder(context, inten);
 
                                 Chicago_Transits chicago_transits = new Chicago_Transits();

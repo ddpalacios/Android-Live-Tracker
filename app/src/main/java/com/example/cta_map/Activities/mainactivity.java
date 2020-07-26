@@ -1,21 +1,27 @@
 package com.example.cta_map.Activities;
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.cta_map.DataBase.DatabaseHelper;
+import com.example.cta_map.DataBase.Database2;
+import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.R;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,33 +36,84 @@ public class mainactivity extends AppCompatActivity {
 
 
 
+    public void fill_fav_station_list(ArrayList<HashMap> table_record, ArrayAdapter<String> favoriteadapter){
+        Database2 sqlite = new Database2(getApplicationContext());
+        if (table_record.isEmpty()){
+                favoriteList.add("No Favorite Stations.");
+            }else {
+                favoriteList.add(0, "Favorite Stations:");
+                for (HashMap station: table_record){
+                    Log.e("ff", station+"");
+                    if (station.get("fav_station_dir").equals("1")){
+                        favoriteList.add("("+station.get("fav_station_type")+") Station ID#"+station.get("fav_station_id")+"   -"+station.get("fav_station_name") +"-      ||North||");
+
+//                        query = "SELECT northbound FROM main_stations WHERE main_station_type = '"+station.get("fav_station_type").toString().toUpperCase()+"'";
+                    }else{
+                        favoriteList.add("("+station.get("fav_station_type")+") Station ID#"+station.get("fav_station_id")+"   -"+station.get("fav_station_name") +"-   ||South||");
+
+
+                    }
+//                        query = "SELECT southbound1 FROM main_stations WHERE main_station_type = '"+station.get("fav_station_type").toString().toUpperCase()+"'";
+//
+//                    }
+//                    String main_station = sqlite.getValue(query);
+
+
+                    favoriteadapter.notifyDataSetChanged();
+                }
+
+        }
+
+    }
+
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_main);
         super.onCreate(savedInstanceState);
-        final DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
-        bb = getIntent().getExtras();
-        final String profile_id= bb.getString("profile_id");
-        if (!sqlite.isEmpty("tracking_table")){
-            boolean isempty = sqlite.deleteAll("tracking_table");
-            Log.e("TRACKING TABLE IS EMPTY", isempty+"");
+        final ArrayAdapter<String> favoriteadapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, favoriteList){
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view =super.getView(position, convertView, parent);
+                TextView textView=(TextView) view.findViewById(android.R.id.text1);
+                textView.setTextColor(Color.BLACK);
 
-        }
-        final ArrayList<HashMap> table_record = sqlite.GetTableRecordByID(Integer.parseInt(profile_id), "train_table");
-        if (table_record.isEmpty()){
-            favoriteList.add("No Favorite Stations.");
-        }else{
-            favoriteList.add(0, "Favorite Stations:");
-        }
+                // Set the item text style to bold
+                textView.setTypeface(textView.getTypeface(), Typeface.BOLD);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
-        final ListView list = findViewById(R.id.station_lines);
-        list.setAdapter(adapter);
+                // Change the item text size
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP,15);
+                return view;
+            }
+        };
+        Chicago_Transits chicago_transits = new Chicago_Transits();
+        Database2 sqlite = new Database2(getApplicationContext());
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, arrayList){
 
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view =super.getView(position, convertView, parent);
+                TextView textView=(TextView) view.findViewById(android.R.id.text1);
+                textView.setTextColor(Color.BLACK);
 
+                // Set the item text style to bold
+                textView.setTypeface(textView.getTypeface(), Typeface.BOLD);
 
+                // Change the item text size
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP,15);
+                return view;
+            }
+        };
         final ListView favoriteStations = findViewById(R.id.favorite_lines);
-        final ArrayAdapter<String> favoriteadapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, favoriteList);
+        final ListView list = findViewById(R.id.station_lines);
         favoriteStations.setAdapter(favoriteadapter);
+        list.setAdapter(adapter);
+//        BufferedReader all_cta_stops = chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_stations);
+//        BufferedReader main_stations = chicago_transits.setup_file_reader(getApplicationContext(), R.raw.main_stations);
+//        BufferedReader line_stops = chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_line_stops);
+//
+//        chicago_transits.Create_TrainInfo_table(all_cta_stops, getApplicationContext());
+//        chicago_transits.create_line_stops_table(line_stops, getApplicationContext());
+//        chicago_transits.create_main_station_table(main_stations, getApplicationContext());
+
 
 
         final String[] main_menu = new String[]{"Add Favorite Station", "Find Station"};
@@ -65,115 +122,62 @@ public class mainactivity extends AppCompatActivity {
             adapter.notifyDataSetChanged();
         }
 
-        for (HashMap train_record: table_record){
-//            Log.e("rec", train_record+"");
-            favoriteList.add(train_record.get("station_name")+"-("+train_record.get("station_type")+")");
-            favoriteadapter.notifyDataSetChanged();
-
-        }
-
-
-
-
-        favoriteStations.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener(){
-
-
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 0){
-                    return false;
-                }
-
-                String station = (String) favoriteStations.getItemAtPosition(position);
-                String[] station_details = station.split("-\\(");
-                String station_name = station_details[0];
-                String station_type = station_details[1].replaceAll("\\)", "");
-                String where = "profile_id = ?"
-                        + " AND station_name = ?"
-                        + " AND station_type = ?";
-                favoriteList.clear();
-                String[] args = new String[]{String.valueOf(profile_id), station_name, station_type};
-                DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
-                sqlite.deleteRecord("train_table", where, args);
-                ArrayList<HashMap> record = sqlite.GetTableRecordByID(Integer.parseInt(profile_id), "train_table");
-
-                if (record.isEmpty()) {
-                    favoriteList.add("No Favorite Stations");
-                    favoriteadapter.notifyDataSetChanged();
-                }
-                else {
-                    favoriteList.add(0, "Favorite Stations");
-                    for (HashMap train_record: record){
-                        favoriteList.add(train_record.get("station_name")+"-("+train_record.get("station_type")+")");
-                        favoriteadapter.notifyDataSetChanged();
-
-                    }
-
-                }
-
-                sqlite.close();
-                return false;
-            }
-
-        });
-
-
-
-        favoriteStations.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(position == 0){
-                    return;
-                }
-                Intent intent = new Intent(mainactivity.this, TrainTrackingActivity.class);
-
-                String station = (String) favoriteStations.getItemAtPosition(position);
-                String[] station_details = station.split("-\\(");
-                String station_name = station_details[0];
-                String station_type = station_details[1].replaceAll("\\)", "");
-                ArrayList<String> target_station_record = sqlite.get_table_record("train_table",
-                        "WHERE profile_id = '"+profile_id+"' AND station_name = '"+station_name+"' AND station_type = '"+station_type+"'");
-                Toast.makeText(getApplicationContext(), target_station_record+"", Toast.LENGTH_LONG).show();
-                ArrayList<String> tracking_record = new ArrayList<>(target_station_record.subList(1, target_station_record.size()));
-                sqlite.add_train_tracker(tracking_record);
-                startActivity(intent);
-
-
-
-
-
-            }
-        });
-
-
+        fill_fav_station_list(sqlite.getAllRecord("favorite_stations"), favoriteadapter);
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(mainactivity.this, ChooseLineActivity.class);
-                SharedPreferences.Editor connect = getSharedPreferences("CONNECT", MODE_PRIVATE).edit();
+                intent.putExtra("position", position);
+                startActivity(intent);
+            }
+        });
 
-                if (position == 0){
-                    connect.putBoolean("connection", false);
-                    connect.apply();
-
-
+        favoriteStations.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(mainactivity.this, TrainTrackingActivity.class);
+                String item = String.valueOf(favoriteStations.getItemAtPosition(position));
+                Database2 sqlite = new Database2(getApplicationContext());
+                String station_id =StringUtils.substringBetween(item, "#", " ");
+                String station_type =StringUtils.substringBetween(item, "(", ")");
+                String station_dir =StringUtils.substringBetween(item, "||", "||");
+                String station_name =StringUtils.substringBetween(item, "-", "-");
+                String v= null;
+                if (station_dir.equals("North")) {
+                    v = "1";
+                }else{
+                    v="5";
                 }
-                if (position == 1){
-                    connect.putBoolean("connection", true);
-                    connect.apply();
-                }
-                connect.putInt("ProfileID", Integer.parseInt(profile_id));
-                connect.apply();
+                String query = "SELECT southbound1 FROM main_stations WHERE main_station_type = '"+station_type.toUpperCase()+"'";
+                Chicago_Transits chicago_transits = new Chicago_Transits();
+                String[] station_coord = chicago_transits.retrieve_station_coordinates(sqlite, station_id);
+                String main_station = sqlite.getValue(query);
+                sqlite.add_tracking_station(station_name, station_type, v, main_station, station_coord, station_id);
 
-                sqlite.close();
+
 
 
                 startActivity(intent);
 
 
+
             }
         });
-        sqlite.close();
+
+        favoriteStations.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Database2 db= new Database2(getApplicationContext());
+                String item = String.valueOf(favoriteStations.getItemAtPosition(position));
+                String[] station_id =new String[]{StringUtils.substringBetween(item, "#", "-")};
+                String where = "station_id = ?";
+                db.DeleteRecentStation(where, station_id);
+                finish();
+                startActivity(getIntent());
+
+                return false;
+            }
+        });
     }
 }

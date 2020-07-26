@@ -7,6 +7,7 @@ import android.util.Log;
 import androidx.annotation.RequiresApi;
 
 import com.example.cta_map.DataBase.CTA_Stations;
+import com.example.cta_map.DataBase.Database2;
 import com.example.cta_map.DataBase.DatabaseHelper;
 import com.example.cta_map.DataBase.MainStation;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -28,7 +29,8 @@ import java.util.HashMap;
 public class Chicago_Transits {
 
     public void create_main_station_table(BufferedReader reader, Context context){
-        DatabaseHelper sqlite = new DatabaseHelper(context);
+        Database2 sqlite = new Database2(context);
+
 
         String line;
         int row=0;
@@ -41,7 +43,7 @@ public class Chicago_Transits {
                     }
                     String[] tokens = (line.replaceAll("\"","")
                             .replaceAll(",,",",")).split(",");
-                    MainStation mainStation = new MainStation(tokens[0].toLowerCase(), tokens[1], tokens[2]);
+                    MainStation mainStation = new MainStation(tokens[0], tokens[1], tokens[2], tokens[3]);
                     sqlite.addMainStations(mainStation);
                     row++;
 
@@ -59,7 +61,7 @@ public class Chicago_Transits {
 
     @SuppressLint("LongLogTag")
     public void create_line_stops_table(BufferedReader reader, Context context) {
-        DatabaseHelper sqlite = new DatabaseHelper(context);
+        Database2 sqlite = new Database2(context);
 
         String line;
         int row=0;
@@ -104,7 +106,7 @@ public class Chicago_Transits {
 
 
     public void Create_TrainInfo_table(BufferedReader reader, Context context) {
-        DatabaseHelper sqlite = new DatabaseHelper(context);
+        Database2 sqlite = new Database2(context);
 
         String line;
         int row=0;
@@ -159,16 +161,15 @@ public class Chicago_Transits {
 
     }
 
-    public String[] retrieve_station_coordinates(DatabaseHelper sqlite, String station_name, String station_type) {
+    public String[] retrieve_station_coordinates(Database2 sqlite, String station_id) {
 
         try {
-            ArrayList<String> record = sqlite.get_table_record("train_station_table", "WHERE STATION_NAME ='" + station_name + "'"
-                    + " AND " + station_type + " = 'true'");
+            ArrayList<String> record = sqlite.get_table_record("cta_stops", "WHERE station_id = '"+station_id+"'");
             return new String[]{record.get(10), record.get(11)};
 
 
         }catch (Exception e){
-            Log.e("SQLITE ERROR", "COULD NOT FIND '"+station_name +"' STATION IN DATABASE!");
+            Log.e("SQLITE ERROR", "COULD NOT FIND STATION IN DATABASE!");
         }
         return null;
     }

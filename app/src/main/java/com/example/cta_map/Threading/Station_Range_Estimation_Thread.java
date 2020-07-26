@@ -2,6 +2,7 @@ package com.example.cta_map.Threading;
 
 import android.util.Log;
 
+import com.example.cta_map.DataBase.Database2;
 import com.example.cta_map.DataBase.DatabaseHelper;
 import com.example.cta_map.Displayers.Chicago_Transits;
 
@@ -13,10 +14,10 @@ import java.util.List;
 public class Station_Range_Estimation_Thread implements Runnable {
     final Message msg;
     String id;
-    DatabaseHelper sqlite;
+   Database2 sqlite;
     HashMap<String, String> record;
     boolean willCommunicate;
-    public Station_Range_Estimation_Thread(Message msg, String id, DatabaseHelper sqlite, HashMap<String,String> record, boolean willCommunicate){
+    public Station_Range_Estimation_Thread(Message msg, String id, Database2 sqlite, HashMap<String,String> record, boolean willCommunicate){
         this.msg = msg;
         this.id = id;
         this.sqlite = sqlite;

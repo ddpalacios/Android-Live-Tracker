@@ -112,7 +112,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String userLocationTable = "CREATE TABLE IF NOT EXISTS "+USERLOCATION+" ( "
                 +LOCATION_ID+" INTEGER PRIMARY KEY AUTOINCREMENT,"
                 +USERLAT + " REAL, "
-                +USERLOT + " REAL," +
+                +USERLOT + " REAL" +
                 ")";
 
 
@@ -438,7 +438,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String query = "SELECT * FROM "+ table_name;
         Cursor cursor = db.rawQuery(query, null);
         HashMap<String, String> record = new HashMap<>();
-
+        cursor.moveToFirst();
         if( cursor != null ){
             if (cursor.getCount() > 0) {
                 while(cursor.moveToNext()) {
@@ -513,7 +513,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (NoOfRows == 0){
             return true;
         }else {
-            Log.e("num rows", NoOfRows+"");
+//            Log.e("num rows", NoOfRows+"");
             return false;
         }
     }
@@ -587,30 +587,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
 
-    public ArrayList<String> get_column_values(String table_name, String col){
-    SQLiteDatabase db= this.getReadableDatabase();
-    ArrayList<String> values = new ArrayList<>();
-        String query = "SELECT "+col +" FROM "+table_name;
-        Cursor cursor = db.rawQuery(query, null);
-        if( cursor != null ) {
-
-            if (cursor.getCount() >= 0) {
-                while (cursor.moveToNext()) {
-                    values.add(cursor.getString(0));
-
-                }
-            }
-        }else{
-            Log.e("NULL CURSOR FROM ", query);
-
-        }
-
-        if (values.contains("null")){
-            values.removeAll(Collections.singleton("null"));
-        }
-return values;
-
-    }
+//    public ArrayList<String> get_column_values(String table_name, String col){
+//    SQLiteDatabase db= this.getReadableDatabase();
+//    ArrayList<String> values = new ArrayList<>();
+//        String query = "SELECT "+col +" FROM "+table_name;
+//        Cursor cursor = db.rawQuery(query, null);
+//        if( cursor != null ) {
+//
+//            if (cursor.getCount() >= 0) {
+//                while (cursor.moveToNext()) {
+//                    values.add(cursor.getString(0));
+//
+//                }
+//            }
+//        }else{
+//            Log.e("NULL CURSOR FROM ", query);
+//
+//        }
+//
+//        if (values.contains("null")){
+//            values.removeAll(Collections.singleton("null"));
+//        }
+//return values;
+//
+//    }
 
 
 

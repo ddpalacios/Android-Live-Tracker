@@ -1,9 +1,9 @@
-train_line,northbound,southbound
-RED,Howard,95th/Dan Ryan
-BLUE,O’Hare,Forest Park
-BROWN,Kimball,Loop
-GREEN,Harlem/lake,63rd/Cottage Grove
-ORANGE,Loop,Midway
-PURPLE,Linden,Howard or Loop
-PINK,Loop,54/Cermak
-YELLOW,Dempster-Skokie,Howard
+station_type,northbound,southbound1, southbound2
+RED,Howard,95th/Dan Ryan,null
+BLUE,O'Hare,Forest Park,null
+BROWN,Kimball,Loop,null
+GREEN,Harlem/lake,63rd,Cottage Grove
+ORANGE,Loop,Midway,null
+PURPLE,Linden,Howard,Loop
+PINK,Loop,54/Cermak,null
+YELLOW,Dempster-Skokie,Howard,null

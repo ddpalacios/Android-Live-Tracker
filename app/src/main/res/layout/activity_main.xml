@@ -12,8 +12,10 @@
     <ListView
         android:id="@+id/station_lines"
         tools:listitem="Test"
-        android:layout_width="match_parent"
-        android:layout_height=".9in" >
+        android:layout_margin="10dp"
+        android:layout_width="wrap_content"
+        android:background="@color/cardview_light_background"
+        android:layout_height="wrap_content" >
 
     </ListView>
 

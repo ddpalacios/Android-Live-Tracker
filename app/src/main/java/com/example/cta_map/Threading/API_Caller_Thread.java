@@ -8,6 +8,8 @@ import com.example.cta_map.Displayers.Chicago_Transits;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.logging.Handler;
 
@@ -32,36 +34,34 @@ public class API_Caller_Thread implements Runnable {
                 try {
                     final Document content = Jsoup.connect(url).get(); // JSOUP to webscrape XML
                     final String[] train_list = content.select("train").outerHtml().split("</train>"); //retrieve our entire XML format, each element == 1 <train></train>
-                    if (train_list.length ==1 && train_list[0] == ""){
+                    if (train_list.length ==1 && train_list[0].equals("")){
                         Bundle bundle = new Bundle();
                         android.os.Message msg = this.handler.obtainMessage();
                         bundle.putBoolean("No_Trains", true);
                         msg.setData(bundle);
                         handler.sendMessage(msg);
-//                        this.msg.wait();
                         continue;
                     }
-
                     this.msg.setMsg(train_list);
-
                     if (this.willCommunicate){
                         Log.e("Url", url);
-                        Log.e("Sending", train_list.length +" Trains.");
+                        Log.e("Found", train_list.length +" Trains.");
                         Log.e(Thread.currentThread().getName(),  "is waiting... ");
 
                     }
 
+                    this.msg.setStatus(true);
                     this.msg.wait();
-
-                    if (this.willCommunicate) {
-                        Log.e("update", Thread.currentThread().getName() + " is done waiting");
-                    }
 
 
                 } catch (IOException | InterruptedException e) {
+                    Log.e("CONNECTION ERROR", "FAILED TO CONNECT TO URL");
                     e.printStackTrace();
                 }
+
+
             }
+
         }
     }
 }

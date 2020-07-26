@@ -1,5 +1,32 @@
 <resources>
     <string name="app_name">CTA-MAP</string>
     <string name="title_activity_maps">Map</string>
-    <string name="testing">TESTING</string>
+
+
+    <string-array name="programming_languages">
+        <item>Red Line</item>
+        <item>Blue Line</item>
+        <item>Green Line</item>
+        <item>Orange Line</item>
+        <item>Brown Line</item>
+        <item>Pink Line</item>
+        <item>Yellow Line</item>
+        <item>Purple Line</item>
+
+    </string-array>
+
+    <string-array name="description">
+        <item>This is a random description</item>
+        <item>This is a random description</item>
+        <item>This is a random description</item>
+        <item>This is a random description</item>
+        <item>This is a random description</item>
+        <item>This is a random description</item>
+        <item>This is a random description</item>
+        <item>This is a random description</item>
+
+
+
+    </string-array>
+
 </resources>

@@ -3,11 +3,12 @@ package com.example.cta_map.DataBase;
 public class MainStation {
     String TrainLine;
     String NorthBound;
-    String SouthBound;
-    public MainStation(String TrainLine, String NorthBound, String SouthBound){
+    String SouthBound, s2;
+    public MainStation(String TrainLine, String NorthBound, String SouthBound, String s2){
         this.TrainLine = TrainLine;
         this.NorthBound = NorthBound;
         this.SouthBound = SouthBound;
+        this.s2 = s2;
 
     }
 
@@ -35,5 +36,8 @@ public class MainStation {
 
     public String getSouthBound() {
         return this.SouthBound;
+    }
+    public String getSouthBound2() {
+        return this.s2;
     }
 }

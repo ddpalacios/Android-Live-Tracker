@@ -5,19 +5,18 @@
     android:id="@+id/relativelayoutactivity">
 
 
-    <Switch
-        android:id="@+id/switch1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:text="Notify\t\t" />
+<!--    <Switch-->
+<!--        android:id="@+id/switch1"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginLeft="10dp"-->
+<!--        android:text="Notify\t\t" />-->
 
 
     <ListView
         android:id="@+id/train_layout_arrival_times"
-        android:layout_below="@+id/switch1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="1in" >
 
 
     </ListView>
@@ -29,8 +28,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom= "true"
-
-
         android:text="View Map"
         />
 
@@ -40,8 +37,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_toRightOf="@id/show"
-
-
         android:text="Choose Station"
         />
 
@@ -56,4 +51,13 @@
 
 
         android:text="switch direction" />
+
+
+<!--    <androidx.recyclerview.widget.RecyclerView-->
+<!--        android:layout_below="@id/train_layout_arrival_times"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:id="@+id/data_view"-->
+<!--        android:layout_height="match_parent" />-->
+
+
 </RelativeLayout>

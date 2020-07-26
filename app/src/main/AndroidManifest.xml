@@ -36,14 +36,14 @@
             android:value="@string/google_maps_key" />
 
 
-        <activity
-            android:name=".Activities.userLoginActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+<!--        <activity-->
+<!--            android:name=".Activities.userLoginActivity">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
 
 
         <activity
@@ -55,27 +55,40 @@
             </intent-filter>
         </activity>
 
-
-
         <activity
-            android:name=".Activities.newUserActivity">
+            android:name=".Activities.SecondActivity">
             <intent-filter>
-<!--                <action android:name="android.intent.action.MAIN" />-->
+                <!--                <action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+
+
+
+
+        <!--        <activity-->
+<!--            android:name=".Activities.newUserActivity">-->
+<!--            <intent-filter>-->
+<!--&lt;!&ndash;                <action android:name="android.intent.action.MAIN" />&ndash;&gt;-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
 
         <activity
             android:name=".Activities.mainactivity">
             <intent-filter>
-<!--                <action android:name="android.intent.action.MAIN" />-->
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
 
             </intent-filter>
         </activity>
-                <activity
+
+
+        <activity
                     android:name=".Activities.ChooseDirectionActivity"
                     android:label="@string/title_activity_maps">
                     <intent-filter>

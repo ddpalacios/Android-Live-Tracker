@@ -9,6 +9,7 @@ public class Message {
     String dir;
     HashMap train_etas;
     boolean t;
+    boolean iswaiting = false;
     boolean x;
     HashMap<String, String> train_content;
     ArrayList<HashMap> ignored;
@@ -20,6 +21,14 @@ public class Message {
     public String[] getMsg(){
         return this.msg;
 
+    }
+
+    public void setStatus(Boolean waiting){
+        this.iswaiting = waiting;
+    }
+
+    public Boolean isWaiting(){
+        return this.iswaiting;
     }
 
     public void setSubStations(List<String> sub){this.sub = sub;}
