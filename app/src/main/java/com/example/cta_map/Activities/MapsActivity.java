@@ -297,6 +297,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                     ArrayList<String> line_stops = sqlite.get_column_values("line_stops_table", type[0]);
                     for (String name : line_stops) {
                         String query = "SELECT station_id FROM cta_stops WHERE station_name = '" + name + "'" + " AND " + type[0] + " = 'true'";
+                        Log.e("query", query);
                         String station_id = sqlite.getValue(query);
                         String[] station_coord = chicago_transits.retrieve_station_coordinates(sqlite, station_id);
                         mapMarker.addMarker(station_coord[0], station_coord[1], name, type[0], 1f);
@@ -318,7 +319,10 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                     ArrayList<String> line_stops = sqlite.get_column_values("line_stops_table", type[0]);
                     for (String name : line_stops) {
                         Log.e("CLicked", name+"");
+
                         String query = "SELECT station_id FROM cta_stops WHERE station_name = '" + name + "' COLLATE NOCASE" + " AND " + type[0] + " = 'true'";
+                        Log.e("query", query);
+
                         String station_id = sqlite.getValue(query);
                         String[] station_coord = chicago_transits.retrieve_station_coordinates(sqlite, station_id);
                         mapMarker.addMarker(station_coord[0], station_coord[1], name, type[0], 1f);
@@ -340,6 +344,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
                     ArrayList<String> line_stops = sqlite.get_column_values("line_stops_table", type[0]);
                     for (String name : line_stops) {
                         String query = "SELECT station_id FROM cta_stops WHERE station_name = '" + name + "'" + " AND " + type[0] + " = 'true'";
+                        Log.e("query", query);
                         String station_id = sqlite.getValue(query);
                         String[] station_coord = chicago_transits.retrieve_station_coordinates(sqlite, station_id);
                         mapMarker.addMarker(station_coord[0], station_coord[1], name, type[0], 1f);

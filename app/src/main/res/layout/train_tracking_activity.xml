@@ -1,63 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/relativelayoutactivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent" android:layout_height="match_parent" >
+    <ScrollView android:layout_width="match_parent" android:layout_height="match_parent">
+        <LinearLayout android:layout_width="match_parent" android:orientation="vertical" android:layout_height="wrap_content">
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-<!--    <Switch-->
-<!--        android:id="@+id/switch1"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginLeft="10dp"-->
-<!--        android:text="Notify\t\t" />-->
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="40dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/textView5"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.4"
+                    app:srcCompat="@drawable/blue" />
 
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="120dp"
+                    android:layout_marginLeft="120dp"
+                    android:padding="5dp"
+                    android:text="Granville (95th/Dan Ryan)"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <ListView
-        android:id="@+id/train_layout_arrival_times"
-        android:layout_width="match_parent"
-        android:layout_height="1in" >
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/vr_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" android:scrollbars="vertical" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="5dp" android:textStyle="bold" android:text="Train Information:"/>
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/hr_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" android:scrollbars="vertical" />
 
+        </LinearLayout>
 
-    </ListView>
-
-
-    <Button
-        android:id="@+id/show"
-
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom= "true"
-        android:text="View Map"
-        />
-
-    <Button
-        android:id="@+id/pickStation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@id/show"
-        android:text="Choose Station"
-        />
-
-    <Button
-        android:id="@+id/switch_direction"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@id/pickStation"
-
-
-
-        android:text="switch direction" />
-
-
-<!--    <androidx.recyclerview.widget.RecyclerView-->
-<!--        android:layout_below="@id/train_layout_arrival_times"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:id="@+id/data_view"-->
-<!--        android:layout_height="match_parent" />-->
-
+    </ScrollView>
 
 </RelativeLayout>
+
+<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    android:id="@+id/relativelayoutactivity">-->
+
+
+<!--&lt;!&ndash;    <Switch&ndash;&gt;-->
+<!--&lt;!&ndash;        android:id="@+id/switch1"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_width="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_height="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_marginLeft="10dp"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:text="Notify\t\t" />&ndash;&gt;-->
+
+
+<!--    <ListView-->
+<!--        android:id="@+id/train_layout_arrival_times"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="1in" >-->
+
+
+<!--    </ListView>-->
+
+
+<!--    <Button-->
+<!--        android:id="@+id/show"-->
+
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentBottom= "true"-->
+<!--        android:text="View Map"-->
+<!--        />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/pickStation"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:layout_toRightOf="@id/show"-->
+<!--        android:text="Choose Station"-->
+<!--        />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/switch_direction"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:layout_toRightOf="@id/pickStation"-->
+
+
+
+<!--        android:text="switch direction" />-->
+
+
+<!--&lt;!&ndash;    <androidx.recyclerview.widget.RecyclerView&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_below="@id/train_layout_arrival_times"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_width="match_parent"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:id="@+id/data_view"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_height="match_parent" />&ndash;&gt;-->
+
+
+<!--</RelativeLayout>-->
