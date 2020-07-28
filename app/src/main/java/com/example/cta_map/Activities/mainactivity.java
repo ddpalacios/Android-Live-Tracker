@@ -21,13 +21,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
 
+import com.example.cta_map.DataBase.Database2;
 import com.example.cta_map.R;
 import com.example.cta_map.StationAdapter;
 import com.example.cta_map.Stations;
 import com.example.cta_map.optionAdapter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class mainactivity extends AppCompatActivity {
 
@@ -35,13 +38,15 @@ public class mainactivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Database2 sqlite = new Database2(getApplicationContext());
         RecyclerView rvContacts = (RecyclerView) findViewById(R.id.recycler_view);
         RecyclerView optionsrv = (RecyclerView) findViewById(R.id.ViewOptions);
-
         ArrayList<Stations> list = new ArrayList<>();
-        String[] stations = new String[]{"Granville", "Chicago", "Fullernton", "North/Clyborn"};
-        for (int i=0; i < 5; i++){
-            list.add(new Stations(i+" Station"));
+        ArrayList<HashMap> favorite_stations = sqlite.getAllRecord("favorite_stations");
+        Log.e("dd", "fav"+ favorite_stations);
+        for (HashMap t: favorite_stations){
+            Log.e("ttt", "f"+t);
+            list.add(new Stations("#"+t.get("PrimaryId")+"."+" "+t.get("fav_station_name")+""," "+t.get("fav_station_type"),t.get("fav_station_dir")+""));
         }
 
         String[] options = new String[]{"Add New Station", "Find Station", "View Map"};
@@ -88,7 +93,6 @@ public class mainactivity extends AppCompatActivity {
 //
 //
 //    public void fill_fav_station_list(ArrayList<HashMap> table_record, ArrayAdapter<String> favoriteadapter){
-//        Database2 sqlite = new Database2(getApplicationContext());
 //        if (table_record.isEmpty()){
 //                favoriteList.add("No Favorite Stations.");
 //            }else {
@@ -107,7 +111,7 @@ public class mainactivity extends AppCompatActivity {
 ////                        query = "SELECT southbound1 FROM main_stations WHERE main_station_type = '"+station.get("fav_station_type").toString().toUpperCase()+"'";
 ////
 ////                    }
-////                    String main_station = sqlite.getValue(query);
+//                    String main_station = sqlite.getValue(query);
 //
 //
 //                    favoriteadapter.notifyDataSetChanged();
@@ -224,8 +228,7 @@ public class mainactivity extends AppCompatActivity {
 //                String[] station_id =new String[]{StringUtils.substringBetween(item, "#", "-")};
 //                String where = "station_id = ?";
 //                db.DeleteRecentStation(where, station_id);
-//                finish();
-//                startActivity(getIntent());
+
 //
 //                return false;
 //            }

@@ -24,9 +24,9 @@
 
 
             <Button
-                android:id="@+id/dir2"
-                android:layout_width="47dp"
-                android:layout_height="33dp"
+                android:id="@+id/delete_btn"
+                android:layout_width="41dp"
+                android:layout_height="31dp"
                 android:text="Del"
                 android:textSize="10sp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -38,21 +38,21 @@
 
             <Button
                 android:id="@+id/dir"
-                android:layout_width="47dp"
-                android:layout_height="33dp"
+                android:layout_width="31dp"
+                android:layout_height="30dp"
                 android:text="N"
                 android:textSize="10sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/track"
-                app:layout_constraintHorizontal_bias="0.892"
+                app:layout_constraintHorizontal_bias="0.914"
                 app:layout_constraintStart_toEndOf="@+id/title"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.533" />
+                app:layout_constraintVertical_bias="0.428" />
 
             <ImageView
                 android:id="@+id/imageView3"
-                android:layout_width="62dp"
-                android:layout_height="39dp"
+                android:layout_width="82dp"
+                android:layout_height="30dp"
                 android:layout_marginEnd="68dp"
                 android:layout_marginRight="68dp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -63,29 +63,29 @@
 
             <Button
                 android:id="@+id/track"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="68dp"
-                android:layout_marginRight="68dp"
+                android:layout_width="82dp"
+                android:layout_height="38dp"
+                android:layout_marginEnd="52dp"
+                android:layout_marginRight="52dp"
 
                 android:text="Track"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
                 android:text="TextView"
-                android:textSize="15sp"
+                android:textSize="17sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/imageView3"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.533" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

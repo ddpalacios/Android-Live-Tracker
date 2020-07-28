@@ -11,6 +11,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.cta_map.Activities.MapsActivity;
+
 public class optionAdapter extends RecyclerView.Adapter<optionAdapter.OptionViewHolder> {
     Context context;
     String[] options;
@@ -35,15 +37,31 @@ public class optionAdapter extends RecyclerView.Adapter<optionAdapter.OptionView
         final String option = this.options[position];
         holder.t1.setText(option);
         final Context context = this.context;
-        holder.t1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, ChooseLine.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                Log.e("Clicked", position+" is clicked");
-                context.startActivity(intent);
-            }
-        });
+            holder.t1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = null;
+                    if (position == 0 || position == 1 ){
+                        intent = new Intent(context, ChooseLine.class);
+
+                    }else {
+                        intent = new Intent(context, MapsActivity.class);
+
+                    }
+
+
+                    intent.putExtra("position", position);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    Log.e("Clicked", position+" is clicked");
+                    context.startActivity(intent);
+                }
+            });
+
+
+
+
+
+
 
 
     }

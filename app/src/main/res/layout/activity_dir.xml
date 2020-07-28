@@ -17,10 +17,11 @@
 
     <Button
         android:id="@+id/north_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="429dp"
+        android:layout_height="72dp"
         android:layout_marginTop="4dp"
         android:text="Howard"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -29,9 +30,10 @@
 
     <Button
         android:id="@+id/south_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="429dp"
+        android:layout_height="72dp"
         android:layout_marginTop="24dp"
+        android:textSize="20sp"
         android:text="95th/Dan  Ryan"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
