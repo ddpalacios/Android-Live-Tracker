@@ -43,8 +43,8 @@ public class TrainStationActivity  extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.train_station_activity);
         recyclerView = findViewById(R.id.recycler_view2);
-        MyAdapter2 myAdapter2 = new MyAdapter2(this, s1);
-        recyclerView.setAdapter(myAdapter2);
+//        MyAdapter2 myAdapter2 = new MyAdapter2(this, s1);
+//        recyclerView.setAdapter(myAdapter2);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
 

@@ -156,6 +156,14 @@ public class Database2 extends SQLiteOpenHelper {
     }
     }
 
+    public void update_fav_dir(String id, String dir){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("chosen_direction", dir);
+        db.update("favorite_stations", cv, "id = ?", new String[]{id});
+
+    }
+
 
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -358,7 +366,7 @@ public class Database2 extends SQLiteOpenHelper {
         String query = "SELECT "+col +" FROM "+table_name;
 //        Log.e("que", query);
         Cursor cursor = db.rawQuery(query, null);
-        cursor.moveToFirst();
+//        cursor.moveToFirst();
         if( cursor != null ) {
             if (cursor.getCount() >= 0) {
                 while (cursor.moveToNext()) {
@@ -427,6 +435,7 @@ public class Database2 extends SQLiteOpenHelper {
         ArrayList<HashMap> result = new ArrayList<>();
         while (cursor.moveToNext()) {
             HashMap<String, String> record = new HashMap<>();
+            record.put("PrimaryId", cursor.getString(0));
             record.put("fav_station_name", cursor.getString(1));
             record.put("fav_station_type", cursor.getString(2));
             record.put("fav_station_dir", cursor.getString(3));

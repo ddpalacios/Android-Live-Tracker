@@ -39,21 +39,21 @@ public class API_Caller_Thread implements Runnable {
                         android.os.Message msg = this.handler.obtainMessage();
                         bundle.putBoolean("No_Trains", true);
                         msg.setData(bundle);
-                        handler.sendMessage(msg);
+//                        handler.sendMessage(msg);
                         continue;
                     }
-                    this.msg.setMsg(train_list);
-                    if (this.willCommunicate){
-                        Log.e("Url", url);
-                        Log.e("Found", train_list.length +" Trains.");
-                        Log.e(Thread.currentThread().getName(),  "is waiting... ");
-
-                    }
-
+//                    this.msg.setMsg(train_list);
+//                    if (this.willCommunicate){
+//                        Log.e("Url", url);
+//                        Log.e("Found", train_list.length +" Trains.");
+//                        Log.e(Thread.currentThread().getName(),  "is waiting... ");
+//
+//                    }
+//
                     this.msg.setStatus(true);
                     this.msg.wait();
-
-
+//
+//
                 } catch (IOException | InterruptedException e) {
                     Log.e("CONNECTION ERROR", "FAILED TO CONNECT TO URL");
                     e.printStackTrace();
