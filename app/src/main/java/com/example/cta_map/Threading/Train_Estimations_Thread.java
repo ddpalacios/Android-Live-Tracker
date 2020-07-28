@@ -91,7 +91,7 @@ public class Train_Estimations_Thread implements Runnable {
                         this.msg.notify();
 
                         if (!this.msg.getClicked()) {
-                            try { Thread.sleep(2000); } catch (InterruptedException e) { e.printStackTrace(); }
+                            try { Thread.sleep(10000); } catch (InterruptedException e) { e.printStackTrace(); }
 
                         }else{
                             this.msg.notify();

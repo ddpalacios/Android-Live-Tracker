@@ -3,8 +3,12 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Handler;
 import android.util.Log;
@@ -35,6 +39,7 @@ import com.example.cta_map.Threading.Train_Estimations_Thread;
 import com.example.cta_map.TrackingAdapter;
 import com.example.cta_map.Tracking_Station;
 import com.example.cta_map.Train_info;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -67,7 +72,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
 //        Database2 sqlite = new Database2(getApplicationContext());
 //        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
 //        list.setAdapter(adapter);
-//        HashMap<Integer, String> train_etas = new HashMap<>();
+        HashMap<Integer, String> train_etas = new HashMap<>();
 
         final ArrayList<HashMap> chosen_trains = (ArrayList<HashMap>) bundle.getSerializable("chosen_trains");
         Log.e("chosen", chosen_trains+"");
@@ -83,35 +88,48 @@ public class TrainTrackingActivity extends AppCompatActivity {
         RecyclerView line_layout = (RecyclerView) findViewById(R.id.vr_recycler_view);
         RecyclerView bottom_layout = (RecyclerView) findViewById(R.id.hr_recycler_view);
 
-        for (HashMap t: chosen_trains){
+        for (HashMap train: chosen_trains){
+            Integer eta = (Integer) train.get("train_eta");
+            String train_id = (String) train.get("train_id");
+            train_etas.put(eta,  train_id);
+        }
 
-            list.add(new Tracking_Station("  #"+t.get("train_id")+". To "+t.get("main_station"), t.get("train_eta")+""));
-
-            String query = "SELECT station_id FROM cta_stops WHERE station_name = '" + chosen_trains.get(0).get("next_stop").toString().trim() + "'" + " AND " + chosen_trains.get(0).get("station_type").toString().trim() + " = 'true'";
-            String station_id = sqlite.getValue(query);
-            Log.e("ID", station_id+"dd");
-            String[] station_coord = chicago_transits.retrieve_station_coordinates(sqlite, station_id);
-
-            Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance(
-                    Double.parseDouble((String) t.get("train_lat")),
-                    Double.parseDouble((String) t.get("train_lon")),
-                    Double.parseDouble(station_coord[0]),
-                    Double.parseDouble(station_coord[1]));
-            int current_train_eta = time.get_estimated_time_arrival(25, current_train_distance_from_target_station);
+        Map<Integer, String> map = new TreeMap(train_etas);
 
 
 
-            list2.add(new Train_info("Next Stop: "+t.get("next_stop")+"",
+        for (Map.Entry<Integer, String> entry : map.entrySet()) {
+            Integer eta = entry.getKey();
+            String train_id = entry.getValue();
+            list.add(new Tracking_Station("  #" + train_id + ". To " + tracking_record.get("main_station"), eta + ""));
+            for (HashMap t: chosen_trains){
+                if (t.containsValue(train_id)){
+                    String query = "SELECT station_id FROM cta_stops WHERE station_name = '" + chosen_trains.get(0).get("next_stop").toString().trim() + "'" + " AND " + chosen_trains.get(0).get("station_type").toString().trim() + " = 'true'";
+                    String station_id = sqlite.getValue(query);
+                    String[] station_coord = chicago_transits.retrieve_station_coordinates(sqlite, station_id);
+                    Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance(
+                            Double.parseDouble((String) t.get("train_lat")),
+                            Double.parseDouble((String) t.get("train_lon")),
+                            Double.parseDouble(station_coord[0]),
+                            Double.parseDouble(station_coord[1]));
+                    int current_train_eta = time.get_estimated_time_arrival(25, current_train_distance_from_target_station);
+                    list2.add(new Train_info("Next Stop: "+t.get("next_stop")+"",
                             ""+current_train_eta+"m",
-                        String.format("%.2f",current_train_distance_from_target_station)+" mi",
-                    "To "+tracking_record.get("station_name")+" (target)",
-                    t.get("train_eta")+"m",
-                    String.format("%.2f",t.get("train_distance"))+" mi", "#"+t.get("train_id")+""));
+                            String.format("%.2f",current_train_distance_from_target_station)+" mi",
+                            "To "+tracking_record.get("station_name")+" (target)",
+                            t.get("train_eta")+"m",
+                            String.format("%.2f",t.get("train_distance"))+" mi", "Train# "+t.get("train_id")+""));
+                }
+            }
+
+
+
         }
 
 
         BottomTrackingAdapter bottomTrackingAdapter = new BottomTrackingAdapter(getApplicationContext(), list2);
         bottom_layout.setAdapter(bottomTrackingAdapter);
+        bottomTrackingAdapter.notifyDataSetChanged();
         bottom_layout.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
 
@@ -125,11 +143,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
 
 //        final HashMap<String, String> tracking_record = (HashMap<String, String>) bundle.getSerializable("target_record");
 ////        Log.e("chosen", chosen_trains+"");
-//        for (HashMap train: chosen_trains){
-//            Integer eta = (Integer) train.get("train_eta");
-//            String train_id = (String) train.get("train_id");
-//            train_etas.put(eta,  train_id);
-//        }
+
 //        int idx = 0;
 //        Map<Integer, String> map = new TreeMap(train_etas);
 //        String nearest_train_id = null;
@@ -215,18 +229,17 @@ public class TrainTrackingActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     protected void onCreate(Bundle savedInstanceState) {
-
-
-//        RecyclerView recList = (RecyclerView) findViewById(R.id.data_view);
-//        recList.setHasFixedSize(true);
-//        LinearLayoutManager llm = new LinearLayoutManager(this);
-//        llm.setOrientation(LinearLayoutManager.VERTICAL);
-//        recList.setLayoutManager(llm);
-
-
+       HashMap<String, Integer> TrainLineKeyCodes  = new HashMap<>();
         setContentView(R.layout.train_tracking_activity);
+        ImageView imageView  = (ImageView) findViewById(R.id.tracking_image);
+        final TextView title = (TextView) findViewById(R.id.tracking_name);
+        Switch s1 = (Switch) findViewById(R.id.toMaps);
+        FloatingActionButton switch_dir = (FloatingActionButton) findViewById(R.id.floatingActionButton);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
         final Database2 sqlite = new Database2(getApplicationContext());
         final HashMap<String, String> tracking_record = sqlite.get_tracking_record(); //("tracking_record", "WHERE TRACKING_ID ='"+0+"'");  //.getAllRecord("tracking_table");
 
@@ -234,7 +247,19 @@ public class TrainTrackingActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "No Tracking Station Found in DB!", Toast.LENGTH_LONG).show();
             return;
         }
+
+        TrainLineKeyCodes.put("red",R.drawable.red );
+        TrainLineKeyCodes.put("blue", R.drawable.blue);
+        TrainLineKeyCodes.put("brown", R.drawable.brown);
+        TrainLineKeyCodes.put("green", R.drawable.green);
+        TrainLineKeyCodes.put("orange", R.drawable.orange);
+        TrainLineKeyCodes.put("pink", R.drawable.pink);
+        TrainLineKeyCodes.put("purple", R.drawable.purple);
+        TrainLineKeyCodes.put("yellow", R.drawable.yellow);
         UserLocation userLocation = new UserLocation(this);
+
+        imageView.setImageResource(TrainLineKeyCodes.get(tracking_record.get("station_type").toString().trim()));
+        title.setText(tracking_record.get("station_name")+" ("+tracking_record.get("main_station")+")");
 //        userLocation.getLastLocation(getApplicationContext());
 //
 //
@@ -259,13 +284,81 @@ public class TrainTrackingActivity extends AppCompatActivity {
         final Thread t2 = new Thread(new Content_Parser_Thread(message, tracking_record, sqlite, true), "Content Parser");
         final Thread t3 = new Thread(new Train_Estimations_Thread(message, userLocation, handler,getApplicationContext(),false), "Estimation Thread");
         final Thread t4 = new Thread(new Notifier_Thread(message, getApplicationContext(), t1,t2,t3,false), "Notifier Thread");
-//t1.start();
-//
-//t2.start();
-//t3.start();
-
         t4.start();
         sqlite.close();
+
+
+
+        s1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TrainTrackingActivity.this, MapsActivity.class);
+                intent.putExtra("position", 1);
+                message.keepSending(false);
+                startActivity(intent);
+            }
+        });
+
+
+        switch_dir.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String target_station_direction;
+                String main_station;
+                if (message.getDir() == null) {
+                    target_station_direction = tracking_record.get("station_dir");
+                    main_station = tracking_record.get("main_station");
+
+
+                } else {
+                    target_station_direction = message.getDir();
+                    main_station = message.getMainStation();
+
+                }
+
+                t3.interrupt();
+                if (target_station_direction.equals("1")) {
+                    Log.e("track", tracking_record.get("tracking_id")+"");
+                    target_station_direction = "5";
+                    sqlite.update_value(tracking_record.get("tracking_id"), "tracking_table", "station_dir", target_station_direction);
+                    String query = "SELECT southbound1 FROM main_stations WHERE main_station_type = '"+tracking_record.get("station_type").toUpperCase().trim()+"'";
+                    main_station = sqlite.getValue(query);
+                    sqlite.update_value(tracking_record.get("tracking_id"), "tracking_table", "main_station_name", main_station);
+                    tracking_record.put("main_station",main_station );
+                    tracking_record.put("station_dir", target_station_direction);
+                    title.setText(tracking_record.get("station_name")+" ("+tracking_record.get("main_station")+")");
+
+                    synchronized (message){
+                        message.setDir(target_station_direction);
+                        message.setMainStation(main_station);
+                        message.setClicked(true);
+                        message.notifyAll();
+                    }
+                } else {
+                    Log.e("track", tracking_record.get("tracking_id")+"");
+                    target_station_direction = "1";
+                    String query = "SELECT northbound FROM main_stations WHERE main_station_type = '" + tracking_record.get("station_type").toUpperCase().trim() + "'";
+                    main_station = sqlite.getValue(query);
+                    sqlite.update_value(tracking_record.get("tracking_id"), "tracking_table", "main_station_name", main_station);
+                    tracking_record.put("main_station", main_station);
+                    tracking_record.put("station_dir", target_station_direction);
+                    title.setText(tracking_record.get("station_name")+" ("+tracking_record.get("main_station")+")");
+
+                    synchronized (message){
+                        message.setDir(target_station_direction);
+                        message.setMainStation(main_station);
+                        message.setClicked(true);
+                        message.notifyAll();
+                    }
+                }
+
+
+
+            }
+        });
+
+
+
 
 //        toMaps.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -294,7 +387,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
 //                synchronized (message){
 //                    message.keepSending(false);
 //                }
-//
+
 //                startActivity(intent);
 //
 //
@@ -352,5 +445,16 @@ public class TrainTrackingActivity extends AppCompatActivity {
 //                }
 //            }
 //        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            this.finish();
+                message.keepSending(false);
+
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

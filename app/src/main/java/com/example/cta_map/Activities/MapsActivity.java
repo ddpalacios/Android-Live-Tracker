@@ -71,7 +71,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         HashMap<String, Integer> colors = GetTrainColors();
         final ArrayList<String> stops = sqlite.get_column_values("line_stops_table", tracking_record.get("station_type").toLowerCase());
 
-        PolylineOptions options = new PolylineOptions().width(15).color(colors.get(tracking_record.get("station_type")));
+        PolylineOptions options = new PolylineOptions().width(15).color(colors.get(tracking_record.get("station_type").trim()));
         for (String each_stop : stops) {
             String[] station_coord = chicago_transits.retrieve_station_coordinates(sqlite, tracking_record.get("station_id"));
             double station_lat = Double.parseDouble(station_coord[0]);
@@ -101,7 +101,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         Database2 sqlite = new Database2(getApplicationContext());
         final HashMap<String, String> tracking_record = sqlite.get_tracking_record();
         Log.e("track", tracking_record+"");
-        final ArrayList<String> stops = sqlite.get_column_values("line_stops_table", tracking_record.get("station_type").toLowerCase());
+        final ArrayList<String> stops = sqlite.get_column_values("line_stops_table", tracking_record.get("station_type").trim().toLowerCase());
         Chicago_Transits chicago_transits = new Chicago_Transits();
         MapMarker mapMarker = new MapMarker(mMap);
         for (HashMap train: chosen_trains){
@@ -116,7 +116,6 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
         String[] main_station_coordinates = new String[]{qu.get("latitude"), qu.get("longitude")};
         Marker target_station_marker = mapMarker.addMarker(tracking_record.get("station_lat"), tracking_record.get("station_lon"), tracking_record.get("station_name"), "default", 1f);
         target_station_marker.showInfoWindow();
-//
         if (main_station_coordinates == null) {
             Toast.makeText(getApplicationContext(), "COULD NOT FIND MAIN STATION", Toast.LENGTH_SHORT).show();
         } else {
@@ -129,16 +128,16 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
             String train_lon = train.get("train_lon");
             mapMarker.addMarker(train_lat, train_lon, train.get("next_stop"), train.get("station_type"), .5f);
         }
-//        for (HashMap<String, String> train : chosen_trains) {
-//            String train_lat = train.get("train_lat");
-//            String train_lon = train.get("train_lon");
-//            String eta = String.valueOf(train.get("train_eta"));
-//            mapMarker.addMarker(train_lat, train_lon, "Next Stop: "+train.get("next_stop")+"| "+eta+"m", train.get("station_type"), 1f);
-//        }
-//        Log.e("Nearest", map.entrySet()+"");
-//
-//
-//    sqlite.close();
+        for (HashMap<String, String> train : chosen_trains) {
+            String train_lat = train.get("train_lat");
+            String train_lon = train.get("train_lon");
+            String eta = String.valueOf(train.get("train_eta"));
+            mapMarker.addMarker(train_lat, train_lon, "Next Stop: "+train.get("next_stop")+"| "+eta+"m", train.get("station_type"), 1f);
+        }
+        Log.e("Nearest", map.entrySet()+"");
+
+
+    sqlite.close();
 
 
     }
@@ -382,7 +381,32 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 
 
         }else {
+//            mMap.setMyLocationEnabled(true); // Enable user location permission
+//            mMap.setOnMyLocationButtonClickListener(this);
+//            mMap.setOnMyLocationClickListener(this);
+            message.keepSending(true);
+            message.setClicked(false);
             layout.setVisibility(View.GONE);
+            UserLocation userLocation = new UserLocation(this);
+
+            final HashMap<String, String> tracking_record = sqlite.get_tracking_record(); //("tracking_record", "WHERE TRACKING_ID ='"+0+"'");  //.getAllRecord("tracking_table");
+            message.setTargetContent(tracking_record);
+            String[] target_coordinates = new String[]{tracking_record.get("station_lat"),tracking_record.get("station_lon") };
+            chicago_transits.ZoomIn(mMap, (float) 13.3, target_coordinates);
+
+            final Thread t1 = new Thread(new API_Caller_Thread(message, tracking_record, handler,true), "API_CALL_Thread");
+            final Thread t2 = new Thread(new Content_Parser_Thread(message, tracking_record, sqlite, false), "Content Parser");
+            final Thread t3 = new Thread(new Train_Estimations_Thread(message, userLocation, handler,getApplicationContext(),false), "Estimation Thread");
+            final Thread t4 = new Thread(new Notifier_Thread(message, getApplicationContext(), t1,t2,t3,false), "Notifier Thread");
+            t4.start();
+
+            sqlite.close();
+
+
+
+
+
+
         }
 
 
@@ -429,7 +453,7 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
 //        final Thread t2 = new Thread(new Content_Parser_Thread(message, tracking_record, sqlite, false), "Content Parser");
 //        final Thread t3 = new Thread(new Train_Estimations_Thread(message, userLocation, handler,getApplicationContext(),false), "Estimation Thread");
 //        final Thread t4 = new Thread(new Notifier_Thread(message, getApplicationContext(), t1,t2,t3,false), "Notifier Thread");
-//
+
 //
 //
 ////        t4.start();
