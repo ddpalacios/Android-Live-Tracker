@@ -46,7 +46,7 @@ public class mainactivity extends AppCompatActivity {
         Log.e("dd", "fav"+ favorite_stations);
         for (HashMap t: favorite_stations){
             Log.e("ttt", "f"+t);
-            list.add(new Stations("#"+t.get("PrimaryId")+"."+" "+t.get("fav_station_name")+""," "+t.get("fav_station_type"),t.get("fav_station_dir")+""));
+            list.add(new Stations("#"+t.get("PrimaryId")+"."+" "+t.get("fav_station_name")+"."," "+t.get("fav_station_type"),t.get("fav_station_dir")+""));
         }
 
         String[] options = new String[]{"Add New Station", "Find Station", "View Map"};

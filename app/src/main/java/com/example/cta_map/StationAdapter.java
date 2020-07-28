@@ -14,8 +14,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cta_map.Activities.MapsActivity;
+import com.example.cta_map.Activities.TrainTrackingActivity;
 import com.example.cta_map.Activities.mainactivity;
 import com.example.cta_map.DataBase.Database2;
+import com.example.cta_map.Displayers.Chicago_Transits;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -80,9 +82,33 @@ public class StationAdapter extends RecyclerView.Adapter<StationAdapter.MyViewHo
         holder.track_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ctx, MapsActivity.class);
+                Intent intent = new Intent(ctx, TrainTrackingActivity.class);
                 intent.putExtra("position", 1);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                String station_name = StringUtils.substringBetween(station.getName(), ". ", ".");
+                String query1 = "SELECT station_id FROM cta_stops WHERE station_name = '" + station_name + "'" + " AND " + station.getType() + " = 'true'";
+                String station_id = sqlite.getValue(query1);
+                String main_query;
+                if (station.getDir().equals("1")){
+                    main_query = "SELECT northbound FROM main_stations WHERE main_station_type = '"+station.getType().toUpperCase().replaceAll(" ", "")+"'";
+
+                }else{
+                    main_query = "SELECT southbound1 FROM main_stations WHERE main_station_type = '"+station.getType().toUpperCase().replaceAll(" ", "")+"'";
+
+                }
+
+
+
+
+                Chicago_Transits chicago_transits = new Chicago_Transits();
+                String[] station_coord = chicago_transits.retrieve_station_coordinates(sqlite, station_id);
+                String main_station = sqlite.getValue(main_query);
+
+
+
+                sqlite.add_tracking_station(station_name, station.getType(), station.getDir(), main_station, station_coord, station_id);
+
+
                 ctx.startActivity(intent);
 
 //                Log.e("TRACK", "Track clicked "+" Data: "+station.getName());
