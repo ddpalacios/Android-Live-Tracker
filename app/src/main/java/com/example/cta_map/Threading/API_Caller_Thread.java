@@ -28,7 +28,8 @@ public class API_Caller_Thread implements Runnable {
     @Override
     public void run() {
         Chicago_Transits chicago_transits = new Chicago_Transits();
-        String url = "https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt="+chicago_transits.TrainLineKeys(this.record.get("station_type"));
+        Log.e("RECORD", this.record+"");
+        String url = "https://lapi.transitchicago.com/api/1.0/ttpositions.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&rt="+chicago_transits.TrainLineKeys(this.record.get("station_type").replaceAll(" ", ""));
         synchronized (this.msg){
             while (this.msg.IsSending()) {
                 try {
@@ -42,7 +43,7 @@ public class API_Caller_Thread implements Runnable {
 //                        handler.sendMessage(msg);
                         continue;
                     }
-//                    this.msg.setMsg(train_list);
+                    this.msg.setMsg(train_list);
 //                    if (this.willCommunicate){
 //                        Log.e("Url", url);
 //                        Log.e("Found", train_list.length +" Trains.");

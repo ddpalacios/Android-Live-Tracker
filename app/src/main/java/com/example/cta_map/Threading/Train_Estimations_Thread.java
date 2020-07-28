@@ -55,19 +55,19 @@ public class Train_Estimations_Thread implements Runnable {
                         return;
                     }
                     else{
-                        this.userLocation.getLastLocation(this.context);
+//                        this.userLocation.getLastLocation(this.context);
                         HashMap<String, String> target_station_record = this.msg.getTargetContent();
                         String target_station_lat = target_station_record.get("station_lat");
                         String target_station_lon = target_station_record.get("station_lon");
 
 
-                        Double current_user_distance_from_target_station = chicago_transits.calculate_coordinate_distance(
-                                Double.parseDouble(target_station_record.get("user_lat")),
-                                Double.parseDouble(target_station_record.get("user_lon")),
-                                Double.parseDouble(target_station_lat),
-                                Double.parseDouble(target_station_lon));
-                        int current_user_eta = time.get_estimated_time_arrival(3, current_user_distance_from_target_station);
-                        target_station_record.put("user_eta", String.valueOf(current_user_eta));
+//                        Double current_user_distance_from_target_station = chicago_transits.calculate_coordinate_distance(
+//                                Double.parseDouble(target_station_record.get("user_lat")),
+//                                Double.parseDouble(target_station_record.get("user_lon")),
+//                                Double.parseDouble(target_station_lat),
+//                                Double.parseDouble(target_station_lon));
+//                        int current_user_eta = time.get_estimated_time_arrival(3, current_user_distance_from_target_station);
+//                        target_station_record.put("user_eta", String.valueOf(current_user_eta));
 //
 
 

@@ -33,8 +33,8 @@ public class Notifier_Thread implements Runnable {
         this.t2.setPriority(2);
         this.t3.setPriority(1);
         this.t1.start();
-//        this.t2.start();
-//        this.t3.start();
+        this.t2.start();
+        this.t3.start();
         Log.e("DONE", "All three threads have finished execution");
 
 

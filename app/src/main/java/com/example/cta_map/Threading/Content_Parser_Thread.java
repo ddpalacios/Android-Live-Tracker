@@ -37,7 +37,7 @@ public class Content_Parser_Thread implements Runnable
         Chicago_Transits chicago_transits = new Chicago_Transits();
         String target_station = this.record.get("station_name").replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
         String station_direction = this.record.get("station_dir");
-        final ArrayList<String> stops = this.sqlite.get_column_values("line_stops_table", this.record.get("station_type").toLowerCase());
+        final ArrayList<String> stops = this.sqlite.get_column_values("line_stops_table", this.record.get("station_type").replaceAll(" ", "").toLowerCase());
         final ArrayList<String> modified_stops = new ArrayList<>();
         List<String> modified_valid_stations;
         for (String each_stop : stops) {
@@ -62,7 +62,7 @@ public class Content_Parser_Thread implements Runnable
                     }
 
                     for (String raw_content : content) {
-                        HashMap<String, String> current_train_info = chicago_transits.get_train_info(raw_content, record.get("station_type"));
+                        HashMap<String, String> current_train_info = chicago_transits.get_train_info(raw_content, record.get("station_type").replaceAll(" ", ""));
                         String modified_next_stop = current_train_info.get("next_stop").replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
                         if (current_train_info.get("train_direction").equals(station_direction) && modified_valid_stations.contains(modified_next_stop)) {
                             chosen_trains.add(current_train_info);
