@@ -62,11 +62,14 @@ public class TrainTrackingActivity extends AppCompatActivity {
                 Bundle bundle = msg.getData();
 
 
-            displayResults(bundle);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                displayResults(bundle);
+            }
         }
     };
 
-    public void displayResults(Bundle bundle){
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void displayResults(Bundle bundle) {
 //        final ListView list = findViewById(R.id.train_layout_arrival_times);
 //        ArrayList<String> arrayList = new ArrayList<>();
 //        Database2 sqlite = new Database2(getApplicationContext());
@@ -75,7 +78,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
         HashMap<Integer, String> train_etas = new HashMap<>();
 
         final ArrayList<HashMap> chosen_trains = (ArrayList<HashMap>) bundle.getSerializable("chosen_trains");
-        Log.e("chosen", chosen_trains+"");
+        Log.e("chosen", chosen_trains + "");
         ArrayList<Tracking_Station> list = new ArrayList<>();
         ArrayList<Train_info> list2 = new ArrayList<>();
         Time time = new Time();
@@ -84,26 +87,24 @@ public class TrainTrackingActivity extends AppCompatActivity {
         final HashMap<String, String> tracking_record = sqlite.get_tracking_record(); //("tracking_record", "WHERE TRACKING_ID ='"+0+"'");  //.getAllRecord("tracking_table");
 
 
-
         RecyclerView line_layout = (RecyclerView) findViewById(R.id.vr_recycler_view);
-        RecyclerView bottom_layout = (RecyclerView) findViewById(R.id.hr_recycler_view);
+        final RecyclerView bottom_layout = (RecyclerView) findViewById(R.id.hr_recycler_view);
 
-        for (HashMap train: chosen_trains){
+        for (HashMap train : chosen_trains) {
             Integer eta = (Integer) train.get("train_eta");
             String train_id = (String) train.get("train_id");
-            train_etas.put(eta,  train_id);
+            train_etas.put(eta, train_id);
         }
 
         Map<Integer, String> map = new TreeMap(train_etas);
-
 
 
         for (Map.Entry<Integer, String> entry : map.entrySet()) {
             Integer eta = entry.getKey();
             String train_id = entry.getValue();
             list.add(new Tracking_Station("  #" + train_id + ". To " + tracking_record.get("main_station"), eta + ""));
-            for (HashMap t: chosen_trains){
-                if (t.containsValue(train_id)){
+            for (HashMap t : chosen_trains) {
+                if (t.containsValue(train_id)) {
                     String query = "SELECT station_id FROM cta_stops WHERE station_name = '" + chosen_trains.get(0).get("next_stop").toString().trim() + "'" + " AND " + chosen_trains.get(0).get("station_type").toString().trim() + " = 'true'";
                     String station_id = sqlite.getValue(query);
                     String[] station_coord = chicago_transits.retrieve_station_coordinates(sqlite, station_id);
@@ -113,31 +114,34 @@ public class TrainTrackingActivity extends AppCompatActivity {
                             Double.parseDouble(station_coord[0]),
                             Double.parseDouble(station_coord[1]));
                     int current_train_eta = time.get_estimated_time_arrival(25, current_train_distance_from_target_station);
-                    list2.add(new Train_info("Next Stop: "+t.get("next_stop")+"",
-                            ""+current_train_eta+"m",
-                            String.format("%.2f",current_train_distance_from_target_station)+" mi",
-                            "To "+tracking_record.get("station_name")+" (target)",
-                            t.get("train_eta")+"m",
-                            String.format("%.2f",t.get("train_distance"))+" mi", "Train# "+t.get("train_id")+""));
+                    list2.add(new Train_info("Next Stop: " + t.get("next_stop") + "",
+                            "" + current_train_eta + "m",
+                            String.format("%.2f", current_train_distance_from_target_station) + " mi",
+                            "To " + tracking_record.get("station_name") + " (target)",
+                            t.get("train_eta") + "m",
+                            String.format("%.2f", t.get("train_distance")) + " mi", "Train# " + t.get("train_id") + ""));
                 }
             }
 
+            BottomTrackingAdapter bottomTrackingAdapter = new BottomTrackingAdapter(getApplicationContext(), list2);
+            bottom_layout.setAdapter(bottomTrackingAdapter);
+            bottomTrackingAdapter.notifyDataSetChanged();
+            bottom_layout.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
 
-        }
+
+            TrackingAdapter adapter = new TrackingAdapter(getApplicationContext(), list);
+            line_layout.setAdapter(adapter);
+            line_layout.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
 
-        BottomTrackingAdapter bottomTrackingAdapter = new BottomTrackingAdapter(getApplicationContext(), list2);
-        bottom_layout.setAdapter(bottomTrackingAdapter);
-        bottomTrackingAdapter.notifyDataSetChanged();
-        bottom_layout.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+            bottom_layout.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+                @Override
+                public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+//                    Log.e("scrolling", ""+bottom_layout.getLayoutManager().getPosition(v));
 
-
-        TrackingAdapter adapter = new TrackingAdapter(getApplicationContext(), list);
-        line_layout.setAdapter(adapter);
-        line_layout.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-
-
+                }
+            });
 
 
 
@@ -191,8 +195,6 @@ public class TrainTrackingActivity extends AppCompatActivity {
 //        }
 
 
-
-
 //        if (Integer.parseInt(tracking_record.get("user_eta"))  <= 15){
 //            int time_to_spare = 10- Integer.parseInt(tracking_record.get("user_eta"));
 //            if (time_to_spare == 0){
@@ -204,7 +206,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
 //            int late = (Integer.parseInt(tracking_record.get("user_eta")) - 10) *-1;
 //            Log.e("LATE","You are "+late+" m Late, Check out next trains or try to make this one.");
 //        }
-//
+
 //
 //        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //            @Override
@@ -222,11 +224,12 @@ public class TrainTrackingActivity extends AppCompatActivity {
 //                }
 //            }
 //        });
-}
+        }
+    }
 
 
 
-
+    @SuppressLint("SetTextI18n")
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     protected void onCreate(Bundle savedInstanceState) {
        HashMap<String, Integer> TrainLineKeyCodes  = new HashMap<>();
@@ -289,6 +292,9 @@ public class TrainTrackingActivity extends AppCompatActivity {
 
 
 
+
+
+
         s1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -327,13 +333,12 @@ public class TrainTrackingActivity extends AppCompatActivity {
                     tracking_record.put("main_station",main_station );
                     tracking_record.put("station_dir", target_station_direction);
                     title.setText(tracking_record.get("station_name")+" ("+tracking_record.get("main_station")+")");
+                    Log.e("Notified", "waiting");
 
-                    synchronized (message){
+                        Log.e("Notified", "Notified");
                         message.setDir(target_station_direction);
                         message.setMainStation(main_station);
                         message.setClicked(true);
-                        message.notifyAll();
-                    }
                 } else {
                     Log.e("track", tracking_record.get("tracking_id")+"");
                     target_station_direction = "1";
@@ -343,13 +348,12 @@ public class TrainTrackingActivity extends AppCompatActivity {
                     tracking_record.put("main_station", main_station);
                     tracking_record.put("station_dir", target_station_direction);
                     title.setText(tracking_record.get("station_name")+" ("+tracking_record.get("main_station")+")");
+                    Log.e("Notified", "waiting");
 
-                    synchronized (message){
+                        Log.e("Notified", "Notified");
                         message.setDir(target_station_direction);
                         message.setMainStation(main_station);
                         message.setClicked(true);
-                        message.notifyAll();
-                    }
                 }
 
 

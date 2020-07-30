@@ -1,6 +1,7 @@
 package com.example.cta_map;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,27 @@ public class BottomTrackingAdapter extends RecyclerView.Adapter<BottomTrackingAd
             holder.main_station_txt.setText(train.getTarget_name());
             holder.target_eta_txt.setText(train.getTarget_eta());
             holder.train_id_txt.setText(train.getTrain_id());
+
+            holder.notifySwitch.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int user_eta = 5;
+                    if (5 <= 15){
+                        int time_to_spare = 10-5;
+                        if (time_to_spare == 0){
+                            Log.e("Leave now", "Leave now before you are late");
+                        }else{
+                            Log.e("time to spare", "You have "+ time_to_spare+" time to spare");
+                        }
+                    }else{
+                        int late = (5- 10) *-1;
+                        Log.e("LATE","You are "+late+" m Late, Check out next trains or try to make this one.");
+                    }
+
+
+
+                }
+            });
 
 
 

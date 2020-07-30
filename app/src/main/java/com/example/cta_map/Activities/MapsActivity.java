@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +37,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.BufferedReader;
 import java.util.ArrayList;
@@ -387,7 +389,9 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
             message.keepSending(true);
             message.setClicked(false);
             layout.setVisibility(View.GONE);
+            FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.floatingActionButton2);
             UserLocation userLocation = new UserLocation(this);
+            Switch exit = (Switch) findViewById(R.id.exit_switch);
 
             final HashMap<String, String> tracking_record = sqlite.get_tracking_record(); //("tracking_record", "WHERE TRACKING_ID ='"+0+"'");  //.getAllRecord("tracking_table");
             message.setTargetContent(tracking_record);
@@ -400,7 +404,71 @@ public class MapsActivity extends FragmentActivity  implements GoogleMap.OnMyLoc
             final Thread t4 = new Thread(new Notifier_Thread(message, getApplicationContext(), t1,t2,t3,false), "Notifier Thread");
             t4.start();
 
+
+            exit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(MapsActivity.this, TrainTrackingActivity.class);
+                    startActivity(intent);
+                }
+            });
+
+
+            floatingActionButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String target_station_direction;
+                String main_station;
+                if (message.getDir() == null) {
+                    target_station_direction = tracking_record.get("station_dir");
+                    main_station = tracking_record.get("main_station");
+
+
+                } else {
+                    target_station_direction = message.getDir();
+                    main_station = message.getMainStation();
+
+                }
+
+                t3.interrupt();
+                if (target_station_direction.equals("1")) {
+                    Log.e("track", tracking_record.get("tracking_id")+"");
+                    target_station_direction = "5";
+                    sqlite.update_value(tracking_record.get("tracking_id"), "tracking_table", "station_dir", target_station_direction);
+                    String query = "SELECT southbound1 FROM main_stations WHERE main_station_type = '"+tracking_record.get("station_type").toUpperCase().trim()+"'";
+                    main_station = sqlite.getValue(query);
+                    sqlite.update_value(tracking_record.get("tracking_id"), "tracking_table", "main_station_name", main_station);
+                    tracking_record.put("main_station",main_station );
+                    tracking_record.put("station_dir", target_station_direction);
+
+                        message.setDir(target_station_direction);
+                        message.setMainStation(main_station);
+                        message.setClicked(true);
+                } else {
+                    Log.e("track", tracking_record.get("tracking_id")+"");
+                    target_station_direction = "1";
+                    String query = "SELECT northbound FROM main_stations WHERE main_station_type = '" + tracking_record.get("station_type").toUpperCase().trim() + "'";
+                    main_station = sqlite.getValue(query);
+                    sqlite.update_value(tracking_record.get("tracking_id"), "tracking_table", "main_station_name", main_station);
+                    tracking_record.put("main_station", main_station);
+                    tracking_record.put("station_dir", target_station_direction);
+                        message.setDir(target_station_direction);
+                        message.setMainStation(main_station);
+                        message.setClicked(true);
+                }
+
+
+                }
+            });
+
+
+
+
+
+
             sqlite.close();
+
+
 
 
 

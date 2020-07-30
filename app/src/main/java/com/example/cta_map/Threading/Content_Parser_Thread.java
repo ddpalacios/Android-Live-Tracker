@@ -84,7 +84,7 @@ public class Content_Parser_Thread implements Runnable
 
                     try {
                         this.sqlite.close();
-                        this.msg.wait();
+                        this.msg.wait(1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

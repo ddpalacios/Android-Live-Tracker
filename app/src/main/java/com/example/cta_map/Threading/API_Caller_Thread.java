@@ -52,7 +52,7 @@ public class API_Caller_Thread implements Runnable {
 //                    }
 //
                     this.msg.setStatus(true);
-                    this.msg.wait();
+                    this.msg.wait(1000);
 //
 //
                 } catch (IOException | InterruptedException e) {
