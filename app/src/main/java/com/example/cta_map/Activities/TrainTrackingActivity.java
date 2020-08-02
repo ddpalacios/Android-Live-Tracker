@@ -66,10 +66,17 @@ public class TrainTrackingActivity extends AppCompatActivity {
         final HashMap<String, String> tracking_record = sqlite.get_tracking_record(); //("tracking_record", "WHERE TRACKING_ID ='"+0+"'");  //.getAllRecord("tracking_table");
         final HashMap<String, ArrayList<HashMap>> new_train_data = (HashMap<String, ArrayList<HashMap>>) bundle.getSerializable("estimated_train_data");
         if (list1.size() ==0){
-            Log.e(TAG, new_train_data.get("chosen_trains")+" "+ list1.size());
             insertMultipleItems(list1, new_train_data, adapter);
         }else{
-            Log.e(TAG, adapter.getItemCount()+" ");
+            Log.e(TAG, adapter.getItemCount()+" "+new_train_data.get("chosen_trains").size());
+            if (adapter.getItemCount() == new_train_data.get("chosen_trains").size()) {
+                Log.e(TAG, new_train_data.get("chosen_trains")+" "+ list1.size());
+                ArrayList<HashMap> trains = new_train_data.get("chosen_trains");
+                for (int i = 0; i < adapter.getItemCount(); i++) {
+                    Tracking_Station new_obj = new Tracking_Station("  #" + trains.get(i).get("train_id") + ". To " + tracking_record.get("main_station"), trains.get(i).get("train_eta") +" ");
+                    updateList(list1, new_obj,i, adapter);
+                }
+            }
 
 
 
@@ -139,7 +146,10 @@ sqlite.close();
         adapter.notifyItemChanged(idx);
     }
 
-
+    private void removeAllItems() {
+        list1.clear();
+        adapter.notifyDataSetChanged();
+    }
 
 
 
@@ -229,6 +239,7 @@ sqlite.close();
             @Override
             public void onClick(View v) {
                 String query;
+                removeAllItems();
                 Log.e(Thread.currentThread().getName(), tracking_record.get("station_dir")+"");
                 if (tracking_record.get("station_dir").equals("1")){
                     tracking_record.put("station_dir", "5");
