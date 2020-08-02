@@ -37,34 +37,34 @@ public class BottomTrackingAdapter extends RecyclerView.Adapter<BottomTrackingAd
             holder.next_stop_eta_txt.setText(train.getNext_stop_eta());
             holder.next_stop_distance.setText(train.getNext_stop_dist());
 
-            holder.target_distance_txt.setText(train.getTarget_distance());
-            holder.main_station_txt.setText(train.getTarget_name());
-            holder.target_eta_txt.setText(train.getTarget_eta());
-            holder.train_id_txt.setText(train.getTrain_id());
-
-            holder.notifySwitch.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int user_eta = 5;
-                    if (5 <= 15){
-                        int time_to_spare = 10-5;
-                        if (time_to_spare == 0){
-                            Log.e("Leave now", "Leave now before you are late");
-                        }else{
-                            Log.e("time to spare", "You have "+ time_to_spare+" time to spare");
-                        }
-                    }else{
-                        int late = (5- 10) *-1;
-                        Log.e("LATE","You are "+late+" m Late, Check out next trains or try to make this one.");
-                    }
-
-
-
-                }
-            });
-
-
-
+//            holder.target_distance_txt.setText(train.getTarget_distance());
+//            holder.main_station_txt.setText(train.getTarget_name());
+//            holder.target_eta_txt.setText(train.getTarget_eta());
+//            holder.train_id_txt.setText(train.getTrain_id());
+//
+//            holder.notifySwitch.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    int user_eta = 5;
+//                    if (5 <= 15){
+//                        int time_to_spare = 10-5;
+//                        if (time_to_spare == 0){
+//                            Log.e("Leave now", "Leave now before you are late");
+//                        }else{
+//                            Log.e("time to spare", "You have "+ time_to_spare+" time to spare");
+//                        }
+//                    }else{
+//                        int late = (5- 10) *-1;
+//                        Log.e("LATE","You are "+late+" m Late, Check out next trains or try to make this one.");
+//                    }
+//
+//
+//
+//                }
+//            });
+//
+//
+//
 
 
     }
@@ -87,11 +87,11 @@ public class BottomTrackingAdapter extends RecyclerView.Adapter<BottomTrackingAd
 
             next_stop_distance = (TextView)itemView.findViewById(R.id.next_stop_distance);
             next_stop_eta_txt= (TextView)itemView.findViewById(R.id.next_stop_eta_txt);
-            target_eta_txt = (TextView)itemView.findViewById(R.id.target_eta_txt);
-            target_distance_txt = (TextView)itemView.findViewById(R.id.target_distance_txt);
-            main_station_txt = (TextView) itemView.findViewById(R.id.main_station_txt);
-            train_id_txt = (TextView) itemView.findViewById(R.id.train_id_txt);
-            notifySwitch = (Switch) itemView.findViewById(R.id.notify_switch);
+//            target_eta_txt = (TextView)itemView.findViewById(R.id.target_eta_txt);
+//            target_distance_txt = (TextView)itemView.findViewById(R.id.target_distance_txt);
+//            main_station_txt = (TextView) itemView.findViewById(R.id.main_station_txt);
+//            train_id_txt = (TextView) itemView.findViewById(R.id.train_id_txt);
+//            notifySwitch = (Switch) itemView.findViewById(R.id.notify_switch);
         }
     }
 

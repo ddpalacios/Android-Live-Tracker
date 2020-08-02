@@ -7,51 +7,27 @@
     android:layout_height="wrap_content">
 
     <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_width="389dp"
+        android:layout_height="50dp"
         tools:ignore="MissingConstraints">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:background="@drawable/cardview_body"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@drawable/cardview_body">
 
             <TextView
                 android:id="@+id/next_stop_eta_txt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginEnd="28dp"
+                android:layout_marginRight="28dp"
                 android:text="3 min"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/notify_switch" />
-
-            <TextView
-                android:id="@+id/target_eta_txt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
-                android:text="5 min"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/next_stop_eta_txt" />
-
-            <TextView
-                android:id="@+id/target_distance_txt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="1.87mi Away"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.814"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.915" />
+                app:layout_constraintTop_toBottomOf="@+id/next_stop_distance"
+                app:layout_constraintVertical_bias="0.129" />
 
             <TextView
                 android:id="@+id/next_stop_distance"
@@ -61,40 +37,25 @@
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.823"
+                app:layout_constraintHorizontal_bias="0.953"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.507" />
+                app:layout_constraintVertical_bias="0.074" />
 
             <TextView
                 android:id="@+id/next_stop_name"
-                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginLeft="16dp"
                 android:text="Next Stop: Granville"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/next_stop_distance"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.506" />
-
-            <TextView
-                android:id="@+id/main_station_txt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginLeft="12dp"
-                android:textStyle="bold"
-                android:text="To Howard (target): "
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/target_distance_txt"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.913" />
+                app:layout_constraintVertical_bias="0.774" />
 
             <TextView
                 android:id="@+id/train_id_txt"
@@ -103,21 +64,13 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="4dp"
-                android:textStyle="bold"
                 android:text="Train# 127"
                 android:textSize="15sp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="MissingConstraints" />
 
-            <Switch
-                android:id="@+id/notify_switch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Notify"
-                android:textSize="15sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

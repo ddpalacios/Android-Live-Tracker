@@ -13,7 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.cta_map.Activities.MapsActivity;
+//import com.example.cta_map.Activities.MapsActivity;
 import com.example.cta_map.Activities.TrainTrackingActivity;
 import com.example.cta_map.Activities.mainactivity;
 import com.example.cta_map.DataBase.Database2;
@@ -58,7 +58,7 @@ public class StationAdapter extends RecyclerView.Adapter<StationAdapter.MyViewHo
         TrainLineKeyCodes.put("yellow", R.drawable.yellow);
         Integer type = TrainLineKeyCodes.get(station.getType().replaceAll(" ", "").toLowerCase());
         final Context ctx = this.context;
-        Log.e("type", station.getType()+"");
+//        Log.e("type", station.getType()+"");
         holder.image.setImageResource(type);
 
         if (station.getDir().equals("1")){

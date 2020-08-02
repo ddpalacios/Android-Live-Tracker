@@ -11,7 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.cta_map.Activities.MapsActivity;
+//import com.example.cta_map.Activities.MapsActivity;
 
 public class optionAdapter extends RecyclerView.Adapter<optionAdapter.OptionViewHolder> {
     Context context;
@@ -45,14 +45,14 @@ public class optionAdapter extends RecyclerView.Adapter<optionAdapter.OptionView
                         intent = new Intent(context, ChooseLine.class);
 
                     }else {
-                        intent = new Intent(context, MapsActivity.class);
+//                        intent = new Intent(context, MapsActivity.class);
 
                     }
 
 
                     intent.putExtra("position", position);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    Log.e("Clicked", position+" is clicked");
+//                    Log.e("Clicked", position+" is clicked");
                     context.startActivity(intent);
                 }
             });

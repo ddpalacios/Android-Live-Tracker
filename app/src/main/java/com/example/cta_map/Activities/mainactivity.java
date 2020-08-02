@@ -44,9 +44,9 @@ public class mainactivity extends AppCompatActivity {
         RecyclerView optionsrv = (RecyclerView) findViewById(R.id.ViewOptions);
         ArrayList<Stations> list = new ArrayList<>();
         ArrayList<HashMap> favorite_stations = sqlite.getAllRecord("favorite_stations");
-        Log.e("dd", "fav"+ favorite_stations);
+//        Log.e("dd", "fav"+ favorite_stations);
         for (HashMap t: favorite_stations){
-            Log.e("ttt", "f"+t);
+//            Log.e("ttt", "f"+t);
             list.add(new Stations("#"+t.get("PrimaryId")+"."+" "+t.get("fav_station_name")+"."," "+t.get("fav_station_type"),t.get("fav_station_dir")+""));
         }
 
