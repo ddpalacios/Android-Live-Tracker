@@ -35,6 +35,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class TrainTrackingActivity extends AppCompatActivity {
 
@@ -65,17 +67,37 @@ public class TrainTrackingActivity extends AppCompatActivity {
         Database2 sqlite = new Database2(getApplicationContext());
         final HashMap<String, String> tracking_record = sqlite.get_tracking_record(); //("tracking_record", "WHERE TRACKING_ID ='"+0+"'");  //.getAllRecord("tracking_table");
         final HashMap<String, ArrayList<HashMap>> new_train_data = (HashMap<String, ArrayList<HashMap>>) bundle.getSerializable("estimated_train_data");
+        HashMap<Integer, String> train_etas = new HashMap<>();
+        for (HashMap train : new_train_data.get("chosen_trains")) {
+
+            Integer eta = Integer.parseInt((String.valueOf(train.get("train_eta"))));
+            String train_id = (String) train.get("train_id");
+            train_etas.put(eta, train_id);
+        }
+        Map<Integer, String> map = new TreeMap(train_etas);
+
+
+
+
+
         if (list1.size() ==0){
-            insertMultipleItems(list1, new_train_data, adapter);
+            insertMultipleItems(list1, map, adapter);
         }else{
             Log.e(TAG, adapter.getItemCount()+" "+new_train_data.get("chosen_trains").size());
             if (adapter.getItemCount() == new_train_data.get("chosen_trains").size()) {
                 Log.e(TAG, new_train_data.get("chosen_trains")+" "+ list1.size());
                 ArrayList<HashMap> trains = new_train_data.get("chosen_trains");
-                for (int i = 0; i < adapter.getItemCount(); i++) {
-                    Tracking_Station new_obj = new Tracking_Station("  #" + trains.get(i).get("train_id") + ". To " + tracking_record.get("main_station"), trains.get(i).get("train_eta") +" ");
+                int i=0;
+                for (Map.Entry<Integer, String> entry : map.entrySet()) {
+                    Integer eta = entry.getKey();
+                    String train_id = entry.getValue();
+
+                    Tracking_Station new_obj = new Tracking_Station("  #" + train_id + ". To " + tracking_record.get("main_station"), eta +" ");
                     updateList(list1, new_obj,i, adapter);
+                    i++;
                 }
+            }else {
+                Toast.makeText(getApplicationContext(), "MORE TRAINS "+ new_train_data.get("chosen_trains").size(), Toast.LENGTH_LONG).show();
             }
 
 
@@ -89,7 +111,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
 //        final HashMap<String, String> tracking_record = sqlite.get_tracking_record(); //("tracking_record", "WHERE TRACKING_ID ='"+0+"'");  //.getAllRecord("tracking_table");
 
 //        HashMap<Integer, String> train_etas = new HashMap<>();
-
+//
 //        for (HashMap train : estimated_train_data.get("chosen_trains")) {
 //
 //            Integer eta = Integer.parseInt((String.valueOf(train.get("train_eta"))));
@@ -97,7 +119,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
 //            train_etas.put(eta, train_id);
 //        }
 //        Map<Integer, String> map = new TreeMap(train_etas);
-//
+
 //        for (Map.Entry<Integer, String> entry : map.entrySet()) {
 //            Integer eta = entry.getKey();
 //            String train_id = entry.getValue();
@@ -129,14 +151,18 @@ public class TrainTrackingActivity extends AppCompatActivity {
 sqlite.close();
     }
 
-    private void insertMultipleItems(ArrayList<Object> data, HashMap<String, ArrayList<HashMap>> estimated_train_data, RecyclerView.Adapter adapter ) {
+    private void insertMultipleItems(ArrayList<Object> data, Map<Integer, String> map, RecyclerView.Adapter adapter ) {
         Database2 sqlite = new Database2(getApplicationContext());
-        final HashMap<String, String> tracking_record = sqlite.get_tracking_record(); //("tracking_record", "WHERE TRACKING_ID ='"+0+"'");  //.getAllRecord("tracking_table");
+        HashMap<String, String> tracking_record = sqlite.get_tracking_record();
         ArrayList<Object> new_objects = new ArrayList<>();
-        ArrayList<HashMap> data_pool = estimated_train_data.get("chosen_trains");
-        for (HashMap trains: data_pool){
-            new_objects.add(new Tracking_Station("  #" + trains.get("train_id") + ". To " + tracking_record.get("main_station"), trains.get("train_eta") +" "));
+
+        for (Map.Entry<Integer, String> entry : map.entrySet()) {
+            Integer eta = entry.getKey();
+            String train_id = entry.getValue();
+            new_objects.add(new Tracking_Station("  #" + train_id + ". To " + tracking_record.get("main_station"), eta + ""));
+
         }
+
         data.addAll(new_objects);
         adapter.notifyItemRangeChanged(0, new_objects.size());
     }
