@@ -58,7 +58,6 @@ public class StationAdapter extends RecyclerView.Adapter<StationAdapter.MyViewHo
         TrainLineKeyCodes.put("yellow", R.drawable.yellow);
         Integer type = TrainLineKeyCodes.get(station.getType().replaceAll(" ", "").toLowerCase());
         final Context ctx = this.context;
-//        Log.e("type", station.getType()+"");
         holder.image.setImageResource(type);
 
         if (station.getDir().equals("1")){
@@ -78,7 +77,7 @@ public class StationAdapter extends RecyclerView.Adapter<StationAdapter.MyViewHo
                 ctx.startActivity(intent);
             }
         });
-
+//
         holder.track_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

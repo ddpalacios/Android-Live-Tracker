@@ -15,9 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 public class TrackingAdapter extends RecyclerView.Adapter<TrackingAdapter.TrackingViewHolder> {
-    ArrayList<Tracking_Station> list;
+    ArrayList<Object> list;
     Context ctx;
-    public TrackingAdapter(Context ctx, ArrayList<Tracking_Station> list){
+    public TrackingAdapter(Context ctx, ArrayList<Object> list){
         this.ctx = ctx;
         this.list = list;
     }
@@ -34,7 +34,7 @@ public class TrackingAdapter extends RecyclerView.Adapter<TrackingAdapter.Tracki
 
     @Override
     public void onBindViewHolder(@NonNull TrackingViewHolder holder, int position) {
-        Tracking_Station train = this.list.get(position);
+        Tracking_Station train = (Tracking_Station) this.list.get(position);
         holder.min.setText(train.getEta()+"m");
         holder.title.setText(train.getName());
 //        Log.e("fff", train.getName()+"fff");

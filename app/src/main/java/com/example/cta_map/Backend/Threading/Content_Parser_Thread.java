@@ -53,8 +53,6 @@ public class Content_Parser_Thread implements Runnable
         List<String> modified_valid_stations;
         for (String each_stop : stops) { modified_stops.add(each_stop.replaceAll("[^a-zA-Z0-9]", "").toLowerCase()); }
 
-
-
         while (this.msg.IsSending()) {
             synchronized (this.msg) {
                 if (this.msg.getRawTrainContent() == null){

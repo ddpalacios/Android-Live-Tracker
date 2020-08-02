@@ -2,7 +2,14 @@ package com.example.cta_map.Activities;//package com.example.cta_map.Activities;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.example.cta_map.DataBase.Database2;
 import com.example.cta_map.R;
 import com.example.cta_map.StationAdapter;
@@ -20,7 +27,7 @@ public class mainactivity extends AppCompatActivity {
         Database2 sqlite = new Database2(getApplicationContext());
         RecyclerView rvContacts = (RecyclerView) findViewById(R.id.recycler_view);
         RecyclerView optionsrv = (RecyclerView) findViewById(R.id.ViewOptions);
-        ArrayList<Stations> list = new ArrayList<>();
+        final ArrayList<Stations> list = new ArrayList<>();
         ArrayList<HashMap> favorite_stations = sqlite.getAllRecord("favorite_stations");
         for (HashMap t: favorite_stations){
             list.add(new Stations("#"+t.get("PrimaryId")+"."+" "+t.get("fav_station_name")+"."," "+t.get("fav_station_type"),t.get("fav_station_dir")+""));
@@ -32,15 +39,17 @@ public class mainactivity extends AppCompatActivity {
         optionsrv.setLayoutManager(new LinearLayoutManager(this));
 
 
-        StationAdapter adapter = new StationAdapter(getApplicationContext(), list);
+        final StationAdapter adapter = new StationAdapter(getApplicationContext(), list);
 //        // Attach the adapter to the recyclerview to populate items
         rvContacts.setAdapter(adapter);
 //        // Set layout manager to position the items
         rvContacts.setLayoutManager(new LinearLayoutManager(this));
 
-
-
-
     }
+
+
+
+
+
 }
 
