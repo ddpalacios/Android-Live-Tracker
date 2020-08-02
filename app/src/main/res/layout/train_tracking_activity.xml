@@ -12,10 +12,10 @@
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/floatingActionButton"
-                    android:layout_width="62dp"
-                    android:layout_height="52dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginRight="16dp"
+                    android:layout_width="54dp"
+                    android:layout_height="67dp"
+                    android:layout_marginEnd="36dp"
+                    android:layout_marginRight="36dp"
                     android:clickable="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

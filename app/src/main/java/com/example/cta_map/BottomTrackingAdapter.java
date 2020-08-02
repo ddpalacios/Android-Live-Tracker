@@ -1,5 +1,6 @@
 package com.example.cta_map;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,16 +31,19 @@ public class BottomTrackingAdapter extends RecyclerView.Adapter<BottomTrackingAd
         return new BottomViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull BottomViewHolder holder, int position) {
             Train_info train = this.list.get(position);
             holder.next_stop_name.setText(train.getNext_stop_name());
             holder.next_stop_eta_txt.setText(train.getNext_stop_eta());
             holder.next_stop_distance.setText(train.getNext_stop_dist());
+            Log.e("ddd", train.getTrain_id()+" ");
+            holder.train_id_txt.setText(train.getTrain_id()+" ");
+//            holder.target_eta_txt.setText(train.getTarget_eta());
 
 //            holder.target_distance_txt.setText(train.getTarget_distance());
 //            holder.main_station_txt.setText(train.getTarget_name());
-//            holder.target_eta_txt.setText(train.getTarget_eta());
 //            holder.train_id_txt.setText(train.getTrain_id());
 //
 //            holder.notifySwitch.setOnClickListener(new View.OnClickListener() {
@@ -90,7 +94,7 @@ public class BottomTrackingAdapter extends RecyclerView.Adapter<BottomTrackingAd
 //            target_eta_txt = (TextView)itemView.findViewById(R.id.target_eta_txt);
 //            target_distance_txt = (TextView)itemView.findViewById(R.id.target_distance_txt);
 //            main_station_txt = (TextView) itemView.findViewById(R.id.main_station_txt);
-//            train_id_txt = (TextView) itemView.findViewById(R.id.train_id_txt);
+            train_id_txt = (TextView) itemView.findViewById(R.id.train_id_txt);
 //            notifySwitch = (Switch) itemView.findViewById(R.id.notify_switch);
         }
     }
