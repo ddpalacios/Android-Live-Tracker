@@ -77,9 +77,6 @@ public class TrainTrackingActivity extends AppCompatActivity {
         Map<Integer, String> map = new TreeMap(train_etas);
 
 
-
-
-
         if (list1.size() ==0){
             insertMultipleItems(list1, map, adapter);
         }else{
@@ -92,15 +89,13 @@ public class TrainTrackingActivity extends AppCompatActivity {
                     Integer eta = entry.getKey();
                     String train_id = entry.getValue();
 
-                    Tracking_Station new_obj = new Tracking_Station("  #" + train_id + ". To " + tracking_record.get("main_station"), eta +" ");
+                    Tracking_Station new_obj = new Tracking_Station("#" + train_id + ". To " + tracking_record.get("main_station"), eta +"");
                     updateList(list1, new_obj,i, adapter);
                     i++;
                 }
             }else {
                 Toast.makeText(getApplicationContext(), "MORE TRAINS "+ new_train_data.get("chosen_trains").size(), Toast.LENGTH_LONG).show();
             }
-
-
 
         }
 
@@ -213,6 +208,7 @@ sqlite.close();
 
         imageView.setImageResource(TrainLineKeyCodes.get(tracking_record.get("station_type").toString().trim()));
         title.setText(tracking_record.get("station_name")+" ("+tracking_record.get("main_station")+")");
+
 //        userLocation.getLastLocation(getApplicationContext());
 //
 //
@@ -228,6 +224,10 @@ sqlite.close();
 //        final Button choose_station = (Button) findViewById(R.id.pickStation);
 //        final Button toMaps = (Button) findViewById(R.id.show);
 //        Log.e("tracking record", tracking_record+"");
+
+
+
+
         RecyclerView line_layout = (RecyclerView) findViewById(R.id.vr_recycler_view);
         RecyclerView bottom_layout = (RecyclerView) findViewById(R.id.hr_recycler_view);
         bottom_layout.setAdapter(bottomTrackingAdapter);

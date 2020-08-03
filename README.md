@@ -148,9 +148,9 @@ Information between each train and station is found between each table. (i.e. Al
  <hr>
  
 
-Choosing Station Line  |  Station Transit(s)
+Main Screen  | Choose Line
 :-------------------------:|:-------------------------:
-![](images/pic1.png)  |  ![](images/pic3.png)
+![](images/main_screen.png)  |  ![](images/ChooseLine.png)
 
 
 <dl><br></dl>
@@ -160,9 +160,9 @@ As time progresses, the train will get closer to our target location and the cha
 Each color indication is determined by the approximate distance based on the current user location. 
 
 
-Train Tracking & User Notification   |  Example train ETAs for each station untill arrival to target station
+Train Tracking & User Notification   | Train Tracking Activity (In-Progress for options for notifications)
 :-------------------------:|:-------------------------:
-![](images/pic4.png)  |  ![](images/pic2.png)
+![](images/pic4.png)  |  ![](images/TrainTracker.png)
 
 
 
