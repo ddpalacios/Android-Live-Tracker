@@ -150,7 +150,7 @@ Information between each train and station is found between each table. (i.e. Al
 
 Main Screen  | Choose Line
 :-------------------------:|:-------------------------:
-![](images/main_screen.png)  |  ![](images/ChooseLine.png)
+![](images/MainScreen.png)  |  ![](images/ChooseLine.png)
 
 
 <dl><br></dl>
@@ -169,9 +169,9 @@ Train Tracking & User Notification   | Train Tracking Activity (In-Progress for 
 
 
 
- Live Mapping & User Notification   |  Blue line transits to Forest Park
+ Live Mapping & User Notification   |  Blue line transits to Belmont (In-Progress)
 :-------------------------:|:-------------------------:
-![](images/pic5.png)  |  ![](images/pic7.png)
+![](images/pic5.png)  |  ![](images/revisedMapBlue.png)
 
  
  
