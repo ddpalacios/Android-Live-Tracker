@@ -14,6 +14,7 @@ import com.example.cta_map.Displayers.UserLocation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.TreeMap;
 
 public class Train_Estimations_Thread implements Runnable {
     final Message msg;
@@ -35,18 +36,20 @@ public class Train_Estimations_Thread implements Runnable {
     @Override
     public void run() {
             while (this.msg.IsSending()){
-                try { Thread.sleep(200); } catch (InterruptedException e) { e.printStackTrace(); }
+                try { Thread.sleep(120); } catch (InterruptedException e) { e.printStackTrace(); }
                 synchronized (this.msg) {
 
                 Bundle bundle = new Bundle();
                 android.os.Message handler_msg = this.handler.obtainMessage();
                 HashMap<String, ArrayList<HashMap>> parsed_train_data = this.msg.getParsedTrainData();
+                TreeMap<Integer, String> treeMap = this.msg.getTrainMap();
                 if (parsed_train_data == null) {
                     Log.e(Thread.currentThread().getName(), "Data is NULL");
                     return;
                 }
 
                 bundle.putSerializable("estimated_train_data", parsed_train_data);
+                bundle.putSerializable("sorted_train_eta_map", treeMap);
                 handler_msg.setData(bundle);
                 handler.sendMessage(handler_msg);
                 this.msg.setParsedTrainData(null);

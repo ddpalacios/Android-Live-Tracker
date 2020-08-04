@@ -3,6 +3,7 @@ package com.example.cta_map.Backend.Threading;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 public class Message {
     HashMap<String, ArrayList<HashMap>> parsedTrainData;
@@ -10,6 +11,7 @@ public class Message {
     String dir;
     HashMap train_etas;
     boolean t;
+    TreeMap<Integer, String> tree;
     boolean iswaiting = false;
     boolean x;
     HashMap<String, String> train_content;
@@ -35,6 +37,16 @@ public class Message {
 
     public HashMap<String, ArrayList<HashMap>> getParsedTrainData() {
         return parsedTrainData;
+    }
+
+
+    public void setTrainMap(TreeMap<Integer, String> map){
+        this.tree = map;
+
+    }
+
+    public TreeMap<Integer, String> getTrainMap(){
+        return this.tree;
     }
 
     //

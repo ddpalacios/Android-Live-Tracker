@@ -11,9 +11,12 @@ import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.Displayers.Time;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 
 public class Content_Parser_Thread implements Runnable
 {
@@ -59,7 +62,8 @@ public class Content_Parser_Thread implements Runnable
                         try { this.msg.wait(); } catch (InterruptedException e) { e.printStackTrace(); }
                         Log.e(TAG, "NULL object. Waiting. ");
                     }
-                    ArrayList<HashMap> chosen_trains = new ArrayList<>();
+                HashMap<Integer, String> train_etas = new HashMap<>();
+                ArrayList<HashMap> chosen_trains = new ArrayList<>();
                     ArrayList<HashMap> ignored_trains = new ArrayList<>();
 
                     if (this.record.get("station_dir").equals("1")) {
@@ -69,14 +73,23 @@ public class Content_Parser_Thread implements Runnable
                     }
                     for (String raw_content: this.msg.getRawTrainContent()){
                         HashMap<String, String> current_train_info = chicago_transits.get_train_info(raw_content, record.get("station_type").replaceAll(" ", ""));
+
                         String modified_next_stop = current_train_info.get("next_stop").replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
                         if (current_train_info.get("train_direction").equals(this.record.get("station_dir")) && modified_valid_stations.contains(modified_next_stop)) {
+
+
+
+
                             Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance(
                                     Double.parseDouble((String) Objects.requireNonNull(current_train_info.get("train_lat"))),
                                     Double.parseDouble((String) Objects.requireNonNull(current_train_info.get("train_lon"))),
                                     Double.parseDouble(Objects.requireNonNull(this.record.get("station_lat"))),
                                     Double.parseDouble(Objects.requireNonNull(this.record.get("station_lon"))));
+
                             int current_train_eta = time.get_estimated_time_arrival(25, current_train_distance_from_target_station);
+                            train_etas.put(current_train_eta, current_train_info.get("train_id"));
+
+
                             current_train_info.put("train_eta", current_train_eta+"");
                             current_train_info.put("train_distance", current_train_distance_from_target_station+"");
                             chosen_trains.add(current_train_info);
@@ -85,6 +98,11 @@ public class Content_Parser_Thread implements Runnable
                             ignored_trains.add(current_train_info);
                         }
                     }
+
+                    TreeMap<Integer, String> map = new TreeMap(train_etas);
+                    this.msg.setTrainMap(map);
+
+
 
                     if (this.willCommunicate) {
                         Log.e(Thread.currentThread().getName(), "Chosen Trains: " + chosen_trains.size());
