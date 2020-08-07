@@ -56,8 +56,6 @@ public class TrainTrackingActivity extends AppCompatActivity {
         @Override
         public void handleMessage(android.os.Message msg) {
                 Bundle bundle = msg.getData();
-
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 displayResults(bundle);
             }
@@ -72,22 +70,34 @@ public class TrainTrackingActivity extends AppCompatActivity {
         final HashMap<String, String> tracking_record = sqlite.get_tracking_record(); //("tracking_record", "WHERE TRACKING_ID ='"+0+"'");  //.getAllRecord("tracking_table");
         final HashMap<String, ArrayList<HashMap>> new_train_data = (HashMap<String, ArrayList<HashMap>>) bundle.getSerializable("estimated_train_data");
         final TreeMap<Integer, String> map = (TreeMap<Integer, String>) bundle.getSerializable("sorted_train_eta_map");
-
-
-
         ArrayList<HashMap> chosen_train = new_train_data.get("chosen_trains");
 
+
         for(int i=0;i<map.size();i++) {
-            HashMap<String, String> current_train = chosen_train.get(i);
             Integer train_eta = (Integer) new Vector(map.keySet()).get(i);
             String train_id = (String) new Vector(map.values()).get(i);
-            Log.e(TAG, train_id+" ");
+            for (HashMap<String, String> current_train: chosen_train){
+                if (current_train.containsValue(train_id)){
+                    if (list1.size() ==0){
+                        insertMultipleItems(list1, map, adapter);
+                    }else{
+                        Log.e(TAG, adapter.getItemCount()+" "+new_train_data.get("chosen_trains").size());
+                            Tracking_Station new_obj = new Tracking_Station("#" + train_id + ". To " + tracking_record.get("main_station"), current_train.get("train_eta") +"");
+                            updateList(list1, new_obj,i, adapter);
+                    }
 
+
+
+
+                        }
+            }
 
 
 
 
         }
+        Log.e(TAG, "Done");
+
 
 
 //        HashMap<Integer, String> train_etas = new HashMap<>();
@@ -261,6 +271,23 @@ sqlite.close();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         super.onCreate(savedInstanceState);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+
+        String[]t = new String[]{"1", "2", null};
+
+        Log.e(TAG, t.length+" ");
+
+        for (String s: t) {
+            Log.e(TAG, s+" ");
+        }
+
+
+
+
+
+
+
 
 
         final Database2 sqlite = new Database2(getApplicationContext());

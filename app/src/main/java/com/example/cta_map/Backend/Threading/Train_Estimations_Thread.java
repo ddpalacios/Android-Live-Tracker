@@ -36,7 +36,7 @@ public class Train_Estimations_Thread implements Runnable {
     @Override
     public void run() {
             while (this.msg.IsSending()){
-                try { Thread.sleep(120); } catch (InterruptedException e) { e.printStackTrace(); }
+                try { Thread.sleep(200); } catch (InterruptedException e) { e.printStackTrace(); }
                 synchronized (this.msg) {
 
                 Bundle bundle = new Bundle();

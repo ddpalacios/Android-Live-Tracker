@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -20,6 +21,8 @@ import java.util.HashMap;
 
 public class mainactivity extends AppCompatActivity {
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,6 +31,19 @@ public class mainactivity extends AppCompatActivity {
         RecyclerView rvContacts = (RecyclerView) findViewById(R.id.recycler_view);
         RecyclerView optionsrv = (RecyclerView) findViewById(R.id.ViewOptions);
         final ArrayList<Stations> list = new ArrayList<>();
+
+
+
+
+
+
+
+
+
+
+
+
+
         ArrayList<HashMap> favorite_stations = sqlite.getAllRecord("favorite_stations");
         for (HashMap t: favorite_stations){
             list.add(new Stations("#"+t.get("PrimaryId")+"."+" "+t.get("fav_station_name")+"."," "+t.get("fav_station_type"),t.get("fav_station_dir")+""));

@@ -16,7 +16,6 @@ public class API_Caller_Thread implements Runnable {
     final Message msg;
     HashMap<String, String> record;
     boolean willCommunicate;
-    android.os.Handler handler;
     String TAG = Thread.currentThread().getName();
     public API_Caller_Thread(Message msg, HashMap<String, String> record, boolean willCommunicate){
         this.msg = msg;
