@@ -33,7 +33,6 @@ import com.example.cta_map.TrackingAdapter;
 import com.example.cta_map.Tracking_Station;
 import com.example.cta_map.Train_info;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.opencsv.CSVReaderHeaderAware;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -80,17 +79,50 @@ public class TrainTrackingActivity extends AppCompatActivity {
                 if (current_train.containsValue(train_id)){
                     if (list1.size() ==0){
                         insertMultipleItems(list1, map, adapter);
+                        insertMultipleItems2(list2, map, chosen_train,adapter);
+
                     }else{
                         Log.e(TAG, adapter.getItemCount()+" "+new_train_data.get("chosen_trains").size());
                             Tracking_Station new_obj = new Tracking_Station("#" + train_id + ". To " + tracking_record.get("main_station"), current_train.get("train_eta") +"");
                             updateList(list1, new_obj,i, adapter);
+
+
+
+                        String query = "SELECT station_id FROM cta_stops WHERE station_name = '" +  current_train.get("next_stop").toString().trim() + "'" + " AND " +  current_train.get("station_type").toString().trim() + " = 'true'";
+                        String station_id = sqlite.getValue(query);
+
+                        String[] station_coord = chicago_transits.retrieve_station_coordinates(sqlite, station_id);
+
+
+
+                        Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance(
+                                Double.parseDouble((String) current_train.get("train_lat")),
+                                Double.parseDouble((String)  current_train.get("train_lon")),
+                                Double.parseDouble(station_coord[0]),
+                                Double.parseDouble(station_coord[1]));
+
+
+
+                        Train_info train_info = new Train_info("Next Stop: " + current_train.get("next_stop") + "",
+                                "" + current_train.get("train_eta") + "m",
+                                String.format("%.2f", current_train_distance_from_target_station) + " mi",
+                                "To " + tracking_record.get("station_name") + " (target)",
+                                current_train.get("train_eta") + "m",
+                                String.format("%.2f", Double.parseDouble(String.valueOf(current_train.get("train_distance")))) + " mi",
+                                "Train# " + train_id + "");
+
+
+                        updateBottomList(list2, train_info,i, bottomTrackingAdapter);
+
+
                     }
-
-
-
-
                         }
             }
+
+
+
+
+
 
 
 
@@ -151,7 +183,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
 //                            Double.parseDouble((String) t.get("train_lon")),
 //                            Double.parseDouble(station_coord[0]),
 //                            Double.parseDouble(station_coord[1]));
-//
+
 //
 //
 //
@@ -247,13 +279,66 @@ sqlite.close();
         adapter.notifyItemRangeChanged(0, new_objects.size());
     }
 
+
+
+    private void insertMultipleItems2(ArrayList<Train_info> data, Map<Integer, String> map, ArrayList<HashMap> chosen_train  , RecyclerView.Adapter adapter ) {
+        Database2 sqlite = new Database2(getApplicationContext());
+        HashMap<String, String> tracking_record = sqlite.get_tracking_record();
+        ArrayList<Train_info> new_objects = new ArrayList<>();
+        int i =0;
+        Chicago_Transits chicago_transits= new Chicago_Transits();
+
+
+        for (Map.Entry<Integer, String> entry : map.entrySet()) {
+            Integer eta = entry.getKey();
+            String train_id = entry.getValue();
+
+            String query = "SELECT station_id FROM cta_stops WHERE station_name = '" +   chosen_train.get(i).get("next_stop").toString().trim() + "'" + " AND " +   chosen_train.get(i).get("station_type").toString().trim() + " = 'true'";
+            String station_id = sqlite.getValue(query);
+
+            String[] station_coord = chicago_transits.retrieve_station_coordinates(sqlite, station_id);
+
+
+
+            Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance(
+                    Double.parseDouble((String)  chosen_train.get(i).get("train_lat")),
+                    Double.parseDouble((String)   chosen_train.get(i).get("train_lon")),
+                    Double.parseDouble(station_coord[0]),
+                    Double.parseDouble(station_coord[1]));
+
+
+
+
+
+            new_objects.add( new Train_info("Next Stop: " + chosen_train.get(i).get("next_stop") + "",
+                    "" + chosen_train.get(i).get("train_eta") + "m",
+                    String.format("%.2f", current_train_distance_from_target_station) + " mi",
+                    "To " + tracking_record.get("station_name") + " (target)",
+                    chosen_train.get(i).get("train_eta") + "m",
+                    String.format("%.2f", Double.parseDouble(String.valueOf( chosen_train.get(i).get("train_distance")))) + " mi",
+                    "Train# " + train_id + ""));
+
+        }
+
+        data.addAll(new_objects);
+        adapter.notifyItemRangeChanged(0, new_objects.size());
+    }
+
     private void updateList(ArrayList<Object> data, Object new_obj, Integer idx, RecyclerView.Adapter adapter) {
         data.set(idx, new_obj);
         adapter.notifyItemChanged(idx);
     }
 
+
+    private void updateBottomList(ArrayList<Train_info> data, Object new_obj, Integer idx, RecyclerView.Adapter adapter) {
+        data.set(idx, (Train_info) new_obj);
+        adapter.notifyItemChanged(idx);
+    }
+
     private void removeAllItems() {
         list1.clear();
+        list2.clear();
+        bottomTrackingAdapter.notifyDataSetChanged();
         adapter.notifyDataSetChanged();
     }
 
