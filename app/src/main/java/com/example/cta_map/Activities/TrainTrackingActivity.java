@@ -101,8 +101,6 @@ public class TrainTrackingActivity extends AppCompatActivity {
                                 Double.parseDouble(station_coord[0]),
                                 Double.parseDouble(station_coord[1]));
 
-
-
                         Train_info train_info = new Train_info("Next Stop: " + current_train.get("next_stop") + "",
                                 "" + current_train.get("train_eta") + "m",
                                 String.format("%.2f", current_train_distance_from_target_station) + " mi",
@@ -110,154 +108,12 @@ public class TrainTrackingActivity extends AppCompatActivity {
                                 current_train.get("train_eta") + "m",
                                 String.format("%.2f", Double.parseDouble(String.valueOf(current_train.get("train_distance")))) + " mi",
                                 "Train# " + train_id + "");
-
-
                         updateBottomList(list2, train_info,i, bottomTrackingAdapter);
-
-
                     }
                         }
             }
-
-
-
-
-
-
-
-
-
         }
         Log.e(TAG, "Done");
-
-
-
-//        HashMap<Integer, String> train_etas = new HashMap<>();
-//        for (HashMap train : new_train_data.get("chosen_trains")) {
-//
-//            Integer eta = Integer.parseInt((String.valueOf(train.get("train_eta"))));
-//            String train_id = (String) train.get("train_id");
-//            train_etas.put(eta, train_id);
-//        }
-//        TreeMap<Integer, String> map = new TreeMap(train_etas);
-//        if (list1.size() ==0){
-//            insertMultipleItems(list1, map, adapter);
-//        }else{
-//            Log.e(TAG, adapter.getItemCount()+" "+new_train_data.get("chosen_trains").size());
-//            if (adapter.getItemCount() == new_train_data.get("chosen_trains").size()) {
-////                Log.e(TAG, new_train_data.get("chosen_trains")+" "+ list1.size());
-//                ArrayList<HashMap> trains = new_train_data.get("chosen_trains");
-
-
-//                int i=0;
-//                for (Map.Entry<Integer, String> entry : map.entrySet()) {
-//                    Integer eta = entry.getKey();
-//                    String train_id = entry.getValue();
-//
-//
-//
-//
-//
-//                    Tracking_Station new_obj = new Tracking_Station("#" + train_id + ". To " + tracking_record.get("main_station"), eta +"");
-//                    updateList(list1, new_obj,i, adapter);
-//                    i++;
-//                }
-
-
-
-//                for (Map.Entry<Integer, String> entry : map.entrySet()) {
-//                    Integer eta = entry.getKey();
-//                    String train_id = entry.getValue();
-//
-//
-//
-//
-//
-//
-//                    String query = "SELECT station_id FROM cta_stops WHERE station_name = '" +  t.get("next_stop").toString().trim() + "'" + " AND " +  t.get("station_type").toString().trim() + " = 'true'";
-//                    String station_id = sqlite.getValue(query);
-//
-//                    String[] station_coord = chicago_transits.retrieve_station_coordinates(sqlite, station_id);
-//                    Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance(
-//                            Double.parseDouble((String) t.get("train_lat")),
-//                            Double.parseDouble((String) t.get("train_lon")),
-//                            Double.parseDouble(station_coord[0]),
-//                            Double.parseDouble(station_coord[1]));
-
-//
-//
-//
-//
-//
-//
-//                    list2.add(new Train_info("Next Stop: " + t.get("next_stop") + "",
-//                            "" + eta + "m",
-//                            String.format("%.2f", current_train_distance_from_target_station) + " mi",
-//                            "To " + tracking_record.get("station_name") + " (target)",
-//                            t.get("train_eta") + "m",
-//                            String.format("%.2f", Double.parseDouble(String.valueOf(t.get("train_distance")))) + " mi",
-//                            "Train# " + train_id + ""));
-//
-//
-//
-//
-//                    Tracking_Station new_obj = new Tracking_Station("#" + train_id + ". To " + tracking_record.get("main_station"), eta +"");
-//                    updateList(list1, new_obj,i, adapter);
-//                    i++;
-//                }
-
-
-
-
-
-//            }else {
-//                Toast.makeText(getApplicationContext(), "MORE TRAINS "+ new_train_data.get("chosen_trains").size(), Toast.LENGTH_LONG).show();
-//            }
-
-//        }
-
-
-//        Chicago_Transits chicago_transits = new Chicago_Transits();
-//        Time time = new Time();
-//        Database2 sqlite = new Database2(getApplicationContext());
-//        final HashMap<String, String> tracking_record = sqlite.get_tracking_record(); //("tracking_record", "WHERE TRACKING_ID ='"+0+"'");  //.getAllRecord("tracking_table");
-
-//        HashMap<Integer, String> train_etas = new HashMap<>();
-//
-//        for (HashMap train : estimated_train_data.get("chosen_trains")) {
-//
-//            Integer eta = Integer.parseInt((String.valueOf(train.get("train_eta"))));
-//            String train_id = (String) train.get("train_id");
-//            train_etas.put(eta, train_id);
-//        }
-//        Map<Integer, String> map = new TreeMap(train_etas);
-
-//        for (Map.Entry<Integer, String> entry : map.entrySet()) {
-//            Integer eta = entry.getKey();
-//            String train_id = entry.getValue();
-//            list.add(new Tracking_Station("  #" + train_id + ". To " + tracking_record.get("main_station"), eta + ""));
-//            for (HashMap t : estimated_train_data.get("chosen_trains")) {
-//                if (t.containsValue(train_id)) {
-//                    String query = "SELECT station_id FROM cta_stops WHERE station_name = '" +  t.get("next_stop").toString().trim() + "'" + " AND " +  t.get("station_type").toString().trim() + " = 'true'";
-//                    String station_id = sqlite.getValue(query);
-//                    String[] station_coord = chicago_transits.retrieve_station_coordinates(sqlite, station_id);
-//                    Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance(
-//                            Double.parseDouble((String) t.get("train_lat")),
-//                            Double.parseDouble((String) t.get("train_lon")),
-//                            Double.parseDouble(station_coord[0]),
-//                            Double.parseDouble(station_coord[1]));
-//                    int current_train_eta = time.get_estimated_time_arrival(25, current_train_distance_from_target_station);
-//                    list2.add(new Train_info("Next Stop: " + t.get("next_stop") + "",
-//                            "" + current_train_eta + "m",
-//                            String.format("%.2f", current_train_distance_from_target_station) + " mi",
-//                            "To " + tracking_record.get("station_name") + " (target)",
-//                            t.get("train_eta") + "m",
-//                            String.format("%.2f", Double.parseDouble(String.valueOf(t.get("train_distance")))) + " mi",
-//                            "Train# " + train_id + ""));
-//                }
-//            }
-//        }
-//
 
 
 sqlite.close();
@@ -356,23 +212,6 @@ sqlite.close();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         super.onCreate(savedInstanceState);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
-
-        String[]t = new String[]{"1", "2", null};
-
-        Log.e(TAG, t.length+" ");
-
-        for (String s: t) {
-            Log.e(TAG, s+" ");
-        }
-
-
-
-
-
-
-
 
 
         final Database2 sqlite = new Database2(getApplicationContext());

@@ -31,18 +31,7 @@ public class mainactivity extends AppCompatActivity {
         RecyclerView rvContacts = (RecyclerView) findViewById(R.id.recycler_view);
         RecyclerView optionsrv = (RecyclerView) findViewById(R.id.ViewOptions);
         final ArrayList<Stations> list = new ArrayList<>();
-
-
-
-
-
-
-
-
-
-
-
-
+        
 
         ArrayList<HashMap> favorite_stations = sqlite.getAllRecord("favorite_stations");
         for (HashMap t: favorite_stations){

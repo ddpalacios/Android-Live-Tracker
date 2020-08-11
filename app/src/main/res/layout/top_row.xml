@@ -10,11 +10,14 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="60dp"
+
+
         tools:ignore="MissingConstraints" >
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_marginBottom="10dp"
+
 
 
             android:background="@drawable/cardview_body"

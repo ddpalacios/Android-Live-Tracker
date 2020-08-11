@@ -8,11 +8,15 @@
 
     <androidx.cardview.widget.CardView
         android:layout_width="389dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
         android:layout_height="50dp"
         tools:ignore="MissingConstraints">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
+
             android:layout_height="match_parent"
             android:background="@drawable/cardview_body">
 
