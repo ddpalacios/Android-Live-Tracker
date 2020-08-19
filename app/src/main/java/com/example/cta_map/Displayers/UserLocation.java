@@ -52,7 +52,6 @@ public class UserLocation extends Activity {
                             @Override
                             public void onComplete(@NonNull Task<Location> task) {
                                 Time time = new Time();
-                                Database2 sqlite = new Database2(ctx);
 //                                NotificationBuilder notificationBuilder = new NotificationBuilder(context, inten);
 
                                 Chicago_Transits chicago_transits = new Chicago_Transits();
@@ -60,10 +59,15 @@ public class UserLocation extends Activity {
                                 if (location == null) {
                                     requestNewLocationData();
                                 }else{
+                                    Database2 sqlite = new Database2(ctx);
                                     if (sqlite.isEmpty("userLocation_table")){
                                         sqlite.addLocation(location.getLatitude(), location.getLongitude());
+                                        sqlite.close();
+
                                     }else{
                                         sqlite.update_location("1", "userLocation_table", location.getLatitude(), location.getLongitude());
+                                        sqlite.close();
+
                                     }
 
                                     sqlite.close();

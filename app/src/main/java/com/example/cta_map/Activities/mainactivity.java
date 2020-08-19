@@ -1,4 +1,5 @@
 package com.example.cta_map.Activities;//package com.example.cta_map.Activities;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,9 +32,13 @@ public class mainactivity extends AppCompatActivity {
         RecyclerView rvContacts = (RecyclerView) findViewById(R.id.recycler_view);
         RecyclerView optionsrv = (RecyclerView) findViewById(R.id.ViewOptions);
         final ArrayList<Stations> list = new ArrayList<>();
-        
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setTitle("Home Page");
+
 
         ArrayList<HashMap> favorite_stations = sqlite.getAllRecord("favorite_stations");
+        sqlite.close();
         for (HashMap t: favorite_stations){
             list.add(new Stations("#"+t.get("PrimaryId")+"."+" "+t.get("fav_station_name")+"."," "+t.get("fav_station_type"),t.get("fav_station_dir")+""));
         }

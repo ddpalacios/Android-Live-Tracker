@@ -86,6 +86,13 @@
 
             </intent-filter>
         </activity>
+        <activity android:name=".Activities.PopUp"
+
+            android:theme="@style/AppTheme.CustomTheme"
+            >
+
+        </activity>
+
 
 
         <!--        <activity-->
@@ -143,17 +150,7 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".Activities.activity_arrival_times"
-            android:label="@string/title_activity_maps">
-            <intent-filter>
-<!--                <action android:name="android.intent.action.MAIN" />-->
 
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-            </intent-filter>
-        </activity>
 
 
 

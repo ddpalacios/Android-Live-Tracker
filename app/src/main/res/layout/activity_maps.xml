@@ -73,127 +73,127 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/map_view"
-            android:layout_width="match_parent"
-            android:layout_height="124dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+<!--        <androidx.cardview.widget.CardView-->
+<!--            android:id="@+id/map_view"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="124dp"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent">-->
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:background="@drawable/cardview_body"
-                android:layout_height="match_parent">
+<!--            <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:background="@drawable/cardview_body"-->
+<!--                android:layout_height="match_parent">-->
 
-                <TextView
-                    android:id="@+id/type_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="RED"
-                    android:textStyle="bold"
-                    android:textSize="20sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.498"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.457" />
+<!--                <TextView-->
+<!--                    android:id="@+id/type_title"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="RED"-->
+<!--                    android:textStyle="bold"-->
+<!--                    android:textSize="20sp"-->
+<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintHorizontal_bias="0.498"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent"-->
+<!--                    app:layout_constraintVertical_bias="0.457" />-->
 
-                <ImageView
-                    android:id="@+id/orange_view"
-                    android:layout_width="52dp"
-                    android:layout_height="41dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginRight="16dp"
-                    android:src="@drawable/orange"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/yellow_view" />
+<!--                <ImageView-->
+<!--                    android:id="@+id/orange_view"-->
+<!--                    android:layout_width="52dp"-->
+<!--                    android:layout_height="41dp"-->
+<!--                    android:layout_marginTop="20dp"-->
+<!--                    android:layout_marginEnd="16dp"-->
+<!--                    android:layout_marginRight="16dp"-->
+<!--                    android:src="@drawable/orange"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintTop_toBottomOf="@+id/yellow_view" />-->
 
-                <ImageView
-                    android:id="@+id/pink_view"
-                    android:layout_width="52dp"
-                    android:layout_height="41dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginEnd="28dp"
-                    android:layout_marginRight="28dp"
-                    android:src="@drawable/pink"
-                    app:layout_constraintEnd_toStartOf="@+id/orange_view"
-                    app:layout_constraintTop_toBottomOf="@+id/blue_view" />
+<!--                <ImageView-->
+<!--                    android:id="@+id/pink_view"-->
+<!--                    android:layout_width="52dp"-->
+<!--                    android:layout_height="41dp"-->
+<!--                    android:layout_marginTop="20dp"-->
+<!--                    android:layout_marginEnd="28dp"-->
+<!--                    android:layout_marginRight="28dp"-->
+<!--                    android:src="@drawable/pink"-->
+<!--                    app:layout_constraintEnd_toStartOf="@+id/orange_view"-->
+<!--                    app:layout_constraintTop_toBottomOf="@+id/blue_view" />-->
 
-                <ImageView
-                    android:id="@+id/brown_view"
-                    android:layout_width="52dp"
-                    android:layout_height="41dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:src="@drawable/brown"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/purple_view"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent" />
+<!--                <ImageView-->
+<!--                    android:id="@+id/brown_view"-->
+<!--                    android:layout_width="52dp"-->
+<!--                    android:layout_height="41dp"-->
+<!--                    android:layout_marginStart="16dp"-->
+<!--                    android:layout_marginLeft="16dp"-->
+<!--                    android:layout_marginBottom="16dp"-->
+<!--                    android:src="@drawable/brown"-->
+<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                    app:layout_constraintEnd_toStartOf="@+id/purple_view"-->
+<!--                    app:layout_constraintHorizontal_bias="0.0"-->
+<!--                    app:layout_constraintStart_toStartOf="parent" />-->
 
-                <ImageView
-                    android:id="@+id/purple_view"
-                    android:layout_width="52dp"
-                    android:layout_height="41dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginEnd="104dp"
-                    android:layout_marginRight="104dp"
-                    android:src="@drawable/purple"
-                    app:layout_constraintEnd_toStartOf="@+id/pink_view"
-                    app:layout_constraintTop_toBottomOf="@+id/green_view" />
+<!--                <ImageView-->
+<!--                    android:id="@+id/purple_view"-->
+<!--                    android:layout_width="52dp"-->
+<!--                    android:layout_height="41dp"-->
+<!--                    android:layout_marginTop="20dp"-->
+<!--                    android:layout_marginEnd="104dp"-->
+<!--                    android:layout_marginRight="104dp"-->
+<!--                    android:src="@drawable/purple"-->
+<!--                    app:layout_constraintEnd_toStartOf="@+id/pink_view"-->
+<!--                    app:layout_constraintTop_toBottomOf="@+id/green_view" />-->
 
-                <ImageView
-                    android:id="@+id/green_view"
-                    android:layout_width="52dp"
-                    android:layout_height="41dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginEnd="104dp"
-                    android:layout_marginRight="104dp"
-                    android:src="@drawable/green"
-                    app:layout_constraintEnd_toStartOf="@+id/blue_view"
-                    app:layout_constraintTop_toTopOf="parent" />
+<!--                <ImageView-->
+<!--                    android:id="@+id/green_view"-->
+<!--                    android:layout_width="52dp"-->
+<!--                    android:layout_height="41dp"-->
+<!--                    android:layout_marginTop="4dp"-->
+<!--                    android:layout_marginEnd="104dp"-->
+<!--                    android:layout_marginRight="104dp"-->
+<!--                    android:src="@drawable/green"-->
+<!--                    app:layout_constraintEnd_toStartOf="@+id/blue_view"-->
+<!--                    app:layout_constraintTop_toTopOf="parent" />-->
 
-                <ImageView
-                    android:id="@+id/red_view"
-                    android:layout_width="52dp"
-                    android:layout_height="41dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginTop="4dp"
-                    android:src="@drawable/red"
-                    app:layout_constraintBottom_toTopOf="@+id/brown_view"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.09" />
+<!--                <ImageView-->
+<!--                    android:id="@+id/red_view"-->
+<!--                    android:layout_width="52dp"-->
+<!--                    android:layout_height="41dp"-->
+<!--                    android:layout_marginStart="16dp"-->
+<!--                    android:layout_marginLeft="16dp"-->
+<!--                    android:layout_marginTop="4dp"-->
+<!--                    android:src="@drawable/red"-->
+<!--                    app:layout_constraintBottom_toTopOf="@+id/brown_view"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent"-->
+<!--                    app:layout_constraintVertical_bias="0.09" />-->
 
-                <ImageView
-                    android:id="@+id/blue_view"
-                    android:layout_width="52dp"
-                    android:layout_height="41dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginEnd="28dp"
-                    android:layout_marginRight="28dp"
-                    android:src="@drawable/blue"
-                    app:layout_constraintEnd_toStartOf="@+id/yellow_view"
-                    app:layout_constraintTop_toTopOf="parent" />
+<!--                <ImageView-->
+<!--                    android:id="@+id/blue_view"-->
+<!--                    android:layout_width="52dp"-->
+<!--                    android:layout_height="41dp"-->
+<!--                    android:layout_marginTop="4dp"-->
+<!--                    android:layout_marginEnd="28dp"-->
+<!--                    android:layout_marginRight="28dp"-->
+<!--                    android:src="@drawable/blue"-->
+<!--                    app:layout_constraintEnd_toStartOf="@+id/yellow_view"-->
+<!--                    app:layout_constraintTop_toTopOf="parent" />-->
 
-                <ImageView
-                    android:id="@+id/yellow_view"
-                    android:layout_width="52dp"
-                    android:layout_height="41dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginRight="16dp"
-                    android:src="@drawable/yellow"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+<!--                <ImageView-->
+<!--                    android:id="@+id/yellow_view"-->
+<!--                    android:layout_width="52dp"-->
+<!--                    android:layout_height="41dp"-->
+<!--                    android:layout_marginTop="4dp"-->
+<!--                    android:layout_marginEnd="16dp"-->
+<!--                    android:layout_marginRight="16dp"-->
+<!--                    android:src="@drawable/yellow"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent" />-->
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.cardview.widget.CardView>
+<!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
+<!--        </androidx.cardview.widget.CardView>-->
 
         <fragment
             android:id="@+id/map"
@@ -203,7 +203,7 @@
             android:layout_alignParentBottom="true"
             app:layout_constraintBottom_toBottomOf="parent"
             tools:context=".Activities.MapsActivity"
-            tools:layout_editor_absoluteX="0dp" />
+            tools:layout_editor_absoluteX="31dp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/switch_dir"
@@ -217,16 +217,25 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Switch
-            android:id="@+id/exit_switch"
+        <Button
+            android:id="@+id/options_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:text="Exit"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/switch_dir" />
+            android:layout_marginTop="16dp"
+            android:text="Options"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!--        <Switch-->
+<!--            android:id="@+id/exit_switch"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="40dp"-->
+<!--            android:text="Exit"-->
+<!--            android:textSize="20sp"-->
+<!--            android:textStyle="bold"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/switch_dir" />-->
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
