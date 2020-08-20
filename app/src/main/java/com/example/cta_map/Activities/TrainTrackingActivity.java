@@ -340,15 +340,14 @@ public class TrainTrackingActivity extends AppCompatActivity {
 //
 //
 //
-//        s1.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(TrainTrackingActivity.this, MapsActivity.class);
-//                intent.putExtra("position", 1);
-//                message.keepSending(false);
-//                startActivity(intent);
-//            }
-//        });
+        s1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TrainTrackingActivity.this, MapsActivity.class);
+                message.keepSending(false);
+                startActivity(intent);
+            }
+        });
 //
 //
         switch_dir.setOnClickListener(new View.OnClickListener() {

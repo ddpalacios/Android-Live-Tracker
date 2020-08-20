@@ -206,7 +206,7 @@
             tools:layout_editor_absoluteX="31dp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/switch_dir"
+            android:id="@+id/map_switch_dir"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -222,8 +222,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginRight="4dp"
             android:text="Options"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/map_switch_dir"
             app:layout_constraintTop_toTopOf="parent" />
 
         <!--        <Switch-->

@@ -19,7 +19,7 @@
         app:layout_constraintVertical_bias="0.908" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/apply_btn"
         android:layout_width="137dp"
         android:layout_height="36dp"
         android:text="Save &amp; Apply"
@@ -42,7 +42,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/exit_btn"
         android:layout_width="80dp"
         android:layout_height="32dp"
 
@@ -94,7 +94,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/space2"
-        app:layout_constraintTop_toBottomOf="@+id/button2" />
+        app:layout_constraintTop_toBottomOf="@+id/exit_btn" />
 
 
     <Spinner

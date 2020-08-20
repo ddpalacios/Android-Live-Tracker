@@ -80,7 +80,7 @@ public class Content_Parser_Thread implements Runnable
 
                             current_train_info.put("train_eta", current_train_eta+"");
                             current_train_info.put("train_distance", current_train_distance_from_target_station+"");
-                            Log.e(TAG, current_train_info+" ");
+//                            Log.e(TAG, current_train_info+" ");
                             chosen_trains.add(current_train_info);
 
 

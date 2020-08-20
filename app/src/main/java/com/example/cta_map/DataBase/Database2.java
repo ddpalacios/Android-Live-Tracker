@@ -230,6 +230,7 @@ public class Database2 extends SQLiteOpenHelper {
     }
     public ArrayList<String> get_table_record(String table_name, String condition){
         ArrayList<String> userRecord = new ArrayList<>();
+        //TODO: Return as Hashmap instead ArrayList
 
         String query = "SELECT * FROM "
                 + table_name

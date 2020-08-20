@@ -2,6 +2,7 @@ package com.example.cta_map.Activities;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -18,6 +20,7 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 
 import com.example.cta_map.DataBase.Database2;
+import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.R;
 
 import java.lang.reflect.Array;
@@ -31,7 +34,11 @@ public class PopUp  extends Activity {
     Spinner spinner, stopSpinner;
     ArrayAdapter<String> adapter;
     SeekBar seekBar;
+    boolean showTarget=false, showAllStations=false, noTrains=false;
     TextView progess;
+    int selected_station_type=0;
+    int selected_station=0;
+    Button exit_btn, submit_btn;
     ArrayAdapter<String> stop_adapter;
     CheckBox no_trains_box, north_box, south_box, target_box, all_station_box;
 
@@ -51,6 +58,8 @@ public class PopUp  extends Activity {
         no_trains_box= findViewById(R.id.no_trains_box);
         north_box = findViewById(R.id.north_box);
         south_box = findViewById(R.id.south_box);
+        exit_btn = findViewById(R.id.exit_btn);
+        submit_btn = findViewById(R.id.apply_btn);
         target_box = findViewById(R.id.target_box);
         all_station_box = findViewById(R.id.all_stations_box);
 
@@ -60,6 +69,7 @@ public class PopUp  extends Activity {
         String[] colors = {"blue", "red", "green", "orange", "purple", "yellow", "pink", "brown"};
         ArrayList<String> line_names = new ArrayList(Arrays.asList(colors));
         HashMap<String, String> tracking_record = sqlite.get_tracking_record();
+        sqlite.close();
         if (Objects.equals(tracking_record.get("station_dir"), "1")){
             north_box.setChecked(true);
             south_box.setEnabled(false);
@@ -95,6 +105,7 @@ public class PopUp  extends Activity {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
+                noTrains = no_trains_box.isChecked();
 
         if (no_trains_box.isChecked()){
             progess.setText("0/10");
@@ -115,9 +126,6 @@ public class PopUp  extends Activity {
                 south_box.setEnabled(true);
 
             }
-
-
-
             seekBar.setEnabled(true);
 
 
@@ -136,7 +144,6 @@ public class PopUp  extends Activity {
             line_names.remove(original_train_line.toLowerCase());
             line_names.add(0, original_train_line);
         }
-        sqlite.close();
 
 
 
@@ -165,10 +172,13 @@ public class PopUp  extends Activity {
 
 
 
+
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Toast.makeText(getApplicationContext(), parent.getItemAtPosition(position)+" ", Toast.LENGTH_SHORT).show();
+                selected_station_type = position;
+
                 final Database2 sqlite = new Database2(getApplicationContext());
 
                 HashMap<String, String> tracking_record = sqlite.get_tracking_record();
@@ -187,13 +197,16 @@ public class PopUp  extends Activity {
 
                 sqlite.close();
                 stop_adapter = new ArrayAdapter<>( getApplicationContext(), android.R.layout.simple_spinner_item, stops);
-
+//                target_box.setChecked(true);
+//                showTarget=true;
                 stop_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 stopSpinner.setAdapter(stop_adapter);
                 stopSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
                         Toast.makeText(getApplicationContext(), parent.getItemAtPosition(position)+" ", Toast.LENGTH_SHORT).show();
+                        selected_station = position;
 
                     }
 
@@ -214,7 +227,78 @@ public class PopUp  extends Activity {
         });
 
 
+        exit_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(PopUp.this, MapsActivity.class));
 
+            }
+        });
+
+
+
+
+        target_box.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showTarget = target_box.isChecked();
+
+
+
+
+            }
+        });
+
+
+        all_station_box.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAllStations = all_station_box.isChecked();
+
+
+            }
+        });
+
+
+
+
+
+submit_btn.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
+        String station_direction = null;
+        String station_type = adapter.getItem(selected_station_type);
+        String station_name = stop_adapter.getItem(selected_station);
+        if (north_box.isChecked()){station_direction = "1";}
+        if (south_box.isChecked()){station_direction = "5";}
+
+        String query1 = "SELECT station_id FROM cta_stops WHERE station_name = '" + station_name + "'" + " AND " + station_type + " = 'true'";
+        String main_query = "SELECT northbound FROM main_stations WHERE main_station_type = '"+station_type.toUpperCase().replaceAll(" ", "")+"'";
+
+        String station_id = sqlite.getValue(query1);
+        Chicago_Transits chicago_transits = new Chicago_Transits();
+        String[] station_coord = chicago_transits.retrieve_station_coordinates(sqlite, station_id);
+        String main_station = sqlite.getValue(main_query);
+        sqlite.add_tracking_station(station_name, station_type, station_direction, main_station, station_coord, station_id);
+        Intent intent = new Intent(PopUp.this, MapsActivity.class);
+        intent.putExtra("noTrains", noTrains);
+        intent.putExtra("fromSettings", true);
+        intent.putExtra("showTarget", showTarget);
+        intent.putExtra("showAllStations", showAllStations);
+
+
+        startActivity(intent);
+
+
+
+        Toast.makeText(getApplicationContext(), station_type+" "+station_name+" "+station_direction, Toast.LENGTH_SHORT).show();
+
+
+
+
+
+    }
+});
 
 
 
