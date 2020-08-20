@@ -141,13 +141,13 @@
         tools:ignore="MissingConstraints" />
 
     <SeekBar
-        android:id="@+id/seekBar2"
+        android:id="@+id/n_trains"
         style="@style/Widget.AppCompat.SeekBar.Discrete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="228dp"
         android:max="10"
-        android:progress="3"
+        android:progress="5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -157,17 +157,17 @@
         android:id="@+id/textView9"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
         android:layout_marginBottom="4dp"
-        android:text="Select x Nearest Trains:"
-        app:layout_constraintBottom_toTopOf="@+id/seekBar2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.065"
+        android:text="Train View : "
+        app:layout_constraintBottom_toTopOf="@+id/n_trains"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider3"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.925" />
 
     <CheckBox
-        android:id="@+id/checkBox"
+        android:id="@+id/no_trains_box"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
@@ -196,10 +196,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/seekBar2" />
+        app:layout_constraintTop_toBottomOf="@+id/n_trains" />
 
     <CheckBox
-        android:id="@+id/checkBox2"
+        android:id="@+id/all_stations_box"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -212,7 +212,7 @@
         app:layout_constraintVertical_bias="0.098" />
 
     <CheckBox
-        android:id="@+id/checkBox6"
+        android:id="@+id/target_box"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -225,7 +225,7 @@
         app:layout_constraintVertical_bias="0.098" />
 
     <CheckBox
-        android:id="@+id/checkBox3"
+        android:id="@+id/north_box"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
@@ -233,10 +233,10 @@
         android:layout_marginTop="24dp"
         android:text="NorthBound"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/seekBar2" />
+        app:layout_constraintTop_toBottomOf="@+id/n_trains" />
 
     <CheckBox
-        android:id="@+id/checkBox4"
+        android:id="@+id/south_box"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
@@ -245,7 +245,21 @@
         android:text="SouthBound"
         app:layout_constraintBottom_toTopOf="@+id/divider4"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/seekBar2"
+        app:layout_constraintTop_toBottomOf="@+id/n_trains"
         app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:text="5/10"
+        app:layout_constraintBottom_toTopOf="@+id/n_trains"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/textView9"
+        app:layout_constraintTop_toBottomOf="@+id/divider3"
+        app:layout_constraintVertical_bias="0.838" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
