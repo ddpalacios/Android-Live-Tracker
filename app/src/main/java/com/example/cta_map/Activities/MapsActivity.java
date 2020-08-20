@@ -165,6 +165,8 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         }catch (NullPointerException e){
             e.printStackTrace();
         }
+
+        addTrail();
         if (fromSettings){
             chicago_transits.ZoomIn(mMap, (float) 13.3, new String[]{tracking_record.get("station_lat")+"", tracking_record.get("station_lon")+""});
             if (showTarget) {
