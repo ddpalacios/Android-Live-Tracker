@@ -182,14 +182,13 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
 
         if (fromSettings){
-            chicago_transits.ZoomIn(mMap, (float) 13.3, new String[]{tracking_record.get("station_lat")+"", tracking_record.get("station_lon")+""});
+//            chicago_transits.ZoomIn(mMap, (float) 13.3, new String[]{tracking_record.get("station_lat")+"", tracking_record.get("station_lon")+""});
                 mapMarker.addMarker(tracking_record.get("station_lat"), tracking_record.get("station_lon"), tracking_record.get("station_name"), "target", 1f,false).showInfoWindow();
                 if (showAllStations){
                     displayStations();
                 }
 
         }if (!fromSettings){
-            chicago_transits.ZoomIn(mMap, (float) 13.3, new String[]{tracking_record.get("station_lat")+"", tracking_record.get("station_lon")+""});
             mapMarker.addMarker(tracking_record.get("station_lat"), tracking_record.get("station_lon"), tracking_record.get("station_name"), "target", 1f,false).showInfoWindow();
         }
 
@@ -325,6 +324,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         UserLocation userLocation = new UserLocation(this);
         Toast.makeText(getApplicationContext(), tracking_record.get("station_name")+" "+tracking_record.get("station_type"), Toast.LENGTH_SHORT).show();
         message.keepSending(false);
+        chicago_transits.ZoomIn(mMap, (float) 13.3, new String[]{tracking_record.get("station_lat")+"", tracking_record.get("station_lon")+""});
 
         final Thread t1 = new Thread(new API_Caller_Thread(message, tracking_record,false), "API_CALL_Thread");
         final Thread t2 = new Thread(new Content_Parser_Thread(message, tracking_record,handler , stops, false), "Content Parser");
