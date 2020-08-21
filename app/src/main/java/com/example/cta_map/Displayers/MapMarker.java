@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import com.example.cta_map.Activities.MapsActivity;
+import com.example.cta_map.CustomInfoWindowAdapter;
 import com.example.cta_map.R;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -22,7 +24,7 @@ public class MapMarker {
     }
 
 
-    public Marker addMarker(String lat, String lon, String title, String color, Float alpha, boolean isStation) {
+    public Marker addMarker(String lat, String lon, String title, String snippet,String color, Float alpha, boolean isStation) {
         float opacity = alpha;
         HashMap<String, Integer> colors = new HashMap<>();
         colors.put("blue", R.drawable.blue);
@@ -42,11 +44,13 @@ public class MapMarker {
         Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
         BitmapDescriptor smallMarkerIcon = BitmapDescriptorFactory.fromBitmap(smallMarker);
 
-        if (isStation) {
-            return this.mMap.addMarker(new MarkerOptions().position(train_marker).title(title).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)).alpha(opacity));
-        }
 
-        return this.mMap.addMarker(new MarkerOptions().position(train_marker).title(title).icon(smallMarkerIcon));
+        if (isStation) {
+            return this.mMap.addMarker(new MarkerOptions().position(train_marker).title(title).snippet(snippet).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)).alpha(opacity));
+        }
+        mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(this.context));
+
+        return this.mMap.addMarker(new MarkerOptions().position(train_marker).title(title).snippet(snippet).icon(smallMarkerIcon));
 
 
 

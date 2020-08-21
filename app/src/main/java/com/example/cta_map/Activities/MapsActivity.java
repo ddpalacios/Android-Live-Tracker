@@ -23,6 +23,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.cta_map.CustomInfoWindowAdapter;
 import com.example.cta_map.DataBase.Database2;
 import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.Displayers.MapMarker;
@@ -61,7 +62,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         HashMap<String, String> tracking_record = sqlite.get_tracking_record();
         List<String> stops = sqlite.get_column_values("line_stops_table", Objects.requireNonNull(tracking_record.get("station_type")).replaceAll(" ", "").toLowerCase());
         MapMarker mapMarker = new MapMarker(mMap,getApplicationContext());
-        mapMarker.addMarker(tracking_record.get("station_lat"), tracking_record.get("station_lon"), tracking_record.get("station_name"), "target", 1f, false).showInfoWindow();
+        mapMarker.addMarker(tracking_record.get("station_lat"), tracking_record.get("station_lon"), tracking_record.get("station_name"), "Station","target", 1f, false).showInfoWindow();
 
         String target_station = tracking_record.get("station_name");
             Log.e("STOPS", stops.indexOf(target_station)+" ");
@@ -81,7 +82,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                     String longitude = values.get(11);
                     Log.e("train", stop_name);
 
-                        mapMarker.addMarker(latitude, longitude, stop_name, tracking_record.get("station_type").trim().toLowerCase(), .3f,true);
+                        mapMarker.addMarker(latitude, longitude, stop_name,"Station", tracking_record.get("station_type").trim().toLowerCase(), .3f,true);
 
                 }catch (NullPointerException e){
                     e.printStackTrace();
@@ -117,9 +118,6 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
         PolylineOptions options = new PolylineOptions().width(15).color(colors.get(tracking_record.get("station_type").trim()));
         for (String each_stop : stops) {
-            if (each_stop.equals("O'Hare")){
-                each_stop  = each_stop.replaceAll("[^0-9a-zA-Z]", "");
-            }
             String query = "SELECT station_id FROM cta_stops WHERE station_name = '"+each_stop+"' AND "+tracking_record.get("station_type").trim().toLowerCase() +" = 'true'";
             String id = sqlite.getValue(query);
             String[] station_coord = chicago_transits.retrieve_station_coordinates(sqlite, id);
@@ -141,11 +139,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             Bundle bundle = msg.getData();
             mMap.clear();
             Database2 sqlite = new Database2(getApplicationContext());
-//            MapMarker mapMarker = new MapMarker(mMap);
-            final HashMap<String, String> tracking_record = sqlite.get_tracking_record(); //("tracking_record", "WHERE TRACKING_ID ='"+0+"'");  //.getAllRecord("tracking_table");
             sqlite.close();
-//            chicago_transits.ZoomIn(mMap, (float) 13.3, new String[]{tracking_record.get("station_lat")+"", tracking_record.get("station_lon")+""});
-//            mapMarker.addMarker(tracking_record.get("station_lat"), tracking_record.get("station_lon"), tracking_record.get("station_name"), "cyan", 1f);
             displayResults(bundle);
         }
     };
@@ -155,14 +149,14 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         Bundle bb;
         Database2 sqlite = new Database2(getApplicationContext());
         MapMarker mapMarker = new MapMarker(mMap, getApplicationContext());
+
         final HashMap<String, String> tracking_record = sqlite.get_tracking_record(); //("tracking_record", "WHERE TRACKING_ID ='"+0+"'");  //.getAllRecord("tracking_table");
         sqlite.close();
-        boolean showTarget= false, noTrains=false, showAllStations=false,fromSettings = false;
+        boolean noTrains=false, showAllStations=false,fromSettings = false;
         int num_of_trains=10;
         try {
             bb = getIntent().getExtras();
             assert bb != null;
-            showTarget = bb.getBoolean("showTarget");
             noTrains = bb.getBoolean("noTrains");
             showAllStations = bb.getBoolean("showAllStations");
             fromSettings = bb.getBoolean("fromSettings");
@@ -176,7 +170,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
 
         if (fromSettings){
-                mapMarker.addMarker(tracking_record.get("station_lat"), tracking_record.get("station_lon"), tracking_record.get("station_name"), "target", 1f,false).showInfoWindow();
+                mapMarker.addMarker(tracking_record.get("station_lat"), tracking_record.get("station_lon"), tracking_record.get("station_name"), "Target","target", 1f,false).showInfoWindow();
                 int i=0;
                 final HashMap<String, ArrayList<HashMap>> new_train_data = (HashMap<String, ArrayList<HashMap>>) bundle.getSerializable("estimated_train_data");
                 final TreeMap<Integer, String> map = (TreeMap<Integer, String>) bundle.getSerializable("sorted_train_eta_map");
@@ -193,7 +187,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                     String query = "SELECT station_id FROM cta_stops WHERE station_name = '"+main_station+"' AND "+tracking_record.get("station_type")+" ='true'";
                     String station_id = sqlite.getValue(query);
                     String[] station_coordinates = chicago_transits.retrieve_station_coordinates(sqlite, station_id);
-                    mapMarker.addMarker(station_coordinates[0], station_coordinates[1], main_station, "main", 1f,false);
+                    mapMarker.addMarker(station_coordinates[0], station_coordinates[1], main_station,"Main",  "main", 1f,false);
             if (!noTrains){
 
             for (HashMap<String, String> chosen : chosen_train){
@@ -201,7 +195,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                     if (num_of_trains == i){
                         break;
                     }
-                    mapMarker.addMarker(chosen.get("train_lat"), chosen.get("train_lon"), chosen.get("next_stop"), chosen.get("station_type"), 1f,false);
+                    mapMarker.addMarker(chosen.get("train_lat"), chosen.get("train_lon"), "Next Stop: "+chosen.get("next_stop").trim() ,chosen.get("train_eta")+"m", chosen.get("station_type"), 1f,false);
                     i++;
                 }
             }
@@ -225,12 +219,12 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             String station_id = sqlite.getValue(query);
             String[] station_coordinates = chicago_transits.retrieve_station_coordinates(sqlite, station_id);
 
-            mapMarker.addMarker(station_coordinates[0], station_coordinates[1], main_station, "main", 1f,false);
+            mapMarker.addMarker(station_coordinates[0], station_coordinates[1], main_station, "Main","main", 1f,false);
 
 
 
 
-            mapMarker.addMarker(tracking_record.get("station_lat"), tracking_record.get("station_lon"), tracking_record.get("station_name"), "target", 1f,false).showInfoWindow();
+            mapMarker.addMarker(tracking_record.get("station_lat"), tracking_record.get("station_lon"), tracking_record.get("station_name"),"Target", "target", 1f,false).showInfoWindow();
             final HashMap<String, ArrayList<HashMap>> new_train_data = (HashMap<String, ArrayList<HashMap>>) bundle.getSerializable("estimated_train_data");
             final TreeMap<Integer, String> map = (TreeMap<Integer, String>) bundle.getSerializable("sorted_train_eta_map");
             ArrayList<HashMap> chosen_train = new_train_data.get("chosen_trains");
@@ -239,7 +233,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             if (!noTrains) {
                 for (HashMap<String, String> chosen : chosen_train) {
                     Log.e("Chosen", chosen_train.size() + " ");
-                    mapMarker.addMarker(chosen.get("train_lat"), chosen.get("train_lon"), chosen.get("next_stop"), chosen.get("station_type"), 1f, false);
+                    mapMarker.addMarker(chosen.get("train_lat"), chosen.get("train_lon"), "Next Stop: "+chosen.get("next_stop").trim(),chosen.get("train_eta")+"m", chosen.get("station_type"), 1f, false);
 
                 }
             }
