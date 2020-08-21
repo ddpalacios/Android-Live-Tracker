@@ -2,12 +2,16 @@ package com.example.cta_map.Displayers;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import com.example.cta_map.R;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -16,30 +20,34 @@ import java.util.HashMap;
 
 public class MapMarker {
     GoogleMap mMap;
-    public MapMarker(GoogleMap mMap){
+    Context context;
+    public MapMarker(GoogleMap mMap, Context context){
         this.mMap = mMap;
+        this.context = context;
     }
 
 
     public Marker addMarker(String lat, String lon, String title, String color, Float alpha){
         float opacity = alpha;
-        HashMap<String, Float> colors = new HashMap<>();
-        colors.put("default", BitmapDescriptorFactory.HUE_ROSE);
-        colors.put("main", BitmapDescriptorFactory.HUE_AZURE);
-        colors.put("blue", BitmapDescriptorFactory.HUE_BLUE);
-        colors.put("cyan", BitmapDescriptorFactory.HUE_CYAN);
-        colors.put("rose", BitmapDescriptorFactory.HUE_ROSE);
-        colors.put("purple", BitmapDescriptorFactory.HUE_VIOLET);
-        colors.put("pink", BitmapDescriptorFactory.HUE_MAGENTA+5);
-        colors.put("green", BitmapDescriptorFactory.HUE_GREEN);
-        colors.put("brown",BitmapDescriptorFactory.HUE_BLUE);
-        colors.put("orange", BitmapDescriptorFactory.HUE_ORANGE);
-        colors.put("red", BitmapDescriptorFactory.HUE_RED);
-        colors.put("yellow", BitmapDescriptorFactory.HUE_YELLOW);
+        HashMap<String, Integer> colors = new HashMap<>();
+        colors.put("blue", R.drawable.blue);
+        colors.put("purple", R.drawable.purple);
+        colors.put("pink", R.drawable.pink);
+        colors.put("green", R.drawable.green);
+        colors.put("brown",R.drawable.brown);
+        colors.put("orange", R.drawable.orange);
+        colors.put("red", R.drawable.red);
+        colors.put("target",R.drawable.target);
+        colors.put("yellow", R.drawable.yellow);
         LatLng train_marker = new LatLng(Double.parseDouble(lat), Double.parseDouble(lon));
-        Float TRAIN_COLOR = colors.get(color);
-        assert TRAIN_COLOR != null;
-        return this.mMap.addMarker(new MarkerOptions().position(train_marker).title(title).icon(BitmapDescriptorFactory.defaultMarker(TRAIN_COLOR)).alpha(opacity));
+        int height = 100;
+        int width = 100;
+        Bitmap b = BitmapFactory.decodeResource(this.context.getResources(), R.drawable.blue);
+        Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+        BitmapDescriptor smallMarkerIcon = BitmapDescriptorFactory.fromBitmap(smallMarker);
+
+
+        return this.mMap.addMarker(new MarkerOptions().position(train_marker).title(title).icon(smallMarkerIcon));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

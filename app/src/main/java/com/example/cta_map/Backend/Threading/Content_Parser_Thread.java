@@ -105,7 +105,7 @@ public class Content_Parser_Thread implements Runnable
                     }
 
                     parsed_train_data.put("chosen_trains", chosen_trains);
-                    parsed_train_data.put("ignored", ignored_trains);
+                    parsed_train_data.put("ignored_trains", ignored_trains);
                     this.msg.setParsedTrainData(parsed_train_data);
 
                     this.msg.notify();

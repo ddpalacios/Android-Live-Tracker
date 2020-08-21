@@ -197,8 +197,9 @@ public class PopUp  extends Activity {
 
                 sqlite.close();
                 stop_adapter = new ArrayAdapter<>( getApplicationContext(), android.R.layout.simple_spinner_item, stops);
-//                target_box.setChecked(true);
-//                showTarget=true;
+                target_box.setChecked(true);
+                target_box.setEnabled(false);
+                showTarget=true;
                 stop_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 stopSpinner.setAdapter(stop_adapter);
                 stopSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
