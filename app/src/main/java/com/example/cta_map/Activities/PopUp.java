@@ -275,7 +275,8 @@ submit_btn.setOnClickListener(new View.OnClickListener() {
 
         String query1 = "SELECT station_id FROM cta_stops WHERE station_name = '" + station_name + "'" + " AND " + station_type + " = 'true'";
         String main_query = "SELECT northbound FROM main_stations WHERE main_station_type = '"+station_type.toUpperCase().replaceAll(" ", "")+"'";
-
+        int num_of_trains = seekBar.getProgress();
+        Log.e("num", num_of_trains+" ");
         String station_id = sqlite.getValue(query1);
         Chicago_Transits chicago_transits = new Chicago_Transits();
         String[] station_coord = chicago_transits.retrieve_station_coordinates(sqlite, station_id);
@@ -283,9 +284,11 @@ submit_btn.setOnClickListener(new View.OnClickListener() {
         sqlite.add_tracking_station(station_name, station_type, station_direction, main_station, station_coord, station_id);
         Intent intent = new Intent(PopUp.this, MapsActivity.class);
         intent.putExtra("noTrains", noTrains);
+        intent.putExtra("num_of_trains", num_of_trains);
         intent.putExtra("fromSettings", true);
         intent.putExtra("showTarget", showTarget);
         intent.putExtra("showAllStations", showAllStations);
+
 
 
         startActivity(intent);

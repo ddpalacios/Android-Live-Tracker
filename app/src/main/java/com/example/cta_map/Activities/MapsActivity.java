@@ -81,7 +81,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                     String longitude = values.get(11);
                     Log.e("train", stop_name);
 
-                        mapMarker.addMarker(latitude, longitude, stop_name, tracking_record.get("station_type").trim().toLowerCase(), .5f,true);
+                        mapMarker.addMarker(latitude, longitude, stop_name, tracking_record.get("station_type").trim().toLowerCase(), .3f,true);
 
                 }catch (NullPointerException e){
                     e.printStackTrace();
@@ -158,6 +158,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         final HashMap<String, String> tracking_record = sqlite.get_tracking_record(); //("tracking_record", "WHERE TRACKING_ID ='"+0+"'");  //.getAllRecord("tracking_table");
         sqlite.close();
         boolean showTarget= false, noTrains=false, showAllStations=false,fromSettings = false;
+        int num_of_trains=10;
         try {
             bb = getIntent().getExtras();
             assert bb != null;
@@ -165,31 +166,84 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             noTrains = bb.getBoolean("noTrains");
             showAllStations = bb.getBoolean("showAllStations");
             fromSettings = bb.getBoolean("fromSettings");
+            num_of_trains = bb.getInt("num_of_trains");
         }catch (NullPointerException e){
             e.printStackTrace();
         }
 
         addTrail();
-        final HashMap<String, ArrayList<HashMap>> new_train_data = (HashMap<String, ArrayList<HashMap>>) bundle.getSerializable("estimated_train_data");
-        final TreeMap<Integer, String> map = (TreeMap<Integer, String>) bundle.getSerializable("sorted_train_eta_map");
-        ArrayList<HashMap> chosen_train = new_train_data.get("chosen_trains");
-        ArrayList<HashMap> ignored_trains = new_train_data.get("ignored_trains");
-        for (HashMap<String, String> chosen : chosen_train){
-            Log.e("Chosen", chosen+" ");
-            mapMarker.addMarker(chosen.get("train_lat"), chosen.get("train_lon"), chosen.get("next_stop"), chosen.get("station_type"), 1f,false);
 
-        }
 
 
         if (fromSettings){
-//            chicago_transits.ZoomIn(mMap, (float) 13.3, new String[]{tracking_record.get("station_lat")+"", tracking_record.get("station_lon")+""});
                 mapMarker.addMarker(tracking_record.get("station_lat"), tracking_record.get("station_lon"), tracking_record.get("station_name"), "target", 1f,false).showInfoWindow();
-                if (showAllStations){
+                int i=0;
+                final HashMap<String, ArrayList<HashMap>> new_train_data = (HashMap<String, ArrayList<HashMap>>) bundle.getSerializable("estimated_train_data");
+                final TreeMap<Integer, String> map = (TreeMap<Integer, String>) bundle.getSerializable("sorted_train_eta_map");
+                ArrayList<HashMap> chosen_train = new_train_data.get("chosen_trains");
+                ArrayList<HashMap> ignored_trains = new_train_data.get("ignored_trains");
+                   String main_query;
+                    if (tracking_record.get("station_dir").equals("1")){
+                        main_query = "SELECT northbound FROM main_stations WHERE main_station_type = '"+tracking_record.get("station_type").toUpperCase().replaceAll(" ", "")+"'";
+
+                    }else{
+                        main_query = "SELECT southbound1 FROM main_stations WHERE main_station_type = '"+tracking_record.get("station_type").toUpperCase().replaceAll(" ", "")+"'";
+                    }
+                    String main_station = sqlite.getValue(main_query);
+                    String query = "SELECT station_id FROM cta_stops WHERE station_name = '"+main_station+"' AND "+tracking_record.get("station_type")+" ='true'";
+                    String station_id = sqlite.getValue(query);
+                    String[] station_coordinates = chicago_transits.retrieve_station_coordinates(sqlite, station_id);
+                    mapMarker.addMarker(station_coordinates[0], station_coordinates[1], main_station, "main", 1f,false);
+            if (!noTrains){
+
+            for (HashMap<String, String> chosen : chosen_train){
+                    Log.e("Chosen", chosen_train.size()+" ");
+                    if (num_of_trains == i){
+                        break;
+                    }
+                    mapMarker.addMarker(chosen.get("train_lat"), chosen.get("train_lon"), chosen.get("next_stop"), chosen.get("station_type"), 1f,false);
+                    i++;
+                }
+            }
+
+            if (showAllStations){
                     displayStations();
                 }
 
         }if (!fromSettings){
+
+            String main_query;
+            if (tracking_record.get("station_dir").equals("1")){
+                main_query = "SELECT northbound FROM main_stations WHERE main_station_type = '"+tracking_record.get("station_type").toUpperCase().replaceAll(" ", "")+"'";
+
+            }else{
+                main_query = "SELECT southbound1 FROM main_stations WHERE main_station_type = '"+tracking_record.get("station_type").toUpperCase().replaceAll(" ", "")+"'";
+            }
+            String main_station = sqlite.getValue(main_query);
+            String query = "SELECT station_id FROM cta_stops WHERE station_name = '"+main_station+"' AND "+tracking_record.get("station_type")+" ='true'";
+            Log.e("quert", query);
+            String station_id = sqlite.getValue(query);
+            String[] station_coordinates = chicago_transits.retrieve_station_coordinates(sqlite, station_id);
+
+            mapMarker.addMarker(station_coordinates[0], station_coordinates[1], main_station, "main", 1f,false);
+
+
+
+
             mapMarker.addMarker(tracking_record.get("station_lat"), tracking_record.get("station_lon"), tracking_record.get("station_name"), "target", 1f,false).showInfoWindow();
+            final HashMap<String, ArrayList<HashMap>> new_train_data = (HashMap<String, ArrayList<HashMap>>) bundle.getSerializable("estimated_train_data");
+            final TreeMap<Integer, String> map = (TreeMap<Integer, String>) bundle.getSerializable("sorted_train_eta_map");
+            ArrayList<HashMap> chosen_train = new_train_data.get("chosen_trains");
+            ArrayList<HashMap> ignored_trains = new_train_data.get("ignored_trains");
+
+            if (!noTrains) {
+                for (HashMap<String, String> chosen : chosen_train) {
+                    Log.e("Chosen", chosen_train.size() + " ");
+                    mapMarker.addMarker(chosen.get("train_lat"), chosen.get("train_lon"), chosen.get("next_stop"), chosen.get("station_type"), 1f, false);
+
+                }
+            }
+
         }
 
     }

@@ -1,13 +1,8 @@
 package com.example.cta_map.Displayers;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
-import android.util.Log;
-
-import androidx.annotation.RequiresApi;
 
 import com.example.cta_map.R;
 import com.google.android.gms.maps.GoogleMap;
@@ -33,6 +28,7 @@ public class MapMarker {
         colors.put("blue", R.drawable.blue);
         colors.put("purple", R.drawable.purple);
         colors.put("pink", R.drawable.pink);
+        colors.put("main", R.drawable.mainstation);
         colors.put("green", R.drawable.green);
         colors.put("brown", R.drawable.brown);
         colors.put("orange", R.drawable.orange);
@@ -40,8 +36,8 @@ public class MapMarker {
         colors.put("target", R.drawable.target);
         colors.put("yellow", R.drawable.yellow);
         LatLng train_marker = new LatLng(Double.parseDouble(lat), Double.parseDouble(lon));
-        int height = 120;
-        int width = 120;
+        int height = 140;
+        int width = 140;
         Bitmap b = BitmapFactory.decodeResource(this.context.getResources(), colors.get(color));
         Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
         BitmapDescriptor smallMarkerIcon = BitmapDescriptorFactory.fromBitmap(smallMarker);
