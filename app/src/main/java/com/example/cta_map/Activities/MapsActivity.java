@@ -61,7 +61,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         HashMap<String, String> tracking_record = sqlite.get_tracking_record();
         List<String> stops = sqlite.get_column_values("line_stops_table", Objects.requireNonNull(tracking_record.get("station_type")).replaceAll(" ", "").toLowerCase());
         MapMarker mapMarker = new MapMarker(mMap,getApplicationContext());
-        mapMarker.addMarker(tracking_record.get("station_lat"), tracking_record.get("station_lon"), tracking_record.get("station_name"), "cyan", 1f).showInfoWindow();
+        mapMarker.addMarker(tracking_record.get("station_lat"), tracking_record.get("station_lon"), tracking_record.get("station_name"), "target", 1f, false).showInfoWindow();
 
         String target_station = tracking_record.get("station_name");
             Log.e("STOPS", stops.indexOf(target_station)+" ");
@@ -81,7 +81,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                     String longitude = values.get(11);
                     Log.e("train", stop_name);
 
-                        mapMarker.addMarker(latitude, longitude, stop_name, tracking_record.get("station_type").trim().toLowerCase(), .5f);
+                        mapMarker.addMarker(latitude, longitude, stop_name, tracking_record.get("station_type").trim().toLowerCase(), .5f,true);
 
                 }catch (NullPointerException e){
                     e.printStackTrace();
@@ -176,21 +176,21 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         ArrayList<HashMap> ignored_trains = new_train_data.get("ignored_trains");
         for (HashMap<String, String> chosen : chosen_train){
             Log.e("Chosen", chosen+" ");
-            mapMarker.addMarker(chosen.get("train_lat"), chosen.get("train_lon"), chosen.get("next_stop"), "red", 1f);
+            mapMarker.addMarker(chosen.get("train_lat"), chosen.get("train_lon"), chosen.get("next_stop"), chosen.get("station_type"), 1f,false);
 
         }
 
 
         if (fromSettings){
             chicago_transits.ZoomIn(mMap, (float) 13.3, new String[]{tracking_record.get("station_lat")+"", tracking_record.get("station_lon")+""});
-                mapMarker.addMarker(tracking_record.get("station_lat"), tracking_record.get("station_lon"), tracking_record.get("station_name"), "cyan", 1f).showInfoWindow();
+                mapMarker.addMarker(tracking_record.get("station_lat"), tracking_record.get("station_lon"), tracking_record.get("station_name"), "target", 1f,false).showInfoWindow();
                 if (showAllStations){
                     displayStations();
                 }
 
         }if (!fromSettings){
             chicago_transits.ZoomIn(mMap, (float) 13.3, new String[]{tracking_record.get("station_lat")+"", tracking_record.get("station_lon")+""});
-            mapMarker.addMarker(tracking_record.get("station_lat"), tracking_record.get("station_lon"), tracking_record.get("station_name"), "cyan", 1f).showInfoWindow();
+            mapMarker.addMarker(tracking_record.get("station_lat"), tracking_record.get("station_lon"), tracking_record.get("station_name"), "target", 1f,false).showInfoWindow();
         }
 
     }
