@@ -15,7 +15,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.HashMap;
 
-public class MapMarker {
+public class MapMarker  {
     GoogleMap mMap;
     Context context;
     public MapMarker(GoogleMap mMap, Context context){

@@ -93,7 +93,12 @@
 
         </activity>
 
+        <activity android:name=".Activities.TrainInfoPopUp"
 
+            android:theme="@style/AppTheme.CustomTheme"
+            >
+
+        </activity>
 
         <!--        <activity-->
 <!--            android:name=".Activities.newUserActivity">-->
