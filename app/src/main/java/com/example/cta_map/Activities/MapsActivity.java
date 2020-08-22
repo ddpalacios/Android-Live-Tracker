@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
+import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -52,6 +53,8 @@ import java.util.TreeMap;
 public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback{
     private GoogleMap mMap;
     String TAG  = "MAPS ACTIVITY";
+
+
     Message message = new Message();
     Chicago_Transits chicago_transits = new Chicago_Transits();
 
@@ -146,6 +149,8 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void displayResults(Bundle bundle){
+        ImageView up_arrow = findViewById(R.id.up);
+        ImageView down_arrow = findViewById(R.id.down);
         Bundle bb;
         Database2 sqlite = new Database2(getApplicationContext());
         MapMarker mapMarker = new MapMarker(mMap, getApplicationContext());
@@ -174,7 +179,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                 int i=0;
                 final HashMap<String, ArrayList<HashMap>> new_train_data = (HashMap<String, ArrayList<HashMap>>) bundle.getSerializable("estimated_train_data");
                 final TreeMap<Integer, String> map = (TreeMap<Integer, String>) bundle.getSerializable("sorted_train_eta_map");
-                ArrayList<HashMap> chosen_train = new_train_data.get("chosen_trains");
+                final ArrayList<HashMap> chosen_train = new_train_data.get("chosen_trains");
                 ArrayList<HashMap> ignored_trains = new_train_data.get("ignored_trains");
                    String main_query;
                     if (tracking_record.get("station_dir").equals("1")){
@@ -204,6 +209,77 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                     displayStations();
                 }
 
+
+            up_arrow.setOnClickListener(new View.OnClickListener() {
+                @SuppressLint("SetTextI18n")
+                @Override
+                public void onClick(View v) {
+                    TextView train_num = findViewById(R.id.trainNum);
+                    String[] map_title = train_num.getText().toString().split("#");
+                    int increment_train_idx = Integer.parseInt(map_title[1].trim())+1;
+
+                    train_num.setText("Train # "+increment_train_idx);
+                    try {
+                        assert map != null;
+                        String train_id = map.values().toArray()[increment_train_idx].toString();
+//                        Toast.makeText(getApplicationContext(), "Train ID "+train_id, Toast.LENGTH_SHORT).show();
+                        for (HashMap chosen: chosen_train){
+                            if (chosen.containsValue(train_id)){
+                                chicago_transits.ZoomIn(mMap, (float) 13.3, new String[]{chosen.get("train_lat")+"", chosen.get("train_lon")+""});
+
+                            }
+                        }
+
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+
+
+
+                }
+            });
+
+            down_arrow.setOnClickListener(new View.OnClickListener() {
+                @SuppressLint("SetTextI18n")
+                @Override
+                public void onClick(View v) {
+                    TextView train_num = findViewById(R.id.trainNum);
+                    String[] map_title = train_num.getText().toString().split("#");
+                    int increment_train_idx = Integer.parseInt(map_title[1].trim())-1;
+                    Toast.makeText(getApplicationContext(), increment_train_idx+" ", Toast.LENGTH_SHORT).show();
+                    if (increment_train_idx < 0) {
+                        train_num.setText("Train # 0");
+                    }else {
+                        train_num.setText("Train # " + increment_train_idx);
+                    }
+                    try {
+                        assert map != null;
+                        String train_id = map.values().toArray()[increment_train_idx].toString();
+//                        Toast.makeText(getApplicationContext(), "Train ID "+train_id, Toast.LENGTH_SHORT).show();
+                        for (HashMap chosen: chosen_train){
+                            if (chosen.containsValue(train_id)){
+                                chicago_transits.ZoomIn(mMap, (float) 13.3, new String[]{chosen.get("train_lat")+"", chosen.get("train_lon")+""});
+
+                            }
+                        }
+
+
+
+
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+
+//                        Toast.makeText(getApplicationContext(), "num "+increment_train_idx, Toast.LENGTH_SHORT).show();
+
+//                        chicago_transits.ZoomIn(mMap, (float) 13.3, new String[]{tracking_record.get("station_lat")+"", tracking_record.get("station_lon")+""});
+
+                }
+            });
+
+
+
+
         }if (!fromSettings){
 
             String main_query;
@@ -227,15 +303,87 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             mapMarker.addMarker(tracking_record.get("station_lat"), tracking_record.get("station_lon"), tracking_record.get("station_name"),"Target", "target", 1f,false).showInfoWindow();
             final HashMap<String, ArrayList<HashMap>> new_train_data = (HashMap<String, ArrayList<HashMap>>) bundle.getSerializable("estimated_train_data");
             final TreeMap<Integer, String> map = (TreeMap<Integer, String>) bundle.getSerializable("sorted_train_eta_map");
-            ArrayList<HashMap> chosen_train = new_train_data.get("chosen_trains");
+            final ArrayList<HashMap> chosen_train = new_train_data.get("chosen_trains");
             ArrayList<HashMap> ignored_trains = new_train_data.get("ignored_trains");
 
             if (!noTrains) {
                 for (HashMap<String, String> chosen : chosen_train) {
-                    Log.e("Chosen", chosen_train.size() + " ");
                     mapMarker.addMarker(chosen.get("train_lat"), chosen.get("train_lon"), "Next Stop: "+chosen.get("next_stop").trim(),chosen.get("train_eta")+"m", chosen.get("station_type"), 1f, false);
-
                 }
+
+                up_arrow.setOnClickListener(new View.OnClickListener() {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void onClick(View v) {
+                        TextView train_num = findViewById(R.id.trainNum);
+                        String[] map_title = train_num.getText().toString().split("#");
+                        int increment_train_idx = Integer.parseInt(map_title[1].trim())+1;
+                        train_num.setText("Train # "+increment_train_idx);
+                        try {
+                            assert map != null;
+                            String train_id = map.values().toArray()[increment_train_idx].toString();
+//                            Toast.makeText(getApplicationContext(), "Train ID "+train_id, Toast.LENGTH_SHORT).show();
+                            for (HashMap chosen: chosen_train){
+                                if (chosen.containsValue(train_id)){
+                                    chicago_transits.ZoomIn(mMap, (float) 13.3, new String[]{chosen.get("train_lat")+"", chosen.get("train_lon")+""});
+
+                                }
+                            }
+
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+
+
+
+                    }
+                });
+
+                down_arrow.setOnClickListener(new View.OnClickListener() {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void onClick(View v) {
+                        TextView train_num = findViewById(R.id.trainNum);
+                        String[] map_title = train_num.getText().toString().split("#");
+                        int increment_train_idx = Integer.parseInt(map_title[1].trim())-1;
+                        Toast.makeText(getApplicationContext(), increment_train_idx+" ", Toast.LENGTH_SHORT).show();
+                        if (increment_train_idx < 0) {
+                            train_num.setText("Train # 0");
+                        }else {
+                            train_num.setText("Train # " + increment_train_idx);
+                        }
+                        train_num.setText("Train # "+increment_train_idx);
+
+                        try {
+                            assert map != null;
+                            String train_id = map.values().toArray()[increment_train_idx].toString();
+//                            Toast.makeText(getApplicationContext(), "Train ID "+train_id, Toast.LENGTH_SHORT).show();
+                            for (HashMap chosen: chosen_train){
+                                if (chosen.containsValue(train_id)){
+                                    chicago_transits.ZoomIn(mMap, (float) 13.3, new String[]{chosen.get("train_lat")+"", chosen.get("train_lon")+""});
+
+                                }
+                            }
+
+
+
+
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+
+//                        Toast.makeText(getApplicationContext(), "num "+increment_train_idx, Toast.LENGTH_SHORT).show();
+
+//                        chicago_transits.ZoomIn(mMap, (float) 13.3, new String[]{tracking_record.get("station_lat")+"", tracking_record.get("station_lon")+""});
+
+                    }
+                });
+
+
+
+
+
+
             }
 
         }
@@ -374,7 +522,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         message.keepSending(false);
         chicago_transits.ZoomIn(mMap, (float) 13.3, new String[]{tracking_record.get("station_lat")+"", tracking_record.get("station_lon")+""});
 
-        final Thread t1 = new Thread(new API_Caller_Thread(message, tracking_record,false), "API_CALL_Thread");
+        final Thread t1 = new Thread(new API_Caller_Thread(message, tracking_record,true), "API_CALL_Thread");
         final Thread t2 = new Thread(new Content_Parser_Thread(message, tracking_record,handler , stops, false), "Content Parser");
         final Thread t3 = new Thread(new Train_Estimations_Thread(message, userLocation, tracking_record,handler,getApplicationContext(),false), "Estimation Thread");
         final Thread t4 = new Thread(new Notifier_Thread(t1,t2,t3), "Notifier Thread");
