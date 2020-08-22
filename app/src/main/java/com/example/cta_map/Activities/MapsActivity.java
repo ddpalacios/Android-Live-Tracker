@@ -507,28 +507,32 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        ImageView mapImage = findViewById(R.id.mapImage);
+        TextView title = findViewById(R.id.mapTitle);
 
-
-        FloatingActionButton switch_dir = (FloatingActionButton) findViewById(R.id.map_switch_dir);
-
+        FloatingActionButton switch_dir =  findViewById(R.id.map_switch_dir);
         Chicago_Transits chicago_transits = new Chicago_Transits();
         final Database2 sqlite = new Database2(getApplicationContext());
         final HashMap<String, String> tracking_record = sqlite.get_tracking_record();
-
         final ArrayList<String> stops = sqlite.get_column_values("line_stops_table", tracking_record.get("station_type").replaceAll(" ", "").toLowerCase());
         sqlite.close();
+
+        HashMap<String, Integer> train_codes = getTrainLineKeys();
+        Integer screen_station_color = train_codes.get(Objects.requireNonNull(tracking_record.get("station_type")).trim());
+        mapImage.setImageResource(screen_station_color);
+
+        title.setText(tracking_record.get("station_name")+" ("+tracking_record.get("station_type").trim()+")");
+
+
         UserLocation userLocation = new UserLocation(this);
         Toast.makeText(getApplicationContext(), tracking_record.get("station_name")+" "+tracking_record.get("station_type"), Toast.LENGTH_SHORT).show();
         message.keepSending(false);
         chicago_transits.ZoomIn(mMap, (float) 13.3, new String[]{tracking_record.get("station_lat")+"", tracking_record.get("station_lon")+""});
-
         final Thread t1 = new Thread(new API_Caller_Thread(message, tracking_record,true), "API_CALL_Thread");
         final Thread t2 = new Thread(new Content_Parser_Thread(message, tracking_record,handler , stops, false), "Content Parser");
         final Thread t3 = new Thread(new Train_Estimations_Thread(message, userLocation, tracking_record,handler,getApplicationContext(),false), "Estimation Thread");
         final Thread t4 = new Thread(new Notifier_Thread(t1,t2,t3), "Notifier Thread");
         t4.start();
-
-
 
         switch_dir.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -589,6 +593,18 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
 
 
+    public HashMap<String, Integer> getTrainLineKeys(){
+        HashMap<String, Integer> TrainLineKeyCodes  = new HashMap<>();
+        TrainLineKeyCodes.put("red",R.drawable.red );
+        TrainLineKeyCodes.put("blue", R.drawable.blue);
+        TrainLineKeyCodes.put("brown", R.drawable.brown);
+        TrainLineKeyCodes.put("green", R.drawable.green);
+        TrainLineKeyCodes.put("orange", R.drawable.orange);
+        TrainLineKeyCodes.put("pink", R.drawable.pink);
+        TrainLineKeyCodes.put("purple", R.drawable.purple);
+        TrainLineKeyCodes.put("yellow", R.drawable.yellow);
+        return TrainLineKeyCodes;
+    }
 
 
 
