@@ -283,7 +283,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
 
 
         final Thread t1 = new Thread(new API_Caller_Thread(message, tracking_record,false), "API_CALL_Thread");
-        final Thread t2 = new Thread(new Content_Parser_Thread(message, tracking_record,handler , stops, false), "Content Parser");
+        final Thread t2 = new Thread(new Content_Parser_Thread(message,getApplicationContext(), tracking_record,handler , stops, false), "Content Parser");
         final Thread t3 = new Thread(new Train_Estimations_Thread(message, userLocation, tracking_record,handler,getApplicationContext(),false), "Estimation Thread");
         final Thread t4 = new Thread(new Notifier_Thread(t1,t2,t3), "Notifier Thread");
         t4.start();

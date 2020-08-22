@@ -225,7 +225,6 @@ public class Database2 extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(query, null);
         cursor.moveToFirst();
 
-
         return cursor.getString(0);
     }
     public ArrayList<String> get_table_record(String table_name, String condition){

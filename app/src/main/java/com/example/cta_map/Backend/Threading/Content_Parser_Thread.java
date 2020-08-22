@@ -1,8 +1,11 @@
 package com.example.cta_map.Backend.Threading;
 
+import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 import androidx.annotation.RequiresApi;
+
+import com.example.cta_map.DataBase.Database2;
 import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.Displayers.Time;
 
@@ -19,10 +22,12 @@ public class Content_Parser_Thread implements Runnable
     HashMap<String, String> record;
     android.os.Handler handler;
     boolean willCommunicate;
+    Context context;
     ArrayList<String> stops;
     String TAG = Thread.currentThread().getName();
-    public Content_Parser_Thread(Message msg, HashMap<String, String> record,android.os.Handler handler , ArrayList<String> stops, boolean willCommunicate){
+    public Content_Parser_Thread(Message msg,Context context, HashMap<String, String> record,android.os.Handler handler , ArrayList<String> stops, boolean willCommunicate){
         this.msg = msg;
+        this.context = context;
         this.record = record;
         this.handler = handler;
         this.stops = stops;
@@ -74,13 +79,31 @@ public class Content_Parser_Thread implements Runnable
                                     Double.parseDouble(Objects.requireNonNull(this.record.get("station_lat"))),
                                     Double.parseDouble(Objects.requireNonNull(this.record.get("station_lon"))));
 
+
+                            try {
+                                Database2 sqlite = new Database2(this.context);
+                                String query1 = "SELECT station_id FROM cta_stops WHERE station_name = '" + current_train_info.get("next_stop").trim()+ "'" + " AND " + current_train_info.get("station_type") + " = 'true'";
+                                String station_id = sqlite.getValue(query1);
+                                String[] next_stop_station_coord = chicago_transits.retrieve_station_coordinates(sqlite, station_id);
+
+                                Double current_train_distance_from_next_station = chicago_transits.calculate_coordinate_distance(
+                                        Double.parseDouble(Objects.requireNonNull(current_train_info.get("train_lat"))),
+                                        Double.parseDouble(Objects.requireNonNull(current_train_info.get("train_lon"))),
+                                        Double.parseDouble(Objects.requireNonNull(next_stop_station_coord[0])),
+                                        Double.parseDouble(Objects.requireNonNull(next_stop_station_coord[1])));
+
+                                int current_train_next_stop_eta = time.get_estimated_time_arrival(25, current_train_distance_from_next_station);
+                                current_train_info.put("next_stop_distance", current_train_distance_from_next_station+"");
+                                current_train_info.put("next_stop_eta", current_train_next_stop_eta+"");
+
+                            }catch (Exception e){e.printStackTrace();}
+
+
                             int current_train_eta = time.get_estimated_time_arrival(25, current_train_distance_from_target_station);
                             train_etas.put(current_train_eta, current_train_info.get("train_id"));
-
-
+                            current_train_info.put("target_station", this.record.get("station_name"));
                             current_train_info.put("train_eta", current_train_eta+"");
                             current_train_info.put("train_distance", current_train_distance_from_target_station+"");
-//                            Log.e(TAG, current_train_info+" ");
                             chosen_trains.add(current_train_info);
 
 
@@ -90,6 +113,7 @@ public class Content_Parser_Thread implements Runnable
                             ignored_trains.add(current_train_info);
                         }
 
+                        Log.e(TAG, current_train_info+" ");
 
 
                     }

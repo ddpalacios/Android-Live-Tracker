@@ -218,6 +218,14 @@ public class Chicago_Transits {
             train_info.put("train_id", train_id.replaceAll(" ", ""));
             String new_stop = next_train_stop.substring(2);
             train_info.put("next_stop", new_stop);
+            try {
+                train_info.put("next_stop_pred_arr_time",
+                        predicted_arrival_time.trim().split(":")[0].replaceAll("20200822", "") + ":" +
+                                predicted_arrival_time.trim().split(":")[1] + ":" +
+                                predicted_arrival_time.trim().split(":")[2]);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
             train_info.put("train_direction", train_direction.replaceAll(" ", ""));
             train_info.put("train_lat", train_lat.replaceAll(" ", ""));
             train_info.put("train_lon", train_lon.replaceAll(" ", ""));
