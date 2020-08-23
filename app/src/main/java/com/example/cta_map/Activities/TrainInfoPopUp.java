@@ -60,6 +60,11 @@ try {
         Integer key = keyCodes.get(Objects.requireNonNull(chosen_train.get("station_type")).toLowerCase().trim());
         imageView.setImageResource(key);
 
+
+        if (Objects.equals(chosen_train.get("isNotified"), "1")){
+            notify_me.setChecked(true);
+        }
+
         info_window_train_id.setText("Train# "+chosen_train.get("train_id"));
         info_window_arrival_time.setText(chosen_train.get("next_stop_pred_arr_time"));
 
@@ -105,8 +110,13 @@ try {
             if (notify_me.isChecked()){
                 String tracking_train_id = chosen_train.get("train_id");
                 Toast.makeText(getApplicationContext(), "On", Toast.LENGTH_SHORT).show();
+                chosen_train.put("isNotified", "1");
+                Log.e("TRAIN", chosen_train+" ");
             }else{
                 Toast.makeText(getApplicationContext(), "Off", Toast.LENGTH_SHORT).show();
+                chosen_train.put("isNotified", "0");
+                Log.e("TRAIN", chosen_train+" ");
+
 
             }
         }

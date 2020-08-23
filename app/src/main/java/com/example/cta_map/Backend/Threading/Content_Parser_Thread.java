@@ -52,6 +52,7 @@ public class Content_Parser_Thread implements Runnable
             for (String each_stop : this.stops) { modified_stops.add(each_stop.replaceAll("[^a-zA-Z0-9]", "").toLowerCase()); }
             while (this.msg.IsSending()){
                 synchronized (this.msg){
+                    Database2 sqlite = new Database2(this.context);
                     if (this.msg.getRawTrainContent() == null){ // no API call
                         this.msg.notify();
                         Log.e(TAG, "NULL object. Waiting. ");
@@ -81,7 +82,6 @@ public class Content_Parser_Thread implements Runnable
 
 
                             try {
-                                Database2 sqlite = new Database2(this.context);
                                 String query1 = "SELECT station_id FROM cta_stops WHERE station_name = '" + current_train_info.get("next_stop").trim()+ "'" + " AND " + current_train_info.get("station_type") + " = 'true'";
                                 String station_id = sqlite.getValue(query1);
                                 String[] next_stop_station_coord = chicago_transits.retrieve_station_coordinates(sqlite, station_id);
@@ -95,16 +95,17 @@ public class Content_Parser_Thread implements Runnable
                                 int current_train_next_stop_eta = time.get_estimated_time_arrival(25, current_train_distance_from_next_station);
                                 current_train_info.put("next_stop_distance", current_train_distance_from_next_station+"");
                                 current_train_info.put("next_stop_eta", current_train_next_stop_eta+"");
+                                int current_train_eta = time.get_estimated_time_arrival(25, current_train_distance_from_target_station);
+                                train_etas.put(current_train_eta, current_train_info.get("train_id"));
+                                current_train_info.put("target_station", this.record.get("station_name"));
+                                current_train_info.put("train_eta", current_train_eta+"");
+                                current_train_info.put("train_distance", current_train_distance_from_target_station+"");
+                                chosen_trains.add(current_train_info);
+                                Log.e(TAG, current_train_info+"");
+
+                                sqlite.AddTrain(current_train_info);
 
                             }catch (Exception e){e.printStackTrace();}
-
-
-                            int current_train_eta = time.get_estimated_time_arrival(25, current_train_distance_from_target_station);
-                            train_etas.put(current_train_eta, current_train_info.get("train_id"));
-                            current_train_info.put("target_station", this.record.get("station_name"));
-                            current_train_info.put("train_eta", current_train_eta+"");
-                            current_train_info.put("train_distance", current_train_distance_from_target_station+"");
-                            chosen_trains.add(current_train_info);
 
 
                         }
@@ -112,10 +113,6 @@ public class Content_Parser_Thread implements Runnable
                         if (!modified_valid_stations.contains(modified_next_stop) && Objects.equals(current_train_info.get("train_direction"), this.record.get("station_dir"))) {
                             ignored_trains.add(current_train_info);
                         }
-
-                        Log.e(TAG, current_train_info+" ");
-
-
                     }
 
                     TreeMap<Integer, String> map = new TreeMap(train_etas);

@@ -15,10 +15,12 @@ import androidx.annotation.RequiresApi;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Objects;
 
 
 public class Database2 extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 3;
+
 
     private static final String DATABASE_NAME = "CTA_DataBase.db";
 
@@ -82,12 +84,47 @@ public class Database2 extends SQLiteOpenHelper {
     public static final String USERLOT = "user_lon";
 
 
+    public static final String ALL_TRAINS_TABLE = "all_trains_table";
+    public static final String TRAIN_ID = "train_id";
+    public static final String IS_DELAYED = "isdelayed";
+    public static final String IS_APPROACHING = "isApproaching";
+    public static final String NEXT_STOP = "next_stop";
+    public static final String TRAIN_LAT = "train_lat";
+    public static final String TRAIN_LON = "train_lon";
+    public static final String PRED_ARRIVAL_TIME = "pred_arrival_time";
+    public static final String NEXT_STOP_DISTANCE = "next_stop_distance";
+    public static final String DISTANCE_TO_TARGET = "distance_to_target";
+    public static final String IS_NOTIFIED = "isNotified";
+    public static final String TO_TARGET_TRAIN_ETA = "to_target_eta";
+    public static final String NEXT_STOP_ETA = "next_stop_eta";
+
+
+
+
+
+
+    public static final String SETTINGS_TABLE = "settings_table";
+    public static final String TRAIN_AMOUNT = "train_amount";
+    public static final String NO_TRAIN = "no_train";
+    public static final String SHOW_ALL_STATIONS  = "show_all_stations";
+
+
+
+
+
+
+
+
     public Database2(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        SQLiteDatabase db ;
+        this.getReadableDatabase();
+
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+
 
         String userLocationTable = "CREATE TABLE IF NOT EXISTS "+USERLOCATION+" ( "
                 +LOCATION_ID+" INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -96,7 +133,8 @@ public class Database2 extends SQLiteOpenHelper {
                 ")";
 
 
-        db.execSQL(userLocationTable);
+
+
 
         String line_stops_table = "CREATE TABLE IF NOT EXISTS " +LINE_STOPS_TABLE + " ( "
                 + STOP_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -144,17 +182,111 @@ public class Database2 extends SQLiteOpenHelper {
                 + TRACKING_DIR_COL +" INTEGER, "
                 + TRACKING_MAIN_COL+ " TEXT)";
 
+
+
+
+        String all_trains_table = "CREATE TABLE IF NOT EXISTS "+ALL_TRAINS_TABLE+" ( "
+                + TRAIN_ID + " INTEGER PRIMARY KEY, "
+                + IS_NOTIFIED + " INTEGER, "
+                + PRED_ARRIVAL_TIME + " TEXT, "
+                + NEXT_STOP + " TEXT, "
+                + NEXT_STOP_ETA + " TEXT, "
+                + NEXT_STOP_DISTANCE + " TEXT, "
+                + IS_DELAYED + " TEXT, "
+                + IS_APPROACHING + " TEXT, "
+                + DISTANCE_TO_TARGET + " TEXT, "
+                + TO_TARGET_TRAIN_ETA + " TEXT, "
+                + TRAIN_LAT + " REAL, "
+                + TRAIN_LON + " REAL)";
+        db.execSQL(all_trains_table);
+        Log.e("DATABASE SUCCESS", "TABLES CREATED SUCCESSFULLY");
+        Log.e("WWW", "ONCREATe");
+
+
+
         try{
+        db.execSQL(userLocationTable);
         db.execSQL(line_stops_table);
         db.execSQL(tracking_table);
         db.execSQL(cta_stops);
         db.execSQL(main_stations);
         db.execSQL(favorite_station);
-        Log.e("DATABASE SUCCESS", "TABLES CREATED SUCCESSFULLY");
     }catch (Exception e){
         Log.e("DATABASE ERROR", "Error in Creating Table(s)");
     }
     }
+
+    private boolean TrainExists(String train_id) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        String Query = "SELECT * FROM " + ALL_TRAINS_TABLE + " WHERE " + TRAIN_ID + " = " + "'" + train_id + "'";
+        Cursor cursor = database.rawQuery(Query, null);
+        if(cursor.getCount() <= 0){
+            cursor.close();
+            return false;
+        }
+        cursor.close();
+
+        return true;
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public void AddTrain(HashMap<String, String> new_train){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        try {
+
+            if (!TrainExists(Objects.requireNonNull(new_train.get("train_id")).trim())) {
+                cv.put(TRAIN_ID, new_train.get("train_id"));
+                cv.put(IS_NOTIFIED, new_train.get("isNotified"));
+                cv.put(PRED_ARRIVAL_TIME, new_train.get("next_stop_pred_arr_time"));
+                cv.put(NEXT_STOP, new_train.get("next_stop"));
+                cv.put(NEXT_STOP_ETA, new_train.get("next_stop_eta"));
+                cv.put(NEXT_STOP_DISTANCE, new_train.get("next_stop_distance"));
+                cv.put(IS_DELAYED, new_train.get("isDelayed"));
+                cv.put(IS_APPROACHING, new_train.get("isApproaching"));
+                cv.put(DISTANCE_TO_TARGET, new_train.get("train_distance"));
+                cv.put(TO_TARGET_TRAIN_ETA, new_train.get("train_eta"));
+                cv.put(TRAIN_LAT, new_train.get("train_lat"));
+                cv.put(TRAIN_LON, new_train.get("train_lon"));
+
+                db.insert(ALL_TRAINS_TABLE, null, cv);
+                Log.e("Train ADDED", "Train ADDED"+new_train.get("train_id"));
+                db.close();
+
+            }else{
+                Log.e("Train Exists", "Train "+new_train.get("train_id"));
+
+                cv.put(TRAIN_ID, new_train.get("train_id"));
+                cv.put(IS_NOTIFIED, new_train.get("isNotified"));
+                cv.put(PRED_ARRIVAL_TIME, new_train.get("next_stop_pred_arr_time"));
+                cv.put(NEXT_STOP, new_train.get("next_stop"));
+                cv.put(NEXT_STOP_ETA, new_train.get("next_stop_eta"));
+                cv.put(NEXT_STOP_DISTANCE, new_train.get("next_stop_distance"));
+                cv.put(IS_DELAYED, new_train.get("isDelayed"));
+                cv.put(IS_APPROACHING, new_train.get("isApproaching"));
+                cv.put(DISTANCE_TO_TARGET, new_train.get("train_distance"));
+                cv.put(TO_TARGET_TRAIN_ETA, new_train.get("train_eta"));
+                cv.put(TRAIN_LAT, new_train.get("train_lat"));
+                cv.put(TRAIN_LON, new_train.get("train_lon"));
+
+                db.update(ALL_TRAINS_TABLE, cv, "train_id = ?", new String[]{new_train.get("train_id")});
+
+
+                db.close();
+
+            }
+        db.close();
+
+
+
+        }catch (Exception e){e.printStackTrace();}
+
+
+
+    }
+
+
 
     public void update_fav_dir(String id, String dir){
         SQLiteDatabase db = this.getWritableDatabase();

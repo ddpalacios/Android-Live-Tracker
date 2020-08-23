@@ -230,7 +230,7 @@ public class Chicago_Transits {
             train_info.put("train_lat", train_lat.replaceAll(" ", ""));
             train_info.put("train_lon", train_lon.replaceAll(" ", ""));
             train_info.put("station_type", station_type.replaceAll(" ", ""));
-
+            train_info.put("isNotified", "0");
             if (train_info.isEmpty()) {
                 return null;
             }

@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -23,7 +24,6 @@ import java.util.HashMap;
 public class mainactivity extends AppCompatActivity {
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +36,9 @@ public class mainactivity extends AppCompatActivity {
         assert actionBar != null;
         actionBar.setTitle("Home Page");
 
+        String query1 = "SELECT station_id FROM cta_stops WHERE station_name = 'Granville'" + " AND red = 'true'";
+        String station_id = sqlite.getValue(query1);
+        Log.e("WWW", station_id+" ");
 
         ArrayList<HashMap> favorite_stations = sqlite.getAllRecord("favorite_stations");
         sqlite.close();
@@ -56,7 +59,7 @@ public class mainactivity extends AppCompatActivity {
         rvContacts.setLayoutManager(new LinearLayoutManager(this));
 
     }
-
+//
 
 
 
