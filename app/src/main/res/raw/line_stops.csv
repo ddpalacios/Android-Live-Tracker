@@ -1,0 +1,34 @@
+STOPID,green,red,blue,yellow,pink,orange,brown,purple
+1,Harlem/Lake,Howard,O'Hare,Dempster-Skokie,Washington/Wells,Adams/Wabash,Kimball,Linden
+2,Oak Park,Jarvis,Rosemont,Oakton-Skokie,Quincy/Wells,Washington/Wabash,Kedzie,Central
+3,Ridgeland,Morse,Cumberland,Howard,LaSalle/Van Buren,State/Lake,Francisco,Noyes
+4,Austin,Loyola,Harlem (O'Hare Branch),null,Harold Washington Library-State/Van Buren,Clark/Lake,Rockwell,Foster
+5,Central,Granville,Jefferson Park,null,Adams/Wabash,Washington/Wells,Western,Davis
+6,Laramie,Thorndale,Montrose,null,Washington/Wabash,Quincy/Wells,Damen,Dempster
+7,Cicero,Bryn Mawr,Irving Park,null,State/Lake,LaSalle/Van Buren,Montrose,Main
+8,Pulaski,Berwyn,Addison,null,Clark/Lake,Harold Washington Library-State/Van Buren,Irving Park,South Boulevard
+9,Conservatory,Argyle,Belmont,null,Clinton,Roosevelt,Addison,Howard
+10,Kedzie,Lawrence,Logan Square,null,Morgan,Halsted,Paulina,Wilson
+11,California,Wilson,California,null,Ashland,Ashland,South Port,Belmont
+12,Ashland,Sheridan,Western (O'Hare Branch),null,Polk,35th/Archer,Belmont,Wellington
+13,Morgan,Addison,Damen,null,18th,Western,Wellington,Diversey
+14,Clinton,Belmont,Division,null,Damen,Kedzie,Diversey,Fullerton
+15,Clark/Lake,Fullerton,Chicago,null,Western,Pulaski,Fullerton,Armitage
+16,State/Lake,North/Clybourn,Grand,null,California,Midway,Armitage,Sedgwick
+17,Washington/Wabash,Clark/Division,Clark/Lake,null,Kedzie,null,Sedgwick,Chicago
+18,Adams/Wabash,Chicago,Washington,null,Central Park,null,Chicago,Merchandise Mart
+19,Roosevelt,Grand,Monroe,null,Pulaski,null,Merchandise Mart,Clark/Lake
+20,Cermak-McCormick Place,Lake,Jackson,null,Kostner,null,Washington/Wells,State/Lake
+21,35th-Bronzeville-IIT,Monroe,LaSalle,null,Cicero,null,Quincy/Wells,Washington/Wabash
+22,Indiana,Jackson,Clinton,null,54th/Cermak,null,LaSalle/Van Buren,Adams/Wabash
+23,43rd,Harrison,UIC-Halsted,null,null,null,Harold Washington Library-State/Van Buren,Harold Washington Library-State/Van Buren
+24,47th,Roosevelt,Racine,null,null,null,Adams/Wabash,LaSalle/Van Buren
+25,51st,Cermak-Chinatown,Illinois Medical District,null,null,null,Washington/Wabash,Quincy/Wells
+26,Garfield,Sox-35th,Western (Forest Park Branch),null,null,null,State/Lake,Washington/Wells
+27,King Drive,47th,Kedzie-Homan,null,null,null,Clark/Lake,null
+28,Cottage Grove,Garfield,Pulaski,null,null,null,null,null
+29,Halsted,63rd,Cicero,null,null,null,null,null
+30,Ashland/63rd,69th,Austin,null,null,null,null,null
+31,null,79th,Oak Park,null,null,null,null,null
+32,null,87th,Harlem (Forest Park Branch),null,null,null,null,null
+33,null,95th/Dan Ryan,Forest Park,null,null,null,null,null

@@ -6,6 +6,61 @@ import java.util.List;
 import java.util.TreeMap;
 
 public class Message {
+
+    private ArrayList<IncomingTrains> incoming_trains;
+
+
+
+    public void setIncoming_trains(ArrayList<IncomingTrains> incoming_trains){
+        this.incoming_trains = incoming_trains;
+    }
+    public ArrayList<IncomingTrains> getIncoming_trains(){
+        return this.incoming_trains;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     HashMap<String, ArrayList<HashMap>> parsedTrainData;
     String[] msg;
     String dir;
@@ -21,6 +76,33 @@ public class Message {
     ArrayList<HashMap> chosen_trains;
     String coord;
     List<String> sub;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public String[] getRawTrainContent(){
         return this.msg;
 

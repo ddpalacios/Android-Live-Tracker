@@ -17,30 +17,30 @@ public class ChooseLine extends AppCompatActivity {
         setContentView(R.layout.line_activity);
         ArrayList<StationLines> list = new ArrayList<>();
         RecyclerView line_layout = (RecyclerView) findViewById(R.id.main_line);
-        Log.e("context", getBaseContext()+" context");
-
-        int[] images = {
-                R.drawable.red,
-                R.drawable.blue,
-                R.drawable.green,
-                R.drawable.orange,
-                R.drawable.brown,
-                R.drawable.pink,
-                R.drawable.yellow,
-                R.drawable.purple};
-
-
-        String[] names = new String[]{"Red", "Blue", "Green", "Orange", "Brown", "Pink", "Yellow", "Purple"};
-        for (int i=0; i<names.length; i++){
-            list.add(new StationLines(names[i], images[i]));
-
-        }
-
-
-
-        LineAdapter adapter = new LineAdapter(getApplicationContext(), list);
-        line_layout.setAdapter(adapter);
-        line_layout.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+//        Log.e("context", getBaseContext()+" context");
+//
+//        int[] images = {
+//                R.drawable.red,
+//                R.drawable.blue,
+//                R.drawable.green,
+//                R.drawable.orange,
+//                R.drawable.brown,
+//                R.drawable.pink,
+//                R.drawable.yellow,
+//                R.drawable.purple};
+//
+//
+//        String[] names = new String[]{"Red", "Blue", "Green", "Orange", "Brown", "Pink", "Yellow", "Purple"};
+//        for (int i=0; i<names.length; i++){
+//            list.add(new StationLines(names[i], images[i]));
+//
+//        }
+//
+//
+//
+//        LineAdapter adapter = new LineAdapter(getApplicationContext(), list);
+//        line_layout.setAdapter(adapter);
+//        line_layout.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
 //
 

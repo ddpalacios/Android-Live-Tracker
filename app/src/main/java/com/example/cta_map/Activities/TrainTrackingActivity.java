@@ -229,65 +229,105 @@ public class TrainTrackingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.train_tracking_activity);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        ImageView imageView  = (ImageView) findViewById(R.id.tracking_image);
-        final TextView title = (TextView) findViewById(R.id.tracking_name);
-        Switch s1 = (Switch) findViewById(R.id.toMaps);
-
-        FloatingActionButton switch_dir = (FloatingActionButton) findViewById(R.id.floatingActionButton);
-        ActionBar actionBar = getSupportActionBar();
-
-        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-
-        assert actionBar != null;
-
-        final Database2 sqlite = new Database2(getApplicationContext());
-        final HashMap<String, String> tracking_record = sqlite.get_tracking_record(); //("tracking_record", "WHERE TRACKING_ID ='"+0+"'");  //.getAllRecord("tracking_table");
-        actionBar.setTitle("Train Tracker ("+tracking_record.get("station_name")+")");
-
-        final ArrayList<String> stops = sqlite.get_column_values("line_stops_table", tracking_record.get("station_type").replaceAll(" ", "").toLowerCase());
-        sqlite.close();
-
-        if (tracking_record.isEmpty()){
-            Toast.makeText(getApplicationContext(), "No Tracking Station Found in DB!", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        UserLocation userLocation = new UserLocation(this);
-        HashMap<String, Integer> TrainLineKeyCodes = getTrainLineKeys();
-        try {
-            Integer screen_station_color = TrainLineKeyCodes.get(Objects.requireNonNull(tracking_record.get("station_type")).trim());
-            if (screen_station_color == null){
-                imageView.setImageResource(R.drawable.ic_launcher_background);
-                return;
-            }
-            imageView.setImageResource(screen_station_color);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        if (Objects.equals(tracking_record.get("station_dir"), "1")){
-            title.setText(tracking_record.get("station_name")+" (North)");
-
-        }else{
-            title.setText(tracking_record.get("station_name")+" (South)");
-
-        }
+        Bundle bb;
+        bb = getIntent().getExtras();
+        String target_station_name = bb.getString("target_station_name");
+        String target_type = bb.getString("target_station_type");
+        String target_dir = bb.getString("target_station_dir");
+        String target_station_id = bb.getString("target_station_id");
 
 
-        RecyclerView line_layout = findViewById(R.id.vr_recycler_view);
-        RecyclerView bottom_layout = findViewById(R.id.hr_recycler_view);
-        bottom_layout.setAdapter(bottomTrackingAdapter);
-        line_layout.setAdapter(adapter);
-        bottom_layout.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        line_layout.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
 
-        final Thread t1 = new Thread(new API_Caller_Thread(message, tracking_record,false), "API_CALL_Thread");
-        final Thread t2 = new Thread(new Content_Parser_Thread(message,getApplicationContext(), tracking_record,handler , stops, false), "Content Parser");
-        final Thread t3 = new Thread(new Train_Estimations_Thread(message, userLocation, tracking_record,handler,getApplicationContext(),false), "Estimation Thread");
-        final Thread t4 = new Thread(new Notifier_Thread(t1,t2,t3), "Notifier Thread");
-        t4.start();
 
+        final Thread t1 = new Thread(new API_Caller_Thread(message, target_type,false), "API_CALL_Thread");
+        final Thread t2 = new Thread(new Content_Parser_Thread(getApplicationContext(), message, target_type, target_dir, target_station_name, target_station_id), "Content Parser");
+
+        t1.start();
+        t2.start();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    }
+
+//
+//        ImageView imageView  = (ImageView) findViewById(R.id.tracking_image);
+//        final TextView title = (TextView) findViewById(R.id.tracking_name);
+//        Switch s1 = (Switch) findViewById(R.id.toMaps);
+//
+//        FloatingActionButton switch_dir = (FloatingActionButton) findViewById(R.id.floatingActionButton);
+//        ActionBar actionBar = getSupportActionBar();
+//
+//        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+//
+//        assert actionBar != null;
+//
+//        final Database2 sqlite = new Database2(getApplicationContext());
+//        final HashMap<String, String> tracking_record = sqlite.get_tracking_record(); //("tracking_record", "WHERE TRACKING_ID ='"+0+"'");  //.getAllRecord("tracking_table");
+//        actionBar.setTitle("Train Tracker ("+tracking_record.get("station_name")+")");
+//
+//        final ArrayList<String> stops = sqlite.get_column_values("line_stops_table", tracking_record.get("station_type").replaceAll(" ", "").toLowerCase());
+//        sqlite.close();
+//
+//        if (tracking_record.isEmpty()){
+//            Toast.makeText(getApplicationContext(), "No Tracking Station Found in DB!", Toast.LENGTH_LONG).show();
+//            return;
+//        }
+//
+//        UserLocation userLocation = new UserLocation(this);
+//        HashMap<String, Integer> TrainLineKeyCodes = getTrainLineKeys();
+//        try {
+//            Integer screen_station_color = TrainLineKeyCodes.get(Objects.requireNonNull(tracking_record.get("station_type")).trim());
+//            if (screen_station_color == null){
+//                imageView.setImageResource(R.drawable.ic_launcher_background);
+//                return;
+//            }
+//            imageView.setImageResource(screen_station_color);
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//        if (Objects.equals(tracking_record.get("station_dir"), "1")){
+//            title.setText(tracking_record.get("station_name")+" (North)");
+//
+//        }else{
+//            title.setText(tracking_record.get("station_name")+" (South)");
+//
+//        }
+//
+//
+//        RecyclerView line_layout = findViewById(R.id.vr_recycler_view);
+//        RecyclerView bottom_layout = findViewById(R.id.hr_recycler_view);
+//        bottom_layout.setAdapter(bottomTrackingAdapter);
+//        line_layout.setAdapter(adapter);
+//        bottom_layout.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+//        line_layout.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+//
+//
+//        final Thread t1 = new Thread(new API_Caller_Thread(message, tracking_record,false), "API_CALL_Thread");
+//        final Thread t2 = new Thread(new Content_Parser_Thread(message,getApplicationContext(), tracking_record,handler , stops, false), "Content Parser");
+//        final Thread t3 = new Thread(new Train_Estimations_Thread(message, userLocation, tracking_record,handler,getApplicationContext(),false), "Estimation Thread");
+//        final Thread t4 = new Thread(new Notifier_Thread(t1,t2,t3), "Notifier Thread");
+//        t4.start();
+//
 
 
 
@@ -340,49 +380,49 @@ public class TrainTrackingActivity extends AppCompatActivity {
 //
 //
 //
-        s1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(TrainTrackingActivity.this, MapsActivity.class);
-                message.keepSending(false);
-                startActivity(intent);
-            }
-        });
+//        s1.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(TrainTrackingActivity.this, MapsActivity.class);
+//                message.keepSending(false);
+//                startActivity(intent);
+//            }
+//        });
+////
+////
+//        switch_dir.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                String query;
+//                removeAllItems();
 //
+//                Log.e(Thread.currentThread().getName(), tracking_record.get("station_dir")+"");
+//                if (Objects.equals(tracking_record.get("station_dir"), "1")){
+//                    tracking_record.put("station_dir", "5");
+//                    title.setText(tracking_record.get("station_name")+" (South)");
+//                    query = "SELECT southbound1 FROM main_stations WHERE main_station_type = '" + tracking_record.get("station_type").toUpperCase().trim() + "'";
 //
-        switch_dir.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String query;
-                removeAllItems();
-
-                Log.e(Thread.currentThread().getName(), tracking_record.get("station_dir")+"");
-                if (Objects.equals(tracking_record.get("station_dir"), "1")){
-                    tracking_record.put("station_dir", "5");
-                    title.setText(tracking_record.get("station_name")+" (South)");
-                    query = "SELECT southbound1 FROM main_stations WHERE main_station_type = '" + tracking_record.get("station_type").toUpperCase().trim() + "'";
-
-                }else{
-                    title.setText(tracking_record.get("station_name")+" (North)");
-                    tracking_record.put("station_dir", "1");
-                    query = "SELECT northbound FROM main_stations WHERE main_station_type = '" + tracking_record.get("station_type").toUpperCase().trim() + "'";
-
-                }
-
-                String main_station = sqlite.getValue(query);
-                if (main_station.equals("O'Hare")){
-                    main_station  = main_station.replaceAll("[^0-9a-zA-Z]", "");
-                }
-
-                sqlite.update_value(tracking_record.get("tracking_id"), "tracking_table", "main_station_name", main_station);
-                tracking_record.put("main_station", main_station);
-
-                t3.interrupt();
-
-            }
-        });
-    }
-
+//                }else{
+//                    title.setText(tracking_record.get("station_name")+" (North)");
+//                    tracking_record.put("station_dir", "1");
+//                    query = "SELECT northbound FROM main_stations WHERE main_station_type = '" + tracking_record.get("station_type").toUpperCase().trim() + "'";
+//
+//                }
+//
+//                String main_station = sqlite.getValue(query);
+//                if (main_station.equals("O'Hare")){
+//                    main_station  = main_station.replaceAll("[^0-9a-zA-Z]", "");
+//                }
+//
+//                sqlite.update_value(tracking_record.get("tracking_id"), "tracking_table", "main_station_name", main_station);
+//                tracking_record.put("main_station", main_station);
+//
+//                t3.interrupt();
+//
+//            }
+//        });
+//    }
+//
 
     public HashMap<String, Integer> getTrainLineKeys(){
         HashMap<String, Integer> TrainLineKeyCodes  = new HashMap<>();

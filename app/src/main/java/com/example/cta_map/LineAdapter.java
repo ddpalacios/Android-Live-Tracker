@@ -33,7 +33,7 @@ public class LineAdapter extends RecyclerView.Adapter<LineAdapter.LineViewHolder
     @Override
     public void onBindViewHolder(@NonNull LineViewHolder holder, int position) {
             final StationLines lines = this.lines.get(position);
-            holder.t1.setText(lines.getLine());
+            holder.t1.setText(lines.getLine().toUpperCase());
             holder.img1.setImageResource(lines.getColor());
             final Context ctx = this.context;
             holder.t1.setOnClickListener(new View.OnClickListener() {
@@ -41,11 +41,9 @@ public class LineAdapter extends RecyclerView.Adapter<LineAdapter.LineViewHolder
                 public void onClick(View v) {
                     Intent intent = new Intent(ctx, ChooseDir.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.putExtra("color", lines.getColor());
-                    intent.putExtra("color_name", lines.getLine());
-
+                    intent.putExtra("station_color", lines.getColor());
+                    intent.putExtra("station_type", lines.getLine());
                     ctx.startActivity(intent);
-
                 }
             });
 
@@ -55,6 +53,7 @@ public class LineAdapter extends RecyclerView.Adapter<LineAdapter.LineViewHolder
     public int getItemCount() {
         return lines.size();
     }
+
 
     public class LineViewHolder extends RecyclerView.ViewHolder {
         TextView t1;

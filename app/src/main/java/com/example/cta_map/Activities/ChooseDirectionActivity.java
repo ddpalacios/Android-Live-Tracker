@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +17,6 @@ import android.widget.TextView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.cta_map.DataBase.DatabaseHelper;
 import com.example.cta_map.R;
 
 import java.util.ArrayList;
@@ -67,10 +65,10 @@ public class ChooseDirectionActivity  extends AppCompatActivity {
 
         };
         list.setAdapter(adapter);
-        DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
-        ArrayList<String> record = sqlite.get_table_record("main_stations_table", "WHERE train_line ='"+target_station_type+"'");
-        arrayList.add("To "+record.get(2));
-        arrayList.add("To "+record.get(3));
+//        DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
+//        ArrayList<String> record = sqlite.get_table_record("main_stations_table", "WHERE train_line ='"+target_station_type+"'");
+//        arrayList.add("To "+record.get(2));
+//        arrayList.add("To "+record.get(3));
         adapter.notifyDataSetChanged();
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {

@@ -12,7 +12,6 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.cta_map.DataBase.DatabaseHelper;
 import com.example.cta_map.DataBase.Profile;
 import com.example.cta_map.R;
 
@@ -34,7 +33,7 @@ public class newUserActivity extends AppCompatActivity {
 
         Button create_account = (Button) findViewById(R.id.create_account_button);
 
-        final DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
+//        final DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
 
 
 
@@ -60,7 +59,7 @@ public class newUserActivity extends AppCompatActivity {
 
 
 
-                sqlite.add_user(new_profile);
+//                sqlite.add_user(new_profile);
                 Toast.makeText(getApplicationContext(), "Added User!", 1).show();
                 Intent intent = new Intent(newUserActivity.this, userLoginActivity.class);
                 startActivity(intent);

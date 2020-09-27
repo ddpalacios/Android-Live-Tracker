@@ -4,7 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import com.example.cta_map.Activities.MapsActivity;
+//import com.example.cta_map.Activities.MapsActivity;
 import com.example.cta_map.CustomInfoWindowAdapter;
 import com.example.cta_map.R;
 import com.google.android.gms.maps.GoogleMap;

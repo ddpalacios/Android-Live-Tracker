@@ -1,35 +1,14 @@
 package com.example.cta_map.Activities;
-import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
-import android.util.TypedValue;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.cta_map.DataBase.Database2;
-import com.example.cta_map.DataBase.DatabaseHelper;
-import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.R;
-import com.example.cta_map.DataBase.UserStation;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class TrainStationActivity  extends AppCompatActivity {
     Bundle bb; // Retrieve data from main screen

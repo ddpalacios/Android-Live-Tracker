@@ -12,6 +12,9 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,7 +37,7 @@ public class Database2 extends SQLiteOpenHelper {
 
 
     public static final String LINE_STOPS_TABLE = "line_stops_table";
-    public static final String STOP_ID = "STOPID";
+//    public static final String STOP_ID = "STOPID";
     public static final String GREEN_LINE_COL = "green";
     public static final String RED_LINE_COL = "red";
     public static final String BLUE_LINE_COL = "blue";
@@ -48,7 +51,9 @@ public class Database2 extends SQLiteOpenHelper {
 
 
     public static final String TRAIN_STATION_TABLE = "cta_stops";
-    public static final String STATION_NAME = "STATION_NAME".toLowerCase();
+    public static final String MAP_ID = "MAP_ID";
+
+    public static final String STATION_NAME = "STATION_NAME";
     public static final String RED_COL = "red";
     public static final String BLUE_COL = "blue";
     public static final String GREEN_COL = "green";
@@ -57,16 +62,15 @@ public class Database2 extends SQLiteOpenHelper {
     public static final String PURPLE_COL = "purple";
     public static final String PINK_COL = "pink";
     public static final String ORANGE_COL = "orange";
-    public static final String LATITUDE_COL = "latitude";
-    public static final String LONGITUDE_COL = "longitude";
+    public static final String COORDINATES_COL = "station_coordinates";
 
 
-    public static final String FAVORITE_STATIONS = "favorite_stations";
-    public static final String ID = "id";
-    public static final String FAV_STATION_NAME = "FAV_STATION_NAME".toLowerCase();
-    public static final String FAV_STATION_TYPE = "FAV_STATION_TYPE".toLowerCase();
-    public static final String CHOSEN_DIRECTION = "CHOSEN_DIRECTION".toLowerCase();
-    public static final String STATION_ID = "STATION_ID".toLowerCase();
+//    public static final String FAVORITE_STATIONS = "favorite_stations";
+//    public static final String I = "id";
+//    public static final String FAV_STATION_NAME = "FAV_STATION_NAME".toLowerCase();
+//    public static final String FAV_STATION_TYPE = "FAV_STATION_TYPE".toLowerCase();
+//    public static final String CHOSEN_DIRECTION = "CHOSEN_DIRECTION".toLowerCase();
+//    public static final String STATION_ID = "STATION_ID".toLowerCase();
 
     public static final String TRACKING_TABLE = "tracking_table";
     public static final String TRACKING_ID = "TRACKING_ID";
@@ -136,23 +140,23 @@ public class Database2 extends SQLiteOpenHelper {
 
 
 
-        String line_stops_table = "CREATE TABLE IF NOT EXISTS " +LINE_STOPS_TABLE + " ( "
-                + STOP_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + GREEN_LINE_COL + " TEXT, "
-                + RED_LINE_COL + " TEXT, "
-                + BLUE_LINE_COL + " TEXT, "
-                + YELLOW_LINE_COL + " TEXT, "
-                + PINK_LINE_COL +" TEXT, "
-                + ORANGE_LINE_COL + " TEXT, "
-                + BROWN_LINE_COL + " TEXT, "
-                + PURPLE_LINE_COL + " TEXT)";
+//        String line_stops_table = "CREATE TABLE IF NOT EXISTS " +LINE_STOPS_TABLE + " ( "
+//                + STOP_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+//                + GREEN_LINE_COL + " TEXT, "
+//                + RED_LINE_COL + " TEXT, "
+//                + BLUE_LINE_COL + " TEXT, "
+//                + YELLOW_LINE_COL + " TEXT, "
+//                + PINK_LINE_COL +" TEXT, "
+//                + ORANGE_LINE_COL + " TEXT, "
+//                + BROWN_LINE_COL + " TEXT, "
+//                + PURPLE_LINE_COL + " TEXT)";
         String main_stations = "CREATE TABLE IF NOT EXISTS "+MAIN_STATIONS+
-                                "("+MAIN_STATION_TYPE +" TEXT PRIMARY KEY, "+
-                                NORTHBOUND+" TEXT," +
-                                SOUTHBOUND1+" TEXT," +
-                                SOUTHBOUND2+" TEXT)";
+                "("+MAIN_STATION_TYPE +" TEXT PRIMARY KEY, "+
+                NORTHBOUND+" TEXT," +
+                SOUTHBOUND1+" TEXT," +
+                SOUTHBOUND2+" TEXT)";
         String cta_stops = "CREATE TABLE IF NOT EXISTS "+TRAIN_STATION_TABLE +
-                "(station_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "("+ MAP_ID +" INTEGER PRIMARY KEY, " +
                 STATION_NAME+" TEXT, " +
                 RED_COL+" TEXT, " +
                 BLUE_COL+" TEXT, " +
@@ -162,16 +166,15 @@ public class Database2 extends SQLiteOpenHelper {
                 YELLOW_COL+" TEXT, " +
                 PINK_COL+" TEXT, " +
                 ORANGE_COL+" TEXT, " +
-                LATITUDE_COL+" REAL, " +
-                LONGITUDE_COL+" REAL)";
-        String favorite_station = "CREATE TABLE IF NOT EXISTS "+FAVORITE_STATIONS+
-                                    "("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                                    FAV_STATION_NAME+" TEXT, "+
-                                    FAV_STATION_TYPE+" TEXT, "+
-                                    CHOSEN_DIRECTION+" INTEGER, "+
-                                    STATION_ID+" INTEGER, " +
-                                    " FOREIGN KEY ("+STATION_ID+") REFERENCES cta_stops ("+STATION_ID+")," +
-                                    " FOREIGN KEY ("+FAV_STATION_TYPE+") REFERENCES main_stations ("+MAIN_STATION_TYPE+"))";
+                COORDINATES_COL+" TEXT)";
+//        String favorite_station = "CREATE TABLE IF NOT EXISTS "+FAVORITE_STATIONS+
+//                                    "("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, " +
+//                                    FAV_STATION_NAME+" TEXT, "+
+//                                    FAV_STATION_TYPE+" TEXT, "+
+//                                    CHOSEN_DIRECTION+" INTEGER, "+
+//                                    STATION_ID+" INTEGER, " +
+//                                    " FOREIGN KEY ("+STATION_ID+") REFERENCES cta_stops ("+STATION_ID+")," +
+//                                    " FOREIGN KEY ("+FAV_STATION_TYPE+") REFERENCES main_stations ("+MAIN_STATION_TYPE+"))";
         String tracking_table = "CREATE TABLE IF NOT EXISTS " + TRACKING_TABLE + " ( "
                 + TRACKING_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + TRACKING_NAME_COL + " TEXT, "
@@ -198,22 +201,22 @@ public class Database2 extends SQLiteOpenHelper {
                 + TO_TARGET_TRAIN_ETA + " TEXT, "
                 + TRAIN_LAT + " REAL, "
                 + TRAIN_LON + " REAL)";
-        db.execSQL(all_trains_table);
+//        db.execSQL(all_trains_table);
         Log.e("DATABASE SUCCESS", "TABLES CREATED SUCCESSFULLY");
         Log.e("WWW", "ONCREATe");
 
 
 
         try{
-        db.execSQL(userLocationTable);
-        db.execSQL(line_stops_table);
-        db.execSQL(tracking_table);
-        db.execSQL(cta_stops);
-        db.execSQL(main_stations);
-        db.execSQL(favorite_station);
-    }catch (Exception e){
-        Log.e("DATABASE ERROR", "Error in Creating Table(s)");
-    }
+//        db.execSQL(userLocationTable);
+//        db.execSQL(line_stops_table);
+//        db.execSQL(tracking_table);
+            db.execSQL(cta_stops);
+//        db.execSQL(main_stations);
+//        db.execSQL(favorite_station);
+        }catch (Exception e){
+            Log.e("DATABASE ERROR", "Error in Creating Table(s)");
+        }
     }
 
     private boolean TrainExists(String train_id) {
@@ -276,7 +279,7 @@ public class Database2 extends SQLiteOpenHelper {
                 db.close();
 
             }
-        db.close();
+            db.close();
 
 
 
@@ -285,6 +288,39 @@ public class Database2 extends SQLiteOpenHelper {
 
 
     }
+
+
+
+//    public void import_csv_as_sql(String table_name, String fileName) throws FileNotFoundException {
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        FileReader file = new FileReader(fileName);
+//        BufferedReader buffer = new BufferedReader(file);
+//        String line = "";
+//        String tableName ="TABLE_NAME";
+//        String columns = "_id, name, dt1, dt2, dt3";
+//        String str1 = "INSERT INTO " + tableName + " (" + columns + ") values(";
+//        String str2 = ");";
+//
+//        db.beginTransaction();
+//        while ((line = buffer.readLine()) != null) {
+//            StringBuilder sb = new StringBuilder(str1);
+//            String[] str = line.split(",");
+//            sb.append("'" + str[0] + "',");
+//            sb.append(str[1] + "',");
+//            sb.append(str[2] + "',");
+//            sb.append(str[3] + "'");
+//            sb.append(str[4] + "'");
+//            sb.append(str2);
+//            db.execSQL(sb.toString());
+//        }
+//        db.setTransactionSuccessful();
+//        db.endTransaction();
+//
+//
+//
+//
+//
+//    }
 
 
 
@@ -422,57 +458,56 @@ public class Database2 extends SQLiteOpenHelper {
 
     }
 
-
-    public void addNewStation(String name, String type, Integer dir,Integer station_id ){
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(FAV_STATION_NAME,name );
-        values.put(FAV_STATION_TYPE,type );
-        values.put(STATION_ID, station_id );
-        values.put(CHOSEN_DIRECTION,dir );
-        try {
-            db.insert(FAVORITE_STATIONS, null, values);
-            Log.e("SUCCESS", "Station added successfully");
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
-
-
-    }
+//
+//    public void addNewStation(String name, String type, Integer dir,Integer station_id ){
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        ContentValues values = new ContentValues();
+//        values.put(FAV_STATION_NAME,name );
+//        values.put(FAV_STATION_TYPE,type );
+//        values.put(STATION_ID, station_id );
+//        values.put(CHOSEN_DIRECTION,dir );
+//        try {
+//            db.insert(FAVORITE_STATIONS, null, values);
+//            Log.e("SUCCESS", "Station added successfully");
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//
+//
+//
+//    }
 
     public void addMainStations(MainStation mainStation){
 //        HashMap<String, String> t = getAllRecord(MAIN_STATIONS);
 //        if (t.isEmpty()) {
-            SQLiteDatabase db = this.getWritableDatabase();
-            ContentValues values = new ContentValues();
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
 
-            values.put(MAIN_STATION_TYPE, mainStation.getTrainLine());
-            values.put(NORTHBOUND, mainStation.getNorthBound());
-            values.put(SOUTHBOUND1, mainStation.getSouthBound());
-            values.put(SOUTHBOUND2, mainStation.getSouthBound2());
-            db.insert(MAIN_STATIONS, null, values);
-            db.close();
+        values.put(MAIN_STATION_TYPE, mainStation.getTrainLine());
+        values.put(NORTHBOUND, mainStation.getNorthBound());
+        values.put(SOUTHBOUND1, mainStation.getSouthBound());
+        db.insert(MAIN_STATIONS, null, values);
+        db.close();
 //        }
     }
     public void add_stations(CTA_Stations cta_data){
 //        HashMap<String, String> t = getAllRecord(MAIN_STATIONS);
 //        if (!t.isEmpty()) {
-            SQLiteDatabase db = this.getWritableDatabase();
-            ContentValues values = new ContentValues();
-            values.put(STATION_NAME, cta_data.getName());
-            values.put(RED_COL, cta_data.getRed());
-            values.put(BLUE_COL, cta_data.getBlue());
-            values.put(GREEN_COL, cta_data.getGreen());
-            values.put(BROWN_COL, cta_data.getBrown());
-            values.put(PURPLE_COL, cta_data.getPurple());
-            values.put(YELLOW_COL, cta_data.getYellow());
-            values.put(PINK_COL, cta_data.getPink());
-            values.put(ORANGE_COL, cta_data.getOrange());
-            values.put(LATITUDE_COL, cta_data.getLat());
-            values.put(LONGITUDE_COL, cta_data.getLon());
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(STATION_NAME, cta_data.getStation_name());
+        values.put(RED_COL, cta_data.getRed());
+        values.put(BLUE_COL, cta_data.getBlue());
+        values.put(GREEN_COL, cta_data.getGreen());
+        values.put(BROWN_COL, cta_data.getBrown());
+        values.put(PURPLE_COL, cta_data.getPurple());
+        values.put(YELLOW_COL, cta_data.getYellow());
+        values.put(PINK_COL, cta_data.getPink());
+        values.put(ORANGE_COL, cta_data.getOrange());
+//            values.put(LATITUDE_COL, cta_data.getLat());
+//            values.put(LONGITUDE_COL, cta_data.getLon());
 
-            db.insert(TRAIN_STATION_TABLE, null, values);
+        db.insert(TRAIN_STATION_TABLE, null, values);
 //        }
 
 

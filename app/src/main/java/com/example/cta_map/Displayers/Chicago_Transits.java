@@ -6,9 +6,10 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import com.example.cta_map.Backend.Threading.IncomingTrains;
+import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.DataBase.CTA_Stations;
 import com.example.cta_map.DataBase.Database2;
-import com.example.cta_map.DataBase.DatabaseHelper;
 import com.example.cta_map.DataBase.MainStation;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -22,14 +23,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 
 
 public class Chicago_Transits {
 
     public void create_main_station_table(BufferedReader reader, Context context){
-        Database2 sqlite = new Database2(context);
+        CTA_DataBase sqlite = new CTA_DataBase(context);
 
 
         String line;
@@ -43,8 +43,9 @@ public class Chicago_Transits {
                     }
                     String[] tokens = (line.replaceAll("\"","")
                             .replaceAll(",,",",")).split(",");
-                    MainStation mainStation = new MainStation(tokens[0], tokens[1], tokens[2], tokens[3]);
-                    sqlite.addMainStations(mainStation);
+                    MainStation mainStation = new MainStation(tokens[0], tokens[1], tokens[2]);
+                    Log.e(Thread.currentThread().getName(), tokens[0]+" "+tokens[1]+" "+tokens[2]);
+                    sqlite.addMainStations_to_mainStationTable(mainStation);
                     row++;
 
                 } else {
@@ -61,7 +62,7 @@ public class Chicago_Transits {
 
     @SuppressLint("LongLogTag")
     public void create_line_stops_table(BufferedReader reader, Context context) {
-        Database2 sqlite = new Database2(context);
+       CTA_DataBase sqlite = new CTA_DataBase(context);
 
         String line;
         int row=0;
@@ -76,18 +77,18 @@ public class Chicago_Transits {
                             .replaceAll(",,",",")).split(",");
 
 
-                    CTA_Stations cta_stations = new CTA_Stations(null);
-                    cta_stations.setGreen(tokens[0]);
-                    cta_stations.setRed(tokens[1]);
-                    cta_stations.setBlue(tokens[2]);
-                    cta_stations.setYellow(tokens[3]);
-                    cta_stations.setPink(tokens[4]);
-                    cta_stations.setOrange(tokens[5]);
-                    cta_stations.setBrown(tokens[6]);
-                    cta_stations.setPurple(tokens[7]);
+                    CTA_Stations cta_stations = new CTA_Stations(tokens[0]);
+                    cta_stations.setGreen(tokens[1]);
+                    cta_stations.setRed(tokens[2]);
+                    cta_stations.setBlue(tokens[3]);
+                    cta_stations.setYellow(tokens[4]);
+                    cta_stations.setPink(tokens[5]);
+                    cta_stations.setOrange(tokens[6]);
+                    cta_stations.setBrown(tokens[7]);
+                    cta_stations.setPurple(tokens[8]);
 
 
-                    sqlite.add_station_lines(cta_stations);
+                    sqlite.add_station_lines_to_line_stops_table(cta_stations);
                     row++;
 
 
@@ -106,7 +107,7 @@ public class Chicago_Transits {
 
 
     public void Create_TrainInfo_table(BufferedReader reader, Context context) {
-        Database2 sqlite = new Database2(context);
+        CTA_DataBase sqlite = new CTA_DataBase(context);
 
         String line;
         int row=0;
@@ -123,26 +124,21 @@ public class Chicago_Transits {
                             .replaceAll(",,",",")).split(",");
 
                     CTA_Stations cta_stations = new CTA_Stations(tokens[0]);
-                    cta_stations.setGreen(tokens[3]);
-                    cta_stations.setRed(tokens[1]);
-                    cta_stations.setBlue(tokens[2]);
-                    cta_stations.setYellow(tokens[6]);
-                    cta_stations.setPink(tokens[7]);
-                    cta_stations.setOrange(tokens[8]);
-                    cta_stations.setBrown(tokens[4]);
-                    cta_stations.setPurple(tokens[5]);
-                    cta_stations.setLat(tokens[9]
-                            .replaceAll("\\(", "")
-                            .replaceAll("\\)", "")
-                            .replaceAll(",,",","));
-                    cta_stations.setLon(tokens[10]
-                            .replaceAll("\\(", "")
-                            .replaceAll("\\)", "")
-                            .replaceAll(",,",","));
+                    cta_stations.setName(tokens[1]);
+                    cta_stations.setRed(tokens[2]);
+                    cta_stations.setBlue(tokens[3]);
+                    cta_stations.setGreen(tokens[4]);
+                    cta_stations.setBrown(tokens[5]);
+                    cta_stations.setPurple(tokens[6]);
+                    cta_stations.setYellow(tokens[7]);
+                    cta_stations.setPink(tokens[8]);
+                    cta_stations.setOrange(tokens[9]);
+                    cta_stations.setCoordinates(tokens[10]+","+tokens[11]);
 
 
 
-                    sqlite.add_stations(cta_stations);
+
+                    sqlite.add_cta_stations_to_cta_table(cta_stations);
                     row++;
 
                 } else {
@@ -162,11 +158,9 @@ public class Chicago_Transits {
     }
 
     public String[] retrieve_station_coordinates(Database2 sqlite, String station_id) {
-
         try {
             ArrayList<String> record = sqlite.get_table_record("cta_stops", "WHERE station_id = '"+station_id+"'");
             return new String[]{record.get(10), record.get(11)};
-
 
         }catch (Exception e){
             Log.e("SQLITE ERROR", "COULD NOT FIND STATION IN DATABASE!");
@@ -189,60 +183,42 @@ public class Chicago_Transits {
 
 
 
-    public HashMap<String, String> get_train_info( String each_train, String station_type) {
-        HashMap<String, String> train_info = new HashMap<>();
+    public IncomingTrains get_train_info( String each_train) {
+        IncomingTrains incomingTrains = new IncomingTrains();
+        try {
+        String rn = get_xml_tag_value(each_train, "<rn>", "</rn>");
+        String destNm = get_xml_tag_value(each_train, "<destNm>", "</destNm>");
+        String trDr = get_xml_tag_value(each_train, "<trDr>", "</trDr>");
+        String nextStpId = get_xml_tag_value(each_train, "<nextStpId>", "</nextStpId>");
+        String nextStaNm = get_xml_tag_value(each_train, "<nextStaNm>", "</nextStaNm>");
+        String prdt = get_xml_tag_value(each_train, "<prdt>", "</prdt>");
+        String arrT = get_xml_tag_value(each_train, "<arrT>", "</arrT>");
+        String isApp = get_xml_tag_value(each_train, "<isApp>", "</isApp>");
+        String isDly = get_xml_tag_value(each_train, "<isDly>", "</isDly>");
+        String lat = get_xml_tag_value(each_train, "<lat>", "</lat>");
+        String lon = get_xml_tag_value(each_train, "<lon>", "</lon>");
 
-        String currTrain = each_train.replaceAll("\n", "")
-                .replaceAll("\t", "")
-                .replaceAll("<train>", "</train>")
-                .replaceAll("</train>", "");
+        incomingTrains.setRn(rn);
+        incomingTrains.setDestNm(destNm);
+        incomingTrains.setTrDr(trDr);
+        incomingTrains.setnextStpId(nextStpId);
+        incomingTrains.setNextStaNm(nextStaNm);
+        incomingTrains.setPrdt(prdt);
+        incomingTrains.setArrT(arrT);
+        incomingTrains.setIsApp(isApp);
+        incomingTrains.setIsDly(isDly);
+        incomingTrains.setLat(Double.parseDouble(lat));
+        incomingTrains.setLon(Double.parseDouble(lon));
 
+        }catch (Exception e){return null;}
 
-        currTrain = currTrain.replaceAll("<nextStaId>[\\s\\S]*?</nextStaId>", "");
-        currTrain = currTrain.replaceAll("<nextStpId>[\\s\\S]*?</nextStpId>", "");
-        currTrain = currTrain.replaceAll("<destSt>[\\s\\S]*?</destSt>", "");
-        String main_station = get_xml_tag_value(currTrain, "<destNm>", "</destNm>");
-        String train_direction = get_xml_tag_value(currTrain, "<trDr>", "</trDr>");
-        String next_train_stop = get_xml_tag_value(currTrain, "<nextStaNm>", "</nextStaNm>");
-        String predicted_arrival_time = get_xml_tag_value(currTrain, "<arrT>", "</arrT>");
-        String isApproaching = get_xml_tag_value(currTrain, "<isApp>", "</isApp>");
-        String isDelayed = get_xml_tag_value(currTrain, "<isDly>", "</isDly>");
-        String train_lat = get_xml_tag_value(currTrain, "<lat>", "</lat>");
-        String train_lon = get_xml_tag_value(currTrain, "<lon>", "</lon>");
-        String train_id = get_xml_tag_value(currTrain, "<rn>", "</rn>");
-        if (isApproaching != null) {
-            train_info.put("isApproaching", isApproaching.replaceAll(" ", ""));
-            train_info.put("isDelayed", isDelayed.replaceAll(" ", ""));
-            String new_main = main_station.substring(2);
-            train_info.put("main_station", new_main);
-            train_info.put("train_id", train_id.replaceAll(" ", ""));
-            String new_stop = next_train_stop.substring(2);
-            train_info.put("next_stop", new_stop);
-            try {
-                train_info.put("next_stop_pred_arr_time",
-                        predicted_arrival_time.trim().split(":")[0].replaceAll("20200822", "") + ":" +
-                                predicted_arrival_time.trim().split(":")[1] + ":" +
-                                predicted_arrival_time.trim().split(":")[2]);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-            train_info.put("train_direction", train_direction.replaceAll(" ", ""));
-            train_info.put("train_lat", train_lat.replaceAll(" ", ""));
-            train_info.put("train_lon", train_lon.replaceAll(" ", ""));
-            train_info.put("station_type", station_type.replaceAll(" ", ""));
-            train_info.put("isNotified", "0");
-            if (train_info.isEmpty()) {
-                return null;
-            }
-        }
-
-        return train_info;
+        return incomingTrains;
     }
 
 
     private String get_xml_tag_value(String raw_xml, String startTag, String endTag){
 
-        return StringUtils.substringBetween(raw_xml, startTag, endTag);
+        return StringUtils.substringBetween(raw_xml, startTag, endTag).trim();
     }
 
 

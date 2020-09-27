@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.DataBase.Database2;
 
 import java.util.ArrayList;
@@ -18,39 +19,31 @@ public class TrainStations extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.train_stations);
+        Bundle bb;
+        bb = getIntent().getExtras();
+        String station_dir = bb.getString("station_dir");
+        String station_type = bb.getString("station_type");
+        String main_station_name = bb.getString("station_name");
+        Log.e(Thread.currentThread().getName(), main_station_name+" Station");
 
-
-//
         RecyclerView station_list = (RecyclerView) findViewById(R.id.stations_view);
         ArrayList<Stops> list = new ArrayList<>();
-        Database2 sqlite = new Database2(getApplicationContext());
-        Bundle bb = getIntent().getExtras();
-        String station_type = bb.getString("station_type");
-        String station_dir = bb.getString("station_dir");
-        ArrayList<String> line_stops = sqlite.get_column_values("line_stops_table", station_type.replaceAll(" ", ""));
-//        int type = TrainLineKeyCodes.get(station_type.replaceAll(" ", "").toLowerCase());
-        if (station_type.equals("purple")){
-            line_stops.subList(9,18).clear();
+
+        CTA_DataBase sqlite = new CTA_DataBase(getApplicationContext());
+
+        ArrayList<Object> get_stops_record = sqlite.excecuteQuery("*", "line_stops_table", null);
+        for (int i=0; i< get_stops_record.size(); i++){
+            HashMap<String, String> stop_record = (HashMap<String, String>) get_stops_record.get(i);
+           String current_stop= stop_record.get(station_type.toLowerCase().trim());
+           if (current_stop.equals("null")){
+               break;
+           }
+            list.add(new Stops(current_stop, station_type.toLowerCase().trim(), station_dir));
         }
-
-        for (int i=0; i<line_stops.size(); i++){
-            list.add(new Stops(line_stops.get(i), station_type.replaceAll(" ","").toLowerCase(), station_dir));
-
-        }
-
         StopAdapter a = new StopAdapter(getApplicationContext(), list);
         station_list.setAdapter(a);
         station_list.setLayoutManager(new LinearLayoutManager(this));
 
-
-
-
-
-
-
-
-
-
-    }
+        }
 
     }

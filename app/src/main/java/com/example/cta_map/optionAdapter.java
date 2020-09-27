@@ -11,7 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.cta_map.Activities.MapsActivity;
+//import com.example.cta_map.Activities.MapsActivity;
 
 //import com.example.cta_map.Activities.MapsActivity;
 
@@ -47,7 +47,7 @@ public class optionAdapter extends RecyclerView.Adapter<optionAdapter.OptionView
                         intent = new Intent(context, ChooseLine.class);
 
                     }else {
-                        intent = new Intent(context, MapsActivity.class);
+//                        intent = new Intent(context, MapsActivity.class);
 
                     }
 

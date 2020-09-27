@@ -2,10 +2,8 @@ package com.example.cta_map.Activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,8 +13,8 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.Displayers.Chicago_Transits;
-import com.example.cta_map.DataBase.DatabaseHelper;
 import com.example.cta_map.R;
 
 import java.io.BufferedReader;
@@ -42,22 +40,23 @@ public class userLoginActivity extends AppCompatActivity {
                 BufferedReader r = chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_stations);
                 BufferedReader r2 = chicago_transits.setup_file_reader(getApplicationContext(), R.raw.train_line_stops);
                 BufferedReader r3 = chicago_transits.setup_file_reader(getApplicationContext(), R.raw.main_stations);
+                CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
                 create_tables(r, r2, r3,false);
-                DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
-                String user_name = username.getText().toString();
-                String pass = password.getText().toString();
-                if (sqlite.find_profile(user_name, pass)){
-                    ArrayList<String> record = sqlite.get_table_record("User_info", "WHERE user_name = '"+user_name+"' AND password = '"+toHex(pass)+"'");
-                    Toast.makeText(getApplicationContext(), "Welcome " + record.get(1), 1).show();
-                    ToStations.putExtra("profile_id", record.get(0));
+//                DatabaseHelper sqlite = new DatabaseHelper(getApplicationContext());
+//                String user_name = username.getText().toString();
+//                String pass = password.getText().toString();
+//                if (sqlite.find_profile(user_name, pass)){
+//                    ArrayList<String> record = sqlite.get_table_record("User_info", "WHERE user_name = '"+user_name+"' AND password = '"+toHex(pass)+"'");
+//                    Toast.makeText(getApplicationContext(), "Welcome " + record.get(1), 1).show();
+//                    ToStations.putExtra("profile_id", record.get(0));
+//
+//                    sqlite.close();
+//                    startActivity(ToStations);
 
-                    sqlite.close();
-                    startActivity(ToStations);
-
-                }else{
-                    Toast.makeText(getApplicationContext(), "No Profile Found", 1).show();
-
-                }
+//                }else{
+//                    Toast.makeText(getApplicationContext(), "No Profile Found", 1).show();
+//
+//                }
 
             }
         });

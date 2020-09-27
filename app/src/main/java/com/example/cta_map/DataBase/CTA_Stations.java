@@ -1,19 +1,22 @@
 package com.example.cta_map.DataBase;
 
+import java.util.HashMap;
+import java.util.HashSet;
+
 public class CTA_Stations {
-    String name;
-    String red;
-    String blue;
-    String green;
-    String brown;
-    String purple;
-    String yellow;
-    String pink;
-    String orange;
-    String lat;
-    String lon;
-    public CTA_Stations(String name){
-        this.name = name;
+    private String id;
+    private String station_name;
+    private String coord;
+    private String red;
+    private String blue;
+    private String green;
+    private String brown;
+    private String purple;
+    private String yellow;
+    private String pink;
+    private String orange;
+    public CTA_Stations(String id){
+        this.id = id;
     }
 
     public void setRed(String state){
@@ -21,6 +24,9 @@ public class CTA_Stations {
     }
     public void setBlue(String state){
         this.blue= state;
+    }
+    public void setName(String station_name){
+        this.station_name = station_name;
     }
     public void setGreen(String state){
         this.green= state;
@@ -42,11 +48,9 @@ public class CTA_Stations {
     public void setOrange(String state){
         this.orange = state;
     }
-    public void setLat(String state){
-        this.lat= state;
-    }
-    public void setLon(String state){
-        this.lon = state;
+
+    public void setCoordinates(String coord){
+        this.coord = coord;
     }
 
 
@@ -74,17 +78,20 @@ public class CTA_Stations {
     public String  getOrange(){
         return this.orange;
     }
-    public String  getName(){
-        return this.name;
+    public String getStation_name(){return this.station_name;}
+    public String  getID(){
+        return this.id;
     }
 
-    public String getLat(){
-        return  this.lat;
-    }
-    public String getLon(){
-        return this.lon;
-    }
+    public HashMap<String, String> getCoordinates(){
+        HashMap<String, String> coordinates = new HashMap<>();
+        this.coord = coord.replaceAll("[()]","").trim();
+        coordinates.put("lat", this.coord.split(",")[0]);
+        coordinates.put("lon", this.coord.split(",")[1]);
 
+        return coordinates;
+
+    }
 
 
 

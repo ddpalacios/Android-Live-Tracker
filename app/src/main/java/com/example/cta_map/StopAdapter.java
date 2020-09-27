@@ -12,7 +12,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.cta_map.Activities.TrainTrackingActivity;
 import com.example.cta_map.Activities.mainactivity;
+import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.DataBase.Database2;
 
 import java.util.ArrayList;
@@ -56,18 +58,47 @@ public class StopAdapter extends RecyclerView.Adapter<StopAdapter.StopViewHolder
         holder.t1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ctx, mainactivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                String station_name = stops.getName();
-                Database2 sqlite = new Database2(ctx);
-                String station_type = stops.getColor();
-                String station_dir = stops.getDir();
-                String query = "SELECT station_id FROM cta_stops WHERE station_name = '"+station_name+"' AND "+station_type+" ='true'";
-                String station_id = sqlite.getValue(query);
+                String target_station_id;
+                switch (stops.getName()) {
+                    case "O'Hare":
+                        target_station_id = "30171";
+                        break;
+                    case "Harlem (O'Hare Branch)":
+                        target_station_id = "30145";
+                        break;
+                    case "Western (O'Hare Branch)":
+                        target_station_id = "30130";
+                        break;
+                    default:
+                        CTA_DataBase cta_dataBase = new CTA_DataBase(ctx);
+                        ArrayList<Object> found_station = cta_dataBase.excecuteQuery("MAP_ID", "cta_stops",
+                                        "station_name = '"+stops.getName()+"' AND "+stops.getColor()+" = 'TRUE'");
+                        HashMap<String,String> found = (HashMap<String, String>) found_station.get(0);
+                        target_station_id = found.get("MAP_ID");
 
-                sqlite.addNewStation(station_name, station_type, Integer.parseInt(station_dir), Integer.parseInt(station_id));
+                }
+                Intent intent = new Intent(ctx, TrainTrackingActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("target_station_id", target_station_id);
+                intent.putExtra("target_station_name", stops.getName());
+                intent.putExtra("target_station_type", stops.getColor());
+                intent.putExtra("target_station_dir", stops.getDir());
+
 
                 ctx.startActivity(intent);
+
+
+
+//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                String station_name = stops.getName();
+//                Database2 sqlite = new Database2(ctx);
+//                String station_type = stops.getColor();
+//                String station_dir = stops.getDir();
+//                String query = "SELECT station_id FROM cta_stops WHERE station_name = '"+station_name+"' AND "+station_type+" ='true'";
+//                String station_id = sqlite.getValue(query);
+//
+////                sqlite.addNewStation(station_name, station_type, Integer.parseInt(station_dir), Integer.parseInt(station_id));
+//
             }
         });
     }

@@ -231,7 +231,7 @@ public class PopUp  extends Activity {
         exit_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(PopUp.this, MapsActivity.class));
+//                startActivity(new Intent(PopUp.this, MapsActivity.class));
 
             }
         });
@@ -282,16 +282,16 @@ submit_btn.setOnClickListener(new View.OnClickListener() {
         String[] station_coord = chicago_transits.retrieve_station_coordinates(sqlite, station_id);
         String main_station = sqlite.getValue(main_query);
         sqlite.add_tracking_station(station_name, station_type, station_direction, main_station, station_coord, station_id);
-        Intent intent = new Intent(PopUp.this, MapsActivity.class);
-        intent.putExtra("noTrains", noTrains);
-        intent.putExtra("num_of_trains", num_of_trains);
-        intent.putExtra("fromSettings", true);
-        intent.putExtra("showTarget", showTarget);
-        intent.putExtra("showAllStations", showAllStations);
-
-
-
-        startActivity(intent);
+//        Intent intent = new Intent(PopUp.this, MapsActivity.class);
+//        intent.putExtra("noTrains", noTrains);
+//        intent.putExtra("num_of_trains", num_of_trains);
+//        intent.putExtra("fromSettings", true);
+//        intent.putExtra("showTarget", showTarget);
+//        intent.putExtra("showAllStations", showAllStations);
+//
+//
+//
+//        startActivity(intent);
 
 
 
