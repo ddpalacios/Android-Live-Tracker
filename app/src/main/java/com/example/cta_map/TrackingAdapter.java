@@ -1,6 +1,8 @@
 package com.example.cta_map;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,9 +12,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.cta_map.Backend.Threading.AllTrainsTable;
+import com.example.cta_map.DataBase.CTA_DataBase;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Objects;
 
 public class TrackingAdapter extends RecyclerView.Adapter<TrackingAdapter.TrackingViewHolder> {
     ArrayList<Object> list;
@@ -32,17 +40,26 @@ public class TrackingAdapter extends RecyclerView.Adapter<TrackingAdapter.Tracki
         return new TrackingAdapter.TrackingViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onBindViewHolder(@NonNull TrackingViewHolder holder, int position) {
-        Tracking_Station train = (Tracking_Station) this.list.get(position);
-        holder.min.setText(train.getEta()+"m");
-        holder.title.setText(train.getName());
+        HashMap<String, String> train = (HashMap<String, String>) this.list.get(position);
+
+        try {
+
+
+        holder.min.setText(train.get("to_target_eta")+"m");
+        CTA_DataBase cta_dataBase = new CTA_DataBase(this.ctx);
+        ArrayList<Object> cta_record = cta_dataBase.excecuteQuery("*", "cta_stops", "MAP_ID = '"+ train.get("next_stop_id").trim()+"'", null);
+        HashMap<String, String> next_stop_station_record = (HashMap<String, String>) cta_record.get(0);
+        holder.title.setText(next_stop_station_record.get("station_name"));
 //        Log.e("fff", train.getName()+"fff");
 //        Log.e("fff", train.getEta()+"fff");
 
 //        holder.title.setText(train.getName()+"");
 //        holder.min.setText(train.getEta()+"m");
-
+        }catch (Exception e){e.printStackTrace();}
     }
 
     @Override

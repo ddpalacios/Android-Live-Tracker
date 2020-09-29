@@ -30,6 +30,15 @@ public class Chicago_Transits {
 
     public void create_main_station_table(BufferedReader reader, Context context){
         CTA_DataBase sqlite = new CTA_DataBase(context);
+        try{
+            ArrayList<Object> cta_stops_table = sqlite.excecuteQuery("*", "main_stations", null, null);
+            if (cta_stops_table != null){
+                sqlite.close();
+                Log.e(Thread.currentThread().getName(), "RECORD EXSITS");
+
+                return;
+            }
+        }catch (Exception e){Log.e(Thread.currentThread().getName(), "No MainStations table, will create!");}
 
 
         String line;
@@ -63,6 +72,17 @@ public class Chicago_Transits {
     @SuppressLint("LongLogTag")
     public void create_line_stops_table(BufferedReader reader, Context context) {
        CTA_DataBase sqlite = new CTA_DataBase(context);
+        try{
+            ArrayList<Object> cta_stops_table = sqlite.excecuteQuery("*", "line_stops_table", null, null);
+            if (cta_stops_table != null){
+                sqlite.close();
+                Log.e(Thread.currentThread().getName(), "RECORD EXSITS");
+                return;
+
+            }
+        }catch (Exception e){Log.e(Thread.currentThread().getName(), "No line_stops_table, will create!");}
+
+
 
         String line;
         int row=0;
@@ -108,6 +128,16 @@ public class Chicago_Transits {
 
     public void Create_TrainInfo_table(BufferedReader reader, Context context) {
         CTA_DataBase sqlite = new CTA_DataBase(context);
+        try{
+            ArrayList<Object> cta_stops_table = sqlite.excecuteQuery("*", "cta_stops", null, null);
+            if (cta_stops_table != null){
+                sqlite.close();
+                Log.e(Thread.currentThread().getName(), "RECORD EXSITS");
+
+                return;
+            }
+        }catch (Exception e){Log.e(Thread.currentThread().getName(), "No Cta_stops_table, will create!");}
+
 
         String line;
         int row=0;

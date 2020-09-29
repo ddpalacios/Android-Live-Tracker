@@ -55,7 +55,7 @@ public class Content_Parser_Thread implements Runnable
     @Override
     public void run() {
         CTA_DataBase cta_dataBase = new CTA_DataBase(this.context);
-        ArrayList<Object> found_target = cta_dataBase.excecuteQuery("*","cta_stops", "MAP_ID = '"+this.target_station_id.trim()+"'");
+        ArrayList<Object> found_target = cta_dataBase.excecuteQuery("*","cta_stops", "MAP_ID = '"+this.target_station_id.trim()+"'", null);
         HashMap<String, String> target_station_record = (HashMap<String,String>) found_target.get(0);
 
 
@@ -93,7 +93,7 @@ public class Content_Parser_Thread implements Runnable
                             Double current_train_lon = current_incoming_train.getLon();
                             Double target_station_lat = Double.parseDouble(target_station_record.get("location").split(",")[0].trim());
                             Double target_station_lon = Double.parseDouble(target_station_record.get("location").split(",")[1].trim());
-                            ArrayList<Object> found_nextStpStation = cta_dataBase.excecuteQuery("*", "cta_stops", "MAP_ID = '" + current_incoming_train.getNextStpId() + "'");
+                            ArrayList<Object> found_nextStpStation = cta_dataBase.excecuteQuery("*", "cta_stops", "MAP_ID = '" + current_incoming_train.getNextStpId() + "'",null);
                             HashMap<String, String> next_stop_station_record = (HashMap<String, String>) found_nextStpStation.get(0);
                             Double next_stop_station_lat = Double.parseDouble(next_stop_station_record.get("location").split(",")[0].trim());
                             Double next_stop_station_lon = Double.parseDouble(next_stop_station_record .get("location").split(",")[1].trim());
@@ -108,7 +108,7 @@ public class Content_Parser_Thread implements Runnable
                             new_train_record.setTrain_id(current_incoming_train.getRn());
                             new_train_record.setNotified(false);
                             new_train_record.setPred_arrival_time(current_incoming_train.getPrdt());
-                            new_train_record.setNext_stop(current_incoming_train.getNextStaNm());
+                            new_train_record.setNext_stop(current_incoming_train.getNextStpId());
                             new_train_record.setNext_stop_eta(current_eta_from_next_stop_station+"");
                             new_train_record.setNext_stop_distance(current_train_distance_from_next_stop_station);
                             if (current_incoming_train.getIsDly().equals("1")) {
@@ -137,11 +137,16 @@ public class Content_Parser_Thread implements Runnable
 
 
 
-
-
-
                     }
 
+                    cta_dataBase.close();
+                    this.msg.setChosenTrains(chosen_trains);
+                    this.msg.notify();
+                    try {
+                        this.msg.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
 
 
 
@@ -237,7 +242,7 @@ public class Content_Parser_Thread implements Runnable
     private ArrayList<String> getStationStopsByType(String target_type, String target_name, String target_dir){
         CTA_DataBase cta_dataBase = new CTA_DataBase(this.context);
         ArrayList<String> all_target_stops = new ArrayList<>();
-        ArrayList<Object> line_stops_table = cta_dataBase.excecuteQuery(this.target_type.toLowerCase().trim(), "line_stops_table", null);
+        ArrayList<Object> line_stops_table = cta_dataBase.excecuteQuery(this.target_type.toLowerCase().trim(), "line_stops_table", null,null);
         for (int i=0; i<line_stops_table.size(); i++){
             HashMap<String, String> cur_stops_by_type = (HashMap<String, String>) line_stops_table.get(i);
             String target_stop = Objects.requireNonNull(cur_stops_by_type.get(target_type)).trim();
@@ -259,7 +264,7 @@ public class Content_Parser_Thread implements Runnable
                     continue;
                 }
                 try {
-                    ArrayList<Object> cta_stops_result = cta_dataBase.excecuteQuery("MAP_ID", "cta_stops", "station_name = '" + target_stop + "' AND " + target_type + " = 'TRUE'");
+                    ArrayList<Object> cta_stops_result = cta_dataBase.excecuteQuery("MAP_ID", "cta_stops", "station_name = '" + target_stop + "' AND " + target_type + " = 'TRUE'",null);
                     HashMap<String, String> found_station_name = (HashMap<String, String>) cta_stops_result.get(0);
                     all_target_stops.add(found_station_name.get("MAP_ID"));
                     continue;
@@ -278,7 +283,7 @@ public class Content_Parser_Thread implements Runnable
                     break;
                 }
                 try {
-                    ArrayList<Object> cta_stops_result = cta_dataBase.excecuteQuery("MAP_ID", "cta_stops", "station_name = '" + target_stop + "' AND " + target_type + " = 'TRUE'");
+                    ArrayList<Object> cta_stops_result = cta_dataBase.excecuteQuery("MAP_ID", "cta_stops", "station_name = '" + target_stop + "' AND " + target_type + " = 'TRUE'",null);
                     HashMap<String, String> found_station_name = (HashMap<String, String>) cta_stops_result.get(0);
                     all_target_stops.add(found_station_name.get("MAP_ID"));
                     break;
@@ -296,7 +301,7 @@ public class Content_Parser_Thread implements Runnable
                 continue;
             }
             try {
-                ArrayList<Object> cta_stops_result = cta_dataBase.excecuteQuery("MAP_ID", "cta_stops", "station_name = '" + target_stop + "' AND " + target_type + " = 'TRUE'");
+                ArrayList<Object> cta_stops_result = cta_dataBase.excecuteQuery("MAP_ID", "cta_stops", "station_name = '" + target_stop + "' AND " + target_type + " = 'TRUE'",null);
                 HashMap<String, String> found_station_name = (HashMap<String, String>) cta_stops_result.get(0);
                 all_target_stops.add(found_station_name.get("MAP_ID"));
             }catch (Exception e){e.printStackTrace();}

@@ -7,6 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import androidx.annotation.Nullable;
+
+import com.example.cta_map.Backend.Threading.AllTrainsTable;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -18,7 +21,7 @@ public class CTA_DataBase extends SQLiteOpenHelper {
     public static final String TRAIN_ID = "train_id";
     public static final String IS_NOTIFIED = "isNotified";
     public static final String PRED_ARRIVAL_TIME = "pred_arrival_time";
-    public static final String NEXT_STOP = "next_stop";
+    public static final String NEXT_STOP_ID = "next_stop_id";
     public static final String NEXT_STOP_ETA = "next_stop_eta";
     public static final String NEXT_STOP_DISTANCE = "next_stop_distance";
     public static final String IS_DELAYED = "isdelayed";
@@ -96,16 +99,16 @@ public class CTA_DataBase extends SQLiteOpenHelper {
     }
    public void create_all_trains_table(SQLiteDatabase db){
        String all_trains_table = "CREATE TABLE IF NOT EXISTS "+ALL_TRAINS_TABLE+" ( "
-               + TRAIN_ID + " INTEGER PRIMARY KEY, "
+               + TRAIN_ID + " TEXT PRIMARY KEY, "
                + IS_NOTIFIED + " INTEGER, "
                + PRED_ARRIVAL_TIME + " TEXT, "
-               + NEXT_STOP + " TEXT, "
+               + NEXT_STOP_ID + " TEXT, "
                + NEXT_STOP_ETA + " TEXT, "
                + NEXT_STOP_DISTANCE + " TEXT, "
                + IS_DELAYED + " TEXT, "
                + IS_APPROACHING + " TEXT, "
                + DISTANCE_TO_TARGET + " TEXT, "
-               + TO_TARGET_TRAIN_ETA + " TEXT, "
+               + TO_TARGET_TRAIN_ETA + " INTEGER, "
                + TRACKING_TYPE + " TEXT, "
                + TRAIN_LAT + " REAL, "
                + TRAIN_LON + " REAL,"
@@ -116,7 +119,7 @@ public class CTA_DataBase extends SQLiteOpenHelper {
    }
     public void create_cta_stops(SQLiteDatabase db){
        String cta_stops = "CREATE TABLE IF NOT EXISTS "+CTA_STOPS_TABLE +
-               "("+ MAP_ID +" INTEGER PRIMARY KEY, " +
+               "("+ MAP_ID +" TEXT PRIMARY KEY, " +
                STATION_NAME+" TEXT, " +
                RED_COL+" TEXT, " +
                BLUE_COL+" TEXT, " +
@@ -178,25 +181,25 @@ public class CTA_DataBase extends SQLiteOpenHelper {
 
         db.close();
     }
-    public void AddTrain_toAllTrains_table(HashMap<String, String> new_train){
+    public void CommitRecordToAllTrainsTable(AllTrainsTable new_train){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
-        cv.put(TRAIN_ID, new_train.get("train_id"));
-        cv.put(IS_NOTIFIED, new_train.get("isNotified"));
-        cv.put(PRED_ARRIVAL_TIME, new_train.get("next_stop_pred_arr_time"));
-        cv.put(NEXT_STOP, new_train.get("next_stop"));
-        cv.put(NEXT_STOP_ETA, new_train.get("next_stop_eta"));
-        cv.put(NEXT_STOP_DISTANCE, new_train.get("next_stop_distance"));
-        cv.put(IS_DELAYED, new_train.get("isDelayed"));
-        cv.put(IS_APPROACHING, new_train.get("isApproaching"));
-        cv.put(DISTANCE_TO_TARGET, new_train.get("train_distance"));
-        cv.put(TO_TARGET_TRAIN_ETA, new_train.get("train_eta"));
-        cv.put(TRAIN_LAT, new_train.get("train_lat"));
-        cv.put(TRAIN_LON, new_train.get("train_lon"));
-        cv.put(TRACKING_TYPE, new_train.get("station_type"));
-        cv.put(TARGET_ID, new_train.get("target_id"));
-        cv.put(TRAIN_DIR, new_train.get("train_dir"));
+        cv.put(TRAIN_ID, new_train.getTrain_id());
+        cv.put(IS_NOTIFIED, new_train.isNotified()+"");
+        cv.put(PRED_ARRIVAL_TIME, new_train.getPred_arrival_time());
+        cv.put(NEXT_STOP_ID, new_train.getNext_stop());
+        cv.put(NEXT_STOP_ETA, new_train.getNext_stop_eta()+"");
+        cv.put(NEXT_STOP_DISTANCE, new_train.getNext_stop_distance()+"");
+        cv.put(IS_DELAYED, new_train.isDelayed()+"");
+        cv.put(IS_APPROACHING, new_train.isApproaching()+"");
+        cv.put(DISTANCE_TO_TARGET, new_train.getDistance_to_target());
+        cv.put(TO_TARGET_TRAIN_ETA, new_train.getTo_target_eta()+"");
+        cv.put(TRAIN_LAT, new_train.getTrain_lat()+"");
+        cv.put(TRAIN_LON, new_train.getTrain_lon()+"");
+        cv.put(TRACKING_TYPE, new_train.getTracking_type());
+        cv.put(TARGET_ID, new_train.getTarget_id());
+        cv.put(TRAIN_DIR, new_train.getTrain_dir()+"");
 
         db.insert(ALL_TRAINS_TABLE, null, cv);
         db.close();
@@ -214,6 +217,32 @@ public class CTA_DataBase extends SQLiteOpenHelper {
 
         db.execSQL(main_stations);
     }
+
+    public void deleteTable(String table_name){
+        SQLiteDatabase db = this.getWritableDatabase();
+        try {
+            db.execSQL("delete from " + table_name);
+        }catch (Exception e){e.printStackTrace();}
+
+    }
+
+    public int retrieve_and_delete_all_records(String table_name){
+        ArrayList<Object> all_trains_table = excecuteQuery("*", table_name, null, null);
+        if (all_trains_table != null){
+            deleteTable(table_name);
+            Log.e("SQLITE", "ALL TRAINS TABLE RECORDS WAS DELETED");
+            return 1;
+        }else{
+            Log.e("SQLITE", "NO RECORDS AVAILABLE");
+            return -1;
+
+        }
+    }
+
+
+
+
+
     private ArrayList<Object> getRecord(String query){
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
@@ -235,14 +264,25 @@ public class CTA_DataBase extends SQLiteOpenHelper {
             }
         return null;
     }
-    public ArrayList<Object> excecuteQuery(String cols,String table_name, String condition ){
+    public ArrayList<Object> excecuteQuery(String cols,String table_name, String condition, String col_orderBy){
             String query;
+        ArrayList<Object> record = null;
             if (condition == null){
                 query = "SELECT "+cols+" FROM "+table_name;
             }else{
                 query = "SELECT "+cols+" FROM "+table_name +" WHERE "+condition;
             }
-            ArrayList<Object> record = getRecord(query);
+            if (col_orderBy == null){
+                record = getRecord(query);
+
+            }else{
+                query = query +" ORDER BY "+ col_orderBy + " ASC";
+                record = getRecord(query);
+            }
+
+
+
+
         return record;
 
 }

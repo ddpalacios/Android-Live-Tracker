@@ -19,7 +19,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.cta_map.Backend.Threading.AllTrainsTable;
 import com.example.cta_map.BottomTrackingAdapter;
+import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.DataBase.Database2;
 import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.Displayers.UserLocation;
@@ -67,10 +69,39 @@ public class TrainTrackingActivity extends AppCompatActivity {
     @SuppressLint("DefaultLocale")
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void displayResults(Bundle bundle) {
+        try {
+            RecyclerView line_layout = (RecyclerView) findViewById(R.id.vr_recycler_view);
+            final ArrayList<Object> all_chosen_trains = (ArrayList<Object>) bundle.getSerializable("all_chosen_trains");
+            if (all_chosen_trains == null) {
+                Toast.makeText(getApplicationContext(), "NO TRAINS AVAIALABLE", Toast.LENGTH_SHORT).show();
+            }
+            else {
+
+                CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
+                for (Object record : all_chosen_trains) {
+                    HashMap<String, String> incoming_train = (HashMap<String, String>) record;
+                    ArrayList<Object> cta_record = cta_dataBase.excecuteQuery("*", "cta_stops", "MAP_ID = '"+ Objects.requireNonNull(incoming_train.get("next_stop_id")).trim()+"'", null);
+                    HashMap<String, String> next_stop_station_record = (HashMap<String, String>) cta_record.get(0);
+                    Log.e(TAG, next_stop_station_record.get("station_name") + " " + incoming_train.get("next_stop_eta"));
+                }
+                TrackingAdapter adapter = new TrackingAdapter(getApplicationContext(), all_chosen_trains);
+                line_layout.setAdapter(adapter);
+                line_layout.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                Log.e(TAG, "DONE.");
+                cta_dataBase.close();
+            }
+
+        }catch (Exception e){e.printStackTrace();}
+
+
+
+
+
+
+
 //        Chicago_Transits chicago_transits = new Chicago_Transits();
 //        Database2 sqlite = new Database2(getApplicationContext());
 //        final HashMap<String, String> tracking_record = sqlite.get_tracking_record(); //("tracking_record", "WHERE TRACKING_ID ='"+0+"'");  //.getAllRecord("tracking_table");
-//        final HashMap<String, ArrayList<HashMap>> new_train_data = (HashMap<String, ArrayList<HashMap>>) bundle.getSerializable("estimated_train_data");
 //        final TreeMap<Integer, String> map = (TreeMap<Integer, String>) bundle.getSerializable("sorted_train_eta_map");
 //        ArrayList<HashMap> chosen_train = new_train_data.get("chosen_trains");
 //        final TextView title = (TextView) findViewById(R.id.tracking_name);
@@ -140,7 +171,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
 //            sqlite.close();
 //        }
     }
-    private void insertMultipleItems(ArrayList<Object> data, Map<Integer, String> map, RecyclerView.Adapter adapter ) {
+    private void insertMultipleItems(ArrayList<Object> data, Map<Integer, String> map, RecyclerView.Adapter adapter) {
         Database2 sqlite = new Database2(getApplicationContext());
         HashMap<String, String> tracking_record = sqlite.get_tracking_record();
         ArrayList<Object> new_objects = new ArrayList<>();
@@ -156,7 +187,6 @@ public class TrainTrackingActivity extends AppCompatActivity {
         adapter.notifyItemRangeChanged(0, new_objects.size());
         sqlite.close();
     }
-
 //
 //
 //    private void insertMultipleItems2(ArrayList<Train_info> data, Map<Integer, String> map, ArrayList<HashMap> chosen_train  , RecyclerView.Adapter adapter ) {
@@ -206,6 +236,7 @@ public class TrainTrackingActivity extends AppCompatActivity {
     private void updateList(ArrayList<Object> data, Object new_obj, Integer idx, RecyclerView.Adapter adapter) {
         data.set(idx, new_obj);
         adapter.notifyItemChanged(idx);
+
     }
 //
 //
@@ -236,35 +267,11 @@ public class TrainTrackingActivity extends AppCompatActivity {
         String target_dir = bb.getString("target_station_dir");
         String target_station_id = bb.getString("target_station_id");
 
-
-
-
-
         final Thread t1 = new Thread(new API_Caller_Thread(message, target_type,false), "API_CALL_Thread");
         final Thread t2 = new Thread(new Content_Parser_Thread(getApplicationContext(), message, target_type, target_dir, target_station_name, target_station_id), "Content Parser");
-
-        t1.start();
-        t2.start();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        final Thread t3 = new Thread(new Train_Estimations_Thread(getApplicationContext(), message, handler), "Estimation Thread");
+        final Thread t4 = new Thread(new Notifier_Thread(t1,t2,t3), "Notifier Thread");
+        t4.start();
 
 
     }

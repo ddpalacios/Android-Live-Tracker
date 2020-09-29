@@ -8,7 +8,7 @@ import java.util.TreeMap;
 public class Message {
 
     private ArrayList<IncomingTrains> incoming_trains;
-
+    private ArrayList<AllTrainsTable> all_chosen_trains;
 
 
     public void setIncoming_trains(ArrayList<IncomingTrains> incoming_trains){
@@ -18,7 +18,13 @@ public class Message {
         return this.incoming_trains;
     }
 
+    public void setChosenTrains(ArrayList<AllTrainsTable> chosen_trains){
+        this.all_chosen_trains = chosen_trains;
+    }
 
+    public ArrayList<AllTrainsTable> getChosen_trains(){
+        return this.all_chosen_trains;
+    }
 
 
 

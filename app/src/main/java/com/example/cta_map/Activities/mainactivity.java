@@ -25,16 +25,19 @@ public class mainactivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
         cta_dataBase.testfunc();
+        cta_dataBase.close();
+        createDB(R.raw.lstops, R.raw.line_stops, R.raw.mainstationsexcel);
+
 
         CTA_DataBase sqlite = new CTA_DataBase(getApplicationContext());
-        ArrayList<Object> record = sqlite.excecuteQuery("*", "main_stations", "main_station_type = 'Blue'");
+        ArrayList<Object> record = sqlite.excecuteQuery("*", "main_stations", "main_station_type = 'Blue'", null);
         for (int i=0; i<record.size(); i++){
             Object obj = record.get(i);
             HashMap<String, String> r = (HashMap<String, String>) obj;
             Log.e(Thread.currentThread().getName(),r.get("northbound")+"");
         }
         Log.e(Thread.currentThread().getName(), "COUNT: "+ record.size());
-        ArrayList<Object> record1 = sqlite.excecuteQuery("*", "cta_stops", "station_name = 'Granville'");
+        ArrayList<Object> record1 = sqlite.excecuteQuery("*", "cta_stops", "station_name = 'Granville'",null);
         HashMap<String, String> r = (HashMap<String, String>) record1.get(0);
         Log.e(Thread.currentThread().getName(), "NEW "+ r.get("station_name")+" "+ r.get("location"));
 
@@ -92,6 +95,9 @@ public class mainactivity extends AppCompatActivity {
         BufferedReader file1Buffer  = chicago_transits.setup_file_reader(getApplicationContext(), file1);
         BufferedReader file2Buffer  = chicago_transits.setup_file_reader(getApplicationContext(), file2);
         BufferedReader file3Buffer  = chicago_transits.setup_file_reader(getApplicationContext(), file3);
+
+
+
 
         chicago_transits.Create_TrainInfo_table(file1Buffer, getApplicationContext());
         chicago_transits.create_line_stops_table(file2Buffer, getApplicationContext());

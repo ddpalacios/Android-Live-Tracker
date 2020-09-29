@@ -39,7 +39,7 @@ public class ChooseLineActivity extends AppCompatActivity {
                 };
 
         CTA_DataBase sqlite = new CTA_DataBase(getApplicationContext());
-        ArrayList<Object> record = sqlite.excecuteQuery("*", "main_stations", null);
+        ArrayList<Object> record = sqlite.excecuteQuery("*", "main_stations", null,null);
 
         for (int i=0; i<record.size(); i++){
             HashMap<String, String> main_station_record = (HashMap<String, String>) record.get(i);

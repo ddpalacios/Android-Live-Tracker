@@ -26,7 +26,6 @@ public class StopAdapter extends RecyclerView.Adapter<StopAdapter.StopViewHolder
     public StopAdapter(Context context, ArrayList<Stops> stops){
         this.stops = stops;
         this.context = context;
-
     }
 
     @NonNull
@@ -34,9 +33,7 @@ public class StopAdapter extends RecyclerView.Adapter<StopAdapter.StopViewHolder
     public StopViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.station_row, parent, false);
-
         return new StopViewHolder(view);
-
     }
 
     @Override
@@ -72,9 +69,10 @@ public class StopAdapter extends RecyclerView.Adapter<StopAdapter.StopViewHolder
                     default:
                         CTA_DataBase cta_dataBase = new CTA_DataBase(ctx);
                         ArrayList<Object> found_station = cta_dataBase.excecuteQuery("MAP_ID", "cta_stops",
-                                        "station_name = '"+stops.getName()+"' AND "+stops.getColor()+" = 'TRUE'");
+                                        "station_name = '"+stops.getName()+"' AND "+stops.getColor()+" = 'TRUE'",null);
                         HashMap<String,String> found = (HashMap<String, String>) found_station.get(0);
                         target_station_id = found.get("MAP_ID");
+                        cta_dataBase.close();
 
                 }
                 Intent intent = new Intent(ctx, TrainTrackingActivity.class);
@@ -116,7 +114,6 @@ public class StopAdapter extends RecyclerView.Adapter<StopAdapter.StopViewHolder
             super(itemView);
             img = (ImageView) itemView.findViewById(R.id.station_img);
             t1 = (TextView) itemView.findViewById(R.id.station_name);
-
         }
     }
 }

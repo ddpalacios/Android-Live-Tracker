@@ -33,13 +33,13 @@ public class ChooseDir extends AppCompatActivity {
         CardView southcard = findViewById(R.id.southboundCardView);
 
         CTA_DataBase sqlite = new CTA_DataBase(getApplicationContext());
-        ArrayList<Object> get_mainStation_record = sqlite.excecuteQuery("*", "main_stations", "main_station_type = '"+station_type.trim()+"'");
+        ArrayList<Object> get_mainStation_record = sqlite.excecuteQuery("*", "main_stations", "main_station_type = '"+station_type.trim()+"'",null);
         HashMap<String, String> main_station_record = (HashMap<String, String>) get_mainStation_record.get(0);
         String northboundID = main_station_record.get("northbound");
         String southboundID = main_station_record.get("southbound");
 
-        HashMap<String, String> get_northbound_record = (HashMap<String, String>) sqlite.excecuteQuery("*", "cta_stops", "MAP_ID = '"+northboundID+"'").get(0);
-        HashMap<String, String> get_southbound_record = (HashMap<String, String>) sqlite.excecuteQuery("*", "cta_stops", "MAP_ID = '"+southboundID+"'").get(0);
+        HashMap<String, String> get_northbound_record = (HashMap<String, String>) sqlite.excecuteQuery("*", "cta_stops", "MAP_ID = '"+northboundID+"'",null).get(0);
+        HashMap<String, String> get_southbound_record = (HashMap<String, String>) sqlite.excecuteQuery("*", "cta_stops", "MAP_ID = '"+southboundID+"'",null).get(0);
         final String north_station = get_northbound_record.get("station_name");
         final String south_station = get_southbound_record.get("station_name");
 

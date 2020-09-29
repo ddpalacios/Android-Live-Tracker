@@ -7,6 +7,7 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.Displayers.Time;
 import com.example.cta_map.Displayers.UserLocation;
@@ -19,56 +20,73 @@ import java.util.TreeMap;
 public class Train_Estimations_Thread implements Runnable {
     final Message msg;
     android.os.Handler handler;
-    HashMap<String, String> tracking_record;
-    boolean willCommunicate;
-    UserLocation userLocation;
     Context context;
-    public Train_Estimations_Thread(Message msg, UserLocation userLocation,   HashMap<String, String> tracking_record,android.os.Handler handler, Context context, boolean willCommunicate) {
-        this.msg = msg;
-        this.tracking_record = tracking_record;
-        this.context = context;
-        this.handler = handler;
-        this.userLocation = userLocation;
-        this.willCommunicate = willCommunicate;
-    }
+
+public Train_Estimations_Thread(Context context, Message msg, android.os.Handler handler) {
+    this.msg = msg;
+    this.context = context;
+    this.handler = handler;
+
+}
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void run() {
+
+        CTA_DataBase cta_dataBase = new CTA_DataBase(this.context);
+        int table_records_removed = cta_dataBase.retrieve_and_delete_all_records("all_trains_table");
+        if (table_records_removed ==1 ){
+            Log.e("SQLITE", "ALL TRAINS TABLE RECORDS WAS DELETED");
+        }else{
+            Log.e("SQLITE", "NO RECORDS AVAILABLE");
+        }
+
             while (this.msg.IsSending()){
                 try { Thread.sleep(200); } catch (InterruptedException e) { e.printStackTrace(); }
                 synchronized (this.msg) {
-
+                    try {
+                    int record_removed = cta_dataBase.retrieve_and_delete_all_records("all_trains_table");
+                    if (record_removed == 1) {
+                        Log.e("SQLITE", "ALL TRAINS TABLE RECORDS WAS DELETED");
+                    } else {
+                        Log.e("SQLITE", "NO RECORDS AVAILABLE");
+                    }
+                    ArrayList<AllTrainsTable> incoming_trains = this.msg.getChosen_trains();
+                     if (incoming_trains == null) {
+                         send_to_UI("all_chosen_trains", null);
+                            try {
+                                Thread.sleep(10000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            this.msg.notify();
+                        } else {
+                            for (AllTrainsTable new_train : incoming_trains) {
+                                Log.e(Thread.currentThread().getName(), new_train.getNext_stop());
+                                cta_dataBase.CommitRecordToAllTrainsTable(new_train);
+                            }
+                            Log.e(Thread.currentThread().getName(), "ALL_TRAINS_TABLE COMMITTED");
+                            ArrayList<Object> committed_incoming_trains = cta_dataBase.excecuteQuery("*", "all_trains_table", null, "to_target_eta");
+                            send_to_UI("all_chosen_trains", committed_incoming_trains);
+                            try {
+                                Thread.sleep(10000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            this.msg.notify();
+                        }
+                    }catch (Exception e){e.printStackTrace();}
+                    }
+                }
+            }
+            public void send_to_UI(String key, ArrayList<Object> message){
                 Bundle bundle = new Bundle();
                 android.os.Message handler_msg = this.handler.obtainMessage();
-                HashMap<String, ArrayList<HashMap>> parsed_train_data = this.msg.getParsedTrainData();
-                TreeMap<Integer, String> treeMap = this.msg.getTrainMap();
-                if (parsed_train_data == null) {
-                    Log.e(Thread.currentThread().getName(), "Data is NULL");
-                    this.msg.notifyAll();
-                    continue;
-                }
-
-                bundle.putSerializable("estimated_train_data", parsed_train_data);
-                bundle.putSerializable("sorted_train_eta_map", treeMap);
+                bundle.putSerializable(key, message);
                 handler_msg.setData(bundle);
                 handler.sendMessage(handler_msg);
-                this.msg.setParsedTrainData(null);
-
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                    this.msg.notify();
-
 
             }
 
         }
 
-
-
-
-        }
-    }
