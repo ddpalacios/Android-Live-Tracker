@@ -1,118 +1,83 @@
-package com.example.cta_map.Activities;//package com.example.cta_map.Activities;
+package com.example.cta_map.Activities;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.NotificationCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.Displayers.Chicago_Transits;
+import com.example.cta_map.Displayers.NotificationBuilder;
+import com.example.cta_map.FavStationAdapter;
 import com.example.cta_map.R;
+import com.example.cta_map.Stops;
+
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class mainactivity extends AppCompatActivity {
-
+    @SuppressLint("SetTextI18n")
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
-        cta_dataBase.testfunc();
-        cta_dataBase.close();
-        createDB(R.raw.lstops, R.raw.line_stops, R.raw.mainstationsexcel);
+        final CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
 
-
-        CTA_DataBase sqlite = new CTA_DataBase(getApplicationContext());
-        ArrayList<Object> record = sqlite.excecuteQuery("*", "main_stations", "main_station_type = 'Blue'", null);
-        for (int i=0; i<record.size(); i++){
-            Object obj = record.get(i);
-            HashMap<String, String> r = (HashMap<String, String>) obj;
-            Log.e(Thread.currentThread().getName(),r.get("northbound")+"");
+        ArrayList<Object> favorite_stations = cta_dataBase.excecuteQuery("*", "USER_FAVORITES", null, null);
+        ArrayList<Stops> list = new ArrayList<>();
+        list.add(new Stops(null, "Choose Station", "choose_station", null));
+        list.add(new Stops(null, "To Maps", "to_maps", null));
+        list.add(new Stops(null, "View Data", "data_view", null));
+        list.add(new Stops(null, "Favorites: ", "favorite", null));
+        if (favorite_stations != null) {
+            if (favorite_stations.size() > 0) {
+                for (int i = 0; i < favorite_stations.size(); i++) {
+                    HashMap<String,String> favorite_station = (HashMap<String,String>) favorite_stations.get(i);
+                    list.add(new Stops(null, favorite_station.get("STATION_NAME"), favorite_station.get("STATION_TYPE"), null));
+                }
+            }
         }
-        Log.e(Thread.currentThread().getName(), "COUNT: "+ record.size());
-        ArrayList<Object> record1 = sqlite.excecuteQuery("*", "cta_stops", "station_name = 'Granville'",null);
-        HashMap<String, String> r = (HashMap<String, String>) record1.get(0);
-        Log.e(Thread.currentThread().getName(), "NEW "+ r.get("station_name")+" "+ r.get("location"));
+        RecyclerView rv = findViewById(R.id.rv_user_favorites);
+        FavStationAdapter adapter = new FavStationAdapter(getApplicationContext(), list);
+        rv.setAdapter(adapter);
+        rv.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        final Button notify = findViewById(R.id.notify);
 
-        CardView choose_station = (CardView) findViewById(R.id.choose_station);
-        choose_station.setOnClickListener(new View.OnClickListener() {
+        notify.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mainactivity.this, ChooseLineActivity.class);
-                startActivity(intent);
+                Intent notificationIntent = new Intent(getApplicationContext() ,mainactivity.class);
+                NotificationBuilder notificationBuilder = new NotificationBuilder(getApplicationContext(), notificationIntent );
+                notificationBuilder.notificationDialog("CTA_map", "New Message");
             }
         });
 
 
-//        RecyclerView rvContacts = (RecyclerView) findViewById(R.id.recycler_view);
-//        RecyclerView optionsrv = (RecyclerView) findViewById(R.id.ViewOptions);
-//        final ArrayList<Stations> list = new ArrayList<>();
-//        ActionBar actionBar = getSupportActionBar();
-//        assert actionBar != null;
-//        actionBar.setTitle("Home Page");
 
 
 
 
 
 
-//        String query1 = "SELECT station_id FROM cta_stops WHERE station_name = 'Granville'" + " AND red = 'true'";
-//        String station_id = sqlite.getValue(query1);
-//        Log.e("WWW", station_id+" ");
-//
-//        ArrayList<HashMap> favorite_stations = sqlite.getAllRecord("favorite_stations");
-//        sqlite.close();
-//        for (HashMap t: favorite_stations){
-//            list.add(new Stations("#"+t.get("PrimaryId")+"."+" "+t.get("fav_station_name")+"."," "+t.get("fav_station_type"),t.get("fav_station_dir")+""));
-//        }
-//
-//        String[] options = new String[]{"Add New Station", "Find Station", "View Map"};
-//        optionAdapter a = new optionAdapter(getApplicationContext(), options);
-//        optionsrv.setAdapter(a);
-//        optionsrv.setLayoutManager(new LinearLayoutManager(this));
-//
-//
-//        final StationAdapter adapter = new StationAdapter(getApplicationContext(), list);
-////        // Attach the adapter to the recyclerview to populate items
-//        rvContacts.setAdapter(adapter);
-////        // Set layout manager to position the items
-//        rvContacts.setLayoutManager(new LinearLayoutManager(this));
-//
+
     }
-//
-
-
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public int createDB(int file1, int file2, int file3){
-        Chicago_Transits chicago_transits = new Chicago_Transits();
-        BufferedReader file1Buffer  = chicago_transits.setup_file_reader(getApplicationContext(), file1);
-        BufferedReader file2Buffer  = chicago_transits.setup_file_reader(getApplicationContext(), file2);
-        BufferedReader file3Buffer  = chicago_transits.setup_file_reader(getApplicationContext(), file3);
-
-
-
-
-        chicago_transits.Create_TrainInfo_table(file1Buffer, getApplicationContext());
-        chicago_transits.create_line_stops_table(file2Buffer, getApplicationContext());
-        chicago_transits.create_main_station_table(file3Buffer, getApplicationContext());
-
-
-
-
-        return 0;
-    }
-
-
-
-
-
-
 }
-

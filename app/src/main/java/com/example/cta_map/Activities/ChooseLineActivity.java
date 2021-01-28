@@ -1,9 +1,13 @@
 package com.example.cta_map.Activities;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,8 +29,8 @@ public class ChooseLineActivity extends AppCompatActivity {
         setContentView(R.layout.line_activity);
         ArrayList<StationLines> list = new ArrayList<>();
         RecyclerView line_layout = (RecyclerView) findViewById(R.id.main_line);
-        Log.e("context", getBaseContext()+" context");
 
+        Log.e("context", getBaseContext()+" context");
         int[] images = {
                 R.drawable.red,
                 R.drawable.blue,
@@ -38,15 +42,10 @@ public class ChooseLineActivity extends AppCompatActivity {
                 R.drawable.yellow
                 };
 
-        CTA_DataBase sqlite = new CTA_DataBase(getApplicationContext());
-        ArrayList<Object> record = sqlite.excecuteQuery("*", "main_stations", null,null);
-
-        for (int i=0; i<record.size(); i++){
-            HashMap<String, String> main_station_record = (HashMap<String, String>) record.get(i);
-            list.add(new StationLines(main_station_record.get("main_station_type"), images[i]));
-
+        String[] line_names = {"RED", "BLUE", "BROWN", "GREEN", "ORANGE", "PURPLE", "PINK", "YELLOW"};
+        for (int i=0; i<images.length; i++){
+            list.add(new StationLines(line_names[i], images[i]));
         }
-
         LineAdapter adapter = new LineAdapter(getApplicationContext(), list);
         line_layout.setAdapter(adapter);
         line_layout.setLayoutManager(new LinearLayoutManager(getApplicationContext()));

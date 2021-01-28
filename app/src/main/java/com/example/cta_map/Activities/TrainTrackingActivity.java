@@ -1,9 +1,13 @@
 package com.example.cta_map.Activities;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Layout;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -16,43 +20,43 @@ import android.view.WindowManager;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cta_map.Backend.Threading.AllTrainsTable;
 import com.example.cta_map.BottomTrackingAdapter;
 import com.example.cta_map.DataBase.CTA_DataBase;
-import com.example.cta_map.DataBase.Database2;
+//import com.example.cta_map.DataBase.Database2;
+import com.example.cta_map.DataBase.CTA_Stops;
 import com.example.cta_map.Displayers.Chicago_Transits;
-import com.example.cta_map.Displayers.UserLocation;
+//import com.example.cta_map.Displayers.UserLocation;
+import com.example.cta_map.Displayers.Train;
+import com.example.cta_map.FavStationAdapter;
 import com.example.cta_map.R;
 
 import com.example.cta_map.Backend.Threading.Message;
 import com.example.cta_map.Backend.Threading.API_Caller_Thread;
 import com.example.cta_map.Backend.Threading.Content_Parser_Thread;
 import com.example.cta_map.Backend.Threading.Notifier_Thread;
-import com.example.cta_map.Backend.Threading.Train_Estimations_Thread;
+//import com.example.cta_map.Backend.Threading.Train_Estimations_Thread;
 import com.example.cta_map.TrackingAdapter;
 import com.example.cta_map.Tracking_Station;
 import com.example.cta_map.Train_info;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 import java.util.Vector;
 
 public class TrainTrackingActivity extends AppCompatActivity {
-
-    Bundle bb; // Retrieve data from main screen
     final Message message = new Message();
     String TAG = "MAIN UI";
-    ArrayList<Object> list1 = new ArrayList<Object>();
-    ArrayList<Train_info> list2 = new ArrayList<>();
-    BottomTrackingAdapter bottomTrackingAdapter = new BottomTrackingAdapter(this, list2);
-    TrackingAdapter adapter = new TrackingAdapter(this, list1);
 
     @SuppressLint("HandlerLeak")
     private final Handler handler = new Handler() {
@@ -65,193 +69,24 @@ public class TrainTrackingActivity extends AppCompatActivity {
             }
         }
     };
-//
-    @SuppressLint("DefaultLocale")
-    @RequiresApi(api = Build.VERSION_CODES.M)
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void displayResults(Bundle bundle) {
-        try {
-            RecyclerView line_layout = (RecyclerView) findViewById(R.id.vr_recycler_view);
-            final ArrayList<Object> all_chosen_trains = (ArrayList<Object>) bundle.getSerializable("all_chosen_trains");
-            if (all_chosen_trains == null) {
-                Toast.makeText(getApplicationContext(), "NO TRAINS AVAIALABLE", Toast.LENGTH_SHORT).show();
-            }
-            else {
+        final ArrayList<Object> all_chosen_trains = (ArrayList<Object>) bundle.getSerializable("new_incoming_trains");
+        ArrayList<Object> list = new ArrayList<>(all_chosen_trains);
+        RecyclerView live_trains_rv = findViewById(R.id.live_trains_rv);
+        TrackingAdapter adapter = new TrackingAdapter(getApplicationContext(), list);
+        live_trains_rv.setAdapter(adapter);
+        live_trains_rv.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        Object main_record = all_chosen_trains.get(0);
+        Train main_train  = (Train) main_record;
 
-                CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
-                for (Object record : all_chosen_trains) {
-                    HashMap<String, String> incoming_train = (HashMap<String, String>) record;
-                    ArrayList<Object> cta_record = cta_dataBase.excecuteQuery("*", "cta_stops", "MAP_ID = '"+ Objects.requireNonNull(incoming_train.get("next_stop_id")).trim()+"'", null);
-                    HashMap<String, String> next_stop_station_record = (HashMap<String, String>) cta_record.get(0);
-                    Log.e(TAG, next_stop_station_record.get("station_name") + " " + incoming_train.get("next_stop_eta"));
+//        all_chosen_trains.remove(0);
+        Log.e("UI", "ALL OTHER TRAINS STATUS:\n");
+        for (Object record : all_chosen_trains) {
+                   Train incoming_train = (Train) record;
+                    Log.e("UI", incoming_train.getRn()+" | "+incoming_train.getNextStaNm()+ " |  "+ incoming_train.getTarget_eta()+"m | STATUS: "+ incoming_train.getStatus() + " | USER STATUS: "+ incoming_train.getUserStatus());
                 }
-                TrackingAdapter adapter = new TrackingAdapter(getApplicationContext(), all_chosen_trains);
-                line_layout.setAdapter(adapter);
-                line_layout.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                Log.e(TAG, "DONE.");
-                cta_dataBase.close();
-            }
-
-        }catch (Exception e){e.printStackTrace();}
-
-
-
-
-
-
-
-//        Chicago_Transits chicago_transits = new Chicago_Transits();
-//        Database2 sqlite = new Database2(getApplicationContext());
-//        final HashMap<String, String> tracking_record = sqlite.get_tracking_record(); //("tracking_record", "WHERE TRACKING_ID ='"+0+"'");  //.getAllRecord("tracking_table");
-//        final TreeMap<Integer, String> map = (TreeMap<Integer, String>) bundle.getSerializable("sorted_train_eta_map");
-//        ArrayList<HashMap> chosen_train = new_train_data.get("chosen_trains");
-//        final TextView title = (TextView) findViewById(R.id.tracking_name);
-//        Log.e(TAG, tracking_record+" ");
-//
-//        assert chosen_train != null;
-//        if (chosen_train.size() == 0) {
-//            Toast.makeText(getApplicationContext(), "No Trains Available", Toast.LENGTH_LONG).show();
-//            sqlite.close();
-//        } else {
-//
-//            if (chosen_train.get(0).get("train_direction").equals("1")) {
-//                title.setText(tracking_record.get("station_name") + " (North)");
-//
-//            } else {
-//                title.setText(tracking_record.get("station_name") + " (South)");
-//
-//            }
-//
-//
-//            for (int i = 0; i < map.size(); i++) {
-//                Integer train_eta = (Integer) new Vector(map.keySet()).get(i);
-//                String train_id = (String) new Vector(map.values()).get(i);
-//                for (HashMap<String, String> current_train : chosen_train) {
-//                    if (current_train.containsValue(train_id)) {
-//                        if (list1.size() == 0) {
-//                            insertMultipleItems(list1, map, adapter);
-//
-////                        insertMultipleItems2(list2, map, chosen_train,adapter);
-//
-//                        } else {
-//                            Log.e(TAG, adapter.getItemCount() + " " + new_train_data.get("chosen_trains").size());
-//                            Tracking_Station new_obj = new Tracking_Station("#" + train_id + ". To " + tracking_record.get("main_station"), current_train.get("train_eta") + "");
-//                            updateList(list1, new_obj, i, adapter);
-//
-//                            String query = "SELECT station_id FROM cta_stops WHERE station_name = '" + current_train.get("next_stop").replaceAll("'", "").trim() + "'" + " AND " + current_train.get("station_type").toString().trim() + " = 'true'";
-//                            try {
-//                                String station_id = sqlite.getValue(query);
-//                                String[] station_coord = chicago_transits.retrieve_station_coordinates(sqlite, station_id);
-//                                Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance(
-//                                        Double.parseDouble((String) current_train.get("train_lat")),
-//                                        Double.parseDouble((String) current_train.get("train_lon")),
-//                                        Double.parseDouble(station_coord[0]),
-//                                        Double.parseDouble(station_coord[1]));
-//
-//                                Train_info train_info = new Train_info("Next Stop: " + current_train.get("next_stop") + "",
-//                                        "" + current_train.get("train_eta") + "m",
-//                                        String.format("%.2f", current_train_distance_from_target_station) + " mi",
-//                                        "To " + tracking_record.get("station_name") + " (target)",
-//                                        current_train.get("train_eta") + "m",
-//                                        String.format("%.2f", Double.parseDouble(String.valueOf(current_train.get("train_distance")))) + " mi",
-//                                        "Train# " + train_id + "");
-//                            } catch (Exception e) {
-//                                Log.e(TAG, "ERROR " + current_train.get("next_stop"));
-//                                e.printStackTrace();
-//                            }
-//
-//
-////                        updateBottomList(list2, train_info,i, bottomTrackingAdapter);
-//                        }
-//                    }
-//                }
-//            }
-//            Log.e(TAG, "Done");
-//
-//
-//            sqlite.close();
-//        }
     }
-    private void insertMultipleItems(ArrayList<Object> data, Map<Integer, String> map, RecyclerView.Adapter adapter) {
-        Database2 sqlite = new Database2(getApplicationContext());
-        HashMap<String, String> tracking_record = sqlite.get_tracking_record();
-        ArrayList<Object> new_objects = new ArrayList<>();
-
-        for (Map.Entry<Integer, String> entry : map.entrySet()) {
-            Integer eta = entry.getKey();
-            String train_id = entry.getValue();
-            new_objects.add(new Tracking_Station("  #" + train_id + ". To " + tracking_record.get("main_station"), eta + ""));
-
-        }
-
-        data.addAll(new_objects);
-        adapter.notifyItemRangeChanged(0, new_objects.size());
-        sqlite.close();
-    }
-//
-//
-//    private void insertMultipleItems2(ArrayList<Train_info> data, Map<Integer, String> map, ArrayList<HashMap> chosen_train  , RecyclerView.Adapter adapter ) {
-//        Database2 sqlite = new Database2(getApplicationContext());
-//        HashMap<String, String> tracking_record = sqlite.get_tracking_record();
-//        ArrayList<Train_info> new_objects = new ArrayList<>();
-//        int i =0;
-//        Chicago_Transits chicago_transits= new Chicago_Transits();
-//
-//
-//        for (Map.Entry<Integer, String> entry : map.entrySet()) {
-//            Integer eta = entry.getKey();
-//            String train_id = entry.getValue();
-//
-//            String query = "SELECT station_id FROM cta_stops WHERE station_name = '" +   chosen_train.get(i).get("next_stop").toString().trim() + "'" + " AND " +   chosen_train.get(i).get("station_type").toString().trim() + " = 'true'";
-//            String station_id = sqlite.getValue(query);
-//
-//            String[] station_coord = chicago_transits.retrieve_station_coordinates(sqlite, station_id);
-//
-//
-//
-//            Double current_train_distance_from_target_station = chicago_transits.calculate_coordinate_distance(
-//                    Double.parseDouble((String)  chosen_train.get(i).get("train_lat")),
-//                    Double.parseDouble((String)   chosen_train.get(i).get("train_lon")),
-//                    Double.parseDouble(station_coord[0]),
-//                    Double.parseDouble(station_coord[1]));
-//
-//
-//
-//
-//
-//            new_objects.add( new Train_info("Next Stop: " + chosen_train.get(i).get("next_stop") + "",
-//                    "" + chosen_train.get(i).get("train_eta") + "m",
-//                    String.format("%.2f", current_train_distance_from_target_station) + " mi",
-//                    "To " + tracking_record.get("station_name") + " (target)",
-//                    chosen_train.get(i).get("train_eta") + "m",
-//                    String.format("%.2f", Double.parseDouble(String.valueOf( chosen_train.get(i).get("train_distance")))) + " mi",
-//                    "Train# " + train_id + ""));
-//
-//        }
-//
-//        data.addAll(new_objects);
-//        adapter.notifyItemRangeChanged(0, new_objects.size());
-//        sqlite.close();
-//    }
-//
-    private void updateList(ArrayList<Object> data, Object new_obj, Integer idx, RecyclerView.Adapter adapter) {
-        data.set(idx, new_obj);
-        adapter.notifyItemChanged(idx);
-
-    }
-//
-//
-//    private void updateBottomList(ArrayList<Train_info> data, Object new_obj, Integer idx, RecyclerView.Adapter adapter) {
-//        data.set(idx, (Train_info) new_obj);
-//        adapter.notifyItemChanged(idx);
-//    }
-//
-    private void removeAllItems() {
-        list1.clear();
-        list2.clear();
-        bottomTrackingAdapter.notifyDataSetChanged();
-        adapter.notifyDataSetChanged();
-    }
-
 
 
     @SuppressLint("SetTextI18n")
@@ -262,19 +97,149 @@ public class TrainTrackingActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Bundle bb;
         bb = getIntent().getExtras();
-        String target_station_name = bb.getString("target_station_name");
-        String target_type = bb.getString("target_station_type");
-        String target_dir = bb.getString("target_station_dir");
-        String target_station_id = bb.getString("target_station_id");
+        CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
+        Chicago_Transits chicago_transits = new Chicago_Transits();
+        final boolean[] change_text;
+        final  boolean[] change_thread_text = new boolean[]{false};
+        HashMap<String, Integer> TrainLineKeyCodes = getTrainLineKeys();
+        // Non Persistable Variables
+        final HashMap<String, String> tracking_station = (HashMap<String, String>) bb.getSerializable("tracking_station");
+        final Button add_to_favorites = findViewById(R.id.add_as_favorite);
+        TextView main_title = findViewById(R.id.main_title);
+        ImageView main_tracking_image = findViewById(R.id.main_tracking_image);
+        main_tracking_image.setImageResource(TrainLineKeyCodes.get(tracking_station.get("station_type").toLowerCase()));
+        main_title.setText(tracking_station.get("target_station_name")+"");
 
-        final Thread t1 = new Thread(new API_Caller_Thread(message, target_type,false), "API_CALL_Thread");
-        final Thread t2 = new Thread(new Content_Parser_Thread(getApplicationContext(), message, target_type, target_dir, target_station_name, target_station_id), "Content Parser");
-        final Thread t3 = new Thread(new Train_Estimations_Thread(getApplicationContext(), message, handler), "Estimation Thread");
-        final Thread t4 = new Thread(new Notifier_Thread(t1,t2,t3), "Notifier Thread");
-        t4.start();
+        final Button backToHome = findViewById(R.id.HomeButton);
+        final Button test_threads = findViewById(R.id.test_threads);
+        ArrayList<Object> record, cta_record;
+        record = cta_dataBase.excecuteQuery("*", "USER_FAVORITES", "STOP_ID = '"+tracking_station.get("station_id")+"'", null);
+        cta_record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STOP_ID = '"+tracking_station.get("station_id")+"'", null);
+        if (tracking_station.get("station_type").toLowerCase().equals("purple" )){
+            record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+tracking_station.get("target_station_name")+"' AND "+chicago_transits.TrainLineKeys(tracking_station.get("station_type").toLowerCase()).toUpperCase() +" = '1'", null);
+            if (record == null){
+                record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+tracking_station.get("target_station_name")+"' AND PEXP = '1'", null);
+
+            }
+        }
+
+        if (record!=null) {
+            change_text = new boolean[]{true};
+            add_to_favorites.setText("Saved");
+        }else{
+            change_text = new boolean[]{false};
+            add_to_favorites.setText("Add To Favorites");
+        }
+
+        message.setSwitchDir(false);
+        message.keepSending(true);
+        message.setTarget_name(tracking_station.get("target_station_name"));
+        message.setTarget_type(tracking_station.get("station_type"));
+
+        final Thread api_caller =  new  Thread(new API_Caller_Thread(message, tracking_station.get("station_type")));
+        final Thread content_parser = new Thread(new Content_Parser_Thread(getApplicationContext(), message, handler));
+
+        test_threads.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!change_thread_text[0]){
+                    change_thread_text[0] = true;
+                    test_threads.setText("Running");
+                    message.setDir(tracking_station.get("station_dir"));
+                    message.setSwitchDir(false);
+                    message.keepSending(true);
+                    message.setTarget_name(tracking_station.get("target_station_name"));
+                    message.setTarget_type(tracking_station.get("station_type"));
+
+                    Log.e(TAG, api_caller.getState().toString()+"");
+                    if (api_caller.getState() == Thread.State.NEW){
+                        api_caller.start();
+                    }
+                    if (content_parser.getState() == Thread.State.NEW){
+                        content_parser.start();
+                    }
+
+                }else{
+                    test_threads.setText("Run");
+                    change_thread_text[0] = false;
+                    message.keepSending(false);
+                    api_caller.interrupt();
+                    content_parser.interrupt();
+
+                }
 
 
-    }
+
+
+
+            }
+        });
+
+        backToHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TrainTrackingActivity.this, mainactivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getApplicationContext().startActivity(intent);
+            }
+        });
+
+
+        add_to_favorites.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!change_text[0]) {
+                    add_to_favorites.setText("Saved");
+                    change_text[0] = true;
+                    Chicago_Transits chicago_transits = new Chicago_Transits();
+                    CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
+                    ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+tracking_station.get("target_station_name")+"' AND "+chicago_transits.TrainLineKeys(tracking_station.get("station_type").toLowerCase()).toUpperCase() +" = '1'", null);
+                    if (tracking_station.get("station_type").toLowerCase().equals("purple" )){
+                        record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+tracking_station.get("target_station_name")+"' AND "+chicago_transits.TrainLineKeys(tracking_station.get("station_type").toLowerCase()).toUpperCase() +" = '1'", null);
+                        if (record == null){
+                            record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+tracking_station.get("target_station_name")+"' AND PEXP = '1'", null);
+
+                        }
+                    }
+
+
+                    HashMap<String,String> target_station_record  = (HashMap<String, String>) record.get(0);
+                    FavoriteStation favoriteStation = new FavoriteStation(tracking_station.get("station_id"),target_station_record.get("STATION_NAME"), tracking_station.get("station_type"));
+                    cta_dataBase.commit(favoriteStation, "favorite_station");
+                    Toast.makeText(getApplicationContext(), tracking_station.get("target_station_name")+ " station added to favorites", Toast.LENGTH_LONG).show();
+
+                }else{
+                    Chicago_Transits chicago_transits = new Chicago_Transits();
+
+                    add_to_favorites.setText("Add To Favorites");
+                    change_text[0] = false;
+                    CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
+                    ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+tracking_station.get("target_station_name")+"' AND "+chicago_transits.TrainLineKeys(tracking_station.get("station_type").toLowerCase()).toUpperCase() +" = '1'", null);
+                    if (tracking_station.get("station_type").toLowerCase().equals("purple" )){
+                        record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+tracking_station.get("target_station_name")+"' AND "+chicago_transits.TrainLineKeys(tracking_station.get("station_type").toLowerCase()).toUpperCase() +" = '1'", null);
+                        if (record == null){
+                            record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+tracking_station.get("target_station_name")+"' AND PEXP = '1'", null);
+
+                        }
+                    }
+
+//                    ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+tracking_station.get("station_name")+"' AND "+chicago_transits.TrainLineKeys(tracking_station.get("station_type").toLowerCase()).toUpperCase() +" = '1'", null);
+                    HashMap<String,String> target_station_record  = (HashMap<String, String>) record.get(0);
+
+                    if (cta_dataBase.delete_record("USER_FAVORITES", "STOP_ID = ?", new String[]{target_station_record.get("STOP_ID")})){
+                        Toast.makeText(getApplicationContext(), "ERROR", Toast.LENGTH_SHORT).show();
+
+                    }else{
+                        Toast.makeText(getApplicationContext(), tracking_station.get("target_station_name")+ " was removed from favorites", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+   }
+
+
+
+
 
 //
 //        ImageView imageView  = (ImageView) findViewById(R.id.tracking_image);
