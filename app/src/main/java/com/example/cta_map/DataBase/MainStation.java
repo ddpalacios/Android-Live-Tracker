@@ -1,34 +1,41 @@
 package com.example.cta_map.DataBase;
 
 public class MainStation {
-    public String TrainLine;
+    public String StationType;
     public String NorthBound;
-    public String SouthBound;
-    public MainStation(String TrainLine, String NorthBound, String SouthBound){
-        this.TrainLine = TrainLine;
-        this.NorthBound = NorthBound;
-        this.SouthBound = SouthBound;
 
+    public String getStationType() {
+        return StationType;
     }
-    public MainStation CreateMainStationObject(String station_type, String northBound, String southBound){
-        return new MainStation(station_type, northBound, southBound);
+
+    public void setStationType(String stationType) {
+        StationType = stationType;
     }
-    private void setTrainLine(String trainLine) {
-        this.TrainLine = trainLine;
-    }
-    public String getTrainLine() {
-        return this.TrainLine;
-    }
-    private void setNorthBound(String northBound) {
-        this.NorthBound = northBound;
-    }
+
     public String getNorthBound() {
-        return this.NorthBound;
+        return NorthBound;
     }
-    private void setSouthBound(String southBound) {
-        this.SouthBound = southBound;
+
+    public void setNorthBound(String northBound) {
+        NorthBound = northBound;
     }
+
     public String getSouthBound() {
-        return this.SouthBound;
+        return SouthBound;
     }
+
+    public void setSouthBound(String southBound) {
+        SouthBound = southBound;
+    }
+
+    public String getExpress() {
+        return express;
+    }
+
+    public void setExpress(String express) {
+        this.express = express;
+    }
+
+    public String SouthBound;
+    public String express;
 }

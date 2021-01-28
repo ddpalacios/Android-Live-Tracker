@@ -15,8 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.cta_map.Activities.TrainTrackingActivity;
 import com.example.cta_map.Activities.mainactivity;
 import com.example.cta_map.DataBase.CTA_DataBase;
-import com.example.cta_map.DataBase.Database2;
+import com.example.cta_map.Displayers.Chicago_Transits;
+//import com.example.cta_map.DataBase.Database2;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -37,7 +39,7 @@ public class StopAdapter extends RecyclerView.Adapter<StopAdapter.StopViewHolder
     }
 
     @Override
-    public void onBindViewHolder(@NonNull StopViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull StopViewHolder holder, final int position) {
         final Stops stops = this.stops.get(position);
         HashMap<String, Integer> TrainLineKeyCodes  = new HashMap<>();
         TrainLineKeyCodes.put("red",R.drawable.red );
@@ -55,35 +57,78 @@ public class StopAdapter extends RecyclerView.Adapter<StopAdapter.StopViewHolder
         holder.t1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String target_station_id;
-                switch (stops.getName()) {
-                    case "O'Hare":
-                        target_station_id = "30171";
-                        break;
-                    case "Harlem (O'Hare Branch)":
-                        target_station_id = "30145";
-                        break;
-                    case "Western (O'Hare Branch)":
-                        target_station_id = "30130";
-                        break;
-                    default:
-                        CTA_DataBase cta_dataBase = new CTA_DataBase(ctx);
-                        ArrayList<Object> found_station = cta_dataBase.excecuteQuery("MAP_ID", "cta_stops",
-                                        "station_name = '"+stops.getName()+"' AND "+stops.getColor()+" = 'TRUE'",null);
-                        HashMap<String,String> found = (HashMap<String, String>) found_station.get(0);
-                        target_station_id = found.get("MAP_ID");
-                        cta_dataBase.close();
+                HashMap<String, String> tracking_station = stops.getTracking_station();
 
+                Intent intent;
+                if (stops.getDir() == null){
+                    intent = new Intent(ctx, TrainStations.class);
+
+                    if (position == 0){
+                        tracking_station.put("station_dir", "1");
+
+                    }else{
+                        tracking_station.put("station_dir", "5");
+                    }
+
+                    intent.putExtra("tracking_station", (Serializable) tracking_station);
+
+
+                }else {
+                    intent = new Intent(ctx, TrainTrackingActivity.class);
+
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    CTA_DataBase cta_dataBase = new CTA_DataBase(ctx);
+                    Chicago_Transits chicago_transits = new Chicago_Transits();
+                    ArrayList<Object> record;
+                    if (stops.getName().equals("O'Hare") ){
+                        stops.getName().replaceAll("'", "\'" );
+                    }
+                    record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '" + stops.getName() + "' AND " + chicago_transits.TrainLineKeys(stops.getColor().toLowerCase()).toUpperCase() + " = '1'", null);
+
+                    if (stops.getColor().toLowerCase().equals("purple")) {
+                        record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '" + stops.getName() + "' AND " + chicago_transits.TrainLineKeys(stops.getColor().toLowerCase()).toUpperCase() + " = '1'", null);
+                        if (record == null) {
+                            record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '" + stops.getName() + "' AND PEXP = '1'", null);
+
+                        }
+                    }
+
+                    HashMap<String, String> station_record = (HashMap<String, String>) record.get(0);
+
+                    tracking_station.put("target_station_name", stops.getName());
+                    tracking_station.put("station_id", station_record.get("STOP_ID"));
+                    intent.putExtra("tracking_station", (Serializable) tracking_station);
                 }
-                Intent intent = new Intent(ctx, TrainTrackingActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("target_station_id", target_station_id);
-                intent.putExtra("target_station_name", stops.getName());
-                intent.putExtra("target_station_type", stops.getColor());
-                intent.putExtra("target_station_dir", stops.getDir());
-
-
                 ctx.startActivity(intent);
+//                String target_station_id;
+//                switch (stops.getName()) {
+//                    case "O'Hare":
+//                        target_station_id = "30171";
+//                        break;
+//                    case "Harlem (O'Hare Branch)":
+//                        target_station_id = "30145";
+//                        break;
+//                    case "Western (O'Hare Branch)":
+//                        target_station_id = "30130";
+//                        break;
+//                    default:
+//                        CTA_DataBase cta_dataBase = new CTA_DataBase(ctx);
+//                        ArrayList<Object> found_station = cta_dataBase.excecuteQuery("MAP_ID", "cta_stops",
+//                                        "station_name = '"+stops.getName()+"' AND "+stops.getColor()+" = 'TRUE'",null);
+//                        HashMap<String,String> found = (HashMap<String, String>) found_station.get(0);
+//                        target_station_id = found.get("MAP_ID");
+//                        cta_dataBase.close();
+//
+//                }
+
+
+//                intent.putExtra("target_station_id", target_station_id);
+//                intent.putExtra("target_station_name", stops.getName());
+//                intent.putExtra("target_station_type", stops.getColor());
+//                intent.putExtra("target_station_dir", stops.getDir());
+//
+//
 
 
 

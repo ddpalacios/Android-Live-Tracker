@@ -11,7 +11,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class LineAdapter extends RecyclerView.Adapter<LineAdapter.LineViewHolder>{
     ArrayList<StationLines> lines;
@@ -25,7 +27,7 @@ public class LineAdapter extends RecyclerView.Adapter<LineAdapter.LineViewHolder
     @Override
     public LineViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.linelist, parent, false);
+        View view = inflater.inflate(R.layout.linelist_original, parent, false);
 
         return new LineAdapter.LineViewHolder(view);
     }
@@ -41,8 +43,11 @@ public class LineAdapter extends RecyclerView.Adapter<LineAdapter.LineViewHolder
                 public void onClick(View v) {
                     Intent intent = new Intent(ctx, ChooseDir.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.putExtra("station_color", lines.getColor());
-                    intent.putExtra("station_type", lines.getLine());
+                    HashMap<String, String> tracking_station = new HashMap<>();
+                    tracking_station.put("station_type",lines.getLine());
+                    intent.putExtra("tracking_station", (Serializable) tracking_station);
+
+
                     ctx.startActivity(intent);
                 }
             });

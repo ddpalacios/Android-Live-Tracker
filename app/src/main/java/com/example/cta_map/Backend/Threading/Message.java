@@ -1,5 +1,7 @@
 package com.example.cta_map.Backend.Threading;
 
+import com.example.cta_map.Displayers.Train;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,24 +9,61 @@ import java.util.TreeMap;
 
 public class Message {
 
-    private ArrayList<IncomingTrains> incoming_trains;
-    private ArrayList<AllTrainsTable> all_chosen_trains;
+
+    public boolean isSwitchDir() {
+        return willSwitchDir;
+    }
+
+    public void setSwitchDir(boolean willSwitchDir) {
+        this.willSwitchDir = willSwitchDir;
+    }
+
+    private boolean willSwitchDir;
+    private ArrayList<Train> incoming_trains;
+    private String targetDir;
+
+    public void setDir(String targetDir) {
+        this.targetDir = targetDir;
+    }
+
+    public String getDir() {
+        return this.targetDir;
+    }
+
+    public String getTarget_name() {
+        return target_name;
+    }
+
+    public String getTarget_type() {
+        return target_type;
+    }
+
+    public void setTarget_type(String target_type) {
+        this.target_type = target_type;
+    }
+
+    private String target_type;
+
+    public void setTarget_name(String target_name) {
+        this.target_name = target_name;
+    }
+
+    private String target_name;
 
 
-    public void setIncoming_trains(ArrayList<IncomingTrains> incoming_trains){
+
+
+    public void setIncoming_trains(ArrayList<Train> incoming_trains){
         this.incoming_trains = incoming_trains;
     }
-    public ArrayList<IncomingTrains> getIncoming_trains(){
+    public ArrayList<Train> getIncoming_trains(){
         return this.incoming_trains;
     }
 
-    public void setChosenTrains(ArrayList<AllTrainsTable> chosen_trains){
-        this.all_chosen_trains = chosen_trains;
-    }
 
-    public ArrayList<AllTrainsTable> getChosen_trains(){
-        return this.all_chosen_trains;
-    }
+
+
+
 
 
 

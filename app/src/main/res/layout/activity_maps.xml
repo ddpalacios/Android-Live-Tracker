@@ -318,10 +318,10 @@
             </androidx.cardview.widget.CardView>
 
             <Button
-                android:id="@+id/options_btn"
+                android:id="@+id/run_map_threads"
                 android:layout_width="98dp"
                 android:layout_height="52dp"
-                android:text="Options"
+                android:text="Run"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"

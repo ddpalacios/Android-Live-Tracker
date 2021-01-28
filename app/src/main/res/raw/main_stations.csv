@@ -1,8 +1,8 @@
-station_type,northbound,southbound1, southbound2
+station_type,northbound,southbound, express
 RED,Howard,95th/Dan Ryan,null
 BLUE,O'Hare,Forest Park,null
 BROWN,Kimball,Loop,null
-GREEN,Harlem/lake,63rd,Cottage Grove
+GREEN,Harlem/lake,63rd/Cottage Grove,null
 ORANGE,Loop,Midway,null
 PURPLE,Linden,Howard,Loop
 PINK,Loop,54/Cermak,null

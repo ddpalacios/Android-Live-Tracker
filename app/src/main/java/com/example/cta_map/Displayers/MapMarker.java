@@ -24,7 +24,7 @@ public class MapMarker  {
     }
 
 
-    public Marker addMarker(String lat, String lon, String title, String snippet,String color, Float alpha, boolean isStation) {
+    public Marker addMarker(Train train ,Double lat, Double lon, String title, String snippet,String color, Float alpha, boolean isStation, String main_title) {
         float opacity = alpha;
         HashMap<String, Integer> colors = new HashMap<>();
         colors.put("blue", R.drawable.blue);
@@ -37,7 +37,7 @@ public class MapMarker  {
         colors.put("red", R.drawable.red);
         colors.put("target", R.drawable.target);
         colors.put("yellow", R.drawable.yellow);
-        LatLng train_marker = new LatLng(Double.parseDouble(lat), Double.parseDouble(lon));
+        LatLng train_marker = new LatLng(lat, lon);
         int height = 140;
         int width = 140;
         Bitmap b = BitmapFactory.decodeResource(this.context.getResources(), colors.get(color));
@@ -45,12 +45,25 @@ public class MapMarker  {
         BitmapDescriptor smallMarkerIcon = BitmapDescriptorFactory.fromBitmap(smallMarker);
 
 
-        if (isStation) {
-            return this.mMap.addMarker(new MarkerOptions().position(train_marker).title(title).snippet(snippet).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)).alpha(opacity));
-        }
-        mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(this.context));
 
-        return this.mMap.addMarker(new MarkerOptions().position(train_marker).title(title).snippet(snippet).icon(smallMarkerIcon));
+
+
+        if (isStation) {
+            HashMap<String, Integer> train_colors = new HashMap<>();
+            train_colors.put("blue", (int) BitmapDescriptorFactory.HUE_BLUE);
+            train_colors.put("purple", (int) BitmapDescriptorFactory.HUE_VIOLET);
+            train_colors.put("pink", (int) BitmapDescriptorFactory.HUE_ROSE);
+            train_colors.put("green", (int) BitmapDescriptorFactory.HUE_GREEN);
+            train_colors.put("brown",(int) BitmapDescriptorFactory.HUE_CYAN);
+            train_colors.put("orange", (int) BitmapDescriptorFactory.HUE_ORANGE);
+            train_colors.put("red", (int) BitmapDescriptorFactory.HUE_RED);
+            train_colors.put("yellow", (int) BitmapDescriptorFactory.HUE_YELLOW);
+            return this.mMap.addMarker(new MarkerOptions().position(train_marker).title(main_title).snippet(snippet).icon(BitmapDescriptorFactory.defaultMarker(train_colors.get(color.toLowerCase()))).alpha(opacity));
+        }
+
+        mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(this.context, train, main_title));
+
+        return this.mMap.addMarker(new MarkerOptions().position(train_marker).title(main_title).snippet(snippet).icon(smallMarkerIcon));
 
 
 

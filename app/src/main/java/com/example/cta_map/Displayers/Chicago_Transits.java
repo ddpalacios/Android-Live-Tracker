@@ -1,15 +1,15 @@
 package com.example.cta_map.Displayers;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
+import android.widget.Switch;
 
 import androidx.annotation.RequiresApi;
 
 import com.example.cta_map.Backend.Threading.IncomingTrains;
 import com.example.cta_map.DataBase.CTA_DataBase;
-import com.example.cta_map.DataBase.CTA_Stations;
-import com.example.cta_map.DataBase.Database2;
+import com.example.cta_map.DataBase.CTA_Stops;
+import com.example.cta_map.DataBase.L_stops;
 import com.example.cta_map.DataBase.MainStation;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -21,6 +21,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,19 +30,21 @@ import java.util.HashMap;
 
 public class Chicago_Transits {
 
+
+
+
+
     public void create_main_station_table(BufferedReader reader, Context context){
         CTA_DataBase sqlite = new CTA_DataBase(context);
         try{
-            ArrayList<Object> cta_stops_table = sqlite.excecuteQuery("*", "main_stations", null, null);
-            if (cta_stops_table != null){
-                sqlite.close();
-                Log.e(Thread.currentThread().getName(), "RECORD EXSITS");
-
-                return;
-            }
+//            ArrayList<Object> cta_stops_table = sqlite.excecuteQuery("*", "MAIN_STATIONS", null, null);
+//            if (cta_stops_table != null){
+//                sqlite.close();
+//                Log.e(Thread.currentThread().getName(), "RECORD EXSITS");
+//
+//                return;
+//            }
         }catch (Exception e){Log.e(Thread.currentThread().getName(), "No MainStations table, will create!");}
-
-
         String line;
         int row=0;
         while (true) {
@@ -52,9 +56,21 @@ public class Chicago_Transits {
                     }
                     String[] tokens = (line.replaceAll("\"","")
                             .replaceAll(",,",",")).split(",");
-                    MainStation mainStation = new MainStation(tokens[0], tokens[1], tokens[2]);
-                    Log.e(Thread.currentThread().getName(), tokens[0]+" "+tokens[1]+" "+tokens[2]);
-                    sqlite.addMainStations_to_mainStationTable(mainStation);
+
+
+
+                    String station_type = tokens[0];
+                    String northbound = tokens[1];
+                    String southbound = tokens[2];
+                    String express = tokens[3];
+
+                    MainStation mainStation = new MainStation();
+                    mainStation.setStationType(station_type);
+                    mainStation.setNorthBound(northbound);
+                    mainStation.setSouthBound(southbound);
+                    mainStation.setExpress(express);
+                    sqlite.commit(mainStation, "MAIN_STATIONS");
+
                     row++;
 
                 } else {
@@ -69,134 +85,257 @@ public class Chicago_Transits {
         }
     }
 
-    @SuppressLint("LongLogTag")
-    public void create_line_stops_table(BufferedReader reader, Context context) {
-       CTA_DataBase sqlite = new CTA_DataBase(context);
-        try{
-            ArrayList<Object> cta_stops_table = sqlite.excecuteQuery("*", "line_stops_table", null, null);
-            if (cta_stops_table != null){
+    public ArrayList<String> create_line_stops_table(BufferedReader reader, Context context, String type) {
+        CTA_DataBase sqlite = null;
+           sqlite = new CTA_DataBase(context);
+        String line;
+        int row=0;
+        ArrayList<String> ordered_station_list = new ArrayList<>();
+        while (true) {
+            try {
+                if ((line = reader.readLine()) != null) {
+                    if (row == 0) {
+                        row++;
+                        continue;
+                    }
+                    String[] tokens = (line.replaceAll("\"", "")
+                            .replaceAll(",,", ",")).split(",");
+                    L_stops cta_STOPS = new L_stops();
+
+                    if (type != null){
+                    switch (type.toLowerCase()) {
+                        case "red":
+                            // code block
+                            ordered_station_list.add(tokens[2]);
+                            break;
+                        case "blue":
+                            // code block
+                            ordered_station_list.add(tokens[3]);
+                            break;
+                        case "brown":
+                            ordered_station_list.add(tokens[7]);
+                            break;
+
+
+                        case "purple":
+                            ordered_station_list.add(tokens[8]);
+                            break;
+                        case "yellow":
+                            ordered_station_list.add(tokens[4]);
+                            break;
+
+                        case "pink":
+                            ordered_station_list.add(tokens[5]);
+                            break;
+
+                        case "green":
+                            ordered_station_list.add(tokens[1]);
+                            break;
+
+                        case "orange":
+                            ordered_station_list.add(tokens[6]);
+                            break;
+
+                        default:
+                            cta_STOPS.setGreen(tokens[1]);
+                            cta_STOPS.setRed(tokens[2]);
+                            cta_STOPS.setBlue(tokens[3]);
+                            cta_STOPS.setYellow(tokens[4]);
+                            cta_STOPS.setPink(tokens[5]);
+                            cta_STOPS.setOrange(tokens[6]);
+                            cta_STOPS.setBrown(tokens[7]);
+                            cta_STOPS.setPurple(tokens[8]);
+
+                            sqlite.commit(cta_STOPS, "L_STOPS");
+                            row++;
+                    }
+                }else{
+                        cta_STOPS.setGreen(tokens[1]);
+                        cta_STOPS.setRed(tokens[2]);
+                        cta_STOPS.setBlue(tokens[3]);
+                        cta_STOPS.setYellow(tokens[4]);
+                        cta_STOPS.setPink(tokens[5]);
+                        cta_STOPS.setOrange(tokens[6]);
+                        cta_STOPS.setBrown(tokens[7]);
+                        cta_STOPS.setPurple(tokens[8]);
+
+                        sqlite.commit(cta_STOPS, "L_STOPS");
+                        row++;
+
+                    }
+
+
+                } else {
+                    break;
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
                 sqlite.close();
-                Log.e(Thread.currentThread().getName(), "RECORD EXSITS");
-                return;
 
-            }
-        }catch (Exception e){Log.e(Thread.currentThread().getName(), "No line_stops_table, will create!");}
-
-
-
-        String line;
-        int row=0;
-        while (true) {
-            try {
-                if ((line = reader.readLine()) != null) {
-                    if (row == 0){
-                        row++;
-                        continue;
-                    }
-                    String[] tokens = (line.replaceAll("\"","")
-                            .replaceAll(",,",",")).split(",");
-
-
-                    CTA_Stations cta_stations = new CTA_Stations(tokens[0]);
-                    cta_stations.setGreen(tokens[1]);
-                    cta_stations.setRed(tokens[2]);
-                    cta_stations.setBlue(tokens[3]);
-                    cta_stations.setYellow(tokens[4]);
-                    cta_stations.setPink(tokens[5]);
-                    cta_stations.setOrange(tokens[6]);
-                    cta_stations.setBrown(tokens[7]);
-                    cta_stations.setPurple(tokens[8]);
-
-
-                    sqlite.add_station_lines_to_line_stops_table(cta_stations);
-                    row++;
-
-
-                } else {
-                    break;
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            sqlite.close();
 
         }
+        return ordered_station_list;
     }
 
 
 
-    public void Create_TrainInfo_table(BufferedReader reader, Context context) {
+    public void Create_TrainInfo_table(BufferedReader reader, Context context) throws IOException {
         CTA_DataBase sqlite = new CTA_DataBase(context);
-        try{
-            ArrayList<Object> cta_stops_table = sqlite.excecuteQuery("*", "cta_stops", null, null);
-            if (cta_stops_table != null){
-                sqlite.close();
-                Log.e(Thread.currentThread().getName(), "RECORD EXSITS");
-
-                return;
-            }
-        }catch (Exception e){Log.e(Thread.currentThread().getName(), "No Cta_stops_table, will create!");}
-
-
         String line;
         int row=0;
         while (true) {
-            try {
-                if ((line = reader.readLine()) != null) {
-                    if (row == 0){
+            try{
+            if ((line = reader.readLine()) != null) {
+                if (row == 0){
                         row++;
                         continue;
                     }
-                    String[] tokens = (line.replaceAll("\"","")
+            }
 
 
-                            .replaceAll(",,",",")).split(",");
+            String[] tokens = line.split(",");
 
-                    CTA_Stations cta_stations = new CTA_Stations(tokens[0]);
-                    cta_stations.setName(tokens[1]);
-                    cta_stations.setRed(tokens[2]);
-                    cta_stations.setBlue(tokens[3]);
-                    cta_stations.setGreen(tokens[4]);
-                    cta_stations.setBrown(tokens[5]);
-                    cta_stations.setPurple(tokens[6]);
-                    cta_stations.setYellow(tokens[7]);
-                    cta_stations.setPink(tokens[8]);
-                    cta_stations.setOrange(tokens[9]);
-                    cta_stations.setCoordinates(tokens[10]+","+tokens[11]);
+
+//            String[] tokens = line.split(","); //(line.replaceAll("\"","").replaceAll(",,",",")).split(",");
+            CTA_Stops cta_stops = new CTA_Stops();
+            cta_stops.setSTOP_ID(tokens[0]);
+            cta_stops.setDIRECTION_ID(tokens[1]);
+            cta_stops.setSTOP_NAME(tokens[2]);
 
 
 
 
-                    sqlite.add_cta_stations_to_cta_table(cta_stations);
-                    row++;
+                String station_name = tokens[3];
 
-                } else {
-                    break;
+                if (!station_name.matches("\\A\\p{ASCII}*\\z")){
+                    cta_stops.setSTATION_NAME("O'Hare");
+
                 }
+            cta_stops.setSTATION_NAME(station_name);
+            cta_stops.setMAP_ID(tokens[4]);
+            if (Boolean.parseBoolean(tokens[5])){
+                cta_stops.setADA("1");
 
-            } catch (IOException e) {
+            }else{
+                cta_stops.setADA("0");
+            }
+
+            if (Boolean.parseBoolean(tokens[6])){
+                cta_stops.setRED("1");
+
+            }else{
+                cta_stops.setRED("0");
+            }
+            if (Boolean.parseBoolean(tokens[7])){
+                cta_stops.setBLUE("1");
+            }else{
+                cta_stops.setBLUE("0");
+            }
+            if (Boolean.parseBoolean(tokens[8])){
+                cta_stops.setG("1");
+
+            }else{
+                cta_stops.setG("0");
+
+
+            }
+            if (Boolean.parseBoolean(tokens[9])){
+                cta_stops.setBRN("1");
+            }else{
+                cta_stops.setBRN("0");
+
+            }
+            if (Boolean.parseBoolean(tokens[10])){
+                cta_stops.setP("1");
+
+            }else{
+                cta_stops.setP("0");
+
+
+            }
+            if (Boolean.parseBoolean(tokens[11])){
+                cta_stops.setPEXP("1");
+
+            }else{
+                cta_stops.setPEXP("0");
+
+            }
+            if (Boolean.parseBoolean(tokens[12])){
+                cta_stops.setY("1");
+
+
+            }else{
+                cta_stops.setY("0");
+
+
+            }
+            if (Boolean.parseBoolean(tokens[13])){
+                cta_stops.setPINK("1");
+
+            }else{
+                cta_stops.setPINK("0");
+
+
+            }
+            if (Boolean.parseBoolean(tokens[14])){
+                cta_stops.setORG("1");
+
+            }else{
+                cta_stops.setORG("0");
+
+
+            }
+
+            String lat = tokens[15].replaceAll("[^0-9.\\-]", "");
+            String lon = tokens[16].replaceAll("[^0-9.\\-]", "");
+
+
+            if (lat.equals("") || lon.equals("") ){
+                Log.e("STATION", tokens[15]+" ,"+tokens[16]);
+            }
+
+            cta_stops.setLAT(Double.parseDouble(lat));
+            cta_stops.setLON(Double.parseDouble(lon));
+
+            sqlite.commit(cta_stops, "cta_stops");
+
+            row++;
+
+
+        }
+            catch (IOException e) {
                 e.printStackTrace();
+            }
+            sqlite.close();
+            if (row == 300){
+                break;
             }
 
         }
-        sqlite.close();
+
 
 
 
 
     }
-
-    public String[] retrieve_station_coordinates(Database2 sqlite, String station_id) {
-        try {
-            ArrayList<String> record = sqlite.get_table_record("cta_stops", "WHERE station_id = '"+station_id+"'");
-            return new String[]{record.get(10), record.get(11)};
-
-        }catch (Exception e){
-            Log.e("SQLITE ERROR", "COULD NOT FIND STATION IN DATABASE!");
-        }
-        return null;
+    public static boolean isPureAscii(String v) {
+        return Charset.forName("US-ASCII").newEncoder().canEncode(v);
+        // or "ISO-8859-1" for ISO Latin 1
+        // or StandardCharsets.US_ASCII with JDK1.7+
     }
+
+//    public String[] retrieve_station_coordinates(Database2 sqlite, String station_id) {
+//        try {
+//            ArrayList<String> record = sqlite.get_table_record("cta_stops", "WHERE station_id = '"+station_id+"'");
+//            return new String[]{record.get(10), record.get(11)};
+//
+//        }catch (Exception e){
+//            Log.e("SQLITE ERROR", "COULD NOT FIND STATION IN DATABASE!");
+//        }
+//        return null;
+//    }
 
 
 
@@ -204,8 +343,14 @@ public class Chicago_Transits {
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public BufferedReader setup_file_reader(Context context, int file){
-        InputStream CSVfile = context.getResources().openRawResource(file);
-        return new BufferedReader(new InputStreamReader(CSVfile, StandardCharsets.UTF_8));
+        try {
+            InputStream CSVfile = context.getResources().openRawResource(file);
+            return new BufferedReader(new InputStreamReader(CSVfile, StandardCharsets.UTF_8));
+
+        }catch (Exception e){
+            Log.e("ERROR IN FILE", "CAN NOT OPEN FILE");
+        }
+        return null;
 
     }
 
@@ -213,9 +358,18 @@ public class Chicago_Transits {
 
 
 
-    public IncomingTrains get_train_info( String each_train) {
-        IncomingTrains incomingTrains = new IncomingTrains();
+    public Train get_train_info( String each_train) {
+        /*
+            <train>
+                <destSt>30089</destSt>
+                <nextStaId>41400</nextStaId>
+                <flags />
+                <heading>178</heading>
+            </train>
+ */
+        Train train = new Train();
         try {
+
         String rn = get_xml_tag_value(each_train, "<rn>", "</rn>");
         String destNm = get_xml_tag_value(each_train, "<destNm>", "</destNm>");
         String trDr = get_xml_tag_value(each_train, "<trDr>", "</trDr>");
@@ -227,22 +381,29 @@ public class Chicago_Transits {
         String isDly = get_xml_tag_value(each_train, "<isDly>", "</isDly>");
         String lat = get_xml_tag_value(each_train, "<lat>", "</lat>");
         String lon = get_xml_tag_value(each_train, "<lon>", "</lon>");
+        String heading = get_xml_tag_value(each_train, "<heading>", "</heading");
+        String destSt = get_xml_tag_value(each_train, "<destSt>", "</destSt");
+        String nextStaId = get_xml_tag_value(each_train, " <nextStaId>", " </nextStaId>");
 
-        incomingTrains.setRn(rn);
-        incomingTrains.setDestNm(destNm);
-        incomingTrains.setTrDr(trDr);
-        incomingTrains.setnextStpId(nextStpId);
-        incomingTrains.setNextStaNm(nextStaNm);
-        incomingTrains.setPrdt(prdt);
-        incomingTrains.setArrT(arrT);
-        incomingTrains.setIsApp(isApp);
-        incomingTrains.setIsDly(isDly);
-        incomingTrains.setLat(Double.parseDouble(lat));
-        incomingTrains.setLon(Double.parseDouble(lon));
+            train.setRn(rn);
+            train.setDestNm(destNm);
+            train.setTrDr(trDr);
+            train.setNextStpID(nextStpId);
+            train.setNextStaNm(nextStaNm);
+            train.setPrdt(prdt);
+            train.setArrT(arrT.split(" ")[1]);
+            train.setIsApp(isApp);
+            train.setHeading(heading);
+            train.setIsDly(isDly);
+            train.setDestSt(destSt);
+            train.setNextStaId(nextStaId);
+            train.setLat(Double.parseDouble(lat));
+            train.setLon(Double.parseDouble(lon));
+
 
         }catch (Exception e){return null;}
 
-        return incomingTrains;
+        return train;
     }
 
 
@@ -284,13 +445,12 @@ public class Chicago_Transits {
         TrainLineKeyCodes.put("purple", "p");
         TrainLineKeyCodes.put("yellow", "y");
 
-        return TrainLineKeyCodes.get(station_type);
+        return TrainLineKeyCodes.get(station_type.toLowerCase());
     }
 
 
-        public void ZoomIn(GoogleMap mMap, Float zoomLevel, String[] coord){
-        assert coord != null;
-        LatLng target = new LatLng(Double.parseDouble(coord[0]), Double.parseDouble(coord[1]));
+        public void ZoomIn(GoogleMap mMap, Float zoomLevel, Double lat, Double lon){
+        LatLng target = new LatLng(lat, lon);
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(target)
                 .zoom(zoomLevel)                   // Sets the zoom

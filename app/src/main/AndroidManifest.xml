@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.cta_map">
-
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
          location permissions for the 'MyLocation' functionality.
     -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name = "android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.VIBRATE"/>
-
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -22,7 +20,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
+        <activity
+            android:name=".MainActivity.TabbedMainActivity"
+            android:label="@string/title_activity_tabbed_main"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".TabbedMainActivity"
+            android:label="@string/title_activity_tabbed_main"
+            android:theme="@style/AppTheme.NoActionBar" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -33,148 +38,100 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
-
-
-<!--        <activity-->
-<!--            android:name=".Activities.userLoginActivity">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
-<!--        </activity>-->
-
-
-        <activity
-            android:name=".Activities.ChooseLineActivity">
+            android:value="@string/google_maps_key" /> <!-- <activity -->
+        <!-- android:name=".Activities.userLoginActivity"> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="android.intent.action.MAIN" /> -->
+        <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+        <!-- </intent-filter> -->
+        <!-- </activity> -->
+        <activity android:name=".Activities.ChooseLineActivity">
             <intent-filter>
-                <!--                <action android:name="android.intent.action.MAIN" />-->
+
+                <!-- <action android:name="android.intent.action.MAIN" /> -->
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name=".Activities.SecondActivity">
-            <intent-filter>
-                <!--                <action android:name="android.intent.action.MAIN" />-->
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
-
         <activity android:name=".ChooseLine">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
             </intent-filter>
         </activity>
-
+        <activity android:name=".Activities.ViewDataActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
         <activity android:name=".ChooseDir">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
             </intent-filter>
         </activity>
-
-
         <activity android:name=".TrainStations">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
             </intent-filter>
-        </activity>
-        <activity android:name=".Activities.PopUp"
-
-            android:theme="@style/AppTheme.CustomTheme"
-            >
-
-        </activity>
-
-        <activity android:name=".Activities.TrainInfoPopUp"
-
-            android:theme="@style/AppTheme.CustomTheme"
-            >
-
-        </activity>
-
-        <!--        <activity-->
-<!--            android:name=".Activities.newUserActivity">-->
-<!--            <intent-filter>-->
-<!--&lt;!&ndash;                <action android:name="android.intent.action.MAIN" />&ndash;&gt;-->
-
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
-<!--        </activity>-->
-
+        </activity> <!-- <activity android:name=".Activities.PopUp" -->
+        <!-- android:theme="@style/AppTheme.CustomTheme" -->
+        <!-- > -->
+        <!-- </activity> -->
         <activity
-            android:name=".Activities.mainactivity">
+            android:name=".Activities.TrainInfoPopUp"
+            android:theme="@style/AppTheme.CustomTheme" /> <!-- <activity -->
+        <!-- android:name=".Activities.newUserActivity"> -->
+        <!-- <intent-filter> -->
+        <!-- &lt;!&ndash;                <action android:name="android.intent.action.MAIN" />&ndash;&gt; -->
+        <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+        <!-- </intent-filter> -->
+        <!-- </activity> -->
+        <activity android:name=".Activities.mainactivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-
             </intent-filter>
         </activity>
-
-
         <activity
-                    android:name=".Activities.ChooseDirectionActivity"
-                    android:label="@string/title_activity_maps">
-                    <intent-filter>
-<!--                        <action android:name="android.intent.action.MAIN" />-->
+            android:name=".Activities.ChooseDirectionActivity"
+            android:label="@string/title_activity_maps">
+            <intent-filter>
 
+                <!-- <action android:name="android.intent.action.MAIN" /> -->
 
-                        <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Activities.TrainStationActivity"
+            android:label="@string/title_activity_maps">
+            <intent-filter>
 
-                    </intent-filter>
-                </activity>
-                <activity
-                    android:name=".Activities.TrainStationActivity"
-                    android:label="@string/title_activity_maps">
-                    <intent-filter>
-<!--                        <action android:name="android.intent.action.MAIN" />-->
+                <!-- <action android:name="android.intent.action.MAIN" /> -->
 
-
-                        <category android:name="android.intent.category.DEFAULT" />
-
-                    </intent-filter>
-                </activity>
-
-
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".Activities.MapsActivity"
             android:label="@string/title_activity_maps">
             <intent-filter>
-<!--                <action android:name="android.intent.action.MAIN" />-->
 
+                <!-- <action android:name="android.intent.action.MAIN" /> -->
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-
-
-
-
-
-
-
         <activity
             android:name=".Activities.TrainTrackingActivity"
             android:label="@string/title_activity_maps">
             <intent-filter>
-<!--                <action android:name="android.intent.action.MAIN" />-->
 
+                <!-- <action android:name="android.intent.action.MAIN" /> -->
 
                 <category android:name="android.intent.category.DEFAULT" />
-
             </intent-filter>
         </activity>
-
-
     </application>
 
 </manifest>

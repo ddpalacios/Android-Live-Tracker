@@ -10,43 +10,41 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
         tools:ignore="MissingConstraints">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
-
-
-            android:layout_marginBottom="25dp"
-            android:background="@drawable/cardview_body">
-
-            <TextView
-                android:id="@+id/train_line"
-                android:layout_width="277dp"
-                android:layout_height="39dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
-                android:text="TextView"
-                android:textSize="30sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/train_image"
-                app:layout_constraintTop_toTopOf="parent" />
+            android:layout_height="match_parent">
 
             <ImageView
                 android:id="@+id/train_image"
-                android:layout_width="49dp"
+                android:layout_width="85dp"
 
-                android:layout_height="44dp"
+                android:layout_height="67dp"
 
-                android:layout_marginStart="28dp"
-                android:layout_marginLeft="28dp"
                 android:background="@drawable/border_image"
                 android:scaleType="fitXY"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="1.0"
                 app:srcCompat="@drawable/red" />
+
+            <TextView
+                android:id="@+id/train_line"
+                android:layout_width="166dp"
+                android:layout_height="40dp"
+                android:text="TextView"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.362"
+                app:layout_constraintStart_toEndOf="@+id/train_image"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.481" />
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

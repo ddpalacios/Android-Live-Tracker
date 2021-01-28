@@ -26,7 +26,6 @@
         <item>This is a random description</item>
 
 
-
     </string-array>
 
     <string name="select_line">Select Line</string>
@@ -41,9 +40,13 @@
         <item>Brown</item>
 
 
-
     </string-array>
-
+    <string name="title_activity_train_tracking_tabbed">trainTrackingTabbed</string>
+    <string name="tab_text_1">MAPS</string>
+    <string name="tab_text_2">TRAIN TIMES</string>
+    <string name="title_activity_main2">MainActivity2</string>
+    <string name="title_activity_tabbed_main">TabbedMainActivity</string>
+    <string name="title_activity_main">MainActivity</string>
 
 
 </resources>
