@@ -20,7 +20,6 @@ public class API_Caller_Thread implements Runnable {
     }
     @Override
     public void run() {
-        this.msg.keepSending(true);
         synchronized (this.msg){
             while (this.msg.IsSending()) {
                 ArrayList<Train> new_incoming_trains = call_cta_rest(this.station_type);

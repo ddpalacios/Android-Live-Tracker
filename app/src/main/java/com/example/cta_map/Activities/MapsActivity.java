@@ -18,8 +18,13 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -92,9 +97,9 @@ import java.util.TreeMap;
                     mapMarker.addMarker(null,Double.parseDouble(target_station.get("LAT")),
                                         Double.parseDouble(target_station.get("LON")),
                                         target_station.get("STATION_NAME"), target_station.get("STATION_NAME"), "target", 1f, false, "Target").showInfoWindow();
-
                     Log.e("Notification", "FOUND TRAIN (NOTIFY?): "+ hasSelectedTrain(main_selection, all_chosen_trains));
                     Boolean haveSelectedTrain = hasSelectedTrain(main_selection, all_chosen_trains);
+
                     for (Object record : all_chosen_trains) {
                         Train incoming_train = (Train) record;
                         if (haveSelectedTrain) {
@@ -109,9 +114,9 @@ import java.util.TreeMap;
                                     1f,
                                     false,
                                     "Train#"+selectedTrain.getRn()+"\nTo "+target_station.get("STATION_NAME")).showInfoWindow();
-                            if (!selectedTrain.getRn().equals(incoming_train.getRn())){
-                                createMarker(incoming_train, false, target_station);
-                            }
+                                if (!selectedTrain.getRn().equals(incoming_train.getRn())){
+                                    createMarker(incoming_train, false, target_station);
+                                }
                         }else {
                             if (SELECTED_TRAIN != null && SELECTED_TRAIN.equals(incoming_train.getRn())) {
                                 MapMarker train_marker = new MapMarker(mMap, getApplicationContext());
@@ -125,13 +130,44 @@ import java.util.TreeMap;
                                         1f,
                                         true,
                                         "Train #" + incoming_train.getRn() + "\nNxt. Stop\n" + incoming_train.getNextStaNm()).showInfoWindow();
-
                             }
                             createMarker(incoming_train, false, target_station);
-
                         }
+                    }
+                    InitiateOnclickListeners(all_chosen_trains);
+                }
+
+
+                private void createMarker(Train incoming_train, Boolean isSelectedTrain, HashMap<String, String> target_station){
+                    if (!isSelectedTrain) {
+                        MapMarker train_marker = new MapMarker(mMap, getApplicationContext());
+                        BigDecimal bd = BigDecimal.valueOf(incoming_train.getNext_stop_distance()).setScale(2, RoundingMode.HALF_UP);
+                        train_marker.addMarker(incoming_train,
+                                incoming_train.getLat(),
+                                incoming_train.getLon(),
+                                incoming_train.getNextStaNm(),
+                                bd.toString() + "mi",
+                                incoming_train.getTrain_type(),
+                                1f,
+                                true,
+                                "Train #" + incoming_train.getRn() + "\nNxt. Stop\n" + incoming_train.getNextStaNm());
+                    }else{
+                        MapMarker main_marker = new MapMarker(mMap, getApplicationContext());
+                        main_marker.addMarker(incoming_train,
+                                incoming_train.getLat(),
+                                incoming_train.getLon(),
+                                incoming_train.getNextStaNm(),
+                                incoming_train.getTarget_eta()+"m", incoming_train.getStatus().toLowerCase(),
+                                1f,
+                                false,
+                                "Train#"+incoming_train.getRn()+"\nTo "+target_station.get("STATION_NAME")).showInfoWindow();
 
                     }
+
+
+                }
+                private void   InitiateOnclickListeners(final ArrayList<Object> all_chosen_trains){
+
 
                     mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                         @Override
@@ -204,38 +240,6 @@ import java.util.TreeMap;
                     });
 
                 }
-
-
-                private void createMarker(Train incoming_train, Boolean isSelectedTrain, HashMap<String, String> target_station){
-                    if (!isSelectedTrain) {
-                        MapMarker train_marker = new MapMarker(mMap, getApplicationContext());
-                        BigDecimal bd = BigDecimal.valueOf(incoming_train.getNext_stop_distance()).setScale(2, RoundingMode.HALF_UP);
-                        train_marker.addMarker(incoming_train,
-                                incoming_train.getLat(),
-                                incoming_train.getLon(),
-                                incoming_train.getNextStaNm(),
-                                bd.toString() + "mi",
-                                incoming_train.getTrain_type(),
-                                1f,
-                                true,
-                                "Train #" + incoming_train.getRn() + "\nNxt. Stop\n" + incoming_train.getNextStaNm());
-                    }else{
-                        MapMarker main_marker = new MapMarker(mMap, getApplicationContext());
-                        main_marker.addMarker(incoming_train,
-                                incoming_train.getLat(),
-                                incoming_train.getLon(),
-                                incoming_train.getNextStaNm(),
-                                incoming_train.getTarget_eta()+"m", incoming_train.getStatus().toLowerCase(),
-                                1f,
-                                false,
-                                "Train#"+incoming_train.getRn()+"\nTo "+target_station.get("STATION_NAME")).showInfoWindow();
-
-                    }
-
-
-                }
-
-
                 @RequiresApi(api = Build.VERSION_CODES.O)
                 private void initiateNotifications(Train selectedTrain){
                     Intent notificationIntent = new Intent(getApplicationContext() ,mainactivity.class);
@@ -256,9 +260,6 @@ import java.util.TreeMap;
                     }
 
                 }
-
-
-
                 private Boolean hasSelectedTrain( Train[] main_selection, ArrayList<Object> all_chosen_trains){
                     if (main_selection[0] !=null) {
                         for (Object record : all_chosen_trains) {
@@ -300,31 +301,89 @@ import java.util.TreeMap;
                 public void onMapReady(GoogleMap googleMap) {
                     mMap = googleMap;
                     final Message message = new Message();
-                    ImageView mapImage = findViewById(R.id.mapImage);
+//                    ImageView mapImage = findViewById(R.id.mapImage);
                     Bundle bundle = getIntent().getExtras();
                     FloatingActionButton switch_dir = findViewById(R.id.map_switch_dir);
                     Chicago_Transits chicago_transits = new Chicago_Transits();
-                    HashMap<String, String> tracking_station = (HashMap<String, String>) bundle.getSerializable("tracking_station");
+                    final HashMap<String, String> tracking_station = (HashMap<String, String>) bundle.getSerializable("tracking_station");
 //                    chicago_transits.ZoomIn(mMap, (float) 13.3, Double.parseDouble(tracking_station.get("LAT")), Double.parseDouble(tracking_station.get("LON")));
-
+                    final CheckBox train_viewer = findViewById(R.id.train_viewer);
+                    final CheckBox station_viewer = findViewById(R.id.station_viewer);
                     message.setDir(tracking_station.get("station_dir"));
-                    message.setSwitchDir(false);
                     message.setTarget_name(tracking_station.get("target_station_name"));
                     message.setTarget_type(tracking_station.get("station_type"));
-                    Button test_threads = findViewById(R.id.run_map_threads);
+//                    Button test_threads = findViewById(R.id.run_map_threads);
                     Toast.makeText(getApplicationContext(), "Current Direction: "+ message.getDir(), Toast.LENGTH_SHORT).show();
 
+                    Spinner spinner = (Spinner) findViewById(R.id.line_selection);
+                    // Create an ArrayAdapter using the string array and a default spinner layout
+                                        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                                                R.array.line_names, android.R.layout.simple_spinner_item);
+                    // Specify the layout to use when the list of choices appears
+                                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    // Apply the adapter to the spinner
+                                        spinner.setAdapter(adapter);
 
-                    final HashMap<String, String> finalTracking_station = tracking_station;
-                    test_threads.setOnClickListener(new View.OnClickListener() {
+
+
+                    train_viewer.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                           api_caller =  new  Thread(new API_Caller_Thread(message, finalTracking_station.get("station_type")));
+                         if (!train_viewer.isChecked()){
+                             Toast.makeText(getApplicationContext(), "NO SHOW", Toast.LENGTH_SHORT).show();
+                             mMap.clear();
+                             message.keepSending(false);
+                             content_parser.interrupt();
+                             api_caller.interrupt();
+                             return;
+                         }
+
+                         if (station_viewer.isChecked()){
+                             station_viewer.setChecked(false);
+                         }
+                            message.keepSending(true);
+                            api_caller =  new  Thread(new API_Caller_Thread(message, tracking_station.get("station_type")));
                             content_parser = new Thread(new Content_Parser_Thread(getApplicationContext(), message, handler));
                             api_caller.start();
                             content_parser.start();
+
                         }
                     });
+
+
+                    station_viewer.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (!station_viewer.isChecked()){
+                                Toast.makeText(getApplicationContext(), "NO SHOW", Toast.LENGTH_SHORT).show();
+                                mMap.clear();
+                                return;
+                            }
+                            if (train_viewer.isChecked()){
+                                train_viewer.setChecked(false);
+                            }
+                            CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
+                            ArrayList<Object> all_stations = cta_dataBase.excecuteQuery("STOP_NAME, LAT, LON", "CTA_STOPS", message.getTarget_type().toUpperCase()+" = '1'",null);
+                            for (Object station: all_stations){
+                                HashMap<String, String> current_station = (HashMap<String, String>) station;
+                                Log.e("Stations", current_station+"");
+                                MapMarker marker = new MapMarker(mMap, getApplicationContext());
+                                marker.addMarker(null,
+                                        Double.parseDouble(current_station.get("LAT")),
+                                        Double.parseDouble(current_station.get("LON")),
+                                        current_station.get("STOP_NAME"),
+                                        "Station",
+                                        message.getTarget_type(),
+                                        1f,
+                                        true,
+                                        current_station.get("STOP_NAME"));
+                            }
+
+                        }
+                    });
+
+
+
 
                     switch_dir.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -340,6 +399,8 @@ import java.util.TreeMap;
                         }
                     });
                 }
+
+
 
                 @Override
                 public boolean onMyLocationButtonClick() {

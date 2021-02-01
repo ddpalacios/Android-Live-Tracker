@@ -9,191 +9,15 @@
     tools:context=".Activities.MapsActivity" >
 
 
-    <!--    <Button-->
-<!--        android:id="@+id/show"-->
-
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_gravity="bottom |left"-->
-<!--        android:layout_marginBottom="5dp"-->
-
-<!--        android:layout_marginLeft="1dp"-->
-<!--        android:text="arrival times"-->
-<!--        />-->
-<!--    <Button-->
-<!--        android:id="@+id/show"-->
-
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_gravity="bottom"-->
-<!--        android:text="View ETA"-->
-<!--        />-->
-
-<!--    <Button-->
-<!--        android:id="@+id/pickStation"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_gravity="center |bottom"-->
-
-<!--        android:text="Choose Station"-->
-<!--        />-->
-
-<!--    <Button-->
-<!--        android:id="@+id/switch_direction"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-
-<!--        android:layout_alignParentBottom="true"-->
-<!--        android:layout_toRightOf="@id/pickStation"-->
-<!--        android:layout_gravity="right |bottom"-->
-
-
-
-<!--        android:text="switch" />-->
 
 
 
 
-
-
-
-<!--    <Button-->
-<!--        android:id="@+id/pickStation"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginRight="5dp"-->
-<!--        android:layout_gravity="bottom|right"-->
-<!--        android:layout_marginBottom="5dp"-->
-
-
-<!--        android:text="Choose Station"-->
-<!--        />-->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-<!--        <androidx.cardview.widget.CardView-->
-<!--            android:id="@+id/map_view"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="124dp"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent">-->
-
-<!--            <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:background="@drawable/cardview_body"-->
-<!--                android:layout_height="match_parent">-->
-
-<!--                <TextView-->
-<!--                    android:id="@+id/type_title"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="RED"-->
-<!--                    android:textStyle="bold"-->
-<!--                    android:textSize="20sp"-->
-<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                    app:layout_constraintEnd_toEndOf="parent"-->
-<!--                    app:layout_constraintHorizontal_bias="0.498"-->
-<!--                    app:layout_constraintStart_toStartOf="parent"-->
-<!--                    app:layout_constraintTop_toTopOf="parent"-->
-<!--                    app:layout_constraintVertical_bias="0.457" />-->
-
-<!--                <ImageView-->
-<!--                    android:id="@+id/orange_view"-->
-<!--                    android:layout_width="52dp"-->
-<!--                    android:layout_height="41dp"-->
-<!--                    android:layout_marginTop="20dp"-->
-<!--                    android:layout_marginEnd="16dp"-->
-<!--                    android:layout_marginRight="16dp"-->
-<!--                    android:src="@drawable/orange"-->
-<!--                    app:layout_constraintEnd_toEndOf="parent"-->
-<!--                    app:layout_constraintTop_toBottomOf="@+id/yellow_view" />-->
-
-<!--                <ImageView-->
-<!--                    android:id="@+id/pink_view"-->
-<!--                    android:layout_width="52dp"-->
-<!--                    android:layout_height="41dp"-->
-<!--                    android:layout_marginTop="20dp"-->
-<!--                    android:layout_marginEnd="28dp"-->
-<!--                    android:layout_marginRight="28dp"-->
-<!--                    android:src="@drawable/pink"-->
-<!--                    app:layout_constraintEnd_toStartOf="@+id/orange_view"-->
-<!--                    app:layout_constraintTop_toBottomOf="@+id/blue_view" />-->
-
-<!--                <ImageView-->
-<!--                    android:id="@+id/brown_view"-->
-<!--                    android:layout_width="52dp"-->
-<!--                    android:layout_height="41dp"-->
-<!--                    android:layout_marginStart="16dp"-->
-<!--                    android:layout_marginLeft="16dp"-->
-<!--                    android:layout_marginBottom="16dp"-->
-<!--                    android:src="@drawable/brown"-->
-<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                    app:layout_constraintEnd_toStartOf="@+id/purple_view"-->
-<!--                    app:layout_constraintHorizontal_bias="0.0"-->
-<!--                    app:layout_constraintStart_toStartOf="parent" />-->
-
-<!--                <ImageView-->
-<!--                    android:id="@+id/purple_view"-->
-<!--                    android:layout_width="52dp"-->
-<!--                    android:layout_height="41dp"-->
-<!--                    android:layout_marginTop="20dp"-->
-<!--                    android:layout_marginEnd="104dp"-->
-<!--                    android:layout_marginRight="104dp"-->
-<!--                    android:src="@drawable/purple"-->
-<!--                    app:layout_constraintEnd_toStartOf="@+id/pink_view"-->
-<!--                    app:layout_constraintTop_toBottomOf="@+id/green_view" />-->
-
-<!--                <ImageView-->
-<!--                    android:id="@+id/green_view"-->
-<!--                    android:layout_width="52dp"-->
-<!--                    android:layout_height="41dp"-->
-<!--                    android:layout_marginTop="4dp"-->
-<!--                    android:layout_marginEnd="104dp"-->
-<!--                    android:layout_marginRight="104dp"-->
-<!--                    android:src="@drawable/green"-->
-<!--                    app:layout_constraintEnd_toStartOf="@+id/blue_view"-->
-<!--                    app:layout_constraintTop_toTopOf="parent" />-->
-
-<!--                <ImageView-->
-<!--                    android:id="@+id/red_view"-->
-<!--                    android:layout_width="52dp"-->
-<!--                    android:layout_height="41dp"-->
-<!--                    android:layout_marginStart="16dp"-->
-<!--                    android:layout_marginLeft="16dp"-->
-<!--                    android:layout_marginTop="4dp"-->
-<!--                    android:src="@drawable/red"-->
-<!--                    app:layout_constraintBottom_toTopOf="@+id/brown_view"-->
-<!--                    app:layout_constraintStart_toStartOf="parent"-->
-<!--                    app:layout_constraintTop_toTopOf="parent"-->
-<!--                    app:layout_constraintVertical_bias="0.09" />-->
-
-<!--                <ImageView-->
-<!--                    android:id="@+id/blue_view"-->
-<!--                    android:layout_width="52dp"-->
-<!--                    android:layout_height="41dp"-->
-<!--                    android:layout_marginTop="4dp"-->
-<!--                    android:layout_marginEnd="28dp"-->
-<!--                    android:layout_marginRight="28dp"-->
-<!--                    android:src="@drawable/blue"-->
-<!--                    app:layout_constraintEnd_toStartOf="@+id/yellow_view"-->
-<!--                    app:layout_constraintTop_toTopOf="parent" />-->
-
-<!--                <ImageView-->
-<!--                    android:id="@+id/yellow_view"-->
-<!--                    android:layout_width="52dp"-->
-<!--                    android:layout_height="41dp"-->
-<!--                    android:layout_marginTop="4dp"-->
-<!--                    android:layout_marginEnd="16dp"-->
-<!--                    android:layout_marginRight="16dp"-->
-<!--                    android:src="@drawable/yellow"-->
-<!--                    app:layout_constraintEnd_toEndOf="parent"-->
-<!--                    app:layout_constraintTop_toTopOf="parent" />-->
-
-<!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
-<!--        </androidx.cardview.widget.CardView>-->
 
         <fragment
             android:id="@+id/map"
@@ -224,123 +48,78 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="126dp">
 
-                    <TextView
-                        android:id="@+id/trainNum"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Train # 0"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
+
+                    <Spinner
+                        android:id="@+id/line_selection"
+                        android:layout_width="399dp"
+                        android:layout_height="28dp"
+                        android:layout_marginTop="132dp"
+                        android:tooltipText="Line Selection"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/space2"
+                        app:layout_constraintTop_toBottomOf="@+id/exit_btn" />
+
+                    <CheckBox
+                        android:id="@+id/train_viewer"
+                        android:layout_width="100dp"
+                        android:layout_height="25dp"
+
+                        android:text="Trains"
+                        android:textSize="10dp"
+
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.477"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.189" />
+                        app:layout_constraintStart_toStartOf="parent" />
 
-                    <ImageView
-                        android:id="@+id/up"
-                        android:layout_width="69dp"
-                        android:layout_height="52dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.186"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.0"
-                        app:srcCompat="@drawable/up" />
+                    <CheckBox
+                        android:id="@+id/station_viewer"
+                        android:layout_width="101dp"
+                        android:layout_height="32dp"
+                        android:text="Stations"
 
-                    <com.google.android.material.floatingactionbutton.FloatingActionButton
-                        android:id="@+id/map_switch_dir"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:clickable="true"
-                        android:src="@drawable/swap"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.955"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:textSize="10dp"
 
-                    <ImageView
-                        android:id="@+id/down"
-                        android:layout_width="67dp"
-                        android:layout_height="50dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.747"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.777"
-                        app:srcCompat="@drawable/down" />
+                        app:layout_constraintBottom_toBottomOf="@+id/searchView"
+                        app:layout_constraintEnd_toEndOf="parent" />
 
-                    <TextView
-                        android:id="@+id/mapTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="1dp"
-                        android:text="Chicago (Red)"
-                        android:textSize="17sp"
-                        android:textStyle="italic"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.464"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/trainNum"
-                        app:layout_constraintVertical_bias="1.0" />
+                    <SearchView
+                        android:id="@+id/searchView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        tools:layout_editor_absoluteX="0dp"
+                        tools:layout_editor_absoluteY="0dp" />
 
-                    <View
-                        android:id="@+id/divider6"
-                        android:layout_width="95dp"
-                        android:layout_height="1dp"
-                        android:background="?android:attr/listDivider"
-                        app:layout_constraintBottom_toTopOf="@+id/textView7"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.481"
-                        app:layout_constraintStart_toStartOf="parent"
-                        />
-
-                    <ImageView
-                        android:id="@+id/mapImage"
-                        android:layout_width="58dp"
-                        android:layout_height="55dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.016"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.0"
-                        app:srcCompat="@drawable/blue" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.cardview.widget.CardView>
 
-            <Button
-                android:id="@+id/run_map_threads"
-                android:layout_width="98dp"
-                android:layout_height="52dp"
-                android:text="Run"
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/map_switch_dir"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:src="@drawable/swap"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cardView2"
-                app:layout_constraintVertical_bias="0.028" />
+                app:layout_constraintVertical_bias="0.895" />
+
+            <!--            <Button-->
+<!--                android:id="@+id/run_map_threads"-->
+<!--                android:layout_width="98dp"-->
+<!--                android:layout_height="52dp"-->
+<!--                android:text="Run"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintHorizontal_bias="1.0"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/cardView2"-->
+<!--                app:layout_constraintVertical_bias="0.028" />-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!--        <Switch-->
-<!--            android:id="@+id/exit_switch"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginTop="40dp"-->
-<!--            android:text="Exit"-->
-<!--            android:textSize="20sp"-->
-<!--            android:textStyle="bold"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/switch_dir" />-->
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
