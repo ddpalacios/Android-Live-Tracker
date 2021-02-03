@@ -37,7 +37,7 @@ public class ChooseDir extends AppCompatActivity {
         ArrayList<Stops> list = new ArrayList();
         RecyclerView main_direction_rv = findViewById(R.id.main_stations_rv);
         CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
-        ArrayList<Object> MAIN_STATIONS = cta_dataBase.excecuteQuery("*", "MAIN_STATIONS", "STATION_TYPE = '"+tracking_station.get("station_type").trim()+"'",null);
+        ArrayList<Object> MAIN_STATIONS = cta_dataBase.excecuteQuery("*", "MAIN_STATIONS", "STATION_TYPE = '"+tracking_station.get("station_type").trim()+"'",null,null);
 
         HashMap<String, String> main_station_record = (HashMap<String, String>) MAIN_STATIONS.get(0);
         list.add(new Stops(tracking_station, main_station_record.get("NORTHBOUND"),main_station_record.get("STATION_TYPE").toLowerCase(),null));

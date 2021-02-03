@@ -74,25 +74,25 @@ public class FavStationAdapter extends RecyclerView.Adapter<FavStationAdapter.Li
                     else if (lines.getName().equals("To Maps")){
                         Intent intent = new Intent(ctx, MapsActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        CTA_DataBase cta_dataBase = new CTA_DataBase(ctx);
-                        ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS","MAP_ID = '41450'", null);
-                        HashMap<String, String> default_tracking =(HashMap<String, String>) record.get(0);
-                        tracking_station = new HashMap<>();
-                        tracking_station.put("station_dir", "1");
-                        tracking_station.put("target_station_name", default_tracking.get("STATION_NAME"));
-                        tracking_station.put("station_type", "blue");
-                        intent.putExtra("tracking_station", tracking_station);
+//                        CTA_DataBase cta_dataBase = new CTA_DataBase(ctx);
+//                        ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS","MAP_ID = '41450'", null,null);
+//                        HashMap<String, String> default_tracking =(HashMap<String, String>) record.get(0);
+//                        tracking_station = new HashMap<>();
+//                        tracking_station.put("station_dir", "1");
+//                        tracking_station.put("target_station_name", default_tracking.get("STATION_NAME"));
+//                        tracking_station.put("station_type", "blue");
+//                        intent.putExtra("tracking_station", tracking_station);
                         ctx.startActivity(intent);
                     }else if (!lines.getName().equals("Favorites")){
                         Intent intent = new Intent(ctx, TabbedMainActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         Chicago_Transits chicago_transits = new Chicago_Transits();
                         CTA_DataBase cta_dataBase = new CTA_DataBase(ctx);
-                        ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+lines.getName()+"' AND "+chicago_transits.TrainLineKeys(lines.getColor().toLowerCase()).toUpperCase() +" = '1'", null);
+                        ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+lines.getName()+"' AND "+chicago_transits.TrainLineKeys(lines.getColor().toLowerCase()).toUpperCase() +" = '1'", null,null);
                         if (lines.getColor().toLowerCase().equals("purple" )){
-                            record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+lines.getName()+"' AND "+chicago_transits.TrainLineKeys(lines.getColor().toLowerCase()).toUpperCase() +" = '1'", null);
+                            record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+lines.getName()+"' AND "+chicago_transits.TrainLineKeys(lines.getColor().toLowerCase()).toUpperCase() +" = '1'", null,null);
                             if (record == null){
-                                record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+lines.getName()+"' AND PEXP = '1'", null);
+                                record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+lines.getName()+"' AND PEXP = '1'", null,null);
 
                             }
                         }

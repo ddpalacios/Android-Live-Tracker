@@ -16,7 +16,6 @@ import java.util.HashMap;
 
 public class CTA_DataBase extends SQLiteOpenHelper {
 
-
 //    public static final String ALL_TRAINS_TABLE = "all_trains_table";
 //    public static final String TRAIN_ID = "train_id";
 //    public static final String IS_NOTIFIED = "isNotified";
@@ -34,6 +33,13 @@ public class CTA_DataBase extends SQLiteOpenHelper {
 //    public static final String TARGET_ID = "target_id";
 //    public static final String TRAIN_DIR = "train_dir";
 //
+    public static final String Markers = "MARKERS";
+    public static final String marker_id = "marker_id";
+    public static final String marker_lat = "marker_lat";
+    public static final String marker_lon = "marker_lon";
+    public static final String marker_name = "marker_name";
+    public static final String marker_type = "marker_type";
+
     public static final String L_STOPS = "L_STOPS";
     public static final String STOPID = "STOPID"; // auto
     public static final String GREEN_LINE = "GREEN";
@@ -80,17 +86,33 @@ public class CTA_DataBase extends SQLiteOpenHelper {
 
 
     public CTA_DataBase(@Nullable Context context) {
+
         super(context, "CTA_DATABASE", null, 6);
-        this.getReadableDatabase();
+
+
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+
         create_cta_stops(db);
         createUserFavorites(db);
         create_main_stations(db);
         create_L_stops_table(db);
-        Log.e(Thread.currentThread().getName(), "CREATED TABLES");
+        createMarkersTable(db);
+
+        Log.e("SQLITE", "CREATED TABLES");
+    }
+
+
+    public void createMarkersTable(SQLiteDatabase db){
+        String marker_table = "CREATE TABLE IF NOT EXISTS "+ Markers+ "("
+                + marker_id+ " INTEGER PRIMARY KEY,"
+                + marker_name + " TEXT,"
+                + marker_type + " TEXT,"
+                + marker_lat + " TEXT,"
+                + marker_lon + " TEXT)";
+        db.execSQL(marker_table);
     }
 
    public void  create_L_stops_table(SQLiteDatabase db){
@@ -137,7 +159,7 @@ public class CTA_DataBase extends SQLiteOpenHelper {
                 SOUTHBOUND + " TEXT, " +
                 EXPRESS + " TEXT)";
 
-        Log.e(Thread.currentThread().getName(), "Done");
+        Log.e("SQLITE", "Done");
         db.execSQL(main_stations);
     }
 
@@ -161,7 +183,7 @@ public class CTA_DataBase extends SQLiteOpenHelper {
                 ORG + " INTEGER, " +
                 LAT + " REAL, " +
                 LON + " REAL)";
-        Log.e(Thread.currentThread().getName(), "Done");
+        Log.e("SQLITE", "Done");
         db.execSQL(cta_stops);
 
     }
@@ -173,7 +195,7 @@ public class CTA_DataBase extends SQLiteOpenHelper {
                 FAVORITE_STATION_NAME + " TEXT)";
 
 
-        Log.e(Thread.currentThread().getName(), "Done");
+        Log.e("SQLITE", "Done");
         db.execSQL(user_favorites);
     }
 
@@ -194,7 +216,23 @@ public class CTA_DataBase extends SQLiteOpenHelper {
         }else if (table_name.equals("L_STOPS")){
             L_stops station = (L_stops) item;
             add_L_stop(station);
+        }else if (table_name.equals(Markers)){
+            Markers marker = (Markers) item;
+            addMarker(marker);
         }
+
+    }
+
+
+    private void addMarker(Markers markers){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(marker_name, markers.getMarker_name());
+        values.put(marker_type, markers.getMarker_type());
+        values.put(marker_lat, markers.getMarker_lat());
+        values.put(marker_lon, markers.getMarker_lon());
+        db.insert(Markers, null, values);
+        db.close();
 
     }
 
@@ -278,7 +316,7 @@ public class CTA_DataBase extends SQLiteOpenHelper {
 
     }
     public int delete_all_records(String table_name){
-        ArrayList<Object> all_trains_table = excecuteQuery("*", table_name, null, null);
+        ArrayList<Object> all_trains_table = excecuteQuery("*", table_name, null, null,null);
         if (all_trains_table != null){
             deleteTable(table_name);
             return 1;
@@ -298,9 +336,12 @@ public class CTA_DataBase extends SQLiteOpenHelper {
 
     private ArrayList<Object> getRecord(String query){
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
         ArrayList<Object> result = new ArrayList<>();
-        if (cursor.moveToFirst()) {
+        try{
+            Cursor cursor = db.rawQuery(query, null);
+
+
+            if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
                 HashMap<String, String> record = new HashMap<>();
                 try {
@@ -315,15 +356,21 @@ public class CTA_DataBase extends SQLiteOpenHelper {
             }
             return result;
         }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         return null;
     }
-    public ArrayList<Object> excecuteQuery(String cols,String table_name, String condition, String col_orderBy){
+    public ArrayList<Object> excecuteQuery(String cols,String table_name, String condition, String contains, String col_orderBy){
         String query;
         ArrayList<Object> record = null;
         if (condition == null){
             query = "SELECT "+cols+" FROM "+table_name;
         }else{
             query = "SELECT "+cols+" FROM "+table_name +" WHERE "+condition;
+            if (contains!=null){
+                query = query + " LIKE '%"+ contains+"%'";
+            }
         }
         if (col_orderBy == null){
             record = getRecord(query);
@@ -341,58 +388,5 @@ public class CTA_DataBase extends SQLiteOpenHelper {
 
     }
 
-//    public void addMainStations_to_mainStationTable(MainStation mainStation){
-//
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        ContentValues values = new ContentValues();
-//
-//        values.put(MAIN_STATION_TYPE, mainStation.getTrainLine());
-//        values.put(NORTHBOUND, mainStation.getNorthBound());
-//        values.put(SOUTHBOUND, mainStation.getSouthBound());
-//        db.insert(MAIN_STATIONS, null, values);
-//        db.close();
-//
-//
-//    }
-//    public void add_station_lines_to_line_stops_table(CTA_Stations cta_data){
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        ContentValues values = new ContentValues();
-//        values.put(RED_COL, cta_data.getRed());
-//        values.put(BLUE_COL, cta_data.getBlue());
-//        values.put(GREEN_COL, cta_data.getGreen());
-//        values.put(BROWN_COL, cta_data.getBrown());
-//        values.put(PURPLE_COL, cta_data.getPurple());
-//        values.put(YELLOW_COL, cta_data.getYellow());
-//        values.put(PINK_COL, cta_data.getPink());
-//        values.put(ORANGE_COL, cta_data.getOrange());
-//        db.insert(LINE_STOPS_TABLE, null,values);
-//
-//        db.close();
-//    }
-//    public void CommitRecordToAllTrainsTable(AllTrainsTable new_train){
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        ContentValues cv = new ContentValues();
-//
-//        cv.put(TRAIN_ID, new_train.getTrain_id());
-//        cv.put(IS_NOTIFIED, new_train.isNotified()+"");
-//        cv.put(PRED_ARRIVAL_TIME, new_train.getPred_arrival_time());
-//        cv.put(NEXT_STOP_ID, new_train.getNext_stop());
-//        cv.put(NEXT_STOP_ETA, new_train.getNext_stop_eta()+"");
-//        cv.put(NEXT_STOP_DISTANCE, new_train.getNext_stop_distance()+"");
-//        cv.put(IS_DELAYED, new_train.isDelayed()+"");
-//        cv.put(IS_APPROACHING, new_train.isApproaching()+"");
-//        cv.put(DISTANCE_TO_TARGET, new_train.getDistance_to_target());
-//        cv.put(TO_TARGET_TRAIN_ETA, new_train.getTo_target_eta()+"");
-//        cv.put(TRAIN_LAT, new_train.getTrain_lat()+"");
-//        cv.put(TRAIN_LON, new_train.getTrain_lon()+"");
-//        cv.put(TRACKING_TYPE, new_train.getTracking_type());
-//        cv.put(TARGET_ID, new_train.getTarget_id());
-//        cv.put(TRAIN_DIR, new_train.getTrain_dir()+"");
-//
-//        db.insert(ALL_TRAINS_TABLE, null, cv);
-//        db.close();
-//    }
-
-//
 
 }

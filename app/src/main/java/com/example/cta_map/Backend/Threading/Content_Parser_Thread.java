@@ -94,7 +94,7 @@ public class Content_Parser_Thread implements Runnable {
         Chicago_Transits chicago_transits = new Chicago_Transits();
         CTA_DataBase cta_dataBase = new CTA_DataBase(context);
         Time time = new Time();
-        ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+target_name+"' AND "+chicago_transits.TrainLineKeys(target_type).toUpperCase() +" = '1'", null);
+        ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+target_name+"' AND "+chicago_transits.TrainLineKeys(target_type).toUpperCase() +" = '1'", null,null);
         if (record == null){return null;}
 
         HashMap<String, String> target_record = (HashMap<String, String>) record.get(0);
@@ -110,7 +110,7 @@ public class Content_Parser_Thread implements Runnable {
                 if (left){
                     List<String> left_sublist = ordered_stops.subList(target_idx, ordered_stops.size()-1);
                     if (left_sublist.contains(train.getNextStaNm())){
-                        ArrayList<Object> record_1 = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STOP_ID = '"+train.getNextStpID()+"'", null);
+                        ArrayList<Object> record_1 = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STOP_ID = '"+train.getNextStpID()+"'", null,null);
                         HashMap<String, String> next_stop_record = (HashMap<String, String>) record_1.get(0);
                         Double train_lat = train.getLat();
                         Double train_lon = train.getLon();
@@ -141,7 +141,7 @@ public class Content_Parser_Thread implements Runnable {
                 }else{
                     List<String> right_sublist = ordered_stops.subList(0, target_idx+1);
                     if (right_sublist.contains(train.getNextStaNm())){
-                        HashMap<String, String> next_stop_record =(HashMap<String, String>) cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STOP_ID = '"+train.getNextStpID()+"'", null).get(0);
+                        HashMap<String, String> next_stop_record =(HashMap<String, String>) cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STOP_ID = '"+train.getNextStpID()+"'", null,null).get(0);
                         Double train_lat = train.getLat();
                         Double train_lon = train.getLon();
                         double n_lat = Double.parseDouble(next_stop_record.get("LAT"));
@@ -174,7 +174,7 @@ public class Content_Parser_Thread implements Runnable {
 
     private HashMap<String, String> getUserLocation(Context context){
         CTA_DataBase cta_dataBase = new CTA_DataBase(context);
-        ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS","MAP_ID = '41450'", null);
+        ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS","MAP_ID = '41450'", null,null);
         return (HashMap<String, String>) record.get(0);
     }
 

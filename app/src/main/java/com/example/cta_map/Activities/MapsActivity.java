@@ -18,12 +18,14 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -91,7 +93,7 @@ import java.util.TreeMap;
                     final Train main_train  = (Train) main_record;
                     String target_id = main_train.getTarget_id();
                     CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
-                    ArrayList<Object> target_record = cta_dataBase.excecuteQuery("*", "CTA_STOPS","MAP_ID = '"+target_id+"'", null);
+                    ArrayList<Object> target_record = cta_dataBase.excecuteQuery("*", "CTA_STOPS","MAP_ID = '"+target_id+"'", null,null);
                     HashMap<String, String> target_station = (HashMap<String, String>) target_record.get(0);
                     final MapMarker mapMarker = new MapMarker(mMap, getApplicationContext());
                     mapMarker.addMarker(null,Double.parseDouble(target_station.get("LAT")),
@@ -301,86 +303,156 @@ import java.util.TreeMap;
                 public void onMapReady(GoogleMap googleMap) {
                     mMap = googleMap;
                     final Message message = new Message();
-//                    ImageView mapImage = findViewById(R.id.mapImage);
                     Bundle bundle = getIntent().getExtras();
                     FloatingActionButton switch_dir = findViewById(R.id.map_switch_dir);
-                    Chicago_Transits chicago_transits = new Chicago_Transits();
-                    final HashMap<String, String> tracking_station = (HashMap<String, String>) bundle.getSerializable("tracking_station");
+//                    final CheckBox train_viewer = findViewById(R.id.train_viewer);
+//                    final CheckBox station_viewer = findViewById(R.id.station_viewer);
+                    SearchView station_search = findViewById(R.id.Station_searchView);
+                    final Chicago_Transits chicago_transits = new Chicago_Transits();
+
+                    try {
+                        final HashMap<String, String> tracking_station = (HashMap<String, String>) bundle.getSerializable("tracking_station");
+                            message.setDir(tracking_station.get("station_dir"));
+                            message.setTarget_name(tracking_station.get("target_station_name"));
+                            message.setTarget_type(tracking_station.get("station_type"));
+
+                    }catch (Exception e){
+                        Toast.makeText(getApplicationContext(), "Select A Line", Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
+                    }
 //                    chicago_transits.ZoomIn(mMap, (float) 13.3, Double.parseDouble(tracking_station.get("LAT")), Double.parseDouble(tracking_station.get("LON")));
-                    final CheckBox train_viewer = findViewById(R.id.train_viewer);
-                    final CheckBox station_viewer = findViewById(R.id.station_viewer);
-                    message.setDir(tracking_station.get("station_dir"));
-                    message.setTarget_name(tracking_station.get("target_station_name"));
-                    message.setTarget_type(tracking_station.get("station_type"));
-//                    Button test_threads = findViewById(R.id.run_map_threads);
-                    Toast.makeText(getApplicationContext(), "Current Direction: "+ message.getDir(), Toast.LENGTH_SHORT).show();
-
                     Spinner spinner = (Spinner) findViewById(R.id.line_selection);
-                    // Create an ArrayAdapter using the string array and a default spinner layout
-                                        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                                                R.array.line_names, android.R.layout.simple_spinner_item);
-                    // Specify the layout to use when the list of choices appears
-                                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    // Apply the adapter to the spinner
-                                        spinner.setAdapter(adapter);
+                    ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,R.array.line_names, android.R.layout.simple_spinner_item);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spinner.setAdapter(adapter);
 
 
-
-                    train_viewer.setOnClickListener(new View.OnClickListener() {
+                    spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
-                        public void onClick(View v) {
-                         if (!train_viewer.isChecked()){
-                             Toast.makeText(getApplicationContext(), "NO SHOW", Toast.LENGTH_SHORT).show();
-                             mMap.clear();
-                             message.keepSending(false);
-                             content_parser.interrupt();
-                             api_caller.interrupt();
-                             return;
-                         }
-
-                         if (station_viewer.isChecked()){
-                             station_viewer.setChecked(false);
-                         }
-                            message.keepSending(true);
-                            api_caller =  new  Thread(new API_Caller_Thread(message, tracking_station.get("station_type")));
-                            content_parser = new Thread(new Content_Parser_Thread(getApplicationContext(), message, handler));
-                            api_caller.start();
-                            content_parser.start();
-
-                        }
-                    });
-
-
-                    station_viewer.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (!station_viewer.isChecked()){
-                                Toast.makeText(getApplicationContext(), "NO SHOW", Toast.LENGTH_SHORT).show();
-                                mMap.clear();
-                                return;
-                            }
-                            if (train_viewer.isChecked()){
-                                train_viewer.setChecked(false);
-                            }
+                        public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                            Toast.makeText(getApplicationContext(), parentView.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
+                            mMap.clear();
+                            message.setTarget_type(parentView.getSelectedItem().toString().toLowerCase());
                             CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
-                            ArrayList<Object> all_stations = cta_dataBase.excecuteQuery("STOP_NAME, LAT, LON", "CTA_STOPS", message.getTarget_type().toUpperCase()+" = '1'",null);
-                            for (Object station: all_stations){
+                            ArrayList<Object> all_stations = cta_dataBase.excecuteQuery("marker_name, marker_lat, marker_lon", "Markers",   "marker_type = '"+parentView.getSelectedItem().toString().toLowerCase()+"'",null,null);
+                            for (Object station : all_stations){
                                 HashMap<String, String> current_station = (HashMap<String, String>) station;
-                                Log.e("Stations", current_station+"");
                                 MapMarker marker = new MapMarker(mMap, getApplicationContext());
                                 marker.addMarker(null,
-                                        Double.parseDouble(current_station.get("LAT")),
-                                        Double.parseDouble(current_station.get("LON")),
-                                        current_station.get("STOP_NAME"),
+                                        Double.parseDouble(current_station.get("marker_lat")),
+                                        Double.parseDouble(current_station.get("marker_lon")),
+                                        current_station.get("marker_name"),
                                         "Station",
-                                        message.getTarget_type(),
+                                        parentView.getSelectedItem().toString().toLowerCase(),
                                         1f,
                                         true,
-                                        current_station.get("STOP_NAME"));
+                                        current_station.get("marker_name"));
                             }
 
+
                         }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parentView) {
+                            // your code here
+                        }
+
                     });
+
+
+                    station_search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                        @Override
+                        public boolean onQueryTextSubmit(String query) {
+                            Log.e("Done", query);
+
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onQueryTextChange(String newText) {
+                            if (message.getTarget_type() != null) {
+                                mMap.clear();
+                                CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
+                                ArrayList<Object> target_stations = cta_dataBase.excecuteQuery("*", "MARKERS", "marker_type = '" + message.getTarget_type() + "' AND marker_name", newText, null);
+                                if (target_stations != null) {
+                                    for (Object station : target_stations) {
+                                        HashMap<String, String> current_station = (HashMap<String, String>) station;
+                                        Log.e("search", current_station.get("marker_id") + "# - " + current_station.get("marker_name"));
+                                        MapMarker marker = new MapMarker(mMap, getApplicationContext());
+                                        marker.addMarker(null,
+                                                Double.parseDouble(current_station.get("marker_lat")),
+                                                Double.parseDouble(current_station.get("marker_lon")),
+                                                current_station.get("marker_name"),
+                                                "Station",
+                                                current_station.get("marker_type"),
+                                                1f,
+                                                true,
+                                                current_station.get("marker_name"));
+                                    }
+                                }
+                            }
+                                return false;
+                            }
+
+                    });
+
+
+
+//                    train_viewer.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//                         if (!train_viewer.isChecked()){
+//                             Toast.makeText(getApplicationContext(), "NO SHOW", Toast.LENGTH_SHORT).show();
+//                             mMap.clear();
+//                             message.keepSending(false);
+//                             content_parser.interrupt();
+//                             api_caller.interrupt();
+//                             return;
+//                         }
+//
+//                         if (station_viewer.isChecked()){
+//                             station_viewer.setChecked(false);
+//                         }
+//                            message.keepSending(true);
+//                            api_caller =  new  Thread(new API_Caller_Thread(message, message.getTarget_type()));
+//                            content_parser = new Thread(new Content_Parser_Thread(getApplicationContext(), message, handler));
+//                            api_caller.start();
+//                            content_parser.start();
+//
+//                        }
+//                    });
+
+//
+//                    station_viewer.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//                            if (!station_viewer.isChecked()){
+//                                Toast.makeText(getApplicationContext(), "NO SHOW", Toast.LENGTH_SHORT).show();
+//                                mMap.clear();
+//                                return;
+//                            }
+//                            if (train_viewer.isChecked()){
+//                                train_viewer.setChecked(false);
+//                            }
+//                            CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
+//                            ArrayList<Object> all_stations = cta_dataBase.excecuteQuery("STOP_NAME, LAT, LON", "CTA_STOPS", message.getTarget_type().toUpperCase()+" = '1'",null,null);
+//                            for (Object station: all_stations){
+//                                HashMap<String, String> current_station = (HashMap<String, String>) station;
+//                                Log.e("Stations", current_station+"");
+//                                MapMarker marker = new MapMarker(mMap, getApplicationContext());
+//                                marker.addMarker(null,
+//                                        Double.parseDouble(current_station.get("LAT")),
+//                                        Double.parseDouble(current_station.get("LON")),
+//                                        current_station.get("STOP_NAME"),
+//                                        "Station",
+//                                        message.getTarget_type(),
+//                                        1f,
+//                                        true,
+//                                        current_station.get("STOP_NAME"));
+//                            }
+//
+//                        }
+//                    });
 
 
 

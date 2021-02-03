@@ -47,6 +47,8 @@ public class ViewDataActivity extends AppCompatActivity {
                 cta_dataBase.delete_all_records("MAIN_STATIONS");
                 cta_dataBase.delete_all_records("CTA_STOPS");
                 cta_dataBase.delete_all_records("USER_FAVORITES");
+                cta_dataBase.delete_all_records("MARKERS");
+
                 RenderData();
 
 
@@ -72,36 +74,46 @@ public class ViewDataActivity extends AppCompatActivity {
     public void RenderData(){
 
         TextView UF = findViewById(R.id.fav_stations_textView);
-        TextView MS = findViewById(R.id.main_stations_textView2);
+        TextView MS = findViewById(R.id.main_stations_textView);
+        TextView Markers = findViewById(R.id.markers_textView);
         TextView LS = findViewById(R.id.l_stops_textView11);
         TextView CS = findViewById(R.id.cta_stops_textView15);
         final CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
 
-        ArrayList<Object> fav_station_count = cta_dataBase.excecuteQuery("*", "USER_FAVORITES", null, null);
-        ArrayList<Object> cta_stops = cta_dataBase.excecuteQuery("*", "CTA_STOPS", null, null);
-        ArrayList<Object> L_stops = cta_dataBase.excecuteQuery("*", "L_STOPS", null, null);
-        ArrayList<Object> main_stations = cta_dataBase.excecuteQuery("*", "MAIN_STATIONS", null, null);
-        if (fav_station_count == null){
-            UF.setText("Fav Station: 0");
-        }else{
-            UF.setText("Fav Station: "+ fav_station_count.size());
+        try {
+            ArrayList<Object> fav_station_count = cta_dataBase.excecuteQuery("*", "USER_FAVORITES", null,null, null);
+            ArrayList<Object> cta_stops = cta_dataBase.excecuteQuery("*", "CTA_STOPS", null, null,null);
+            ArrayList<Object> L_stops = cta_dataBase.excecuteQuery("*", "L_STOPS", null, null,null);
+            ArrayList<Object> markers = cta_dataBase.excecuteQuery("*", "MARKERS", null, null,null);
+            ArrayList<Object> main_stations = cta_dataBase.excecuteQuery("*", "MAIN_STATIONS", null, null,null);
+            if (fav_station_count == null) {
+                UF.setText("Fav Station: 0");
+            } else {
+                UF.setText("Fav Station: " + fav_station_count.size());
+            }
+            if (cta_stops == null) {
+                CS.setText("Cta_Stops: 0");
+            } else {
+                CS.setText("Cta_Stops: " + cta_stops.size());
+            }
+            if (main_stations == null) {
+                MS.setText("Main Stations: 0");
+            } else {
+                MS.setText("Main Stations: " + main_stations.size());
+            }
+            if (L_stops == null) {
+                LS.setText("L Stops: 0");
+            } else {
+                LS.setText("L_Stops: " + L_stops.size());
+            }
+            if (markers == null) {
+                Markers.setText("Markers: 0");
+            } else {
+                Markers.setText("Markers: " + markers.size());
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        if (cta_stops == null){
-            CS.setText("Cta_Stops: 0");
-        }else {
-            CS.setText("Cta_Stops: "+ cta_stops.size());
-        }
-        if (main_stations == null){
-            MS.setText("Main Stations: 0");
-        }else{
-            MS.setText("Main Stations: "+main_stations.size());
-        }
-        if (L_stops == null){
-            LS.setText("L Stops: 0");
-        }else{
-            LS.setText("L_Stops: "+ L_stops.size());
-        }
-
 
 
 
@@ -118,6 +130,7 @@ public class ViewDataActivity extends AppCompatActivity {
         chicago_transits.create_line_stops_table(file3Buffer, getApplicationContext(), null);
         chicago_transits.Create_TrainInfo_table(file1Buffer, getApplicationContext());
         chicago_transits.create_main_station_table(file2Buffer, getApplicationContext());
+        chicago_transits.createMarkerTable(getApplicationContext());
         return 0;
     }
 

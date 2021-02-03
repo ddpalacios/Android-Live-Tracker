@@ -113,12 +113,12 @@ public class TrainTrackingActivity extends AppCompatActivity {
         final Button backToHome = findViewById(R.id.HomeButton);
         final Button test_threads = findViewById(R.id.test_threads);
         ArrayList<Object> record, cta_record;
-        record = cta_dataBase.excecuteQuery("*", "USER_FAVORITES", "STOP_ID = '"+tracking_station.get("station_id")+"'", null);
-        cta_record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STOP_ID = '"+tracking_station.get("station_id")+"'", null);
+        record = cta_dataBase.excecuteQuery("*", "USER_FAVORITES", "STOP_ID = '"+tracking_station.get("station_id")+"'", null,null);
+        cta_record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STOP_ID = '"+tracking_station.get("station_id")+"'", null,null);
         if (tracking_station.get("station_type").toLowerCase().equals("purple" )){
-            record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+tracking_station.get("target_station_name")+"' AND "+chicago_transits.TrainLineKeys(tracking_station.get("station_type").toLowerCase()).toUpperCase() +" = '1'", null);
+            record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+tracking_station.get("target_station_name")+"' AND "+chicago_transits.TrainLineKeys(tracking_station.get("station_type").toLowerCase()).toUpperCase() +" = '1'", null,null);
             if (record == null){
-                record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+tracking_station.get("target_station_name")+"' AND PEXP = '1'", null);
+                record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+tracking_station.get("target_station_name")+"' AND PEXP = '1'", null,null);
 
             }
         }
@@ -193,11 +193,11 @@ public class TrainTrackingActivity extends AppCompatActivity {
                     change_text[0] = true;
                     Chicago_Transits chicago_transits = new Chicago_Transits();
                     CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
-                    ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+tracking_station.get("target_station_name")+"' AND "+chicago_transits.TrainLineKeys(tracking_station.get("station_type").toLowerCase()).toUpperCase() +" = '1'", null);
+                    ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+tracking_station.get("target_station_name")+"' AND "+chicago_transits.TrainLineKeys(tracking_station.get("station_type").toLowerCase()).toUpperCase() +" = '1'", null,null);
                     if (tracking_station.get("station_type").toLowerCase().equals("purple" )){
-                        record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+tracking_station.get("target_station_name")+"' AND "+chicago_transits.TrainLineKeys(tracking_station.get("station_type").toLowerCase()).toUpperCase() +" = '1'", null);
+                        record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+tracking_station.get("target_station_name")+"' AND "+chicago_transits.TrainLineKeys(tracking_station.get("station_type").toLowerCase()).toUpperCase() +" = '1'", null,null);
                         if (record == null){
-                            record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+tracking_station.get("target_station_name")+"' AND PEXP = '1'", null);
+                            record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+tracking_station.get("target_station_name")+"' AND PEXP = '1'", null,null);
 
                         }
                     }
@@ -214,11 +214,11 @@ public class TrainTrackingActivity extends AppCompatActivity {
                     add_to_favorites.setText("Add To Favorites");
                     change_text[0] = false;
                     CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
-                    ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+tracking_station.get("target_station_name")+"' AND "+chicago_transits.TrainLineKeys(tracking_station.get("station_type").toLowerCase()).toUpperCase() +" = '1'", null);
+                    ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+tracking_station.get("target_station_name")+"' AND "+chicago_transits.TrainLineKeys(tracking_station.get("station_type").toLowerCase()).toUpperCase() +" = '1'", null,null);
                     if (tracking_station.get("station_type").toLowerCase().equals("purple" )){
-                        record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+tracking_station.get("target_station_name")+"' AND "+chicago_transits.TrainLineKeys(tracking_station.get("station_type").toLowerCase()).toUpperCase() +" = '1'", null);
+                        record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+tracking_station.get("target_station_name")+"' AND "+chicago_transits.TrainLineKeys(tracking_station.get("station_type").toLowerCase()).toUpperCase() +" = '1'", null,null);
                         if (record == null){
-                            record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+tracking_station.get("target_station_name")+"' AND PEXP = '1'", null);
+                            record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+tracking_station.get("target_station_name")+"' AND PEXP = '1'", null,null);
 
                         }
                     }

@@ -83,12 +83,12 @@ public class StopAdapter extends RecyclerView.Adapter<StopAdapter.StopViewHolder
                     if (stops.getName().equals("O'Hare") ){
                         stops.getName().replaceAll("'", "\'" );
                     }
-                    record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '" + stops.getName() + "' AND " + chicago_transits.TrainLineKeys(stops.getColor().toLowerCase()).toUpperCase() + " = '1'", null);
+                    record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '" + stops.getName() + "' AND " + chicago_transits.TrainLineKeys(stops.getColor().toLowerCase()).toUpperCase() + " = '1'", null,null);
 
                     if (stops.getColor().toLowerCase().equals("purple")) {
-                        record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '" + stops.getName() + "' AND " + chicago_transits.TrainLineKeys(stops.getColor().toLowerCase()).toUpperCase() + " = '1'", null);
+                        record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '" + stops.getName() + "' AND " + chicago_transits.TrainLineKeys(stops.getColor().toLowerCase()).toUpperCase() + " = '1'", null,null);
                         if (record == null) {
-                            record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '" + stops.getName() + "' AND PEXP = '1'", null);
+                            record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '" + stops.getName() + "' AND PEXP = '1'", null,null);
 
                         }
                     }

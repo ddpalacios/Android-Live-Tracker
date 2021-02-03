@@ -28,7 +28,7 @@ public class TrainStations extends AppCompatActivity {
 
         CTA_DataBase sqlite = new CTA_DataBase(getApplicationContext());
 
-        ArrayList<Object> get_stops_record = sqlite.excecuteQuery(tracking_station.get("station_type").toUpperCase(), "L_STOPS", null, null);
+        ArrayList<Object> get_stops_record = sqlite.excecuteQuery(tracking_station.get("station_type").toUpperCase(), "L_STOPS", null, null,null);
         for (int i = 0; i < get_stops_record.size(); i++) {
             HashMap<String, String> stop_record = (HashMap<String, String>) get_stops_record.get(i);
             if (stop_record.get(tracking_station.get("station_type").toUpperCase()).equals("null")){

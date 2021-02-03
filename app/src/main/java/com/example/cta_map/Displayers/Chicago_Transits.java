@@ -11,6 +11,7 @@ import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.DataBase.CTA_Stops;
 import com.example.cta_map.DataBase.L_stops;
 import com.example.cta_map.DataBase.MainStation;
+import com.example.cta_map.DataBase.Markers;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -29,6 +30,52 @@ import java.util.HashMap;
 
 
 public class Chicago_Transits {
+
+
+    public void createMarkerTable(Context context){
+        CTA_DataBase cta_dataBase= new CTA_DataBase(context);
+        ArrayList<Object> redLine = cta_dataBase.excecuteQuery("MAP_ID,LAT, LON, STATION_NAME", "CTA_STOPS", "RED = '1'", null,null);
+        ArrayList<Object> BlueLine = cta_dataBase.excecuteQuery("MAP_ID,LAT, LON, STATION_NAME", "CTA_STOPS", "BLUE = '1'",null, null);
+        ArrayList<Object> GreenLine = cta_dataBase.excecuteQuery("MAP_ID,LAT, LON, STATION_NAME", "CTA_STOPS", "G = '1'", null,null);
+        ArrayList<Object> OrangeLine = cta_dataBase.excecuteQuery("MAP_ID,LAT, LON, STATION_NAME", "CTA_STOPS", "ORG = '1'", null,null);
+        ArrayList<Object> PurpleLine = cta_dataBase.excecuteQuery("MAP_ID,LAT, LON, STATION_NAME", "CTA_STOPS", "P = '1'", null,null);
+        ArrayList<Object> BrownLine = cta_dataBase.excecuteQuery("MAP_ID,LAT, LON, STATION_NAME", "CTA_STOPS", "BRN = '1'", null,null);
+        ArrayList<Object> PinkLine = cta_dataBase.excecuteQuery("MAP_ID,LAT, LON, STATION_NAME", "CTA_STOPS", "PINK = '1'", null,null);
+        ArrayList<Object> YellowLine = cta_dataBase.excecuteQuery("MAP_ID,LAT, LON, STATION_NAME", "CTA_STOPS", "Y = '1'", null,null);
+        populateMarkers(context, redLine, "red");
+        populateMarkers(context, BlueLine, "blue");
+        populateMarkers(context, GreenLine, "green");
+        populateMarkers(context, PurpleLine, "purple");
+        populateMarkers(context, BrownLine, "brown");
+        populateMarkers(context, YellowLine, "yellow");
+        populateMarkers(context, PinkLine, "pink");
+        populateMarkers(context, OrangeLine, "orange");
+
+
+
+
+    }
+    private void populateMarkers(Context context, ArrayList<Object> all_stations, String station_type){
+        CTA_DataBase cta_dataBase = new CTA_DataBase(context);
+        ArrayList<Markers> list_of_markers = new ArrayList<>();
+        for (Object station : all_stations){
+            Markers marker = new Markers();
+            HashMap<String, String> current_station = (HashMap<String, String>) station;
+            marker.setMarker_name(current_station.get("STATION_NAME"));
+            marker.setMarker_id(current_station.get("MAP_ID"));
+            marker.setMarker_type(station_type);
+            marker.setMarker_lat(Double.parseDouble(current_station.get("LAT")));
+            marker.setMarker_lon(Double.parseDouble(current_station.get("LON")));
+            list_of_markers.add(marker);
+
+        }
+        for (Markers marker : list_of_markers) {
+            cta_dataBase.commit(marker, "MARKERS");
+        }
+    }
+
+
+
 
 
 

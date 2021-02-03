@@ -41,7 +41,7 @@ public class mainactivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         final CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
 
-        ArrayList<Object> favorite_stations = cta_dataBase.excecuteQuery("*", "USER_FAVORITES", null, null);
+        ArrayList<Object> favorite_stations = cta_dataBase.excecuteQuery("*", "USER_FAVORITES", null, null,null);
         ArrayList<Stops> list = new ArrayList<>();
         list.add(new Stops(null, "Choose Station", "choose_station", null));
         list.add(new Stops(null, "To Maps", "to_maps", null));
