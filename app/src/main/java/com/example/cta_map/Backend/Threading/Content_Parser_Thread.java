@@ -30,15 +30,19 @@ import java.util.List;
 public class Content_Parser_Thread implements Runnable {
     private final Context context;
     private final Message msg;
+
     android.os.Handler handler;
+    HashMap<String, String> target_station;
     ArrayList<Double> all_speeds = new ArrayList<>();
 
     String TAG = "Content Parser";
 
-    public Content_Parser_Thread(Context context, Message msg,android.os.Handler handler){
+    public Content_Parser_Thread(Context context, Message msg,android.os.Handler handler, HashMap<String, String> target_station){
         this.msg = msg;
         this.context = context;
         this.handler = handler;
+        this.target_station = target_station;
+
 
     }
 
@@ -52,18 +56,31 @@ public class Content_Parser_Thread implements Runnable {
         }
         synchronized (this.msg){
             while (this.msg.IsSending()){
-                ArrayList<Train> incoming_trains = this.msg.getIncoming_trains();
+                ArrayList<Train> incoming_trains = this.msg.getIncoming_trains(); // From API Call
                 ArrayList<Train> chosen_trains = null;
                 try {
-                    chosen_trains = choose_trains(this.context, incoming_trains,
-                                                                    this.msg.getDir(),
-                                                                    this.msg.getTarget_name(),
-                                                                    this.msg.getTarget_type());
+                    chosen_trains = choose_trains(this.context, this.target_station, incoming_trains, this.msg);
+
+                    if (this.msg.getOld_trains()!=null){
+                        for (Train new_train: chosen_trains) {
+                            updateTrains(new_train, this.msg.getOld_trains());
+                        }
+                    }
                 } catch (ParseException e) {
                     Log.e("ERROR", "ERROR WITHIN 'CHOOSE_TRAINS'");
                     e.printStackTrace();
                 }
-                send_to_UI("new_incoming_trains", chosen_trains);
+
+                if (this.msg.getOld_trains() != null){
+                    if (!this.msg.getDirectionChanged()) {
+                        send_to_UI("new_incoming_trains", this.msg.getOld_trains());
+                    }else {
+                        this.msg.setDirectionChanged(false);
+                        send_to_UI("new_incoming_trains", chosen_trains);
+                    }
+                }else{
+                    send_to_UI("new_incoming_trains", chosen_trains);
+                }
                 this.msg.notify();
                 try {
                     this.msg.wait();
@@ -80,6 +97,42 @@ public class Content_Parser_Thread implements Runnable {
         }
         Log.e(TAG, "is Killed.");
     }
+    public void updateTrains(Train new_train, ArrayList<Train> old_trains){
+        for (Train old_train : old_trains) {
+            if (old_train.getRn().equals(new_train.getRn())) {
+                old_train.setRn(new_train.getRn());
+                old_train.setStatus(new_train.getStatus());
+                old_train.setDestNm(new_train.getDestNm());
+                old_train.setTrDr(new_train.getTrDr());
+                old_train.setNextStpID(new_train.getNextStpID());
+                old_train.setNextStaNm(new_train.getNextStaNm());
+                old_train.setPrdt(new_train.getPrdt());
+                old_train.setArrT(new_train.getArrT());
+                old_train.setIsApp(new_train.getIsApp());
+                old_train.setHeading(new_train.getHeading());
+                old_train.setIsDly(new_train.getIsDly());
+                old_train.setDestSt(new_train.getDestSt());
+                old_train.setNextStaId(new_train.getNextStaId());
+                old_train.setLat(new_train.getLat());
+                old_train.setLon(new_train.getLon());
+                old_train.setTarget_id(new_train.getTarget_id());
+                old_train.setTarget_eta(new_train.getTarget_eta());
+                old_train.setNext_stop_distance(new_train.getNext_stop_distance());
+                old_train.setNextStopEtA(new_train.getNextStopEtA());
+                old_train.setTarget_distance(new_train.getTarget_distance());
+
+            }
+
+        }
+
+
+
+
+
+
+    }
+
+
     public void send_to_UI(String key, ArrayList<Train> message){
         Bundle bundle = new Bundle();
         android.os.Message handler_msg = this.handler.obtainMessage();
@@ -88,13 +141,12 @@ public class Content_Parser_Thread implements Runnable {
         handler.sendMessage(handler_msg);
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public ArrayList<Train> choose_trains(Context context, ArrayList<Train> incoming_trains, String direction, String target_name, String target_type) throws ParseException {
-        Log.e("Content_Parser","Current Train Direction: "+ direction);
-        boolean left = direction.equals("1");
+    public ArrayList<Train> choose_trains(Context context,HashMap<String, String> target_station ,ArrayList<Train> incoming_trains, Message message) throws ParseException {
+        boolean left = message.getDir().equals("1");
         Chicago_Transits chicago_transits = new Chicago_Transits();
         CTA_DataBase cta_dataBase = new CTA_DataBase(context);
         Time time = new Time();
-        ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "STATION_NAME = '"+target_name+"' AND "+chicago_transits.TrainLineKeys(target_type).toUpperCase() +" = '1'", null,null);
+        ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "MAP_ID = '"+target_station.get("MAP_ID")+"'", null,null);
         if (record == null){return null;}
 
         HashMap<String, String> target_record = (HashMap<String, String>) record.get(0);
@@ -102,11 +154,13 @@ public class Content_Parser_Thread implements Runnable {
         double target_lon = Double.parseDouble(target_record.get("LON"));
         BufferedReader file3Buffer = chicago_transits.setup_file_reader(context, R.raw.line_stops);
         ArrayList<Train> chosen_trains = new ArrayList<>();
-        ArrayList<String> ordered_stops = chicago_transits.create_line_stops_table(file3Buffer, context, target_type);
-        int target_idx = ordered_stops.indexOf(target_name);
+        ArrayList<String> ordered_stops = chicago_transits.create_line_stops_table(file3Buffer, context, message.getTarget_type());
+        int target_idx = ordered_stops.indexOf(target_station.get("STATION_NAME"));
         for (Train train: incoming_trains){
 
-            if (train.getTrDr().equals(direction)){
+            if (train.getTrDr().equals(message.getDir())){
+//                Log.e("Content_Parser","Current Train Direction: "+ train.getTrDr());
+
                 if (left){
                     List<String> left_sublist = ordered_stops.subList(target_idx, ordered_stops.size()-1);
                     if (left_sublist.contains(train.getNextStaNm())){
@@ -122,7 +176,7 @@ public class Content_Parser_Thread implements Runnable {
                         int next_stop_eta = time.get_estimated_time_arrival((int) avg_train_speed, next_stop_distance);
                         int target_eta = time.get_estimated_time_arrival((int) avg_train_speed, train_to_target_distance);
                         DecimalFormat df = new DecimalFormat("###.##");
-                        Log.e("Next Stop speed", "Train#"+ train.getRn()+ " | Distance: "+ df.format(next_stop_distance) +"mi | Speed: "+avg_train_speed+" miles per hour. Next Stop: "+ train.getNextStaNm()+ "|  ETA: "+next_stop_eta +" | Target ETA: "+ target_eta);
+//                        Log.e("Next Stop speed", "Train#"+ train.getRn()+" | Distance: "+ df.format(next_stop_distance) +"mi | Speed: "+avg_train_speed+" miles per hour. Next Stop: "+ train.getNextStaNm()+ "|  ETA: "+next_stop_eta +" | Target ETA: "+ target_eta);
                         HashMap<String,String> user_loc = getUserLocation(this.context);
                         Double user_lat = Double.parseDouble(user_loc.get("LAT"));
                         Double user_lon = Double.parseDouble(user_loc.get("LON"));
@@ -166,8 +220,9 @@ public class Content_Parser_Thread implements Runnable {
                 }
             }
         }
+        cta_dataBase.close();
         Collections.sort(chosen_trains);
-        return setStatus(this.context, chosen_trains, target_name);
+        return setStatus(this.context, chosen_trains, target_station.get("STATION_NAME"));
 
     }
 
@@ -175,6 +230,7 @@ public class Content_Parser_Thread implements Runnable {
     private HashMap<String, String> getUserLocation(Context context){
         CTA_DataBase cta_dataBase = new CTA_DataBase(context);
         ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS","MAP_ID = '41450'", null,null);
+        cta_dataBase.close();
         return (HashMap<String, String>) record.get(0);
     }
 
@@ -216,49 +272,51 @@ public class Content_Parser_Thread implements Runnable {
     private ArrayList<Train> setStatus(Context context, ArrayList<Train> incoming_trains, String target_name){
         Chicago_Transits chicago_transits = new Chicago_Transits();
         BufferedReader file3Buffer = chicago_transits.setup_file_reader(context, R.raw.line_stops);
-        ArrayList<String> ordered_stops = chicago_transits.create_line_stops_table(file3Buffer, context,incoming_trains.get(0).getTrain_type());
-        for (Train main_train: incoming_trains) {
-            try {
-                int target_idx = ordered_stops.indexOf(target_name);
-                if (main_train.getIsApp().equals("1") && main_train.getNextStaId().equals(main_train.getTarget_id())) {
-                    Log.e("NORTH STATUS", "RED");
-                    Log.e("NORTH", " IS APP. " + main_train.getNextStaNm());
-                    main_train.setStatus("RED");
-                }
-                int next_stop_idx = ordered_stops.indexOf(main_train.getNextStaNm());
-                List<String> remaining_stops;
-                if (main_train.getTrDr().equals("1")) {
-                    remaining_stops = ordered_stops.subList(target_idx, next_stop_idx + 1);
-                } else {
-                    remaining_stops = ordered_stops.subList(next_stop_idx, target_idx + 1);
-                }
 
-                if (remaining_stops.size() <= 1) {
-                    Log.e("NORTH STATUS", "RED");
-                    main_train.setStatus("RED");
+        if (incoming_trains.size() >0) {
+            ArrayList<String> ordered_stops = chicago_transits.create_line_stops_table(file3Buffer, context, incoming_trains.get(0).getTrain_type());
+            for (Train main_train : incoming_trains) {
+                try {
+                    int target_idx = ordered_stops.indexOf(target_name);
+                    if (main_train.getIsApp().equals("1") && main_train.getNextStaId().equals(main_train.getTarget_id())) {
+//                        Log.e("NORTH STATUS", "RED");
+//                        Log.e("NORTH", " IS APP. " + main_train.getNextStaNm());
+                        main_train.setStatus("RED");
+                    }
+                    int next_stop_idx = ordered_stops.indexOf(main_train.getNextStaNm());
+                    List<String> remaining_stops;
+                    if (main_train.getTrDr().equals("1")) {
+                        remaining_stops = ordered_stops.subList(target_idx, next_stop_idx + 1);
+                    } else {
+                        remaining_stops = ordered_stops.subList(next_stop_idx, target_idx + 1);
+                    }
+
+                    if (remaining_stops.size() <= 1) {
+//                        Log.e("NORTH STATUS", "RED");
+                        main_train.setStatus("RED");
+                    }
+                    if (remaining_stops.size() == 2) {
+//                        Log.e("NORTH STATUS", "YELLOW");
+                        main_train.setStatus("YELLOW");
+
+                    } else if (remaining_stops.size() >= 3) {
+//                        Log.e("NORTH STATUS", "GREEN");
+                        main_train.setStatus("GREEN");
+                    }
+
+                    Double train_to_target_distance = main_train.getTarget_distance();
+                    Double user_to_target_distance = main_train.getUser_to_target_distance();
+
+                    if (user_to_target_distance <= train_to_target_distance) {
+                        main_train.setUserStatus("GREEN");
+                    } else if (train_to_target_distance <= user_to_target_distance) {
+                        main_train.setUserStatus("RED");
+                    }
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                if (remaining_stops.size() == 2) {
-                    Log.e("NORTH STATUS", "YELLOW");
-                    main_train.setStatus("YELLOW");
-
-                } else if (remaining_stops.size() >= 3) {
-                    Log.e("NORTH STATUS", "GREEN");
-                    main_train.setStatus("GREEN");
-                }
-
-                Double train_to_target_distance = main_train.getTarget_distance();
-                Double user_to_target_distance = main_train.getUser_to_target_distance();
-
-                if (user_to_target_distance <= train_to_target_distance){
-                    main_train.setUserStatus("GREEN");
-                }
-                else if (train_to_target_distance <= user_to_target_distance){
-                    main_train.setUserStatus("RED");
-                }
-
-
-            }catch (Exception e){
-                e.printStackTrace();
             }
         }
         return incoming_trains;

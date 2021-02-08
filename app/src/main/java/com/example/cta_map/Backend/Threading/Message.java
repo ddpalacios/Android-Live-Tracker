@@ -10,17 +10,46 @@ import java.util.TreeMap;
 public class Message {
 
 
-    public boolean isSwitchDir() {
-        return willSwitchDir;
+    /*
+    Object that Interacts with threads
+
+     */
+
+
+    public Boolean getDirectionChanged() {
+        return DirectionChanged;
     }
 
-    public void setSwitchDir(boolean willSwitchDir) {
-        this.willSwitchDir = willSwitchDir;
+    public void setDirectionChanged(Boolean directionChanged) {
+        DirectionChanged = directionChanged;
     }
 
-    private boolean willSwitchDir;
+    private Boolean DirectionChanged;
+
+    public Boolean getSendingNotifications() {
+        return IsSendingNotifications;
+    }
+
+    public void setSendingNotifications(Boolean sendingNotifications) {
+        IsSendingNotifications = sendingNotifications;
+    }
+
+    private  Boolean IsSendingNotifications;
     private ArrayList<Train> incoming_trains;
     private String targetDir;
+    boolean x;
+
+    public ArrayList<Train> getOld_trains() {
+        return old_trains;
+    }
+
+    public void setOld_trains(ArrayList<Train> old_trains) {
+        this.old_trains = old_trains;
+    }
+
+    ArrayList<Train> old_trains;
+
+
 
     public void setDir(String targetDir) {
         this.targetDir = targetDir;
@@ -50,9 +79,6 @@ public class Message {
 
     private String target_name;
 
-
-
-
     public void setIncoming_trains(ArrayList<Train> incoming_trains){
         this.incoming_trains = incoming_trains;
     }
@@ -61,214 +87,12 @@ public class Message {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    HashMap<String, ArrayList<HashMap>> parsedTrainData;
-    String[] msg;
-    String dir;
-    HashMap train_etas;
-    boolean t;
-    TreeMap<Integer, String> tree;
-    boolean iswaiting = false;
-    boolean x;
-    HashMap<String, String> train_content;
-    ArrayList<HashMap> ignored;
-    String next_stop;
-    String main;
-    ArrayList<HashMap> chosen_trains;
-    String coord;
-    List<String> sub;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public String[] getRawTrainContent(){
-        return this.msg;
-
-    }
-
-    public void setStatus(Boolean waiting){
-        this.iswaiting = waiting;
-    }
-
-    public void setParsedTrainData(HashMap<String, ArrayList<HashMap>> parsedTrainData){
-        this.parsedTrainData = parsedTrainData;
-
-    }
-
-    public HashMap<String, ArrayList<HashMap>> getParsedTrainData() {
-        return parsedTrainData;
-    }
-
-
-    public void setTrainMap(TreeMap<Integer, String> map){
-        this.tree = map;
-
-    }
-
-    public TreeMap<Integer, String> getTrainMap(){
-        return this.tree;
-    }
-
-    //
-//    public Boolean isWaiting(){
-//        return this.iswaiting;
-//    }
-//
-//    public void setSubStations(List<String> sub){this.sub = sub;}
-//    public List<String> getSubStations(){return this.sub;}
-//
-//
-//    public HashMap<String, String> getTargetContent(){
-//        return this.train_content;
-//    }
-//    public void setTargetContent(HashMap<String, String> content){
-//        this.train_content = content;
-//    }
-//
-//    public void setTrain_etas(HashMap train_etas){
-//        this.train_etas = train_etas;
-//
-//    }
-//
-//    public void setMainStation(String main){
-//        this.main = main;
-//    }
-//    public String getMainStation(){
-//        return this.main;
-//    }
-//
-//
-//    public void set_chosen_trains(ArrayList<HashMap> chosen_trains){
-//        this.chosen_trains = chosen_trains;
-//
-//    }
-//
-//    public ArrayList<HashMap> get_chosen_trains(){
-//                return this.chosen_trains;
-//    }
-//
-//    public HashMap get_train_etas(){
-//        return this.train_etas;
-//    }
-//
-    public void setRawTrainList(String[] object){
-        this.msg = object;
-
-    }
-//
-//    public void setIgnored(ArrayList<HashMap> ignored){
-//        this.ignored = ignored;
-//    }
-//
-//    public ArrayList<HashMap> getIgnored(){
-//        return this.ignored;
-//    }
-//
-//    public void setNextStop(String stop){
-//        this.next_stop = stop;
-//    }
-//
-//    public String getNextStop(){
-//        return this.next_stop;
-//    }
-//
-//    public void setCoord(String lat, String lon){
-//        this.coord = lat +","+lon;
-//
-//    }    public String getCoord(){
-//        return this.coord;
-//    }
-//
-//
-//    public void setDir(String object){
-//        this.dir = object;
-//
-//    }
-//    public String getDir(){
-//        return this.dir;
-//
-//    }
         public void keepSending(boolean x) {
             this.x = x;
         }
     public boolean IsSending(){
         return this.x;
     }
-//
-//    public boolean getClicked(){
-//        return this.t;
-//
-//    }  public void setClicked(boolean t){
-//        this.t = t;
-//
-//    }
 
 
 

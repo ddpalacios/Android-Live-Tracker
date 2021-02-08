@@ -433,6 +433,8 @@ public class Chicago_Transits {
         String nextStaId = get_xml_tag_value(each_train, " <nextStaId>", " </nextStaId>");
 
             train.setRn(rn);
+            train.setViewIcon(false);
+            train.setSelected(false);
             train.setDestNm(destNm);
             train.setTrDr(trDr);
             train.setNextStpID(nextStpId);

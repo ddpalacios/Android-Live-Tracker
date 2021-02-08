@@ -131,49 +131,48 @@ public class TrainTrackingActivity extends AppCompatActivity {
             add_to_favorites.setText("Add To Favorites");
         }
 
-        message.setSwitchDir(false);
         message.keepSending(true);
         message.setTarget_name(tracking_station.get("target_station_name"));
         message.setTarget_type(tracking_station.get("station_type"));
 
-        final Thread api_caller =  new  Thread(new API_Caller_Thread(message, tracking_station.get("station_type")));
-        final Thread content_parser = new Thread(new Content_Parser_Thread(getApplicationContext(), message, handler));
-
-        test_threads.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!change_thread_text[0]){
-                    change_thread_text[0] = true;
-                    test_threads.setText("Running");
-                    message.setDir(tracking_station.get("station_dir"));
-                    message.setSwitchDir(false);
-                    message.keepSending(true);
-                    message.setTarget_name(tracking_station.get("target_station_name"));
-                    message.setTarget_type(tracking_station.get("station_type"));
-
-                    Log.e(TAG, api_caller.getState().toString()+"");
-                    if (api_caller.getState() == Thread.State.NEW){
-                        api_caller.start();
-                    }
-                    if (content_parser.getState() == Thread.State.NEW){
-                        content_parser.start();
-                    }
-
-                }else{
-                    test_threads.setText("Run");
-                    change_thread_text[0] = false;
-                    message.keepSending(false);
-                    api_caller.interrupt();
-                    content_parser.interrupt();
-
-                }
-
-
-
-
-
-            }
-        });
+//        final Thread api_caller =  new  Thread(new API_Caller_Thread(message));
+//        final Thread content_parser = new Thread(new Content_Parser_Thread(getApplicationContext(), message, handler, ));
+//
+//        test_threads.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (!change_thread_text[0]){
+//                    change_thread_text[0] = true;
+//                    test_threads.setText("Running");
+//                    message.setDir(tracking_station.get("station_dir"));
+//                    message.setSwitchDir(false);
+//                    message.keepSending(true);
+//                    message.setTarget_name(tracking_station.get("target_station_name"));
+//                    message.setTarget_type(tracking_station.get("station_type"));
+//
+//                    Log.e(TAG, api_caller.getState().toString()+"");
+//                    if (api_caller.getState() == Thread.State.NEW){
+//                        api_caller.start();
+//                    }
+//                    if (content_parser.getState() == Thread.State.NEW){
+//                        content_parser.start();
+//                    }
+//
+//                }else{
+//                    test_threads.setText("Run");
+//                    change_thread_text[0] = false;
+//                    message.keepSending(false);
+//                    api_caller.interrupt();
+//                    content_parser.interrupt();
+//
+//                }
+//
+//
+//
+//
+//
+//            }
+//        });
 
         backToHome.setOnClickListener(new View.OnClickListener() {
             @Override

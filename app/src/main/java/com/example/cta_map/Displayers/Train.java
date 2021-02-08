@@ -2,28 +2,36 @@ package com.example.cta_map.Displayers;
 
 public class Train implements Comparable< Train >{
 
+    public Boolean getViewIcon() {
+        return viewIcon;
+    }
+
+    public void setViewIcon(Boolean viewIcon) {
+        this.viewIcon = viewIcon;
+    }
+
     /*
-<train>
-            <rn>831</rn>
-            <destSt>30089</destSt>
-            <destNm>95th/Dan Ryan</destNm>
-            <trDr>5</trDr>
-            <nextStaId>41400</nextStaId>
-            <nextStpId>30270</nextStpId>
-            <nextStaNm>Roosevelt</nextStaNm>
-            <prdt>20201224 22:19:47</prdt>
-            <arrT>20201224 22:20:47</arrT>
-            <isApp>1</isApp>
-            <isDly>0</isDly>
-            <flags />
-            <lat>41.87678</lat>
-            <lon>-87.62756</lon>
-            <heading>178</heading>
-        </train>
+    <train>
+                <rn>831</rn>
+                <destSt>30089</destSt>
+                <destNm>95th/Dan Ryan</destNm>
+                <trDr>5</trDr>
+                <nextStaId>41400</nextStaId>
+                <nextStpId>30270</nextStpId>
+                <nextStaNm>Roosevelt</nextStaNm>
+                <prdt>20201224 22:19:47</prdt>
+                <arrT>20201224 22:20:47</arrT>
+                <isApp>1</isApp>
+                <isDly>0</isDly>
+                <flags />
+                <lat>41.87678</lat>
+                <lon>-87.62756</lon>
+                <heading>178</heading>
+            </train>
 
 
- */
-
+     */
+    private Boolean viewIcon;
     private String rn;
     private String destSt;
     private String trDr;
@@ -32,6 +40,18 @@ public class Train implements Comparable< Train >{
     private String nextStaNm;
     private String prdt;
     private String arrT;
+
+    public Boolean getSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(Boolean selected) {
+        isSelected = selected;
+    }
+
+    private Boolean isSelected;
+
+
 
     public String getUserStatus() {
         return userStatus;

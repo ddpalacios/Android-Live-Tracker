@@ -86,8 +86,10 @@ public class CTA_DataBase extends SQLiteOpenHelper {
 
 
     public CTA_DataBase(@Nullable Context context) {
+        super(context, "CTA_DATABASE", null, 10);
+        SQLiteDatabase db = this.getWritableDatabase();
+        createMarkersTable(db);
 
-        super(context, "CTA_DATABASE", null, 6);
 
 
     }
@@ -99,7 +101,6 @@ public class CTA_DataBase extends SQLiteOpenHelper {
         createUserFavorites(db);
         create_main_stations(db);
         create_L_stops_table(db);
-        createMarkersTable(db);
 
         Log.e("SQLITE", "CREATED TABLES");
     }
@@ -227,6 +228,7 @@ public class CTA_DataBase extends SQLiteOpenHelper {
     private void addMarker(Markers markers){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
+        values.put(marker_id, markers.getMarker_id());
         values.put(marker_name, markers.getMarker_name());
         values.put(marker_type, markers.getMarker_type());
         values.put(marker_lat, markers.getMarker_lat());
@@ -369,7 +371,7 @@ public class CTA_DataBase extends SQLiteOpenHelper {
         }else{
             query = "SELECT "+cols+" FROM "+table_name +" WHERE "+condition;
             if (contains!=null){
-                query = query + " LIKE '%"+ contains+"%'";
+                query = query + " LIKE '"+ contains+"%'";
             }
         }
         if (col_orderBy == null){

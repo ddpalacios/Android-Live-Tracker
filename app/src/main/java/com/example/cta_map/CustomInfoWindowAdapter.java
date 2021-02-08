@@ -8,10 +8,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.cta_map.Displayers.Train;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter{
     private  final  View mWindow;
@@ -30,20 +33,19 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter{
     private void renderWindowText(Marker marker, View view){
         String next_stop = marker.getTitle();
         TextView stop_title = view.findViewById(R.id.nextStop);
-//        TextView window_title = view.findViewById(R.id.notification_title);
-//        LinearLayout linearLayout = view.findViewById(R.id.main_notification_window);
-//        TextView textView = new TextView(this.context);
-//        textView.setTextColor(Color.BLACK);
-//        textView.setTextSize(2);
-//        textView.setText(next_stop);
-//        linearLayout.addView(textView);
-
         stop_title.setText(next_stop);
-        String snipper = marker.getSnippet();
-        TextView subSinnet = view.findViewById(R.id.subtitle);
-        subSinnet.setText(snipper);
+        if (!stop_title.getText().toString().equals("Target")) {
+            String snippet = marker.getSnippet();
+            try {
+                String MAP_ID = StringUtils.substringBetween(snippet, "StationID#", "Train").trim();
+                String TRAIN_ID = StringUtils.substringBetween(snippet, "Train#", ".").trim();
+                TextView subSinnet = view.findViewById(R.id.subtitle);
+                subSinnet.setText("Train# " + TRAIN_ID);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-
+        }
     }
 
 
