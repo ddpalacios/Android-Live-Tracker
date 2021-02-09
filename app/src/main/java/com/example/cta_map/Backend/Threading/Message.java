@@ -37,6 +37,16 @@ public class Message {
     private  Boolean IsSendingNotifications;
     private ArrayList<Train> incoming_trains;
     private String targetDir;
+
+    public String getTARGET_MAP_ID() {
+        return TARGET_MAP_ID;
+    }
+
+    public void setTARGET_MAP_ID(String TARGET_MAP_ID) {
+        this.TARGET_MAP_ID = TARGET_MAP_ID;
+    }
+
+    private String TARGET_MAP_ID;
     boolean x;
 
     public ArrayList<Train> getOld_trains() {

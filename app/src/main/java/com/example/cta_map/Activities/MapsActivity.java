@@ -15,6 +15,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -94,8 +96,8 @@ import java.util.TreeMap;
                     setContentView(R.layout.activity_maps);
                     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                     SupportMapFragment mapFragment;
-                    ActionBar actionBar = getSupportActionBar();
-                    actionBar.setTitle("Live Map Viewer");
+//                    ActionBar actionBar = getSupportActionBar();
+//                    actionBar.setTitle("Live Map Viewer");
                     mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
                     mapFragment.getMapAsync(this);
 
@@ -106,51 +108,29 @@ import java.util.TreeMap;
                     mMap = googleMap;
                     InitiateOnclickListeners(mMap);
 
+
+
+
                 }
 
-                private void   InitiateOnclickListeners(final GoogleMap mMap) {
-                    message = new Message();
+                @SuppressLint("ResourceType")
+                @Override
+                public boolean onCreateOptionsMenu(Menu menu) {
+                    // Inflate the menu; this adds items to the action bar if it is present.
+                    getMenuInflater().inflate(R.menu.menu, menu);
 
-                    FloatingActionButton switch_dir = findViewById(R.id.map_switch_dir);
-//                    Button stationLookup = findViewById(R.id.stationLookup);
-                    final TextView search_result = findViewById(R.id.search_res);
-                    SearchView station_search = findViewById(R.id.Station_searchView);
-                    Spinner line_drop_down = (Spinner) findViewById(R.id.line_selection);
-                    ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,R.array.line_names, android.R.layout.simple_spinner_item);
+                    MenuItem item = menu.findItem(R.id.spinner);
+                    MenuItem searchView_item =  menu.findItem(R.id.app_bar_search);
+                    Spinner spinner = (Spinner) item.getActionView();
+                    SearchView searchView = (SearchView) searchView_item.getActionView();
+
+                    ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                            R.array.line_names, android.R.layout.simple_spinner_item);
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    line_drop_down.setAdapter(adapter);
 
-//                    stationLookup.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-//                            mMap.clear();
-//                            message.keepSending(false);
-//                            if (content_parser != null) {
-//                                content_parser.interrupt();
-//                            }
-//                            if (message.getTarget_type() != null) {
-//                                CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
-//                                ArrayList<Object> all_stations = cta_dataBase.excecuteQuery("*", "MARKERS", "marker_type = '" + message.getTarget_type() + "'", null, null);
-//                                cta_dataBase.close();
-//                                for (Object station : all_stations) {
-//                                    HashMap<String, String> current_station = (HashMap<String, String>) station;
-//                                    MapMarker marker = new MapMarker(mMap, getApplicationContext(), message);
-//                                    marker.addMarker(Double.parseDouble(current_station.get("marker_lat")), Double.parseDouble(current_station.get("marker_lon")),
-//                                            "Station# " + current_station.get("marker_id"),
-//                                            message.getTarget_type(),
-//                                            1f,
-//                                            false,
-//                                            false,
-//                                            true,
-//                                            current_station.get("marker_name"), false);
-//                                }
-//                            }
-//                        }
-//                    });
+                    spinner.setAdapter(adapter);
 
-
-
-                    line_drop_down.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                         @Override
                         public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -190,7 +170,9 @@ import java.util.TreeMap;
 
 
 
-                    station_search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+
+                    searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                         @Override
                         public boolean onQueryTextSubmit(String query) {
                             return false;
@@ -204,7 +186,7 @@ import java.util.TreeMap;
                                 ArrayList<Object> target_stations = cta_dataBase.excecuteQuery("*", "MARKERS", "marker_type = '" + message.getTarget_type() + "' AND marker_name", search_string, null);
                                 cta_dataBase.close();
                                 if (target_stations != null) {
-                                    search_result.setText("Search Result: "+target_stations.size());
+//                                    search_result.setText("Search Result: "+target_stations.size());
                                     for (Object station : target_stations) {
                                         HashMap<String, String> current_station = (HashMap<String, String>) station;
                                         Log.e("search", current_station.get("marker_id") + "# - " + current_station.get("marker_name"));
@@ -220,14 +202,47 @@ import java.util.TreeMap;
                                                 true,
                                                 current_station.get("marker_name"),false);
                                     }
-                                }else{
-                                    search_result.setText("Search Result: 0");
                                 }
+
                             }
                             return false;
                         }
 
                     });
+
+
+
+
+
+                    return true;
+                }
+
+
+
+                @Override
+                public boolean onOptionsItemSelected(MenuItem item) {
+                    // Handle action bar item clicks here. The action bar will
+                    // automatically handle clicks on the Home/Up button, so long
+                    // as you specify a parent activity in AndroidManifest.xml.
+                    int id = item.getItemId();
+
+                    //noinspection SimplifiableIfStatement
+                    if (id == R.id.app_bar_search) {
+                        return true;
+                    }
+
+                    return super.onOptionsItemSelected(item);
+                }
+
+
+
+
+                private void   InitiateOnclickListeners(final GoogleMap mMap) {
+                    message = new Message();
+
+                    FloatingActionButton switch_dir = findViewById(R.id.map_switch_dir);
+
+
 
                     switch_dir.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -254,9 +269,6 @@ import java.util.TreeMap;
                         public void onInfoWindowClick(Marker marker) {
                             CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
                             if (message.getOld_trains() != null){
-
-
-
                                 String TRAIN_ID  =  marker.getSnippet().replaceAll("Train#", "").trim();
                                 Train selected_train = trainLookup(TRAIN_ID, false);
 
@@ -280,6 +292,10 @@ import java.util.TreeMap;
                                     // Then set the selected marker
                                     selected_train.setSelected(true);
                                     selected_train.setViewIcon(true);
+                                    greenNotified = false;
+                                    YellowNotified = false;
+                                    RedNotified = false;
+
                                     NotificationTrain = selected_train;
 
                                     initiateNotifications(selected_train);
@@ -290,6 +306,7 @@ import java.util.TreeMap;
 
                             }else{
                                 String MAP_ID = marker.getSnippet().replaceAll("Station# ", "");
+                                message.setTARGET_MAP_ID(MAP_ID);
                                 Object target_stations = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "MAP_ID = '" + MAP_ID + "'", null, null).get(0);
                                 if (target_stations != null) {
                                     HashMap<String, String> new_target_station = (HashMap<String, String>) target_stations;
@@ -395,17 +412,19 @@ import java.util.TreeMap;
                     for (Train train: all_chosen_trains){
                         Log.e("TRAIN", "RN: "+train.getRn()+". Is Selected? "+train.getSelected() +" Icon? "+ train.getViewIcon());
                     }
+
+                    CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
+                    ArrayList<Object> target_station_record = cta_dataBase.excecuteQuery("*",
+                            "CTA_STOPS",
+                            "MAP_ID = '" + message.getTARGET_MAP_ID() + "'",
+                            null,
+                            null);
+
+                    HashMap<String, String> target_station = (HashMap<String, String>) target_station_record.get(0);
+                    plot_marker(null, target_station); // Plot Target Station
                     Log.e("TRAIN", "DONE");
                     if (all_chosen_trains.size() > 0) {
-                        CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
-                        ArrayList<Object> target_station_record = cta_dataBase.excecuteQuery("*",
-                                                                                "CTA_STOPS",
-                                                                                "MAP_ID = '" + all_chosen_trains.get(0).getTarget_id() + "'",
-                                                                                null,
-                                                                                null);
 
-                        HashMap<String, String> target_station = (HashMap<String, String>) target_station_record.get(0);
-                        plot_marker(null, target_station); // Plot Target Station
                         for (Train train : all_chosen_trains) {  // Find Train that has an icon
                             if (train.getViewIcon() && train.getSelected()) {
                                 NotificationTrain = train;
@@ -439,22 +458,19 @@ import java.util.TreeMap;
                         NotificationBuilder notificationBuilder = new NotificationBuilder(getApplicationContext(), notificationIntent);
                         notificationBuilder.notificationDialog("CTA_map", "");
                         Toast.makeText(getApplicationContext(), "NOTIFIED FOR "+ selectedTrain.getRn() +" Status: " +selectedTrain.getStatus(), Toast.LENGTH_SHORT).show();
-
                         greenNotified = true;
                     }
                     else if (selectedTrain.getStatus().equals("YELLOW") && !YellowNotified){
                         NotificationBuilder notificationBuilder = new NotificationBuilder(getApplicationContext(), notificationIntent );
                         notificationBuilder.notificationDialog("CTA_map", "");
                         Toast.makeText(getApplicationContext(), "NOTIFIED FOR "+ selectedTrain.getRn() +" Status: " +selectedTrain.getStatus(), Toast.LENGTH_SHORT).show();
-
                         YellowNotified = true;
+
                     }else if (selectedTrain.getStatus().equals("RED") && !RedNotified){
                         NotificationBuilder notificationBuilder = new NotificationBuilder(getApplicationContext(), notificationIntent);
                         notificationBuilder.notificationDialog("CTA_map", "");
                         Toast.makeText(getApplicationContext(), "NOTIFIED FOR "+ selectedTrain.getRn(), Toast.LENGTH_SHORT).show();
-
                         RedNotified = true;
-
                     }
 
                 }
