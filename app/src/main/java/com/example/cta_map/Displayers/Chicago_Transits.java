@@ -2,16 +2,15 @@ package com.example.cta_map.Displayers;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
-import android.widget.Switch;
 
 import androidx.annotation.RequiresApi;
 
-import com.example.cta_map.Backend.Threading.IncomingTrains;
 import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.DataBase.CTA_Stops;
 import com.example.cta_map.DataBase.L_stops;
 import com.example.cta_map.DataBase.MainStation;
 import com.example.cta_map.DataBase.Markers;
+import com.example.cta_map.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -22,7 +21,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -30,6 +28,20 @@ import java.util.HashMap;
 
 
 public class Chicago_Transits {
+
+    public  Integer getTrainImage(String train_line){
+        HashMap<String, Integer> TrainLineKeyCodes  = new HashMap<>();
+        train_line = train_line.toLowerCase().trim();
+        TrainLineKeyCodes.put("red", R.drawable.red );
+        TrainLineKeyCodes.put("blue", R.drawable.blue);
+        TrainLineKeyCodes.put("brown", R.drawable.brown);
+        TrainLineKeyCodes.put("green", R.drawable.green);
+        TrainLineKeyCodes.put("orange", R.drawable.orange);
+        TrainLineKeyCodes.put("pink", R.drawable.pink);
+        TrainLineKeyCodes.put("purple", R.drawable.purple);
+        TrainLineKeyCodes.put("yellow", R.drawable.yellow);
+        return TrainLineKeyCodes.get(train_line);
+    }
 
 
     public void createMarkerTable(Context context){
@@ -495,6 +507,24 @@ public class Chicago_Transits {
         TrainLineKeyCodes.put("yellow", "y");
 
         return TrainLineKeyCodes.get(station_type.toLowerCase());
+
+
+
+    }
+
+
+    public Integer GetBackgroundColor(String color, Context context) {
+        HashMap<String, Integer> TrainLineKeyCodes = new HashMap<>();
+        TrainLineKeyCodes.put("red", context.getResources().getColor(R.color.red_100));
+        TrainLineKeyCodes.put("blue", context.getResources().getColor(R.color.blue_100));
+        TrainLineKeyCodes.put("brown", context.getResources().getColor(R.color.brown));
+        TrainLineKeyCodes.put("green", context.getResources().getColor(R.color.green_100));
+        TrainLineKeyCodes.put("orange", context.getResources().getColor(R.color.orange));
+        TrainLineKeyCodes.put("pink", context.getResources().getColor(R.color.pink));
+        TrainLineKeyCodes.put("purple",context.getResources().getColor(R.color.purple));
+        TrainLineKeyCodes.put("yellow", context.getResources().getColor(R.color.yellow));
+
+        return TrainLineKeyCodes.get(color.toLowerCase());
     }
 
 

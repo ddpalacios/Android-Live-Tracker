@@ -2,23 +2,22 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activities.ChooseTrainLineActivity">
+    android:background="@color/myGreen">
+
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Choose Route:"
-        android:layout_marginLeft="10dp"
+        android:layout_marginTop="356dp"
+        android:text="sample text 1"
+        android:textSize="25dp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/list_of_train_lines"
+        android:textColor="@color/blue_700"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
-    android:layout_marginTop="25dp"
-    android:id="@+id/list_of_train_lines"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

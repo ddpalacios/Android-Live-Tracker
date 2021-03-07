@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import androidx.annotation.Nullable;
 
-import com.example.cta_map.Activities.FavoriteStation;
+import com.example.cta_map.Activities.Classes.FavoriteStation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -81,12 +81,17 @@ public class CTA_DataBase extends SQLiteOpenHelper {
 
     public final String USER_FAVORITES = "USER_FAVORITES";
     public  final String FAVORITE_STOP_ID = "STOP_ID";
+    public final String FAVORITE_MAP_ID = "FAVORITE_MAP_ID";
     public  final String FAVORITE_STATION_TYPE = "STATION_TYPE";
     public  final String FAVORITE_STATION_NAME = "STATION_NAME";
+    public  final String FAVORITE_STATION_DIRECTION = "STATION_DIR";
+    public  final String FAVORITE_STATION_DIRECTION_LABEL = "STATION_DIR_LABEL";
+
+
 
 
     public CTA_DataBase(@Nullable Context context) {
-        super(context, "CTA_DATABASE", null, 10);
+        super(context, "CTA_DATABASE", null, 15);
         SQLiteDatabase db = this.getWritableDatabase();
         createMarkersTable(db);
 
@@ -191,8 +196,11 @@ public class CTA_DataBase extends SQLiteOpenHelper {
 
     public void createUserFavorites(SQLiteDatabase db){
         String user_favorites = "CREATE TABLE IF NOT EXISTS " + USER_FAVORITES +
-                "(" + FAVORITE_STOP_ID + " TEXT PRIMARY KEY, " +
+                "(" + FAVORITE_STOP_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                FAVORITE_MAP_ID + " TEXT, " +
                 FAVORITE_STATION_TYPE + " TEXT, " +
+                FAVORITE_STATION_DIRECTION + " TEXT, " +
+                FAVORITE_STATION_DIRECTION_LABEL + " TEXT, " +
                 FAVORITE_STATION_NAME + " TEXT)";
 
 
@@ -206,7 +214,7 @@ public class CTA_DataBase extends SQLiteOpenHelper {
             CTA_Stops station = (CTA_Stops) item;
             add_cta_stations_to_cta_table(station);
 
-        }else if (table_name.equals("favorite_station")){
+        }else if (table_name.equals("USER_FAVORITES")){
             FavoriteStation station = (FavoriteStation) item;
            add_user_favorites(station);
 
@@ -277,9 +285,11 @@ public class CTA_DataBase extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(FAVORITE_STOP_ID, cta_data.getStation_id());
+        values.put(FAVORITE_MAP_ID, cta_data.getStation_id());
         values.put(FAVORITE_STATION_NAME, cta_data.getStation_name());
         values.put(FAVORITE_STATION_TYPE, cta_data.getStation_type());
+        values.put(FAVORITE_STATION_DIRECTION, cta_data.getStation_dir());
+        values.put(FAVORITE_STATION_DIRECTION_LABEL, cta_data.getStation_dir_label());
         db.insert(USER_FAVORITES, null, values);
         db.close();
     }
@@ -371,7 +381,7 @@ public class CTA_DataBase extends SQLiteOpenHelper {
         }else{
             query = "SELECT "+cols+" FROM "+table_name +" WHERE "+condition;
             if (contains!=null){
-                query = query + " LIKE '"+ contains+"%'";
+                query = query + " LIKE '%"+ contains+"%'";
             }
         }
         if (col_orderBy == null){

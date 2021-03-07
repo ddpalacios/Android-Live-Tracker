@@ -20,12 +20,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity
-            android:name=".MainActivity.TabbedMainActivity"
-            android:label="@string/title_activity_tabbed_main"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity
-            android:name=".TabbedMainActivity"
+            android:name=".Activities.Fragment_main_activity.ResponsiveMap"
             android:label="@string/title_activity_tabbed_main"
             android:theme="@style/AppTheme.NoActionBar" />
         <!--
@@ -39,99 +36,35 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" /> <!-- <activity -->
-        <!-- android:name=".Activities.userLoginActivity"> -->
-        <!-- <intent-filter> -->
-        <!-- <action android:name="android.intent.action.MAIN" /> -->
-        <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-        <!-- </intent-filter> -->
-        <!-- </activity> -->
-        <activity android:name=".Activities.ChooseLineActivity">
-            <intent-filter>
 
-                <!-- <action android:name="android.intent.action.MAIN" /> -->
 
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".ChooseLine">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".Activities.ViewDataActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".ChooseDir">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".TrainStations">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity> <!-- <activity android:name=".Activities.PopUp" -->
-        <!-- android:theme="@style/AppTheme.CustomTheme" -->
-        <!-- > -->
-        <!-- </activity> -->
-        <activity
-            android:name=".Activities.TrainInfoPopUp"
-            android:theme="@style/AppTheme.CustomTheme" /> <!-- <activity -->
-        <!-- android:name=".Activities.newUserActivity"> -->
-        <!-- <intent-filter> -->
-        <!-- &lt;!&ndash;                <action android:name="android.intent.action.MAIN" />&ndash;&gt; -->
-        <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-        <!-- </intent-filter> -->
-        <!-- </activity> -->
-        <activity android:name=".Activities.mainactivity">
+        <activity android:name=".Activities.MainActivity" android:configChanges="orientation|screenSize|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".Activities.ChooseDirectionActivity"
-            android:label="@string/title_activity_maps">
+
+
+        <activity android:name=".Activities.ChooseTrainLineActivity" android:configChanges="orientation|screenSize|keyboardHidden">
             <intent-filter>
-
-                <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".Activities.TrainStationActivity"
-            android:label="@string/title_activity_maps">
+
+        <activity android:name=".Activities.ChooseTrainDirectionActivity" android:configChanges="orientation|screenSize|keyboardHidden">
             <intent-filter>
-
-                <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".Activities.MapsActivity"
-            android:label="@string/title_activity_maps">
+
+        <activity android:name=".Activities.ChooseStationActivity" android:configChanges="orientation|screenSize|keyboardHidden">
             <intent-filter>
-
-                <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".Activities.TrainTrackingActivity"
-            android:label="@string/title_activity_maps">
-            <intent-filter>
 
-                <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>

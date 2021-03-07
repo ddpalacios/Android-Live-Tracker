@@ -8,7 +8,6 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
@@ -16,7 +15,7 @@ import android.os.Vibrator;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
-import com.example.cta_map.Activities.mainactivity;
+//import com.example.cta_map.Activities.Navigation.mainactivity;
 import com.example.cta_map.R;
 
 public class NotificationBuilder {
@@ -45,20 +44,20 @@ public class NotificationBuilder {
         // First: root activity of ApiDemos.
         // This is a convenient way to make the proper Intent to launch and
         // reset an application's task.
-        intents[0] = Intent.makeRestartActivityTask(new ComponentName(context,
-               mainactivity.class));
-
-        // "App"
-        intents[1] = new Intent(context, mainactivity.class);
-        intents[1].putExtra(" com.example.cta_map.Displayers", "App");
-        // "App/Notification"
-        intents[2] = new Intent(context,  mainactivity.class);
-
-        // Now the activity to display to the user.  Also fill in the data it
-        // should display.
-        intents[3] = new Intent(context, mainactivity.class);
-//        intents[3].putExtra(IncomingMessageView.KEY_FROM, from);
-//        intents[3].putExtra(IncomingMessageView.KEY_MESSAGE, msg);
+//        intents[0] = Intent.makeRestartActivityTask(new ComponentName(context,
+//               mainactivity.class));
+//
+//        // "App"
+//        intents[1] = new Intent(context, mainactivity.class);
+//        intents[1].putExtra(" com.example.cta_map.Displayers", "App");
+//        // "App/Notification"
+//        intents[2] = new Intent(context,  mainactivity.class);
+//
+//        // Now the activity to display to the user.  Also fill in the data it
+//        // should display.
+//        intents[3] = new Intent(context, mainactivity.class);
+////        intents[3].putExtra(IncomingMessageView.KEY_FROM, from);
+////        intents[3].putExtra(IncomingMessageView.KEY_MESSAGE, msg);
 
         return intents;
     }

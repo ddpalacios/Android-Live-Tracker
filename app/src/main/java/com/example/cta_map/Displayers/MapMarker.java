@@ -4,9 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-//import com.example.cta_map.Activities.MapsActivity;
+//import com.example.cta_map.Activities.Navigation.MapsActivity;
 import com.example.cta_map.Backend.Threading.Message;
-import com.example.cta_map.CustomInfoWindowAdapter;
 import com.example.cta_map.R;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -14,8 +13,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 

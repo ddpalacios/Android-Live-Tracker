@@ -47,6 +47,14 @@
     <string name="title_activity_main2">MainActivity2</string>
     <string name="title_activity_tabbed_main">TabbedMainActivity</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="sample_string">
+        \m learning SQL and was trying to make a very large table which I could use for optimization tests. Something generic with random values. I created a little Java program to do just that, and was able to put out a text file with 100,000 lines, each line being an SQL INSERT statement for a new random record. However, with anything much bigger than 100,000 lines, I had problems either opening/using the text file in any text editor, or copying/pasting the text to the windows clipboard and then into SQL Developer so I could execute it as a script.
+
+Im probably overlooking something really obvious, or doing something really stupid. There has got to be a better way to do this, but I couldnt find anything through Google or Stackoverflow or Superuser.
+
+
+
+    </string>
 
 
 </resources>

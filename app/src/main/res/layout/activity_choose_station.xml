@@ -5,11 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activities.ChooseTrainLineActivity">
+
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Choose Route:"
+        android:text="Choose Station:"
         android:layout_marginLeft="10dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/list_of_train_lines"
@@ -17,8 +18,8 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
-    android:layout_marginTop="25dp"
-    android:id="@+id/list_of_train_lines"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+        android:layout_marginTop="25dp"
+        android:id="@+id/list_of_train_lines"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
