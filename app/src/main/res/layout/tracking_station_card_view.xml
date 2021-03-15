@@ -23,9 +23,9 @@
 
             <ImageView
                 android:id="@+id/train_image"
-                android:layout_width="85dp"
+                android:layout_width="55dp"
 
-                android:layout_height="67dp"
+                android:layout_height="46dp"
 
                 android:scaleType="fitXY"
                 app:layout_constraintBottom_toBottomOf="parent"

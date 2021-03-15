@@ -144,10 +144,6 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
                     });
 
-
-
-
-
                     searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                         @Override
                         public boolean onQueryTextSubmit(String query) {
@@ -179,17 +175,10 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                                                 current_station.get("marker_name"),false);
                                     }
                                 }
-
                             }
                             return false;
                         }
-
                     });
-
-
-
-
-
                     return true;
                 }
 
@@ -368,10 +357,10 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                 private void StartThreads(HashMap<String , String> target_station){
                     message.setDir("1");
                     message.setTarget_name(target_station.get("STATION_NAME"));
+                    message.keepSending(true);
                     mMap.clear();
                     api_caller =  new  Thread(new API_Caller_Thread(message));
-                    content_parser = new Thread(new Content_Parser_Thread(getApplicationContext(), message, handler, target_station));
-                    message.keepSending(true);
+                    content_parser = new Thread(new Content_Parser_Thread(getApplicationContext(),handler, message));
                     api_caller.start();
                     content_parser.start();
 

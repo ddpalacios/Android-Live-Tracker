@@ -1,5 +1,6 @@
 package com.example.cta_map.Activities;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cta_map.ListItem;
@@ -15,15 +17,15 @@ import com.example.cta_map.R;
 
 import java.util.ArrayList;
 
-public class RecyclerView_Adapter_frag1 extends RecyclerView.Adapter<RecyclerView_Adapter_frag1.ItemHolder>  {
+public class TrainTimes_Adapter_frag extends RecyclerView.Adapter<TrainTimes_Adapter_frag.ItemHolder>  {
     ArrayList<ListItem> contactsList;
-    public RecyclerView_Adapter_frag1( ArrayList<ListItem> contactsList){
+    public TrainTimes_Adapter_frag(ArrayList<ListItem> contactsList){
         this.contactsList = contactsList;
     }
 
     @NonNull
     @Override
-    public RecyclerView_Adapter_frag1.ItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public TrainTimes_Adapter_frag.ItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.card_view_layout, parent, false);
 
@@ -31,25 +33,28 @@ public class RecyclerView_Adapter_frag1 extends RecyclerView.Adapter<RecyclerVie
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView_Adapter_frag1.ItemHolder holder, int position) {
+    public void onBindViewHolder(@NonNull TrainTimes_Adapter_frag.ItemHolder holder, int position) {
         final ListItem contact = this.contactsList.get(position);
         holder.t1.setText(contact.getTitle());
         holder.imageView.setImageResource(contact.getImage());
+        Log.e("New", this.contactsList.size()+"");
+
+
+
+
         holder.t1.setOnClickListener(v -> {
-//            ChooseDirection_Fragment chooseDirection_fragment = new ChooseDirection_Fragment(this.context);
-//            Toast.makeText(this.context, "Clicked "+ contact.getTitle(), Toast.LENGTH_SHORT).show();
-//            FragmentTransaction ft = this.context.beginTransaction();
-//            ft.replace(R.id.user_frag, chooseDirection_fragment)
-//                    .commit();
-
-
-
-
-
-
+            Log.e("CLICKED", contact.getTitle()+"");
 
         });
     }
+
+    public void updateData(final ArrayList<ListItem> stationArrivalPOJO) {
+       this.contactsList = new ArrayList<>();
+       this.contactsList.addAll(stationArrivalPOJO);
+       this.notifyDataSetChanged();
+    }
+
+
 
     @Override
     public int getItemCount() {
@@ -65,5 +70,6 @@ public class RecyclerView_Adapter_frag1 extends RecyclerView.Adapter<RecyclerVie
             imageView = (ImageView) itemView.findViewById(R.id.train_image);
         }
     }
+
 }
 

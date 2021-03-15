@@ -3,6 +3,16 @@ package com.example.cta_map.Activities.Classes;
 public class FavoriteStation {
     String station_id;
 
+    public String getTracking() {
+        return isTracking;
+    }
+
+    public void setTracking(String tracking) {
+        isTracking = tracking;
+    }
+
+     String isTracking;
+
     public String getStation_id() {
         return station_id;
     }

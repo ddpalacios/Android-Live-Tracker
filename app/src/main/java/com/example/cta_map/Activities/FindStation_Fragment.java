@@ -53,35 +53,35 @@ public class FindStation_Fragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
-        recyclerView = view.findViewById(R.id.frag_rv);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        ArrayList<ListItem> arrayList = new ArrayList<>();
-        int[] images = {
-                R.drawable.red,
-                R.drawable.blue,
-                R.drawable.brown,
-                R.drawable.green,
-                R.drawable.orange,
-                R.drawable.purple,
-                R.drawable.pink,
-                R.drawable.yellow
-        };
+//        recyclerView = view.findViewById(R.id.frag_rv);
+//        recyclerView.setHasFixedSize(true);
+//        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+//        ArrayList<ListItem> arrayList = new ArrayList<>();
+//        int[] images = {
+//                R.drawable.red,
+//                R.drawable.blue,
+//                R.drawable.brown,
+//                R.drawable.green,
+//                R.drawable.orange,
+//                R.drawable.purple,
+//                R.drawable.pink,
+//                R.drawable.yellow
+//        };
 
 
-        String[] line_names = {"RED", "BLUE", "BROWN", "GREEN", "ORANGE", "PURPLE", "PINK", "YELLOW"};
-        for (int i=0; i<images.length; i++){
-            ListItem listItem = new ListItem();
-            listItem.setImage(images[i]);
-            listItem.setTitle(line_names[i]);
-
-            arrayList.add(listItem);
-        }
-        FragmentManager fragManager = myContext.getSupportFragmentManager();
-        HashMap<String, String> tracking_station = new HashMap<>();
-
-        recyclerView.setAdapter(new RecyclerView_Adapter_frag3(tracking_station, fragManager, arrayList));
-
+//        String[] line_names = {"RED", "BLUE", "BROWN", "GREEN", "ORANGE", "PURPLE", "PINK", "YELLOW"};
+//        for (int i=0; i<images.length; i++){
+//            ListItem listItem = new ListItem();
+//            listItem.setImage(images[i]);
+//            listItem.setTitle(line_names[i]);
+//
+//            arrayList.add(listItem);
+//        }
+//        FragmentManager fragManager = myContext.getSupportFragmentManager();
+//        HashMap<String, String> tracking_station = new HashMap<>();
+//
+//        recyclerView.setAdapter(new RecyclerView_Adapter_frag3(tracking_station, fragManager, arrayList));
+//
     }
 
 

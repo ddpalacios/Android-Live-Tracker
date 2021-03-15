@@ -4,9 +4,11 @@ package com.example.cta_map.Backend.Threading;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import androidx.annotation.RequiresApi;
 
+import com.example.cta_map.Activities.MainActivity;
 import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.Displayers.Time;
@@ -30,18 +32,19 @@ import java.util.List;
 public class Content_Parser_Thread implements Runnable {
     private final Context context;
     private final Message msg;
+    private volatile boolean cancelled = false;
 
-    android.os.Handler handler;
     HashMap<String, String> target_station;
+    private Handler handler;
     ArrayList<Double> all_speeds = new ArrayList<>();
 
     String TAG = "Content Parser";
 
-    public Content_Parser_Thread(Context context, Message msg,android.os.Handler handler, HashMap<String, String> target_station){
+    public Content_Parser_Thread(Context context, Handler handler, Message msg){
         this.msg = msg;
         this.context = context;
         this.handler = handler;
-        this.target_station = target_station;
+        this.target_station = msg.getTarget_station();
 
 
     }
@@ -56,10 +59,13 @@ public class Content_Parser_Thread implements Runnable {
         }
         synchronized (this.msg){
             while (this.msg.IsSending()){
+                if (cancelled) {
+                    break;
+                }
                 ArrayList<Train> incoming_trains = this.msg.getIncoming_trains(); // From API Call
                 ArrayList<Train> chosen_trains = null;
                 try {
-                    chosen_trains = choose_trains(this.context, this.target_station, incoming_trains, this.msg);
+                    chosen_trains = choose_trains(this.context,  this.msg, incoming_trains);
 
                     if (this.msg.getOld_trains()!=null){
                         for (Train new_train: chosen_trains) {
@@ -73,13 +79,13 @@ public class Content_Parser_Thread implements Runnable {
 
                 if (this.msg.getOld_trains() != null){
                     if (!this.msg.getDirectionChanged()) {
-                        send_to_UI("new_incoming_trains", this.msg.getOld_trains());
+                        send_to_UI(this.msg, "new_incoming_trains", this.msg.getOld_trains());
                     }else {
                         this.msg.setDirectionChanged(false);
-                        send_to_UI("new_incoming_trains", chosen_trains);
+                        send_to_UI(this.msg, "new_incoming_trains", chosen_trains);
                     }
                 }else{
-                    send_to_UI("new_incoming_trains", chosen_trains);
+                    send_to_UI(this.msg, "new_incoming_trains", chosen_trains);
                 }
                 this.msg.notify();
                 try {
@@ -91,6 +97,9 @@ public class Content_Parser_Thread implements Runnable {
                     Thread.sleep(10000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                    if (cancelled){
+                        break;
+                    }
                 }
 
             }
@@ -132,16 +141,21 @@ public class Content_Parser_Thread implements Runnable {
 
     }
 
+    public void cancel() {
+        cancelled = true;
+    }
 
-    public void send_to_UI(String key, ArrayList<Train> message){
+
+    public void send_to_UI(Message message, String key, ArrayList<Train> trainArrayList){
         Bundle bundle = new Bundle();
-        android.os.Message handler_msg = this.handler.obtainMessage();
-        bundle.putSerializable(key, message);
+        android.os.Message handler_msg =  handler.obtainMessage();//this.msg.getHandler().obtainMessage();
+        bundle.putSerializable(key, trainArrayList);
         handler_msg.setData(bundle);
         handler.sendMessage(handler_msg);
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public ArrayList<Train> choose_trains(Context context,HashMap<String, String> target_station ,ArrayList<Train> incoming_trains, Message message) throws ParseException {
+    public ArrayList<Train> choose_trains(Context context, Message message ,ArrayList<Train> incoming_trains) throws ParseException {
+        target_station = message.getTarget_station();
         boolean left = message.getDir().equals("1");
         Chicago_Transits chicago_transits = new Chicago_Transits();
         CTA_DataBase cta_dataBase = new CTA_DataBase(context);
@@ -155,7 +169,7 @@ public class Content_Parser_Thread implements Runnable {
         BufferedReader file3Buffer = chicago_transits.setup_file_reader(context, R.raw.line_stops);
         ArrayList<Train> chosen_trains = new ArrayList<>();
         ArrayList<String> ordered_stops = chicago_transits.create_line_stops_table(file3Buffer, context, message.getTarget_type());
-        int target_idx = ordered_stops.indexOf(target_station.get("STATION_NAME"));
+        int target_idx = ordered_stops.indexOf(target_record.get("STATION_NAME"));
         for (Train train: incoming_trains){
 
             if (train.getTrDr().equals(message.getDir())){

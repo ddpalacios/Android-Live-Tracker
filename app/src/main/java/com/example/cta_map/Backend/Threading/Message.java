@@ -1,19 +1,73 @@
 package com.example.cta_map.Backend.Threading;
 
+import android.content.Context;
+import android.os.Handler;
+
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.cta_map.Activities.TrainTimes_Adapter_frag;
 import com.example.cta_map.Displayers.Train;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 
-public class Message {
+public class Message implements Serializable {
 
 
     /*
     Object that Interacts with threads
 
      */
+
+    public TrainTimes_Adapter_frag getTrainTimes_adapter_frag() {
+        return trainTimes_adapter_frag;
+    }
+
+    public void setTrainTimes_adapter_frag(TrainTimes_Adapter_frag trainTimes_adapter_frag) {
+        this.trainTimes_adapter_frag = trainTimes_adapter_frag;
+    }
+
+    TrainTimes_Adapter_frag trainTimes_adapter_frag;
+    API_Caller_Thread api_caller_thread;
+
+    public API_Caller_Thread getApi_caller_thread() {
+        return api_caller_thread;
+    }
+
+    public void setApi_caller_thread(API_Caller_Thread api_caller_thread) {
+        this.api_caller_thread = api_caller_thread;
+    }
+
+    public Content_Parser_Thread getContent_parser_thread() {
+        return content_parser_thread;
+    }
+
+    public void setContent_parser_thread(Content_Parser_Thread content_parser_thread) {
+        this.content_parser_thread = content_parser_thread;
+    }
+
+    public Thread getT1() {
+        return t1;
+    }
+
+    public void setT1(Thread t1) {
+        this.t1 = t1;
+    }
+
+    public Thread getT2() {
+        return t2;
+    }
+
+    public void setT2(Thread t2) {
+        this.t2 = t2;
+    }
+
+    Content_Parser_Thread content_parser_thread;
+    Thread t1;
+    Thread t2;
 
 
     public Boolean getDirectionChanged() {
@@ -34,6 +88,16 @@ public class Message {
         IsSendingNotifications = sendingNotifications;
     }
 
+
+    public HashMap<String, String> getTarget_station() {
+        return target_station;
+    }
+
+    public void setTarget_station(HashMap<String, String> target_station) {
+        this.target_station = target_station;
+    }
+
+    private HashMap<String, String> target_station;
     private  Boolean IsSendingNotifications;
     private ArrayList<Train> incoming_trains;
     private String targetDir;
@@ -105,5 +169,13 @@ public class Message {
     }
 
 
+    public RecyclerView getRV() {
+        return RV;
+    }
 
+    public void setRV(RecyclerView RV) {
+        this.RV = RV;
+    }
+
+    private RecyclerView RV;
 }
