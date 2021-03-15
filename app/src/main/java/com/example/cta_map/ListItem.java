@@ -1,6 +1,16 @@
 package com.example.cta_map;
 
 public class ListItem {
+
+    public String getTrainLine() {
+        return TrainLine;
+    }
+
+    public void setTrainLine(String trainLine) {
+        TrainLine = trainLine;
+    }
+
+    private String TrainLine;
     public int getImage() {
         return image;
     }

@@ -86,12 +86,14 @@ public class CTA_DataBase extends SQLiteOpenHelper {
     public  final String FAVORITE_STATION_NAME = "STATION_NAME";
     public  final String FAVORITE_STATION_DIRECTION = "STATION_DIR";
     public  final String FAVORITE_STATION_DIRECTION_LABEL = "STATION_DIR_LABEL";
+    public  final String ISTRACKING = "ISTRACKING";
+
 
 
 
 
     public CTA_DataBase(@Nullable Context context) {
-        super(context, "CTA_DATABASE", null, 15);
+        super(context, "CTA_DATABASE", null, 18);
         SQLiteDatabase db = this.getWritableDatabase();
         createMarkersTable(db);
 
@@ -201,6 +203,7 @@ public class CTA_DataBase extends SQLiteOpenHelper {
                 FAVORITE_STATION_TYPE + " TEXT, " +
                 FAVORITE_STATION_DIRECTION + " TEXT, " +
                 FAVORITE_STATION_DIRECTION_LABEL + " TEXT, " +
+                ISTRACKING+ " INTEGER, " +
                 FAVORITE_STATION_NAME + " TEXT)";
 
 
@@ -289,6 +292,7 @@ public class CTA_DataBase extends SQLiteOpenHelper {
         values.put(FAVORITE_STATION_NAME, cta_data.getStation_name());
         values.put(FAVORITE_STATION_TYPE, cta_data.getStation_type());
         values.put(FAVORITE_STATION_DIRECTION, cta_data.getStation_dir());
+        values.put(ISTRACKING, cta_data.getTracking());
         values.put(FAVORITE_STATION_DIRECTION_LABEL, cta_data.getStation_dir_label());
         db.insert(USER_FAVORITES, null, values);
         db.close();
@@ -338,6 +342,12 @@ public class CTA_DataBase extends SQLiteOpenHelper {
         }
     }
 
+    public void update(String table_name, String col, String val, String where){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE "+table_name+" SET "+col+"= '"+val+"' WHERE " +where;
+        db.execSQL(query);
+    }
+
     public boolean delete_record(String table_name, String whereClause, String[] values){
         SQLiteDatabase db = this.getWritableDatabase();
         int res = db.delete(table_name,whereClause,values);
@@ -381,7 +391,7 @@ public class CTA_DataBase extends SQLiteOpenHelper {
         }else{
             query = "SELECT "+cols+" FROM "+table_name +" WHERE "+condition;
             if (contains!=null){
-                query = query + " LIKE '%"+ contains+"%'";
+                query = query + " LIKE '"+ contains+"%'";
             }
         }
         if (col_orderBy == null){

@@ -216,6 +216,7 @@ public class ChooseStationActivity extends AppCompatActivity {
                 cta_dataBase.delete_all_records("CTA_STOPS");
                 cta_dataBase.delete_all_records("USER_FAVORITES");
                 cta_dataBase.delete_all_records("MARKERS");
+                cta_dataBase.close();
                 finish();
                 startActivity(getIntent());
 

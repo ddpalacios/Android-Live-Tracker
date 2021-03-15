@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.cta_map.Backend.Threading.API_Caller_Thread;
+import com.example.cta_map.Backend.Threading.Content_Parser_Thread;
+import com.example.cta_map.Backend.Threading.Message;
 import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.ListItem;
@@ -26,40 +30,29 @@ import com.example.cta_map.R;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
 // Instances of this class are fragments representing a single
 // object in our collection.
 public class AllStationView_Fragment extends Fragment {
-    private RecyclerView recyclerView;
-    private FragmentActivity myContext;
     private Context main_context;
-    private FrameLayout frameLayout;
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-
-
         if (context instanceof Activity){
-            myContext= (FragmentActivity) context;
             main_context = context;
         }
-
     }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-
-
         return inflater.inflate(R.layout.find_station_frag2_layout, container, false);
     }
 
     @SuppressLint("SetTextI18n")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        frameLayout = view.findViewById(R.id.user_frag2);
-        recyclerView = view.findViewById(R.id.frag_rv);
+        FrameLayout frameLayout = view.findViewById(R.id.user_frag2);
+        RecyclerView recyclerView = view.findViewById(R.id.frag_rv);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
 
@@ -67,19 +60,38 @@ public class AllStationView_Fragment extends Fragment {
         Chicago_Transits chicago_transits = new Chicago_Transits();
         CTA_DataBase cta_dataBase = new CTA_DataBase(main_context);
         ArrayList<Object> all_station_list  =  cta_dataBase.excecuteQuery("*", "USER_FAVORITES", null,null,null);
+        cta_dataBase.close();
         if (all_station_list !=null){
             recyclerView.setVisibility(View.VISIBLE);
             for (int i = 0; i < all_station_list.size(); i++) {
                 ListItem listItem = new ListItem();
                 HashMap<String, String> station = (HashMap<String, String>) all_station_list.get(i);
                 listItem.setDirection_id(station.get("STATION_DIR_LABEL"));
+                listItem.setMapID(station.get("FAVORITE_MAP_ID"));
+                listItem.setTrain_dir_label(station.get("STATION_DIR_LABEL"));
                 listItem.setTitle(station.get("STATION_NAME"));
+                listItem.setTrain_dir(station.get("STATION_DIR"));
                 listItem.setImage(chicago_transits.getTrainImage(station.get("STATION_TYPE")));
+                listItem.setTrainLine(station.get("STATION_TYPE"));
                 arrayList.add(listItem);
+            }
 
-        }
-            FragmentManager fragManager = myContext.getSupportFragmentManager();
-            recyclerView.setAdapter(new RecyclerView_Adapter_frag2(fragManager, arrayList));
+             Thread t1 = ((MainActivity)getActivity()).t1;
+             Thread t2 = ((MainActivity)getActivity()).t2;
+             Handler handler = ((MainActivity)getActivity()).handler;
+             Message message = ((MainActivity)getActivity()).message;
+            API_Caller_Thread api_caller = ((MainActivity)getActivity()).api_caller;
+            Content_Parser_Thread content_parser = ((MainActivity)getActivity()).content_parser;
+
+            HashMap<String, Object> thread_handling = new HashMap<>();
+             thread_handling.put("t1", t1);
+            thread_handling.put("t2", t2);
+            thread_handling.put("api_caller", api_caller);
+            thread_handling.put("content_parser", content_parser);
+            thread_handling.put("handler", handler);
+            thread_handling.put("message", message);
+
+            recyclerView.setAdapter(new RecyclerView_Adapter_frag2( thread_handling, main_context, arrayList));
 
         }else{
             recyclerView.setVisibility(View.GONE);
@@ -89,42 +101,5 @@ public class AllStationView_Fragment extends Fragment {
 
         }
     }
-
-
-
-
-    public Integer getTrainImage(HashMap<String, String> station){
-        if (station.get("PINK").equals("1")){
-            return R.drawable.pink;
-
-        }else if (station.get("BRN").equals("1")){
-            return R.drawable.brown;
-
-        } else if (station.get("BLUE").equals("1")){
-            return R.drawable.blue;
-
-        } else if (station.get("ORG").equals("1")){
-            return R.drawable.orange;
-
-        } else if (station.get("P").equals("1")){
-            return R.drawable.purple;
-
-        } else if (station.get("RED").equals("1")){
-            return R.drawable.red;
-
-        } else if (station.get("Y").equals("1")){
-            return R.drawable.yellow;
-
-        } else if (station.get("G").equals("1")){
-            return R.drawable.green;
-
-        }else{
-            return R.drawable.red;
-
-        }
-    }
-
-
-
 
 }

@@ -57,6 +57,7 @@ public class TrainStationAdapter extends RecyclerView.Adapter<TrainStationAdapte
                     FavoriteStation favoriteStation = new FavoriteStation(listItem.getMapID(), listItem.getTitle(), tracking_station.get("train_line").toLowerCase());
                     favoriteStation.setStation_dir_label(listItem.getTrain_dir_label());
                     favoriteStation.setStation_dir(this.tracking_station.get("train_dir"));
+                    favoriteStation.setTracking("0");
                     ArrayList<Object> userStation = cta_dataBase.excecuteQuery("*", "USER_FAVORITES", "FAVORITE_MAP_ID = '"+listItem.getMapID()+"' AND STATION_DIR_LABEL = '"+listItem.getTrain_dir_label()+"' AND STATION_TYPE = '"+this.tracking_station.get("train_line").toLowerCase()+"'",null,null);
                     Intent intent = new Intent(this.context, MainActivity.class);
 
