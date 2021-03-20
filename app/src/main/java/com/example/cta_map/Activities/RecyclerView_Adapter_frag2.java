@@ -26,6 +26,7 @@ import com.example.cta_map.Backend.Threading.Message;
 import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.ListItem;
 import com.example.cta_map.R;
+import com.google.android.gms.location.FusedLocationProviderClient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,12 +41,14 @@ public class RecyclerView_Adapter_frag2 extends RecyclerView.Adapter<RecyclerVie
     Content_Parser_Thread content_parser;
     HashMap<String, Object> threadHashMap;
     Message message;
+    FusedLocationProviderClient fusedLocationClient;
 
 
-    public RecyclerView_Adapter_frag2(HashMap<String, Object> threadHashMap, Context Maincontext, ArrayList<ListItem> contactsList){
+    public RecyclerView_Adapter_frag2(HashMap<String, Object> threadHashMap, Context Maincontext, ArrayList<ListItem> contactsList, FusedLocationProviderClient fusedLocationClient){
         this.contactsList = contactsList;
         this.Maincontext = Maincontext;
         this.threadHashMap = threadHashMap;
+        this.fusedLocationClient = fusedLocationClient;
     }
 
     @NonNull

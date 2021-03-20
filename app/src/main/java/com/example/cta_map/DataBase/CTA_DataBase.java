@@ -9,30 +9,13 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.example.cta_map.Activities.Classes.FavoriteStation;
+import com.example.cta_map.Activities.UserLocation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 
 public class CTA_DataBase extends SQLiteOpenHelper {
-
-//    public static final String ALL_TRAINS_TABLE = "all_trains_table";
-//    public static final String TRAIN_ID = "train_id";
-//    public static final String IS_NOTIFIED = "isNotified";
-//    public static final String PRED_ARRIVAL_TIME = "pred_arrival_time";
-//    public static final String NEXT_STOP_ID = "next_stop_id";
-//    public static final String NEXT_STOP_ETA = "next_stop_eta";
-//    public static final String NEXT_STOP_DISTANCE = "next_stop_distance";
-//    public static final String IS_DELAYED = "isdelayed";
-//    public static final String IS_APPROACHING = "isApproaching";
-//    public static final String DISTANCE_TO_TARGET = "distance_to_target";
-//    public static final String TRAIN_LAT = "train_lat";
-//    public static final String TRAIN_LON = "train_lon";
-//    public static final String TO_TARGET_TRAIN_ETA = "to_target_eta";
-//    public static final String TRACKING_TYPE = "tracking_type";
-//    public static final String TARGET_ID = "target_id";
-//    public static final String TRAIN_DIR = "train_dir";
-//
     public static final String Markers = "MARKERS";
     public static final String marker_id = "marker_id";
     public static final String marker_lat = "marker_lat";
@@ -89,11 +72,18 @@ public class CTA_DataBase extends SQLiteOpenHelper {
     public  final String ISTRACKING = "ISTRACKING";
 
 
+    public final String USER_LOCATION = "USER_LOCATION";
+    public  final String USER_LOCATION_ID = "STOP_ID";
+    public final String HAS_LOCATION = "HAS_LOCATION";
+    public  final String USER_LAT = "USER_LAT";
+    public final String USER_LON = "USER_LON";
+
+
 
 
 
     public CTA_DataBase(@Nullable Context context) {
-        super(context, "CTA_DATABASE", null, 18);
+        super(context, "CTA_DATABASE", null, 19);
         SQLiteDatabase db = this.getWritableDatabase();
         createMarkersTable(db);
 
@@ -108,6 +98,7 @@ public class CTA_DataBase extends SQLiteOpenHelper {
         createUserFavorites(db);
         create_main_stations(db);
         create_L_stops_table(db);
+        create_userLocation_table(db);
 
         Log.e("SQLITE", "CREATED TABLES");
     }
@@ -137,26 +128,18 @@ public class CTA_DataBase extends SQLiteOpenHelper {
 
         db.execSQL(line_stops_table);
     }
-//   public void create_all_trains_table(SQLiteDatabase db){
-//       String all_trains_table = "CREATE TABLE IF NOT EXISTS "+ALL_TRAINS_TABLE+" ( "
-//               + TRAIN_ID + " TEXT PRIMARY KEY, "
-//               + IS_NOTIFIED + " INTEGER, "
-//               + PRED_ARRIVAL_TIME + " TEXT, "
-//               + NEXT_STOP_ID + " TEXT, "
-//               + NEXT_STOP_ETA + " TEXT, "
-//               + NEXT_STOP_DISTANCE + " TEXT, "
-//               + IS_DELAYED + " TEXT, "
-//               + IS_APPROACHING + " TEXT, "
-//               + DISTANCE_TO_TARGET + " TEXT, "
-//               + TO_TARGET_TRAIN_ETA + " INTEGER, "
-//               + TRACKING_TYPE + " TEXT, "
-//               + TRAIN_LAT + " REAL, "
-//               + TRAIN_LON + " REAL,"
-//               + TARGET_ID+ " INTEGER, "
-//               +TRAIN_DIR+" INTEGER)";
-//
-//       db.execSQL(all_trains_table);
-//   }
+
+
+
+    public void  create_userLocation_table(SQLiteDatabase db){
+        String user_location_table = "CREATE TABLE IF NOT EXISTS " +USER_LOCATION + " ( "
+                + USER_LOCATION_ID+ " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + USER_LAT+ " REAL, "
+                + USER_LON + " REAL, "
+                + HAS_LOCATION + " INTEGER)";
+
+        db.execSQL(user_location_table);
+    }
 
 
 
@@ -167,7 +150,6 @@ public class CTA_DataBase extends SQLiteOpenHelper {
                 SOUTHBOUND + " TEXT, " +
                 EXPRESS + " TEXT)";
 
-        Log.e("SQLITE", "Done");
         db.execSQL(main_stations);
     }
 
@@ -191,7 +173,6 @@ public class CTA_DataBase extends SQLiteOpenHelper {
                 ORG + " INTEGER, " +
                 LAT + " REAL, " +
                 LON + " REAL)";
-        Log.e("SQLITE", "Done");
         db.execSQL(cta_stops);
 
     }
@@ -207,7 +188,6 @@ public class CTA_DataBase extends SQLiteOpenHelper {
                 FAVORITE_STATION_NAME + " TEXT)";
 
 
-        Log.e("SQLITE", "Done");
         db.execSQL(user_favorites);
     }
 
@@ -231,8 +211,22 @@ public class CTA_DataBase extends SQLiteOpenHelper {
         }else if (table_name.equals(Markers)){
             Markers marker = (Markers) item;
             addMarker(marker);
+        }else if (table_name.equals("USER_LOCATION")){
+            UserLocation userLocation = (UserLocation) item;
+            addUserLocation(userLocation);
         }
 
+    }
+
+
+    private void addUserLocation(UserLocation userLocation){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(USER_LAT, userLocation.getLat());
+        values.put(USER_LON, userLocation.getLon());
+        values.put(HAS_LOCATION, userLocation.getHasLocation());
+        db.insert(USER_LOCATION, null, values);
+        db.close();
     }
 
 
@@ -248,6 +242,7 @@ public class CTA_DataBase extends SQLiteOpenHelper {
         db.close();
 
     }
+
 
     public void add_main_station(MainStation main_station){
 
