@@ -26,6 +26,7 @@ import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.ListItem;
 import com.example.cta_map.R;
+import com.google.android.gms.location.FusedLocationProviderClient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -82,6 +83,7 @@ public class AllStationView_Fragment extends Fragment {
              Message message = ((MainActivity)getActivity()).message;
             API_Caller_Thread api_caller = ((MainActivity)getActivity()).api_caller;
             Content_Parser_Thread content_parser = ((MainActivity)getActivity()).content_parser;
+            FusedLocationProviderClient fusedLocationClient = ((MainActivity)getActivity()).fusedLocationClient;
 
             HashMap<String, Object> thread_handling = new HashMap<>();
              thread_handling.put("t1", t1);
@@ -91,7 +93,7 @@ public class AllStationView_Fragment extends Fragment {
             thread_handling.put("handler", handler);
             thread_handling.put("message", message);
 
-            recyclerView.setAdapter(new RecyclerView_Adapter_frag2( thread_handling, main_context, arrayList));
+            recyclerView.setAdapter(new RecyclerView_Adapter_frag2( thread_handling, main_context, arrayList, fusedLocationClient));
 
         }else{
             recyclerView.setVisibility(View.GONE);

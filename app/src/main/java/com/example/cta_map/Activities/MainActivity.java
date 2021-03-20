@@ -1,10 +1,20 @@
 package com.example.cta_map.Activities;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+
 import com.example.cta_map.Backend.Threading.API_Caller_Thread;
 import com.example.cta_map.Backend.Threading.Content_Parser_Thread;
 import com.example.cta_map.Backend.Threading.Message;
@@ -12,36 +22,47 @@ import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.Displayers.Train;
 import com.example.cta_map.R;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Switch;
 import android.widget.Toast;
+
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
-public class MainActivity extends AppCompatActivity implements Serializable  {
+public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback {
     private GoogleMap mMap;
-    API_Caller_Thread  api_caller;
+    API_Caller_Thread api_caller;
+    Context context;
     Content_Parser_Thread content_parser;
     Message message = new Message();
     MainPlaceHolder_Fragment mainPlaceHolder_fragment;
-    Thread t1,t2;
+    int IsSharingLocation;
+    Thread t1, t2;
+    private final int REQUEST_PERMISSION_PHONE_STATE = 1;
+    FusedLocationProviderClient fusedLocationClient;
 
     @SuppressLint("HandlerLeak")
-    public final Handler handler = new Handler(){
+    public final Handler handler = new Handler() {
         @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
         public void handleMessage(android.os.Message msg) {
@@ -54,38 +75,47 @@ public class MainActivity extends AppCompatActivity implements Serializable  {
     };
 
 
-    public void displayResults(Bundle bundle){
-        Toast.makeText(getApplicationContext(), "TRAINS!", Toast.LENGTH_SHORT).show();
+    @SuppressLint("MissingPermission")
+    public void displayResults(Bundle bundle) {
         ArrayList<Train> current_incoming_trains = (ArrayList<Train>) bundle.getSerializable("new_incoming_trains");
         message.setIncoming_trains(current_incoming_trains);
-        for (Train train: current_incoming_trains){
-        }
-        FragmentManager fragment_manager = mainPlaceHolder_fragment.getChildFragmentManager();
-        if (fragment_manager !=null) {
-            Fragment TrainTimes_fragment = fragment_manager.findFragmentByTag("f1");
-            Fragment mapDetails_fragment = fragment_manager.findFragmentByTag("f0");
-            if (TrainTimes_fragment != null || mapDetails_fragment !=null) {
-                Log.e("Frag Update", "Frag update");
-                FragmentTransaction fragmentTransaction = fragment_manager.beginTransaction();
-                fragmentTransaction.detach(TrainTimes_fragment);
-                fragmentTransaction.attach(TrainTimes_fragment);
-                fragmentTransaction.detach(mapDetails_fragment);
-                fragmentTransaction.attach(mapDetails_fragment);
-                fragmentTransaction.commitAllowingStateLoss();
-
-
-            }
+        for (Train train : current_incoming_trains) {
+            Log.e("INCOMING TRAIN", "User: "+train.getUserStatus() + " Train: "+ train.getStatus());
         }
 
+//        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//        ft.detach(mainPlaceHolder_fragment);
+//        ft.attach(mainPlaceHolder_fragment);
+//        ft.commitAllowingStateLoss();
+
+        updateFragment("f0");
+        updateFragment("f1");
+
+
+
+        IsSharingLocation = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
+        CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
+        ArrayList<Object> UserLocation = cta_dataBase.excecuteQuery("*", "USER_LOCATION", "HAS_LOCATION = '1'", null,null);
+        cta_dataBase.close();
+        if (IsSharingLocation == 0 && UserLocation !=null){
+            updatetUserLocation();
+        }
     }
 
+
+
+
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_layout);
-        View inflatedView = getLayoutInflater().inflate(R.layout.train_times_frag_layout, null);
+        context = getApplicationContext();
+        IsSharingLocation = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         api_caller = new API_Caller_Thread(message);
-        content_parser = new Content_Parser_Thread(getApplicationContext(),handler,message);
+        content_parser = new Content_Parser_Thread(getApplicationContext(), handler, message);
         t1 = new Thread(api_caller);
         t2 = new Thread(content_parser);
         message.setT1(t1);
@@ -98,13 +128,108 @@ public class MainActivity extends AppCompatActivity implements Serializable  {
         ft.replace(R.id.place_holder, mainPlaceHolder_fragment, "main_place_holder_frag");
         ft.commit();
         initializeView();
-        if (isRunning()){
-            Toast.makeText(getApplicationContext(), "Threads Are Running!", Toast.LENGTH_SHORT).show();
+        if (IsSharingLocation < 0){
+            Toast.makeText(getApplicationContext(), "Not Sharing Location", Toast.LENGTH_SHORT).show();
+            run();
         }else{
+            Toast.makeText(getApplicationContext(), "Sharing Location", Toast.LENGTH_SHORT).show();
+            CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
+            ArrayList<Object> userLocationRecord = cta_dataBase.excecuteQuery("*", "USER_LOCATION", null, null, null);
+            if (userLocationRecord != null){
+                cta_dataBase.update("USER_LOCATION", "HAS_LOCATION", "1", "HAS_LOCATION = '0'");
+                updatetUserLocation();
+            }else{
+                cta_dataBase.update("USER_LOCATION", "HAS_LOCATION", "0", "HAS_LOCATION= '1'");
+                updatetUserLocation();
+            }
+            run();
+            cta_dataBase.close();
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode,
+            @NonNull String[] permissions,
+            @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_PERMISSION_PHONE_STATE) {
+            CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
+
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(MainActivity.this, "Permission Granted!", Toast.LENGTH_SHORT).show();
+                cta_dataBase.update("USER_LOCATION", "HAS_LOCATION", "1", "STOP_ID = '1'");
+                cta_dataBase.close();
+                updatetUserLocation();
+            } else {
+                Toast.makeText(MainActivity.this, "Permission Denied!", Toast.LENGTH_SHORT).show();
+
+                cta_dataBase.update("USER_LOCATION", "HAS_LOCATION", "0", "STOP_ID = '1'");
+                cta_dataBase.close();
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setCancelable(true);
+                builder.setTitle("Location");
+                builder.setMessage("It appears that your location is turned off.  Grant application access to use your " +
+                                        "location for a more precise train status.");
+                builder.setPositiveButton("Head to settings",
+                        (dialog, which) -> {
+                            final Intent i = new Intent();
+                            i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                            i.addCategory(Intent.CATEGORY_DEFAULT);
+                            i.setData(Uri.parse("package:" + context.getPackageName()));
+                            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                            i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                            context.startActivity(i);
+
+                                    });
+                builder.setNegativeButton(android.R.string.cancel, (dialog, which) -> {
+                    View inflatedView = getLayoutInflater().inflate(R.layout.pick_train_line_frag3_layout, null);
+                    Switch location_switch = (Switch) inflatedView.findViewById(R.id.switch1);
+                    location_switch.isChecked();
+                    location_switch.setChecked(false);
+
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    public void updatetUserLocation(){
+        fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
+            if (location != null) {
+                CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
+                Toast.makeText(this.context,
+                        "LAT: "+ location.getLatitude() + " LON: "+ location.getLongitude(), Toast.LENGTH_SHORT).show();
+                ArrayList<Object> userLocationRecord = cta_dataBase.excecuteQuery("*", "USER_LOCATION", null, null, null);
+                if (userLocationRecord !=null){
+                    cta_dataBase.update("USER_LOCATION", "USER_LAT", location.getLatitude()+"", "HAS_LOCATION= '1'");
+                    cta_dataBase.update("USER_LOCATION", "USER_LON", location.getLongitude()+"", "HAS_LOCATION = '1'");
+                }
+                else {
+                    UserLocation new_userLocation = new UserLocation();
+                    new_userLocation.setLat(location.getLatitude());
+                    new_userLocation.setLon(location.getLongitude());
+                    new_userLocation.setHasLocation(1);
+                    cta_dataBase.commit(new_userLocation, "USER_LOCATION");
+                }
+                cta_dataBase.close();
+            }
+        });
+
+    }
+
+    private void run(){
+        if (isRunning()) {
+            Toast.makeText(getApplicationContext(), "Threads Are Running!", Toast.LENGTH_SHORT).show();
+        } else {
             Toast.makeText(getApplicationContext(), "No Threads Running!", Toast.LENGTH_SHORT).show();
 
         }
     }
+
+
     private void initializeView(){
         FloatingActionButton floatingActionButton = findViewById(R.id.AddStationFloatingButton);
         floatingActionButton.setOnClickListener(v -> {
@@ -193,6 +318,42 @@ public class MainActivity extends AppCompatActivity implements Serializable  {
         message.getT1().start();
         message.getT2().start();
     }
+
+    @Override
+    public boolean onMyLocationButtonClick() {
+        return false;
+    }
+
+    @Override
+    public void onMyLocationClick(@NonNull Location location) {
+
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+
+    }
+
+
+
+    public void updateFragment(String frag_tag){
+        FragmentManager fragment_manager = mainPlaceHolder_fragment.getChildFragmentManager();
+        if (fragment_manager != null) {
+            Fragment TrainTimes_fragment = fragment_manager.findFragmentByTag(frag_tag); // e.g. f0
+            Fragment mapDetails_fragment = fragment_manager.findFragmentByTag(frag_tag); // e.g. f1
+            if (TrainTimes_fragment != null || mapDetails_fragment != null) {
+                Log.e("Frag Update", "Frag update");
+                FragmentTransaction fragmentTransaction = fragment_manager.beginTransaction();
+                fragmentTransaction.detach(TrainTimes_fragment);
+                fragmentTransaction.attach(TrainTimes_fragment);
+                fragmentTransaction.detach(mapDetails_fragment);
+                fragmentTransaction.attach(mapDetails_fragment);
+                fragmentTransaction.commitAllowingStateLoss();
+            }
+        }
+
+    }
+
 }
 
 

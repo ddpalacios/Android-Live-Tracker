@@ -1,12 +1,14 @@
 
 package com.example.cta_map.Backend.Threading;
 
+import android.Manifest;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
 
 import com.example.cta_map.Activities.MainActivity;
 import com.example.cta_map.DataBase.CTA_DataBase;
@@ -155,6 +157,7 @@ public class Content_Parser_Thread implements Runnable {
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
     public ArrayList<Train> choose_trains(Context context, Message message ,ArrayList<Train> incoming_trains) throws ParseException {
+        Integer IsSharingLocation = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION);
         target_station = message.getTarget_station();
         boolean left = message.getDir().equals("1");
         Chicago_Transits chicago_transits = new Chicago_Transits();
@@ -173,8 +176,6 @@ public class Content_Parser_Thread implements Runnable {
         for (Train train: incoming_trains){
 
             if (train.getTrDr().equals(message.getDir())){
-//                Log.e("Content_Parser","Current Train Direction: "+ train.getTrDr());
-
                 if (left){
                     List<String> left_sublist = ordered_stops.subList(target_idx, ordered_stops.size()-1);
                     if (left_sublist.contains(train.getNextStaNm())){
@@ -191,13 +192,20 @@ public class Content_Parser_Thread implements Runnable {
                         int target_eta = time.get_estimated_time_arrival((int) avg_train_speed, train_to_target_distance);
                         DecimalFormat df = new DecimalFormat("###.##");
 //                        Log.e("Next Stop speed", "Train#"+ train.getRn()+" | Distance: "+ df.format(next_stop_distance) +"mi | Speed: "+avg_train_speed+" miles per hour. Next Stop: "+ train.getNextStaNm()+ "|  ETA: "+next_stop_eta +" | Target ETA: "+ target_eta);
-                        HashMap<String,String> user_loc = getUserLocation(this.context);
-                        Double user_lat = Double.parseDouble(user_loc.get("LAT"));
-                        Double user_lon = Double.parseDouble(user_loc.get("LON"));
-                        Double user_to_target_distance = chicago_transits.calculate_coordinate_distance(target_lat, target_lon, user_lat, user_lon);
-                        train.setUser_to_target_distance(user_to_target_distance);
-                        train.setUser_lat(user_lat);
-                        train.setUser_lon(user_lon);
+
+                        ArrayList<Object> UserLocation = cta_dataBase.excecuteQuery("*", "USER_LOCATION", "HAS_LOCATION = '1'", null,null);
+                        if (UserLocation !=null && IsSharingLocation  == 0) {
+                            HashMap<String, String> user_loc = (HashMap<String, String>) UserLocation.get(0);
+                            if (user_loc.get("USER_LAT") != "" || user_loc.get("USER_LON") !="") {
+                                Double user_lat = Double.parseDouble(user_loc.get("USER_LAT"));
+                                Double user_lon = Double.parseDouble(user_loc.get("USER_LON"));
+                                train.setUser_lat(user_lat);
+                                train.setUser_lon(user_lon);
+                                Double user_to_target_distance = chicago_transits.calculate_coordinate_distance(target_lat, target_lon, user_lat, user_lon);
+                                train.setUser_to_target_distance(user_to_target_distance);
+                            }
+                        }
+
                         train.setTarget_id(target_record.get("MAP_ID"));
                         train.setTarget_eta(target_eta);
                         train.setNext_stop_distance(next_stop_distance);
@@ -218,13 +226,21 @@ public class Content_Parser_Thread implements Runnable {
                         Double target_stop_distance = chicago_transits.calculate_coordinate_distance(target_lat, target_lon, train_lat, train_lon);
                         int eta = time.get_estimated_time_arrival(55, target_stop_distance);
                         HashMap<String,String> user_loc = getUserLocation(this.context);
-                        Double user_lat = Double.parseDouble(user_loc.get("LAT"));
-                        Double user_lon = Double.parseDouble(user_loc.get("LON"));
-                        Double user_to_target_distance = chicago_transits.calculate_coordinate_distance(target_lat, target_lon, user_lat, user_lon);
-                        train.setUser_to_target_distance(user_to_target_distance);
+
+                        ArrayList<Object> UserLocation = cta_dataBase.excecuteQuery("*", "USER_LOCATION", "HAS_LOCATION = '1'", null,null);
+                        if (UserLocation !=null && IsSharingLocation  == 0) {
+                            if (user_loc.get("USER_LAT") != "" || user_loc.get("USER_LON") !="") {
+                                HashMap<String, String> user_location = (HashMap<String, String>) UserLocation.get(0);
+                                Double user_lat = Double.parseDouble(user_location.get("USER_LAT"));
+                                Double user_lon = Double.parseDouble(user_location.get("USER_LON"));
+                                train.setUser_lat(user_lat);
+                                train.setUser_lon(user_lon);
+                                Double user_to_target_distance = chicago_transits.calculate_coordinate_distance(target_lat, target_lon, user_lat, user_lon);
+                                train.setUser_to_target_distance(user_to_target_distance);
+                            }
+                        }
+
                         train.setTarget_eta(eta);
-                        train.setUser_lat(user_lat);
-                        train.setUser_lon(user_lon);
                         train.setTarget_id(target_record.get("MAP_ID"));
                         BigDecimal bd = new BigDecimal(next_stop_distance).setScale(2, RoundingMode.HALF_UP);
                         train.setNext_stop_distance(bd.doubleValue());
@@ -241,8 +257,11 @@ public class Content_Parser_Thread implements Runnable {
     }
 
 
+
+
     private HashMap<String, String> getUserLocation(Context context){
-        CTA_DataBase cta_dataBase = new CTA_DataBase(context);
+
+        CTA_DataBase cta_dataBase = new CTA_DataBase(this.context);
         ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS","MAP_ID = '41450'", null,null);
         cta_dataBase.close();
         return (HashMap<String, String>) record.get(0);
@@ -291,10 +310,10 @@ public class Content_Parser_Thread implements Runnable {
             ArrayList<String> ordered_stops = chicago_transits.create_line_stops_table(file3Buffer, context, incoming_trains.get(0).getTrain_type());
             for (Train main_train : incoming_trains) {
                 try {
+
+
                     int target_idx = ordered_stops.indexOf(target_name);
                     if (main_train.getIsApp().equals("1") && main_train.getNextStaId().equals(main_train.getTarget_id())) {
-//                        Log.e("NORTH STATUS", "RED");
-//                        Log.e("NORTH", " IS APP. " + main_train.getNextStaNm());
                         main_train.setStatus("RED");
                     }
                     int next_stop_idx = ordered_stops.indexOf(main_train.getNextStaNm());
@@ -306,28 +325,24 @@ public class Content_Parser_Thread implements Runnable {
                     }
 
                     if (remaining_stops.size() <= 1) {
-//                        Log.e("NORTH STATUS", "RED");
                         main_train.setStatus("RED");
                     }
                     if (remaining_stops.size() == 2) {
-//                        Log.e("NORTH STATUS", "YELLOW");
                         main_train.setStatus("YELLOW");
 
                     } else if (remaining_stops.size() >= 3) {
-//                        Log.e("NORTH STATUS", "GREEN");
                         main_train.setStatus("GREEN");
                     }
 
+                    if (main_train.getUser_to_target_distance() !=null){
                     Double train_to_target_distance = main_train.getTarget_distance();
                     Double user_to_target_distance = main_train.getUser_to_target_distance();
-
                     if (user_to_target_distance <= train_to_target_distance) {
                         main_train.setUserStatus("GREEN");
                     } else if (train_to_target_distance <= user_to_target_distance) {
                         main_train.setUserStatus("RED");
                     }
-
-
+                   }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

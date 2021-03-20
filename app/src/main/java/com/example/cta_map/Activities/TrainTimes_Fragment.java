@@ -73,7 +73,6 @@ public class TrainTimes_Fragment extends Fragment {
                 Train current_live_train =current_incoming_trains.get(i);
                 ListItem listItem = new ListItem();
                 listItem.setTitle("RN# "+current_live_train.getRn()+" ETA: " + current_live_train.getTarget_eta()+"m");
-                Log.e("TRAIN", "RN# "+current_live_train.getRn()+" ETA: " + current_live_train.getTarget_eta()+"m");
 
                 arrayList.add(listItem);
             }
