@@ -24,46 +24,52 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/direction_id"
+                android:id="@+id/card_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView"
+                android:layout_marginStart="20dp"
 
+                android:layout_marginLeft="20dp"
+                android:text="TextView"
+                android:textSize="20sp"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/train_image"
-                android:textSize="15sp"
-                android:textStyle="bold"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.489" />
 
             <ImageView
                 android:id="@+id/train_image"
-                android:layout_width="55dp"
+                android:layout_width="74dp"
 
-                android:layout_height="46dp"
+                android:layout_height="67dp"
 
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
                 android:scaleType="fitXY"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0"
+                app:layout_constraintVertical_bias="0.0"
                 app:srcCompat="@drawable/red" />
 
             <TextView
-                android:id="@+id/title_item"
+                android:id="@+id/title_eta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginLeft="12dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
                 android:ellipsize="end"
                 android:lines="1"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:text="TextView"
-                android:textSize="15sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/direction_id"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.489" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>

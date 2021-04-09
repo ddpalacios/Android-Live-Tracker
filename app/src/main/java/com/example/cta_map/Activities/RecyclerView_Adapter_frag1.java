@@ -7,7 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cta_map.ListItem;
@@ -25,7 +25,7 @@ public class RecyclerView_Adapter_frag1 extends RecyclerView.Adapter<RecyclerVie
     @Override
     public RecyclerView_Adapter_frag1.ItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.card_view_layout, parent, false);
+        View view = inflater.inflate(R.layout.map_card_view_layout, parent, false);
 
         return new ItemHolder(view);
     }
@@ -33,35 +33,25 @@ public class RecyclerView_Adapter_frag1 extends RecyclerView.Adapter<RecyclerVie
     @Override
     public void onBindViewHolder(@NonNull RecyclerView_Adapter_frag1.ItemHolder holder, int position) {
         final ListItem contact = this.contactsList.get(position);
-        holder.t1.setText(contact.getTitle());
         holder.imageView.setImageResource(contact.getImage());
-        holder.t1.setOnClickListener(v -> {
-//            ChooseDirection_Fragment chooseDirection_fragment = new ChooseDirection_Fragment(this.context);
-//            Toast.makeText(this.context, "Clicked "+ contact.getTitle(), Toast.LENGTH_SHORT).show();
-//            FragmentTransaction ft = this.context.beginTransaction();
-//            ft.replace(R.id.user_frag, chooseDirection_fragment)
-//                    .commit();
-
-
-
-
-
-
-
-        });
+        holder.main_title.setText(contact.getTitle());
+        holder.subtitle.setText(contact.getSubtitle());
+        holder.imageView.setImageResource(contact.getImage());
     }
 
     @Override
     public int getItemCount() {
         return this.contactsList.size();
     }
-
     public static class ItemHolder extends RecyclerView.ViewHolder {
-        TextView t1;
+        TextView main_title, subtitle;
         ImageView imageView;
+        CardView item;
         public ItemHolder(@NonNull View itemView) {
             super(itemView);
-            t1 = (TextView) itemView.findViewById(R.id.title_item);
+            item = (CardView) itemView.findViewById(R.id.list_item);
+            main_title = (TextView) itemView.findViewById(R.id.card_title);
+            subtitle = (TextView) itemView.findViewById(R.id.title_eta);
             imageView = (ImageView) itemView.findViewById(R.id.train_image);
         }
     }

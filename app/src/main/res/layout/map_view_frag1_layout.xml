@@ -1,27 +1,32 @@
-<?xml version="1.0" encoding="utf-8"?>
-    <FrameLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-         android:tag="map_info_frag"
+
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/user_frag1"
+    android:background="@color/cardview_light_background"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp" >
+
+
+    <TextView
+
+        android:id="@+id/title"
+        android:layout_alignParentLeft="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="italic|bold"
+        android:textSize="20dp"
+        android:text="Train Status" />
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/frag_rv"
+        android:layout_below="@+id/title"
         android:layout_width="match_parent"
-        android:id="@+id/user_frag1"
-        android:background="@color/cardview_light_background"
-        android:layout_height="match_parent">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/frag_rv"
-            android:paddingBottom="100dp"
-            android:clipToPadding="false"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
+        android:layout_height="match_parent" />
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>
 
 
-</FrameLayout>

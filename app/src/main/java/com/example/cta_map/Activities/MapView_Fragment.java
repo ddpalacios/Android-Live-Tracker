@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cta_map.Backend.Threading.Message;
+import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.Displayers.Train;
 import com.example.cta_map.ListItem;
 import com.example.cta_map.R;
@@ -44,7 +45,11 @@ public class MapView_Fragment extends Fragment {
             for (int i = 0; i < current_incoming_trains.size(); i++) {
                 Train current_live_train =current_incoming_trains.get(i);
                 ListItem listItem = new ListItem();
-                listItem.setTitle("RN# "+current_live_train.getRn()+" Status: " + current_live_train.getStatus());
+                listItem.setTitle("#"+ current_live_train.getRn());
+                listItem.setSubtitle( current_live_train.getStatus());
+                listItem.setImage(new Chicago_Transits().getTrainImage(current_live_train.getTrain_type()));
+                listItem.setLat(current_live_train.getLat());
+                listItem.setLon(current_live_train.getLon());
                 arrayList.add(listItem);
             }
             recyclerView.setAdapter(new RecyclerView_Adapter_frag1(arrayList));

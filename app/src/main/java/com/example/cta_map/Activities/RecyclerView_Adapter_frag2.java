@@ -2,9 +2,7 @@ package com.example.cta_map.Activities;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,14 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.cardview.widget.CardView;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cta_map.Backend.Threading.API_Caller_Thread;
@@ -63,7 +57,8 @@ public class RecyclerView_Adapter_frag2 extends RecyclerView.Adapter<RecyclerVie
     @Override
     public ItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.card_view_layout, parent, false);
+        View view;
+            view = inflater.inflate(R.layout.all_fav_stations_card_layout, parent, false);
 
         return new ItemHolder(view);
     }
@@ -77,7 +72,7 @@ public class RecyclerView_Adapter_frag2 extends RecyclerView.Adapter<RecyclerVie
         content_parser = (Content_Parser_Thread) threadHashMap.get("content_parser");
 
         contact = this.contactsList.get(position);
-        holder.direction_id.setText(contact.getDirection_id());
+//        holder.direction_id.setText(contact.getDirection_id());
         holder.t1.setText(contact.getTitle());
         holder.imageView.setImageResource(contact.getImage());
         holder.list_item.setOnLongClickListener(v -> {
@@ -202,9 +197,9 @@ public class RecyclerView_Adapter_frag2 extends RecyclerView.Adapter<RecyclerVie
         CardView list_item;
         public ItemHolder(@NonNull View itemView) {
             super(itemView);
-            direction_id = itemView.findViewById(R.id.direction_id);
+//            direction_id = itemView.findViewById(R.id.main_title);
             list_item = (CardView) itemView.findViewById(R.id.list_item);
-            t1 = (TextView) itemView.findViewById(R.id.title_item);
+            t1 = (TextView) itemView.findViewById(R.id.card_title);
             imageView = (ImageView) itemView.findViewById(R.id.train_image);
         }
     }

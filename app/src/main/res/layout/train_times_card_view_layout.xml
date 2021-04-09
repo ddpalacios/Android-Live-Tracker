@@ -24,48 +24,19 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/main_title"
-                android:layout_width="110dp"
+                android:id="@+id/card_title"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
+
                 android:layout_marginLeft="20dp"
-                android:layout_marginTop="4dp"
                 android:text="TextView"
                 android:textSize="20sp"
-                android:maxLength="25"
-                android:ellipsize="end"
-                android:maxLines="1"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/title_2"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/train_image"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <Switch
-                android:id="@+id/activate_alarm_switch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
-                android:scaleX="2"
-                android:scaleY="2"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/title_1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-
-                android:layout_marginStart="24dp"
-                android:layout_marginLeft="24dp"
-                android:text="TextView"
-                android:textSize="15sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/main_title"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.212" />
+                app:layout_constraintVertical_bias="0.489" />
 
             <ImageView
                 android:id="@+id/train_image"
@@ -73,30 +44,32 @@
 
                 android:layout_height="67dp"
 
-
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
                 android:scaleType="fitXY"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0"
+                app:layout_constraintVertical_bias="0.0"
                 app:srcCompat="@drawable/red" />
 
             <TextView
-                android:id="@+id/title_2"
+                android:id="@+id/title_eta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginBottom="4dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
                 android:ellipsize="end"
                 android:lines="1"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:text="TextView"
-                android:textSize="15sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/train_image" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.489" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>

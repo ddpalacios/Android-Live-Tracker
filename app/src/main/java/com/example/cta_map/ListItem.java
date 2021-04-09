@@ -58,6 +58,25 @@ public class ListItem {
     private String train_dir_label;
     private String train_dir;
     private String title;
+    private Double lat;
+
+    public Double getLat() {
+        return lat;
+    }
+
+    public void setLat(Double lat) {
+        this.lat = lat;
+    }
+
+    public Double getLon() {
+        return lon;
+    }
+
+    public void setLon(Double lon) {
+        this.lon = lon;
+    }
+
+    private Double lon;
 
     public String getMapID() {
         return MapID;

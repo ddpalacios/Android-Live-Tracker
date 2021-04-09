@@ -4,15 +4,25 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp" >
 
-    <Button
-        android:id="@+id/test_notification"
+<!--    <Button-->
+<!--        android:id="@+id/test_notification"-->
+<!--        android:layout_alignParentLeft="true"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Test Notification" />-->
+
+    <TextView
+        android:id="@+id/textView7"
         android:layout_alignParentLeft="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Test Notification" />
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:text="Current Alarms" />
 
     <Button
         android:id="@+id/add_alarm"
+
         android:layout_alignParentRight="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

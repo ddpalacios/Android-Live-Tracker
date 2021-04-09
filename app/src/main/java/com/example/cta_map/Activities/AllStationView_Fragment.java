@@ -48,13 +48,12 @@ public class AllStationView_Fragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.find_station_frag2_layout, container, false);
+        return inflater.inflate(R.layout.favorite_stations_layout, container, false);
     }
 
     @SuppressLint("SetTextI18n")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        FrameLayout frameLayout = view.findViewById(R.id.user_frag2);
         RecyclerView recyclerView = view.findViewById(R.id.frag_rv);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
@@ -102,7 +101,6 @@ public class AllStationView_Fragment extends Fragment {
             recyclerView.setVisibility(View.GONE);
             TextView textView = new TextView(main_context);
             textView.setText("No Stations Added.");
-            frameLayout.addView(textView);
 
         }
     }

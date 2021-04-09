@@ -1,8 +1,7 @@
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/user_frag1"
+    android:id="@+id/user_frag2"
     android:background="@color/cardview_light_background"
     android:paddingLeft="16dp"
     android:paddingRight="16dp" >
@@ -16,7 +15,7 @@
         android:layout_height="wrap_content"
         android:textStyle="italic|bold"
         android:textSize="20dp"
-        android:text="Train Times" />
+        android:text="Favorite Stations" />
 
 
     <androidx.recyclerview.widget.RecyclerView

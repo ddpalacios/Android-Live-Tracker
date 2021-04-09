@@ -152,13 +152,20 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 //            }
 //            cta_dataBase.close();
 //        }
-////        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-////        ft.detach(mainPlaceHolder_fragment);
-////        ft.attach(mainPlaceHolder_fragment);
-////        ft.commitAllowingStateLoss();
+//        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//        ft.detach(mainPlaceHolder_fragment);
+//        ft.attach(mainPlaceHolder_fragment);
+//        ft.commitAllowingStateLoss();
+
+        Fragment frg = null;
+        frg = getSupportFragmentManager().findFragmentByTag("main_place_holder_frag");
+        final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.detach(frg);
+        ft.attach(frg);
+        ft.commitAllowingStateLoss();
 //
-        updateFragment("f0");
-        updateFragment("f1");
+//        updateFragment("f0");
+//        updateFragment("f1");
 
 
 

@@ -63,12 +63,12 @@ public class Alarms_Fragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         Button add_alarm = view.findViewById(R.id.add_alarm);
-        Button test_notification = view.findViewById(R.id.test_notification);
-
-        test_notification.setOnClickListener(v -> {
-            NotificationBuilder notificationBuilder = new NotificationBuilder(myContext, new Intent(myContext, MainActivity.class));
-            notificationBuilder.notificationDialog("ALARM GOING OFF", "Its off!", null);
-        });
+//        Button test_notification = view.findViewById(R.id.test_notification);
+//
+//        test_notification.setOnClickListener(v -> {
+//            NotificationBuilder notificationBuilder = new NotificationBuilder(myContext, new Intent(myContext, MainActivity.class));
+//            notificationBuilder.notificationDialog("ALARM GOING OFF", "Its off!", null);
+//        });
 
         add_alarm.setOnClickListener(v -> {
             startActivity(new Intent(myContext, Pop.class));

@@ -22,9 +22,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cta_map.Activities.RecyclerView_Adapter_frag1;
 import com.example.cta_map.Backend.Threading.Message;
+import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.Displayers.Train;
 import com.example.cta_map.ListItem;
 import com.example.cta_map.R;
+import com.google.android.gms.maps.GoogleMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,15 +70,19 @@ public class TrainTimes_Fragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         arrayList = new ArrayList<>();
+        GoogleMap mMap = ((MainActivity)getActivity()).mMap;
         if (current_incoming_trains!=null) {
             for (int i = 0; i < current_incoming_trains.size(); i++) {
                 Train current_live_train =current_incoming_trains.get(i);
                 ListItem listItem = new ListItem();
-                listItem.setTitle("RN# "+current_live_train.getRn()+" ETA: " + current_live_train.getTarget_eta()+"m");
-
+                listItem.setTitle("#"+ current_live_train.getRn());
+                listItem.setSubtitle( current_live_train.getTarget_eta()+"m");
+                listItem.setImage(new Chicago_Transits().getTrainImage(current_live_train.getTrain_type()));
+                listItem.setLat(current_live_train.getLat());
+                listItem.setLon(current_live_train.getLon());
                 arrayList.add(listItem);
             }
-            trainTimes_adapter_frag = new TrainTimes_Adapter_frag(arrayList);
+            trainTimes_adapter_frag = new TrainTimes_Adapter_frag(arrayList, mMap);
             recyclerView.setAdapter(trainTimes_adapter_frag);
 
 
