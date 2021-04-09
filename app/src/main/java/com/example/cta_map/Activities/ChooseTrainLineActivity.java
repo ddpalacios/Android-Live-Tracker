@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+//import com.example.cta_map.Activities.Adapters.TrainLineAdapter;
 import com.example.cta_map.Activities.Adapters.TrainLineAdapter;
 import com.example.cta_map.ListItem;
 import com.example.cta_map.R;

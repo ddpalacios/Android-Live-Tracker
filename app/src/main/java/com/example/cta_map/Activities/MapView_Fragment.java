@@ -35,7 +35,7 @@ public class MapView_Fragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Message message = ((MainActivity)getActivity()).message;
-        current_incoming_trains = message.getIncoming_trains();
+        current_incoming_trains = message.getOld_trains();
         recyclerView = view.findViewById(R.id.frag_rv);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
@@ -51,6 +51,7 @@ public class MapView_Fragment extends Fragment {
         }
 
     }
+
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
 

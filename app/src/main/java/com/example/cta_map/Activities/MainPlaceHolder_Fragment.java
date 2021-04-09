@@ -77,7 +77,7 @@ public class MainPlaceHolder_Fragment extends Fragment implements Serializable  
             }else if (position == 2){
                 tab.setText("Stations");
             }else{
-                tab.setText("Settings");
+                tab.setText("Alarms");
             }
 
         }).attach();

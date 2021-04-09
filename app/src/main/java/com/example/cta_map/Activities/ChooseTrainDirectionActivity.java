@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cta_map.Activities.Adapters.TrainDirAdapter;
-import com.example.cta_map.Activities.Adapters.TrainLineAdapter;
+//import com.example.cta_map.Activities.Adapters.TrainLineAdapter;
 import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.ListItem;
@@ -31,7 +31,6 @@ public class ChooseTrainDirectionActivity extends AppCompatActivity {
 
         HashMap<String, String> tracking_station = (HashMap<String, String>) bundle.getSerializable("tracking_station");
 
-        setTitle(tracking_station.get("train_line")+ " Line");
         setContentView(R.layout.activity_choose_direction);
         RecyclerView recyclerView = findViewById(R.id.list_of_train_lines);
         ArrayList<ListItem> arrayList = new ArrayList<>();
@@ -41,6 +40,7 @@ public class ChooseTrainDirectionActivity extends AppCompatActivity {
         Chicago_Transits chicago_transits = new Chicago_Transits();
         ActionBar bar = getSupportActionBar();
         assert bar != null;
+        setTitle(tracking_station.get("train_line")+ " Line");
         bar.setBackgroundDrawable(new ColorDrawable(chicago_transits.GetBackgroundColor(train_line.toLowerCase(), getApplicationContext())));
         HashMap<String, String> main_stations = (HashMap<String, String>) cta_dataBase.excecuteQuery("*", "MAIN_STATIONS", "STATION_TYPE = '"+tracking_station.get("train_line").toUpperCase()+"'", null,null).get(0);
 

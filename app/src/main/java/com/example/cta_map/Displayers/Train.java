@@ -1,5 +1,10 @@
 package com.example.cta_map.Displayers;
 
+import com.example.cta_map.DataBase.CTA_Stops;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class Train implements Comparable< Train >{
 
     public Boolean getViewIcon() {
@@ -40,6 +45,16 @@ public class Train implements Comparable< Train >{
     private String nextStaNm;
     private String prdt;
     private String arrT;
+
+    public ArrayList<CTA_Stops> getRemaining_stops() {
+        return remaining_stops;
+    }
+
+    public void setRemaining_stops(ArrayList<CTA_Stops> remaining_stops) {
+        this.remaining_stops = remaining_stops;
+    }
+
+    private ArrayList<CTA_Stops> remaining_stops;
 
     public Boolean getSelected() {
         return isSelected;

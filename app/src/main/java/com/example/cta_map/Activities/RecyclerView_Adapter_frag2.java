@@ -3,6 +3,7 @@ package com.example.cta_map.Activities;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -24,9 +26,11 @@ import com.example.cta_map.Backend.Threading.API_Caller_Thread;
 import com.example.cta_map.Backend.Threading.Content_Parser_Thread;
 import com.example.cta_map.Backend.Threading.Message;
 import com.example.cta_map.DataBase.CTA_DataBase;
+import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.ListItem;
 import com.example.cta_map.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.maps.GoogleMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,13 +46,17 @@ public class RecyclerView_Adapter_frag2 extends RecyclerView.Adapter<RecyclerVie
     HashMap<String, Object> threadHashMap;
     Message message;
     FusedLocationProviderClient fusedLocationClient;
+    ActionBar actionBar;
+    GoogleMap mMap;
 
 
-    public RecyclerView_Adapter_frag2(HashMap<String, Object> threadHashMap, Context Maincontext, ArrayList<ListItem> contactsList, FusedLocationProviderClient fusedLocationClient){
+    public RecyclerView_Adapter_frag2(HashMap<String, Object> threadHashMap, Context Maincontext, ArrayList<ListItem> contactsList, FusedLocationProviderClient fusedLocationClient, ActionBar actionBar, GoogleMap mMap){
         this.contactsList = contactsList;
         this.Maincontext = Maincontext;
         this.threadHashMap = threadHashMap;
         this.fusedLocationClient = fusedLocationClient;
+        this.actionBar = actionBar;
+        this.mMap = mMap;
     }
 
     @NonNull
@@ -158,10 +166,21 @@ public class RecyclerView_Adapter_frag2 extends RecyclerView.Adapter<RecyclerVie
 
 
     private void callThreads(HashMap<String, String> target_station){
+        CTA_DataBase cta_dataBase = new CTA_DataBase(Maincontext);
+        Chicago_Transits chicago_transits = new Chicago_Transits();
         message.setTARGET_MAP_ID(target_station.get("MAP_ID"));
         message.setDir(contact.getTrain_dir());
         message.setTarget_name(target_station.get("STATION_NAME"));
         message.setTarget_type(contact.getTrainLine());
+        ArrayList<Object> user_tracking_record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "MAP_ID = '" + target_station.get("MAP_ID") + "'", null, null);
+        HashMap<String, String> tracking_station = (HashMap<String, String>) user_tracking_record.get(0);
+        chicago_transits.ZoomIn(mMap, 12f, Double.parseDouble(tracking_station.get("LAT")), Double.parseDouble(tracking_station.get("LON")));
+        cta_dataBase.close();
+
+        assert actionBar != null;
+        actionBar.setTitle("To "+target_station.get("STATION_NAME")+".");
+        actionBar.setBackgroundDrawable(new ColorDrawable(chicago_transits.GetBackgroundColor(contact.getTrainLine(), Maincontext)));
+
         message.keepSending(true);
         message.setTarget_station(target_station);
         api_caller = new API_Caller_Thread(message);

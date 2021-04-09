@@ -27,6 +27,7 @@ public class MapMarker  {
     }
 
 
+
     public Marker addMarker(Double lat, Double lon, String snippet,String color, Float alpha, boolean isTrain, boolean isTarget, boolean isStation, String main_title, Boolean UseIcon) {
         float opacity = alpha;
         HashMap<String, Integer> colors = new HashMap<>();
@@ -69,7 +70,7 @@ public class MapMarker  {
                     }else {
                         return this.mMap.addMarker(new MarkerOptions().position(train_marker).title(main_title).snippet(snippet).icon(smallMarkerIcon));
                     }
-                    }
+                }
             }catch (Exception e){
                 e.printStackTrace();
                 return this.mMap.addMarker(new MarkerOptions().position(train_marker).title(main_title).snippet(snippet).icon(BitmapDescriptorFactory.defaultMarker(train_colors.get(color.toLowerCase()))).alpha(opacity));
@@ -87,7 +88,6 @@ public class MapMarker  {
             return null;
         }
     }
-
 
 
 

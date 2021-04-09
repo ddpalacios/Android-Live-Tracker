@@ -17,7 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.cta_map.Activities.Adapters.TrainLineAdapter;
+//import com.example.cta_map.Activities.Adapters.TrainLineAdapter;
 import com.example.cta_map.Activities.Adapters.TrainStationAdapter;
 import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.Displayers.Chicago_Transits;

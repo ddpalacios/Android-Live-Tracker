@@ -63,11 +63,11 @@ public class TrainTimes_Fragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         message = ((MainActivity)getActivity()).message;
-        current_incoming_trains = message.getIncoming_trains();
+        current_incoming_trains = message.getOld_trains();
         recyclerView = view.findViewById(R.id.frag_rv);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-         arrayList = new ArrayList<>();
+        arrayList = new ArrayList<>();
         if (current_incoming_trains!=null) {
             for (int i = 0; i < current_incoming_trains.size(); i++) {
                 Train current_live_train =current_incoming_trains.get(i);
@@ -83,7 +83,6 @@ public class TrainTimes_Fragment extends Fragment {
         }
 
     }
-
     @Override
     public void onResume() {
         super.onResume();

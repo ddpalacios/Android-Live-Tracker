@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class API_Caller_Thread implements Runnable {
-   String station_type;
+    String station_type;
     final Message msg;
     String TAG = "API CALLER";
     private volatile boolean cancelled = false;
@@ -28,8 +28,10 @@ public class API_Caller_Thread implements Runnable {
                 if (cancelled) {
                     break;
                 }
-                ArrayList<Train> new_incoming_trains = call_cta_rest(msg.getTarget_type());
-                this.msg.setIncoming_trains(new_incoming_trains);
+                if (this.msg.getTarget_type()!= null) {
+                    ArrayList<Train> new_incoming_trains = call_cta_rest(msg.getTarget_type());
+                    this.msg.setIncoming_trains(new_incoming_trains);
+                }
                 try {
                     Log.e(TAG, "is waiting... ");
                     this.msg.wait();
@@ -63,7 +65,7 @@ public class API_Caller_Thread implements Runnable {
                 train.setTrain_type(station_type.toLowerCase());
                 all_incoming_trains.add(train);
             }
-        }catch (IOException e){
+        }catch (Exception e){
             e.printStackTrace();
         }
         return all_incoming_trains;

@@ -2,6 +2,7 @@
 package com.example.cta_map.Backend.Threading;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import androidx.core.content.ContextCompat;
 
 import com.example.cta_map.Activities.MainActivity;
 import com.example.cta_map.DataBase.CTA_DataBase;
+import com.example.cta_map.DataBase.CTA_Stops;
 import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.Displayers.Time;
 import com.example.cta_map.Displayers.Train;
@@ -30,6 +32,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Content_Parser_Thread implements Runnable {
     private final Context context;
@@ -51,7 +56,7 @@ public class Content_Parser_Thread implements Runnable {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void run() {
         try {
@@ -59,6 +64,8 @@ public class Content_Parser_Thread implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+
         synchronized (this.msg){
             while (this.msg.IsSending()){
                 if (cancelled) {
@@ -66,6 +73,7 @@ public class Content_Parser_Thread implements Runnable {
                 }
                 ArrayList<Train> incoming_trains = this.msg.getIncoming_trains(); // From API Call
                 ArrayList<Train> chosen_trains = null;
+
                 try {
                     chosen_trains = choose_trains(this.context,  this.msg, incoming_trains);
 
@@ -74,21 +82,26 @@ public class Content_Parser_Thread implements Runnable {
                             updateTrains(new_train, this.msg.getOld_trains());
                         }
                     }
+
+
                 } catch (ParseException e) {
                     Log.e("ERROR", "ERROR WITHIN 'CHOOSE_TRAINS'");
                     e.printStackTrace();
                 }
 
-                if (this.msg.getOld_trains() != null){
-                    if (!this.msg.getDirectionChanged()) {
-                        send_to_UI(this.msg, "new_incoming_trains", this.msg.getOld_trains());
-                    }else {
-                        this.msg.setDirectionChanged(false);
-                        send_to_UI(this.msg, "new_incoming_trains", chosen_trains);
-                    }
-                }else{
+
+
+
+//                if (this.msg.getOld_trains() != null){
+//                    if (!this.msg.getDirectionChanged()) {
+//                        send_to_UI(this.msg, "new_incoming_trains", this.msg.getOld_trains());
+//                    }else {
+//                        this.msg.setDirectionChanged(false);
+//                        send_to_UI(this.msg, "new_incoming_trains", chosen_trains);
+//                    }
+//                }else{
                     send_to_UI(this.msg, "new_incoming_trains", chosen_trains);
-                }
+//                }
                 this.msg.notify();
                 try {
                     this.msg.wait();
@@ -252,7 +265,7 @@ public class Content_Parser_Thread implements Runnable {
         }
         cta_dataBase.close();
         Collections.sort(chosen_trains);
-        return setStatus(this.context, chosen_trains, target_station.get("STATION_NAME"));
+        return setStatus(this.context, chosen_trains, smash(target_station.get("STATION_NAME")));
 
     }
 
@@ -299,24 +312,28 @@ public class Content_Parser_Thread implements Runnable {
 
 
     }
-
-
+    @TargetApi(Build.VERSION_CODES.N)
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private ArrayList<Train> setStatus(Context context, ArrayList<Train> incoming_trains, String target_name){
         Chicago_Transits chicago_transits = new Chicago_Transits();
         BufferedReader file3Buffer = chicago_transits.setup_file_reader(context, R.raw.line_stops);
 
         if (incoming_trains.size() >0) {
-            ArrayList<String> ordered_stops = chicago_transits.create_line_stops_table(file3Buffer, context, incoming_trains.get(0).getTrain_type());
+            ArrayList<String> ordered_stops = smashUp(chicago_transits.create_line_stops_table(file3Buffer, context, incoming_trains.get(0).getTrain_type()));
+            CTA_DataBase cta_database = new CTA_DataBase(this.context);
+            ArrayList<Object> ordered_stops_main_record = cta_database.excecuteQuery("*", "CTA_STOPS",
+                    chicago_transits.TrainLineKeys(incoming_trains.get(0).getTrain_type()).toUpperCase()+" = '1'",
+                    null,
+                    null);
+            cta_database.close();
+
             for (Train main_train : incoming_trains) {
                 try {
-
-
                     int target_idx = ordered_stops.indexOf(target_name);
                     if (main_train.getIsApp().equals("1") && main_train.getNextStaId().equals(main_train.getTarget_id())) {
                         main_train.setStatus("RED");
                     }
-                    int next_stop_idx = ordered_stops.indexOf(main_train.getNextStaNm());
+                    int next_stop_idx = ordered_stops.indexOf(smash(main_train.getNextStaNm()));
                     List<String> remaining_stops;
                     if (main_train.getTrDr().equals("1")) {
                         remaining_stops = ordered_stops.subList(target_idx, next_stop_idx + 1);
@@ -324,25 +341,29 @@ public class Content_Parser_Thread implements Runnable {
                         remaining_stops = ordered_stops.subList(next_stop_idx, target_idx + 1);
                     }
 
-                    if (remaining_stops.size() <= 1) {
+                    ArrayList<CTA_Stops> all_remaining_stops= getStopsID(smashUp(new ArrayList<>(remaining_stops)), ordered_stops_main_record);
+
+
+                    if (remaining_stops.size() == 1  || remaining_stops.size() ==2 || remaining_stops.size() < 1) {
                         main_train.setStatus("RED");
                     }
-                    if (remaining_stops.size() == 2) {
+                    if (remaining_stops.size() == 3 ||  remaining_stops.size() ==4) {
                         main_train.setStatus("YELLOW");
 
-                    } else if (remaining_stops.size() >= 3) {
+                    } else if (remaining_stops.size() >= 5) {
                         main_train.setStatus("GREEN");
                     }
 
+                    main_train.setRemaining_stops(all_remaining_stops);
                     if (main_train.getUser_to_target_distance() !=null){
-                    Double train_to_target_distance = main_train.getTarget_distance();
-                    Double user_to_target_distance = main_train.getUser_to_target_distance();
-                    if (user_to_target_distance <= train_to_target_distance) {
-                        main_train.setUserStatus("GREEN");
-                    } else if (train_to_target_distance <= user_to_target_distance) {
-                        main_train.setUserStatus("RED");
-                    }
-                   }
+                        Double train_to_target_distance = main_train.getTarget_distance();
+                        Double user_to_target_distance = main_train.getUser_to_target_distance();
+                        if (user_to_target_distance <= train_to_target_distance) {
+                            main_train.setUserStatus("GREEN");
+                        } else if (train_to_target_distance <= user_to_target_distance) {
+                            main_train.setUserStatus("RED");
+                        }
+                       }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -351,5 +372,59 @@ public class Content_Parser_Thread implements Runnable {
         return incoming_trains;
     }
 
+    private HashMap<String , String > SearchForStation(String name, ArrayList<Object> all_stops){
+        for (Object record : all_stops) {
+            HashMap<String,String> main_info_record = (HashMap<String, String>) record;
+            String smashed_station_name = smash(main_info_record.get("STATION_NAME"));
+            if (name.equals(smashed_station_name)){
+                return main_info_record;
+            }
+        }
+        return null;
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private ArrayList<CTA_Stops> getStopsID(ArrayList<String>all_remaining_stops, ArrayList<Object> ordered_stops_main_record) {
+        ArrayList<CTA_Stops> remaining_stops = new ArrayList<>();
+        for (String stop_name : all_remaining_stops){
+            HashMap<String, String> found_station = SearchForStation(stop_name, ordered_stops_main_record);
+            if (found_station!=null){
+                String MAP_ID = found_station.get("MAP_ID");
+                if (!remaining_stops.contains(MAP_ID)){
+                    CTA_DataBase cta_dataBase = new CTA_DataBase(context);
+                    Object remaining_station = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "MAP_ID = '"+ MAP_ID+"'", null,null).get(0);
+                    HashMap<String, String> station = (HashMap<String, String>) remaining_station;
+                    CTA_Stops stop = new CTA_Stops();
+                    stop.setDIRECTION_ID(station.get("DIRECTION_ID"));
+                    stop.setLAT(Double.parseDouble(station.get("LAT")));
+                    stop.setLON(Double.parseDouble(station.get("LON")));
+                    stop.setSTATION_NAME(station.get("STATION_NAME"));
+                    stop.setSTOP_ID(station.get("STOP_ID"));
+                    stop.setMAP_ID(station.get("MAP_ID"));
+                    stop.setSTOP_NAME(station.get("STOP_NAME"));
+                    remaining_stops.add(stop);
+                    cta_dataBase.close();
+
+                }
+            }
+        }
+
+        return remaining_stops;
+    }
+
+
+        private String smash(String item){
+        return item.trim().replaceAll("[^\\w_]", "").toLowerCase().replaceAll(" ", "");
+        }
+        private ArrayList<String> smashUp (ArrayList < String > items) {
+            ArrayList<String> new_smashed_items = new ArrayList<>();
+            for (String item : items) {
+                String new_smashed_item = item.trim().replaceAll("[^\\w_ ]", "").toLowerCase().replaceAll(" ", "");
+                new_smashed_items.add(new_smashed_item);
+            }
+
+            return new_smashed_items;
+        }
 
 }

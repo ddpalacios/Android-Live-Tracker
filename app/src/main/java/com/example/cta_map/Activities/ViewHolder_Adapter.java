@@ -2,13 +2,7 @@ package com.example.cta_map.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
-
-import java.util.HashMap;
-
-import android.os.Bundle;
-import android.os.Handler;
 
 public class ViewHolder_Adapter extends FragmentStateAdapter {
     private Integer TAB_PAGES = 4;
@@ -22,7 +16,7 @@ public class ViewHolder_Adapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         Fragment fragment1 = new MapView_Fragment();
         Fragment fragment2 = new AllStationView_Fragment();
-        Fragment fragment3 = new FindStation_Fragment();
+        Fragment fragment3 = new Alarms_Fragment();
         Fragment fragment4 = new TrainTimes_Fragment();
         if (position ==0){
             return fragment1;

@@ -1,5 +1,6 @@
 package com.example.cta_map.DataBase;
 
+import android.animation.ValueAnimator;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -8,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import androidx.annotation.Nullable;
 
+import com.example.cta_map.Activities.Classes.Alarm;
 import com.example.cta_map.Activities.Classes.FavoriteStation;
 import com.example.cta_map.Activities.UserLocation;
 
@@ -79,11 +81,36 @@ public class CTA_DataBase extends SQLiteOpenHelper {
     public final String USER_LON = "USER_LON";
 
 
+    public final String ALARMS = "ALARMS";
+    public  final String ALARM_ID = "ALARM_ID";
+    public final String ALARM_STATION_TYPE = "STATION_TYPE";
+    public final String ALARM_STATION_NAME = "STATION_NAME";
+    public final String ALARM_MAP_ID = "MAP_ID";
+
+    public final String WILL_REPEAT = "WILL_REPEAT";
+    public  final String TIME = "TIME";
+    public  final String HOUR = "HOUR";
+    public  final String MIN = "MIN";
+
+    public final String MON = "MON";
+    public final String TUES = "TUES";
+    public final String WENS = "WENS";
+    public final String THUR = "THUR";
+    public final String FRI = "FRI";
+    public final String SAT = "SAT";
+    public final String SUN = "SUN";
+    public final String WEEK_LABEL = "WEEK_LABEL";
+
+
+
+
+
+
 
 
 
     public CTA_DataBase(@Nullable Context context) {
-        super(context, "CTA_DATABASE", null, 19);
+        super(context, "CTA_DATABASE", null, 40);
         SQLiteDatabase db = this.getWritableDatabase();
         createMarkersTable(db);
 
@@ -99,6 +126,7 @@ public class CTA_DataBase extends SQLiteOpenHelper {
         create_main_stations(db);
         create_L_stops_table(db);
         create_userLocation_table(db);
+        create_alarm_table(db);
 
         Log.e("SQLITE", "CREATED TABLES");
     }
@@ -127,6 +155,31 @@ public class CTA_DataBase extends SQLiteOpenHelper {
                 + PURPLE_LINE + " TEXT)";
 
         db.execSQL(line_stops_table);
+    }
+
+
+
+
+    public void  create_alarm_table(SQLiteDatabase db){
+        String alarm_table = "CREATE TABLE IF NOT EXISTS " +ALARMS + " ( "
+                + ALARM_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + ALARM_STATION_TYPE + " TEXT, "
+                + ALARM_STATION_NAME + " TEXT, "
+                + TIME + " TEXT, "
+                + HOUR + " TEXT, "
+                + MIN + " TEXT, "
+                + ALARM_MAP_ID + " TEXT, "
+                + WILL_REPEAT + " INTEGER, "
+                + MON +" INTEGER, "
+                + TUES + " INTEGER, "
+                + WENS + " INTEGER, "
+                + THUR + " INTEGER, "
+                + FRI + " INTEGER, "
+                + SAT + " INTEGER, "
+                + SUN + " INTEGER,"
+                + WEEK_LABEL + " TEXT )";
+
+        db.execSQL(alarm_table);
     }
 
 
@@ -214,7 +267,39 @@ public class CTA_DataBase extends SQLiteOpenHelper {
         }else if (table_name.equals("USER_LOCATION")){
             UserLocation userLocation = (UserLocation) item;
             addUserLocation(userLocation);
+        }else if (table_name.equals("ALARMS")){
+            Alarm new_alarm = (Alarm) item;
+            addAlarm(new_alarm);
         }
+
+    }
+
+    private void addAlarm(Alarm alarm){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(TIME, alarm.getTime());
+        values.put(HOUR, alarm.getHour());
+        values.put(MIN, alarm.getMin());
+        values.put(ALARM_MAP_ID, alarm.getMap_id());
+        values.put(ALARM_STATION_TYPE, alarm.getStationType());
+        values.put(ALARM_STATION_NAME, alarm.getStationName());
+        values.put(WILL_REPEAT, alarm.getIsRepeating());
+        values.put(MON, alarm.getMon());
+        values.put(TUES, alarm.getTues());
+        values.put(WENS, alarm.getWens());
+        values.put(THUR, alarm.getThur());
+        values.put(FRI, alarm.getFri());
+        values.put(SAT, alarm.getSat());
+        values.put(SUN, alarm.getSun());
+        values.put(WEEK_LABEL, alarm.getWeekLabel());
+
+
+        db.insert(ALARMS, null, values);
+        db.close();
+
+
+
+
 
     }
 

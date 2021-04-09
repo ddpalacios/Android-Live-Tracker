@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -27,6 +28,7 @@ import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.ListItem;
 import com.example.cta_map.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.maps.GoogleMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -81,10 +83,11 @@ public class AllStationView_Fragment extends Fragment {
              Thread t2 = ((MainActivity)getActivity()).t2;
              Handler handler = ((MainActivity)getActivity()).handler;
              Message message = ((MainActivity)getActivity()).message;
+            ActionBar actionBar = ((MainActivity)getActivity()).getSupportActionBar();
             API_Caller_Thread api_caller = ((MainActivity)getActivity()).api_caller;
             Content_Parser_Thread content_parser = ((MainActivity)getActivity()).content_parser;
             FusedLocationProviderClient fusedLocationClient = ((MainActivity)getActivity()).fusedLocationClient;
-
+            GoogleMap mMap = ((MainActivity)getActivity()).mMap;
             HashMap<String, Object> thread_handling = new HashMap<>();
              thread_handling.put("t1", t1);
             thread_handling.put("t2", t2);
@@ -93,7 +96,7 @@ public class AllStationView_Fragment extends Fragment {
             thread_handling.put("handler", handler);
             thread_handling.put("message", message);
 
-            recyclerView.setAdapter(new RecyclerView_Adapter_frag2( thread_handling, main_context, arrayList, fusedLocationClient));
+            recyclerView.setAdapter(new RecyclerView_Adapter_frag2( thread_handling, main_context, arrayList, fusedLocationClient, actionBar, mMap));
 
         }else{
             recyclerView.setVisibility(View.GONE);

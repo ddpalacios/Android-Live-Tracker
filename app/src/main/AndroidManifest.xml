@@ -66,6 +66,15 @@
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
         </activity>
+        <activity android:name=".Activities.Pop" android:theme="@style/AppTheme.CustomTheme" >
+
+        </activity>
+        <receiver
+            android:name=".Activities.MyBroadCastReciever"
+            android:enabled="true"
+            android:exported="true"
+            />
+
 
     </application>
 

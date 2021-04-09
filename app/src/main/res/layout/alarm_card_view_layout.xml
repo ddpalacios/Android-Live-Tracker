@@ -24,22 +24,52 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/direction_id"
+                android:id="@+id/main_title"
+                android:layout_width="110dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="4dp"
+                android:text="TextView"
+                android:textSize="20sp"
+                android:maxLength="25"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/title_2"
+                app:layout_constraintStart_toEndOf="@+id/train_image"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Switch
+                android:id="@+id/activate_alarm_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView"
-
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/train_image"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/title_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_marginStart="52dp"
+                android:layout_marginLeft="52dp"
+                android:text="TextView"
                 android:textSize="15sp"
                 android:textStyle="bold"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/activate_alarm_switch"
+                app:layout_constraintHorizontal_bias="0.864"
+                app:layout_constraintStart_toEndOf="@+id/main_title"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.255" />
 
             <ImageView
                 android:id="@+id/train_image"
-                android:layout_width="55dp"
+                android:layout_width="68dp"
 
-                android:layout_height="46dp"
+                android:layout_height="63dp"
 
                 android:scaleType="fitXY"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -49,11 +79,12 @@
                 app:srcCompat="@drawable/red" />
 
             <TextView
-                android:id="@+id/title_item"
+                android:id="@+id/title_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginLeft="12dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginBottom="4dp"
                 android:ellipsize="end"
                 android:lines="1"
                 android:scrollHorizontally="true"
@@ -62,8 +93,7 @@
                 android:textSize="15sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/direction_id"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toEndOf="@+id/train_image" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>

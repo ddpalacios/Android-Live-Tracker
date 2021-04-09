@@ -22,6 +22,16 @@ public class CTA_Stops {
     public String PINK = "PINK";
     public String ORG = "ORG";
     public Double LAT;
+    private String station_type;
+
+    public String getStation_type() {
+        return station_type;
+    }
+
+    public void setStation_type(String station_type) {
+        this.station_type = station_type;
+    }
+
     public Double LON;
     public String getSTOP_ID() {
         return STOP_ID;

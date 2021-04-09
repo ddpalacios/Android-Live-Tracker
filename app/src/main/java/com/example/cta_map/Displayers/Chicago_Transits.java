@@ -466,7 +466,18 @@ public class Chicago_Transits {
 
         return train;
     }
-
+    public int getSpinnerPosition(String train_line) {
+        HashMap<String, Integer> positions = new HashMap<>();
+        positions.put("blue", 0);
+        positions.put("red", 1);
+        positions.put("green", 2);
+        positions.put("yellow", 3);
+        positions.put("pink", 4);
+        positions.put("orange", 5);
+        positions.put("purple", 6);
+        positions.put("brown", 7);
+        return positions.get(train_line.toLowerCase().trim());
+    }
 
     private String get_xml_tag_value(String raw_xml, String startTag, String endTag){
 
@@ -493,6 +504,22 @@ public class Chicago_Transits {
 
     private static Double toRad(Double value) {
         return value * Math.PI / 180;
+    }
+
+
+    public Integer getDayOfWeekNum(String dayOfWeek){
+        HashMap<String, Integer> week = new HashMap<>();
+        week.put("mon", 2);
+        week.put("tues", 3);
+        week.put("wen", 4);
+        week.put("thu", 5);
+        week.put("fri", 6);
+        week.put("sat", 7);
+        week.put("sun", 1);
+        return week.get(dayOfWeek.toLowerCase());
+
+
+
     }
 
     public String TrainLineKeys(String station_type){
