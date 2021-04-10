@@ -281,6 +281,23 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         });
 
 
+        FloatingActionButton switch_dir = findViewById(R.id.switch_dir_button);
+        switch_dir.setOnClickListener(v -> {
+            String dir = message.getDir();
+            if (dir !=null) {
+                if (dir.equals("1")) {
+                    message.setDir("5");
+
+                } else {
+                    message.setDir("1");
+                }
+                message.getT1().interrupt();
+            }
+
+
+        });
+
+
     }
 
     private Boolean isRunning(){
