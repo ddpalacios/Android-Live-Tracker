@@ -21,6 +21,7 @@ import com.example.cta_map.Displayers.Train;
 import com.example.cta_map.ListItem;
 import com.example.cta_map.R;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -57,8 +58,9 @@ public class TrainTimes_Fragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         message = ((MainActivity)getActivity()).message;
-        Context context = ((MainActivity)getActivity()).context;
 
+        Context context = ((MainActivity)getActivity()).context;
+        FloatingActionButton switch_dir = view.findViewById(R.id.switch_dir_button);
         current_incoming_trains = message.getOld_trains();
         recyclerView = view.findViewById(R.id.frag_rv);
         recyclerView.setHasFixedSize(true);
@@ -70,6 +72,22 @@ public class TrainTimes_Fragment extends Fragment {
 
 
         }
+        switch_dir.setOnClickListener(v -> {
+            String dir = message.getDir();
+            if (dir !=null) {
+                if (dir.equals("1")) {
+                    message.setDir("5");
+
+                } else {
+                    message.setDir("1");
+                }
+                message.getT1().interrupt();
+            }
+
+
+        });
+
+
 
     }
     @Override
