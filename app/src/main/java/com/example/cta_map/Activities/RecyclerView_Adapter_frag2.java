@@ -36,7 +36,7 @@ public class RecyclerView_Adapter_frag2 extends RecyclerView.Adapter<RecyclerVie
     Thread t1,t2;
     Handler handler;
     API_Caller_Thread api_caller;
-    Content_Parser_Thread content_parser;
+//    Content_Parser_Thread content_parser;
     HashMap<String, Object> threadHashMap;
     Message message;
     FusedLocationProviderClient fusedLocationClient;
@@ -65,11 +65,10 @@ public class RecyclerView_Adapter_frag2 extends RecyclerView.Adapter<RecyclerVie
     @Override
     public void onBindViewHolder(@NonNull ItemHolder holder, int position) {
         t1 =  (Thread) threadHashMap.get("t1");
-        t2 =  (Thread) threadHashMap.get("t2");
         handler =  (Handler) threadHashMap.get("handler");
         message = (Message) threadHashMap.get("message");
         api_caller = (API_Caller_Thread) threadHashMap.get("api_caller");
-        content_parser = (Content_Parser_Thread) threadHashMap.get("content_parser");
+//        content_parser = (Content_Parser_Thread) threadHashMap.get("content_parser");
 
         contact = this.contactsList.get(position);
 //        holder.direction_id.setText(contact.getDirection_id());
@@ -88,11 +87,11 @@ public class RecyclerView_Adapter_frag2 extends RecyclerView.Adapter<RecyclerVie
                         if (user_tracking_record!=null){
                             HashMap<String, String> currentTrackingStation = (HashMap<String, String>) user_tracking_record.get(0);
                             if (currentTrackingStation.get("FAVORITE_MAP_ID").equals(contact.getMapID())){
-                                if (t1 != null && t2 != null) {
-                                    api_caller.cancel();
-                                    t1.interrupt();
-                                    content_parser.cancel();
-                                    t2.interrupt();
+                                if (t1 != null) {
+                                   message.getApi_caller_thread().cancel();
+                                    message.getT1().interrupt();
+//                                    content_parser.cancel();
+//                                    t2.interrupt();
                                 }
                             }
                         }
@@ -122,18 +121,17 @@ public class RecyclerView_Adapter_frag2 extends RecyclerView.Adapter<RecyclerVie
                 cta_dataBase.update("USER_FAVORITES", "ISTRACKING", "1", "FAVORITE_MAP_ID = " + "'"+contact.getMapID()+"'");
                 Log.e("TRACKING", target_station.get("STATION_NAME")+".");
                 callThreads(target_station);
+                cta_dataBase.close();
             } else{
                 HashMap<String, String> currentTrackingStation = (HashMap<String, String>) user_tracking_record.get(0);
                 if (!currentTrackingStation.get("FAVORITE_MAP_ID").equals(contact.getMapID())) { // As long as its not the same item that's being tracked...
                     cta_dataBase.update("USER_FAVORITES", "ISTRACKING", "0", "FAVORITE_MAP_ID = " +"'" + currentTrackingStation.get("FAVORITE_MAP_ID") + "'");
-                    if (threadHashMap.get("t1") != null && threadHashMap.get("t2") != null) {
-                        api_caller.cancel();
-                        t1.interrupt();
-                        content_parser.cancel();
-                        t2.interrupt();
+                    if (threadHashMap.get("t1") != null) {
+                        message.getApi_caller_thread().cancel();
+                        message.getT1().interrupt();
                     }
                     cta_dataBase.update("USER_FAVORITES", "ISTRACKING", "1", "FAVORITE_MAP_ID = " +
-                            "'" + contact.getMapID() + "'");
+                            "'" + contact.getMapID() + "'"); // New station being tracked
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
@@ -161,6 +159,9 @@ public class RecyclerView_Adapter_frag2 extends RecyclerView.Adapter<RecyclerVie
 
 
     private void callThreads(HashMap<String, String> target_station){
+        mMap.clear();
+        message.getApi_caller_thread().cancel();
+        message.getT1().interrupt();
         CTA_DataBase cta_dataBase = new CTA_DataBase(Maincontext);
         Chicago_Transits chicago_transits = new Chicago_Transits();
         message.setTARGET_MAP_ID(target_station.get("MAP_ID"));
@@ -169,35 +170,26 @@ public class RecyclerView_Adapter_frag2 extends RecyclerView.Adapter<RecyclerVie
         message.setTarget_type(contact.getTrainLine());
         ArrayList<Object> user_tracking_record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "MAP_ID = '" + target_station.get("MAP_ID") + "'", null, null);
         HashMap<String, String> tracking_station = (HashMap<String, String>) user_tracking_record.get(0);
-        chicago_transits.ZoomIn(mMap, 12f, Double.parseDouble(tracking_station.get("LAT")), Double.parseDouble(tracking_station.get("LON")));
         cta_dataBase.close();
-
         assert actionBar != null;
-        actionBar.setTitle("To "+target_station.get("STATION_NAME")+".");
-        actionBar.setBackgroundDrawable(new ColorDrawable(chicago_transits.GetBackgroundColor(contact.getTrainLine(), Maincontext)));
-
         message.keepSending(true);
         message.setTarget_station(target_station);
-        api_caller = new API_Caller_Thread(message);
-        content_parser = new Content_Parser_Thread(Maincontext,handler,message);
+        api_caller = new API_Caller_Thread(message, Maincontext, handler);
         t1 = new Thread(api_caller);
-        t2 = new Thread(content_parser);
         message.setT1(t1);
-        message.setT2(t2);
-        message.setContent_parser_thread(content_parser);
         message.setApi_caller_thread(api_caller);
         message.getT1().start();
-        message.getT2().start();
-
+        actionBar.setTitle("To "+target_station.get("STATION_NAME")+".");
+        actionBar.setBackgroundDrawable(new ColorDrawable(chicago_transits.GetBackgroundColor(contact.getTrainLine(), Maincontext)));
+        chicago_transits.ZoomIn(mMap, 12f, Double.parseDouble(tracking_station.get("LAT")), Double.parseDouble(tracking_station.get("LON")));
     }
 
     public static class ItemHolder extends RecyclerView.ViewHolder {
-        TextView t1, direction_id;
+        TextView t1;
         ImageView imageView;
         CardView list_item;
         public ItemHolder(@NonNull View itemView) {
             super(itemView);
-//            direction_id = itemView.findViewById(R.id.main_title);
             list_item = (CardView) itemView.findViewById(R.id.list_item);
             t1 = (TextView) itemView.findViewById(R.id.card_title);
             imageView = (ImageView) itemView.findViewById(R.id.train_image);

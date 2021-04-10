@@ -3,10 +3,7 @@ package com.example.cta_map.Activities;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.cta_map.Activities.RecyclerView_Adapter_frag1;
 import com.example.cta_map.Backend.Threading.Message;
 import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.Displayers.Train;
@@ -29,10 +23,8 @@ import com.example.cta_map.R;
 import com.google.android.gms.maps.GoogleMap;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class TrainTimes_Fragment extends Fragment {
-    ArrayList<ListItem> arrayList;
     RecyclerView recyclerView;
     TrainTimes_Adapter_frag trainTimes_adapter_frag;
     Message message;
@@ -65,24 +57,15 @@ public class TrainTimes_Fragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         message = ((MainActivity)getActivity()).message;
+        Context context = ((MainActivity)getActivity()).context;
+
         current_incoming_trains = message.getOld_trains();
         recyclerView = view.findViewById(R.id.frag_rv);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        arrayList = new ArrayList<>();
         GoogleMap mMap = ((MainActivity)getActivity()).mMap;
         if (current_incoming_trains!=null) {
-            for (int i = 0; i < current_incoming_trains.size(); i++) {
-                Train current_live_train =current_incoming_trains.get(i);
-                ListItem listItem = new ListItem();
-                listItem.setTitle("#"+ current_live_train.getRn());
-                listItem.setSubtitle( current_live_train.getTarget_eta()+"m");
-                listItem.setImage(new Chicago_Transits().getTrainImage(current_live_train.getTrain_type()));
-                listItem.setLat(current_live_train.getLat());
-                listItem.setLon(current_live_train.getLon());
-                arrayList.add(listItem);
-            }
-            trainTimes_adapter_frag = new TrainTimes_Adapter_frag(arrayList, mMap);
+            trainTimes_adapter_frag = new TrainTimes_Adapter_frag(context,message,current_incoming_trains, mMap);
             recyclerView.setAdapter(trainTimes_adapter_frag);
 
 

@@ -359,7 +359,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                     message.setTarget_name(target_station.get("STATION_NAME"));
                     message.keepSending(true);
                     mMap.clear();
-                    api_caller =  new  Thread(new API_Caller_Thread(message));
+                    api_caller =  new  Thread(new API_Caller_Thread(message, getApplicationContext(), handler));
                     content_parser = new Thread(new Content_Parser_Thread(getApplicationContext(),handler, message));
                     api_caller.start();
                     content_parser.start();

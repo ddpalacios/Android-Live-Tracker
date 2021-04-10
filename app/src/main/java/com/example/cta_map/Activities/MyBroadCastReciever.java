@@ -103,8 +103,8 @@ public class MyBroadCastReciever extends BroadcastReceiver {
         String station_type = intent.getExtras().getString("station_type");
 
 
-        Thread t1 = new Thread(new API_Caller_Thread(message));
-        Thread t2= new Thread(new Content_Parser_Thread(context, handler,message));
+        Thread t1 = new Thread(new API_Caller_Thread(message, context, handler));
+//        Thread t2= new Thread(new Content_Parser_Thread(context, handler,message));
         if (map_id !=null) {
             CTA_DataBase cta_dataBase = new CTA_DataBase(context);
             ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "MAP_ID = '" +map_id + "'", null, null);
@@ -115,7 +115,7 @@ public class MyBroadCastReciever extends BroadcastReceiver {
             message.setTarget_type(station_type);
             message.setTarget_station(tracking_record);
             t1.start();
-            t2.start();
+//            t2.start();
 
 
         }

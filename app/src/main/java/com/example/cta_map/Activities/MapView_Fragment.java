@@ -45,9 +45,9 @@ public class MapView_Fragment extends Fragment {
             for (int i = 0; i < current_incoming_trains.size(); i++) {
                 Train current_live_train =current_incoming_trains.get(i);
                 ListItem listItem = new ListItem();
-                listItem.setTitle("#"+ current_live_train.getRn());
+                listItem.setTitle("To "+current_live_train.getDestNm());
                 listItem.setSubtitle( current_live_train.getStatus());
-                listItem.setImage(new Chicago_Transits().getTrainImage(current_live_train.getTrain_type()));
+                listItem.setImage(new Chicago_Transits().getTrainImage(current_live_train.getRt()));
                 listItem.setLat(current_live_train.getLat());
                 listItem.setLon(current_live_train.getLon());
                 arrayList.add(listItem);

@@ -5,6 +5,8 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import com.example.cta_map.Activities.Adapters.CustomInfoWindowAdapter;
+import com.example.cta_map.Backend.Threading.Message;
 import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.DataBase.CTA_Stops;
 import com.example.cta_map.DataBase.L_stops;
@@ -25,21 +27,37 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 
 public class Chicago_Transits {
 
     public  Integer getTrainImage(String train_line){
+        if (train_line.toLowerCase().equals("purple")){
+            train_line = "p";
+
+        }else if(train_line.toLowerCase().equals("orange")){
+            train_line = "org";
+
+        }else if(train_line.toLowerCase().equals("yellow")){
+            train_line = "y";
+
+        }else if(train_line.toLowerCase().equals("green")){
+            train_line = "g";
+        }else if(train_line.toLowerCase().equals("brown")){
+            train_line = "brn";
+
+        }
         HashMap<String, Integer> TrainLineKeyCodes  = new HashMap<>();
         train_line = train_line.toLowerCase().trim();
         TrainLineKeyCodes.put("red", R.drawable.red );
         TrainLineKeyCodes.put("blue", R.drawable.blue);
-        TrainLineKeyCodes.put("brown", R.drawable.brown);
-        TrainLineKeyCodes.put("green", R.drawable.green);
-        TrainLineKeyCodes.put("orange", R.drawable.orange);
+        TrainLineKeyCodes.put("brn", R.drawable.brown);
+        TrainLineKeyCodes.put("g", R.drawable.green);
+        TrainLineKeyCodes.put("org", R.drawable.orange);
         TrainLineKeyCodes.put("pink", R.drawable.pink);
-        TrainLineKeyCodes.put("purple", R.drawable.purple);
-        TrainLineKeyCodes.put("yellow", R.drawable.yellow);
+        TrainLineKeyCodes.put("p", R.drawable.purple);
+        TrainLineKeyCodes.put("y", R.drawable.yellow);
         return TrainLineKeyCodes.get(train_line);
     }
 
@@ -419,47 +437,216 @@ public class Chicago_Transits {
 
     public Train get_train_info( String each_train) {
         /*
-            <train>
-                <destSt>30089</destSt>
-                <nextStaId>41400</nextStaId>
-                <flags />
-                <heading>178</heading>
-            </train>
+            <eta>
+        <staId>41450</staId>
+        <stpId>30279</stpId>
+        <staNm>Chicago</staNm>
+        <stpDe>Service toward Howard</stpDe>
+        <rn>905</rn>
+        <rt>Red</rt>
+        <destSt>30173</destSt>
+        <destNm>Howard</destNm>
+        <trDr>1</trDr>
+        <prdt>20210409 12:23:02</prdt>
+        <arrT>20210409 12:25:02</arrT>
+        <isApp>0</isApp>
+        <isSch>0</isSch>
+        <isDly>0</isDly>
+        <isFlt>0</isFlt>
+        <flags />
+        <lat>41.88481</lat>
+        <lon>-87.62781</lon>
+        <heading>358</heading>
+    </eta>
  */
         Train train = new Train();
         try {
 
-        String rn = get_xml_tag_value(each_train, "<rn>", "</rn>");
-        String destNm = get_xml_tag_value(each_train, "<destNm>", "</destNm>");
-        String trDr = get_xml_tag_value(each_train, "<trDr>", "</trDr>");
-        String nextStpId = get_xml_tag_value(each_train, "<nextStpId>", "</nextStpId>");
-        String nextStaNm = get_xml_tag_value(each_train, "<nextStaNm>", "</nextStaNm>");
-        String prdt = get_xml_tag_value(each_train, "<prdt>", "</prdt>");
-        String arrT = get_xml_tag_value(each_train, "<arrT>", "</arrT>");
-        String isApp = get_xml_tag_value(each_train, "<isApp>", "</isApp>");
-        String isDly = get_xml_tag_value(each_train, "<isDly>", "</isDly>");
-        String lat = get_xml_tag_value(each_train, "<lat>", "</lat>");
-        String lon = get_xml_tag_value(each_train, "<lon>", "</lon>");
-        String heading = get_xml_tag_value(each_train, "<heading>", "</heading");
-        String destSt = get_xml_tag_value(each_train, "<destSt>", "</destSt");
-        String nextStaId = get_xml_tag_value(each_train, " <nextStaId>", " </nextStaId>");
+            String staId = get_xml_tag_value(each_train, "staId");
+            String stpId = get_xml_tag_value(each_train, "stpId");
+            String staNm = get_xml_tag_value(each_train, "staNm");
+            String stpDe = get_xml_tag_value(each_train, "stpDe");
+            String rn = get_xml_tag_value(each_train, "rn");
+            String rt = get_xml_tag_value(each_train, "rt");
+            String destSt = get_xml_tag_value(each_train, "destSt");
+            String destNm= get_xml_tag_value(each_train, "destNm");
+            String trDr = get_xml_tag_value(each_train, "trDr");
+            String prdt= get_xml_tag_value(each_train, "prdt");
+            String arrT = get_xml_tag_value(each_train, "arrT");
+            String isApp = get_xml_tag_value(each_train, "isApp");
+            String isDly= get_xml_tag_value(each_train, "isDly");
+            String isFlt = get_xml_tag_value(each_train, "isFlt");
+            String lat = get_xml_tag_value(each_train, "lat");
+            String lon= get_xml_tag_value(each_train, "lon");
+            String heading= get_xml_tag_value(each_train, "heading");
+
 
             train.setRn(rn);
             train.setViewIcon(false);
             train.setSelected(false);
             train.setDestNm(destNm);
             train.setTrDr(trDr);
-            train.setNextStpID(nextStpId);
-            train.setNextStaNm(nextStaNm);
-            train.setPrdt(prdt);
-            train.setArrT(arrT.split(" ")[1]);
+            train.setStaId(staId);
+            train.setStpId(stpId);
+            train.setStaNm(staNm);
+            train.setStpDe(stpDe);
+            train.setRt(rt);
+
+            String date1 = getDate(prdt.split(" ")[0]);
+            train.setPrdt(date1+" "+prdt.split(" ")[1]);
+            String date2 = getDate(arrT.split(" ")[0]);
+            train.setArrT(date2 +" " +arrT.split(" ")[1]);
             train.setIsApp(isApp);
             train.setHeading(heading);
             train.setIsDly(isDly);
             train.setDestSt(destSt);
-            train.setNextStaId(nextStaId);
-            train.setLat(Double.parseDouble(lat));
-            train.setLon(Double.parseDouble(lon));
+            train.setIsFlt(isFlt);
+            train.setLat(Double.parseDouble(lat.trim()));
+            train.setLon(Double.parseDouble(lon.trim()));
+
+
+        }catch (Exception e){
+            return null;
+        }
+
+        return train;
+    }
+
+    private String getDate(String prdt){
+        String year = prdt.substring(0, 4);
+        String month = prdt.substring(4, 6);
+        String day = prdt.substring(6, 8);
+        return  year+ "-"+month+"-"+day;
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public void plot_marker(Context context, Message message, GoogleMap mMap, Train train, HashMap<String, String > target_station){
+        MapMarker mapMarker = new MapMarker(mMap, context, message);
+        CustomInfoWindowAdapter adapter = new CustomInfoWindowAdapter(context, message,"Test");
+        mMap.setInfoWindowAdapter(adapter);
+        if (train == null){
+            mapMarker.addMarker(
+                    Double.parseDouble(Objects.requireNonNull(target_station.get("LAT"))),
+                    Double.parseDouble(Objects.requireNonNull(target_station.get("LON"))),
+                    "Station# "+target_station.get("MAP_ID"),
+                    "target",
+                    1f,
+                    false,
+                    true,
+                    false,
+                    target_station.get("STATION_NAME"), false);
+        }else {
+            if (train.getSelected()) {
+                if (!train.getViewIcon()) {
+                    mapMarker.addMarker(
+                            train.getLat(),
+                            train.getLon(),
+                            "Train# " + train.getRn(),
+                            train.getRt().toLowerCase(),
+                            1f,
+                            true,
+                            false,
+                            false,
+                            train.getRn(),
+                            false).showInfoWindow();
+                }else{
+                    mapMarker.addMarker(
+                            train.getLat(),
+                            train.getLon(),
+                            "Train# " + train.getRn(),
+                            train.getStatus().toLowerCase(),
+                            1f,
+                            true,
+                            false,
+                            false,
+                            train.getRn(),
+                            true).showInfoWindow();
+
+                }
+            }else {
+                if (!train.getViewIcon()) {
+                    mapMarker.addMarker(
+                            train.getLat(),
+                            train.getLon(),
+                            "Train# " + train.getRn(),
+                            train.getRt().toLowerCase(),
+                            1f,
+                            true,
+                            false,
+                            false,
+                            train.getRn(), false);
+
+                }
+            }
+        }
+    }
+
+
+    public TrainStops get_remaining_train_stop_info( String each_train) {
+        /*
+            <eta>
+        <staId>41450</staId>
+        <stpId>30279</stpId>
+        <staNm>Chicago</staNm>
+        <stpDe>Service toward Howard</stpDe>
+        <rn>905</rn>
+        <rt>Red</rt>
+        <destSt>30173</destSt>
+        <destNm>Howard</destNm>
+        <trDr>1</trDr>
+        <prdt>20210409 12:23:02</prdt>
+        <arrT>20210409 12:25:02</arrT>
+        <isApp>0</isApp>
+        <isSch>0</isSch>
+        <isDly>0</isDly>
+        <isFlt>0</isFlt>
+        <flags />
+        <lat>41.88481</lat>
+        <lon>-87.62781</lon>
+        <heading>358</heading>
+    </eta>
+ */
+        TrainStops train = new TrainStops();
+        try {
+
+            String staId = get_xml_tag_value(each_train, "staId");
+            String stpId = get_xml_tag_value(each_train, "stpId");
+            String staNm = get_xml_tag_value(each_train, "staNm");
+            String stpDe = get_xml_tag_value(each_train, "stpDe");
+            String rn = get_xml_tag_value(each_train, "rn");
+            String rt = get_xml_tag_value(each_train, "rt");
+            String destSt = get_xml_tag_value(each_train, "destSt");
+            String destNm= get_xml_tag_value(each_train, "destNm");
+            String trDr = get_xml_tag_value(each_train, "trDr");
+            String prdt= get_xml_tag_value(each_train, "prdt");
+            String arrT = get_xml_tag_value(each_train, "arrT");
+            String isApp = get_xml_tag_value(each_train, "isApp");
+            String isDly= get_xml_tag_value(each_train, "isDly");
+            String isFlt = get_xml_tag_value(each_train, "isFlt");
+
+
+            train.setRn(rn);
+            train.setViewIcon(false);
+            train.setSelected(false);
+            train.setDestNm(destNm);
+            train.setTrDr(trDr);
+            train.setStaId(staId);
+            train.setStpId(stpId);
+            train.setStaNm(staNm);
+            train.setStpDe(stpDe);
+            train.setRt(rt);
+
+
+            String date1 = getDate(prdt.split(" ")[0]);
+            train.setPrdt(date1+" "+prdt.split(" ")[1]);
+            String date2 = getDate(arrT.split(" ")[0]);
+            train.setArrT(date2 +" " +arrT.split(" ")[1]);
+
+            train.setIsApp(isApp);
+            train.setIsDly(isDly);
+            train.setDestSt(destSt);
+            train.setIsFlt(isFlt);
 
 
         }catch (Exception e){return null;}
@@ -479,9 +666,10 @@ public class Chicago_Transits {
         return positions.get(train_line.toLowerCase().trim());
     }
 
-    private String get_xml_tag_value(String raw_xml, String startTag, String endTag){
+    private String get_xml_tag_value(String raw_xml, String startTag){
+        String end_tag = "</"+startTag+">";
 
-        return StringUtils.substringBetween(raw_xml, startTag, endTag).trim();
+        return StringUtils.substringBetween(raw_xml,"<"+startTag+">", end_tag).trim();
     }
 
 

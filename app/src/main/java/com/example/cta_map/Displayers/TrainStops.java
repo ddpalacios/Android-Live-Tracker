@@ -4,7 +4,7 @@ import com.example.cta_map.DataBase.CTA_Stops;
 
 import java.util.ArrayList;
 
-public class Train implements Comparable< Train >{
+public class TrainStops implements Comparable<TrainStops>{
 
     public Boolean getViewIcon() {
         return viewIcon;
@@ -47,15 +47,6 @@ public class Train implements Comparable< Train >{
     private String staId ;
     private String stpId ;
     private String staNm ;
-    private boolean isSelected;
-
-    public boolean isSelected() {
-        return isSelected;
-    }
-
-    public void setSelected(boolean selected) {
-        isSelected = selected;
-    }
 
     public String getStaId() {
         return staId;
@@ -100,15 +91,15 @@ public class Train implements Comparable< Train >{
     private String stpDe ;
     private String rt;
 
-    public ArrayList<TrainStops> getRemaining_stops() {
+    public ArrayList<CTA_Stops> getRemaining_stops() {
         return remaining_stops;
     }
 
-    public void setRemaining_stops(ArrayList<TrainStops> remaining_stops) {
+    public void setRemaining_stops(ArrayList<CTA_Stops> remaining_stops) {
         this.remaining_stops = remaining_stops;
     }
 
-    private ArrayList<TrainStops> remaining_stops;
+    private ArrayList<CTA_Stops> remaining_stops;
 
     public Boolean getSelected() {
         return isSelected;
@@ -118,6 +109,7 @@ public class Train implements Comparable< Train >{
         isSelected = selected;
     }
 
+    private Boolean isSelected;
 
 
 
@@ -362,7 +354,7 @@ public class Train implements Comparable< Train >{
 
 
     @Override
-    public int compareTo(Train o) {
+    public int compareTo(TrainStops o) {
         return this.getTarget_eta().compareTo(o.getTarget_eta());
     }
 }

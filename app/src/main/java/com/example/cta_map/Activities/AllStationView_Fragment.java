@@ -78,8 +78,6 @@ public class AllStationView_Fragment extends Fragment {
                 arrayList.add(listItem);
             }
 
-             Thread t1 = ((MainActivity)getActivity()).t1;
-             Thread t2 = ((MainActivity)getActivity()).t2;
              Handler handler = ((MainActivity)getActivity()).handler;
              Message message = ((MainActivity)getActivity()).message;
             ActionBar actionBar = ((MainActivity)getActivity()).getSupportActionBar();
@@ -88,8 +86,7 @@ public class AllStationView_Fragment extends Fragment {
             FusedLocationProviderClient fusedLocationClient = ((MainActivity)getActivity()).fusedLocationClient;
             GoogleMap mMap = ((MainActivity)getActivity()).mMap;
             HashMap<String, Object> thread_handling = new HashMap<>();
-             thread_handling.put("t1", t1);
-            thread_handling.put("t2", t2);
+             thread_handling.put("t1", message.getT1());
             thread_handling.put("api_caller", api_caller);
             thread_handling.put("content_parser", content_parser);
             thread_handling.put("handler", handler);

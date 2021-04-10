@@ -1,94 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:id="@+id/main_notification_window"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@drawable/white_border"
-    android:padding="10dp">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+    >
 
         <TextView
+            android:id="@+id/textView12"
             android:layout_width="wrap_content"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="20dp"
             android:layout_height="wrap_content"
-            android:id="@+id/nextStop"
-            android:layout_gravity="center_horizontal"
-            android:ellipsize="end"
-            android:maxLines="10"
-            android:textColor="#000"
-            android:textSize="17sp"
-            android:textStyle="bold"/>
+            android:text="Next stops" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/remaining_stops_rv"
+            android:layout_width="250dp"
+            android:layout_below="@+id/textView12"
+            android:layout_height="wrap_content" />
+
+</RelativeLayout>
 
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/station_id"
-            android:layout_gravity="center_horizontal"
-            android:textSize="1sp"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:textStyle="italic"
-            android:layout_gravity="center_horizontal"
-            android:maxLines="10"
-            android:textSize="17sp"
-            android:textColor="#000"
-            android:id="@+id/subtitle"/>
-
-
-
-    </LinearLayout>
-
-<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent">-->
-
-<!--    <TextView-->
-<!--        android:id="@+id/nextStop"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-
-<!--        android:text="TextView"-->
-<!--        android:textStyle="bold"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintVertical_bias="0.027"-->
-<!--        tools:layout_editor_absoluteX="-7dp" />-->
-
-<!--    <TextView-->
-<!--        android:id="@+id/subtitle"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Next Stop:"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintVertical_bias="0.027" />-->
-
-<!--    <Space-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="20dp"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toStartOf="@+id/subtitle"-->
-<!--        app:layout_constraintHorizontal_bias="0.0"-->
-<!--        app:layout_constraintStart_toEndOf="@+id/nextStop"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintVertical_bias="0.027" />-->
-
-    <!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
-</LinearLayout>
 

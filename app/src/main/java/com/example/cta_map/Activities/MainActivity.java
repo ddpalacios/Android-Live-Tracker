@@ -88,170 +88,40 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @SuppressLint("MissingPermission")
     public void displayResults(Bundle bundle) {
-        ArrayList<Train> all_chosen_trains = (ArrayList<Train>) bundle.getSerializable("new_incoming_trains");
         CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
-        message.setOld_trains(all_chosen_trains);
+        ArrayList<Train> all_chosen_trains = (ArrayList<Train>) bundle.getSerializable("new_incoming_trains");
+        ArrayList<Object> target_station_record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "MAP_ID = '" + message.getTARGET_MAP_ID() + "'", null, null);
+        HashMap<String, String> target_station = (HashMap<String, String>) target_station_record.get(0);
+        new Chicago_Transits().plot_marker(getApplicationContext(),message,mMap,null, target_station); // Plot Target Station
         if (all_chosen_trains !=null && all_chosen_trains.size() > 0){
-            ActionBar bar = getSupportActionBar();
-            assert bar != null;
-            Chicago_Transits chicago_transits = new Chicago_Transits();
-            setTitle("To "+all_chosen_trains.get(0).getNextStaNm() +".");
-            ArrayList<Object> target_station_record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "MAP_ID = '" + message.getTARGET_MAP_ID() + "'", null, null);
-            HashMap<String, String> target_station = (HashMap<String, String>) target_station_record.get(0);
-            plot_marker(null, target_station); // Plot Target Station
+
             for (Train train : all_chosen_trains){
-                Log.e("INCOMING", train.getRn() + "# | "+ train.getTrain_type() + " | "+train.getTarget_eta()+"m");
-                plot_marker(train, null);
+                Log.e("INCOMING", train.getRn() + "# | "+ train.getRt() + " | "+train.getTarget_eta()+"m Selected? "+ train.getSelected());
+                new Chicago_Transits().plot_marker(getApplicationContext(),message,mMap,train, null);
             }
-
+            message.setOld_trains(all_chosen_trains);
+            IsSharingLocation = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
+            ArrayList<Object> UserLocation = cta_dataBase.excecuteQuery("*", "USER_LOCATION", "HAS_LOCATION = '1'", null,null);
+            cta_dataBase.close();
+            if (IsSharingLocation == 0 && UserLocation !=null){
+                updatetUserLocation();
+            }
         }else{
-            ActionBar bar = getSupportActionBar();
-            assert bar != null;
-            setTitle("No Trains Available");
-
-
+            message.setOld_trains(null);
         }
 
-
-//        for (Train train: all_chosen_trains){
-//            Log.e("TRAIN", "RN: "+train.getRn()+". Is Selected? "+train.getSelected() +" Icon? "+ train.getViewIcon());
-//        }
-//
-//        CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
-//        ArrayList<Object> target_station_record = cta_dataBase.excecuteQuery("*",
-//                "CTA_STOPS",
-//                "MAP_ID = '" + message.getTARGET_MAP_ID() + "'",
-//                null,
-//                null);
-//
-//        HashMap<String, String> target_station = (HashMap<String, String>) target_station_record.get(0);
-//        plot_marker(null, target_station); // Plot Target Station
-//        Log.e("TRAIN", "DONE");
-//        if (all_chosen_trains.size() > 0) {
-//
-//            for (Train train : all_chosen_trains) {  // Find Train that has an icon
-//                if (train.getViewIcon() && train.getSelected()) {
-//                    NotificationTrain = train;
-//                    break;
-//                }
-//            }
-//            for (Train train : all_chosen_trains){
-//                if (NotificationTrain !=null) {
-//                    if (NotificationTrain.getRn().equals(train.getRn())) {
-//                        train.setSelected(true);
-//                        train.setViewIcon(true);
-//                        plot_marker(train, null);
-//                        continue;
-//                    }
-//                }
-//                plot_marker(train, null);
-//            }
-//            Train selected_train = trainLookup(null, true);
-//            if (selected_train!=null) {
-//                plot_marker(selected_train, null);
-//            }
-//            cta_dataBase.close();
-//        }
-//        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-//        ft.detach(mainPlaceHolder_fragment);
-//        ft.attach(mainPlaceHolder_fragment);
-//        ft.commitAllowingStateLoss();
-
-        Fragment frg = null;
-        frg = getSupportFragmentManager().findFragmentByTag("main_place_holder_frag");
-        final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.detach(frg);
-        ft.attach(frg);
-        ft.commitAllowingStateLoss();
-//
-//        updateFragment("f0");
-//        updateFragment("f1");
-
-
-
-        IsSharingLocation = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
-        ArrayList<Object> UserLocation = cta_dataBase.excecuteQuery("*", "USER_LOCATION", "HAS_LOCATION = '1'", null,null);
+        Fragment frg = getSupportFragmentManager().findFragmentByTag("main_place_holder_frag");
+        if (frg!=null) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.detach(frg);
+            ft.attach(frg);
+            ft.commitAllowingStateLoss();
+        }
         cta_dataBase.close();
-        if (IsSharingLocation == 0 && UserLocation !=null){
-            updatetUserLocation();
-        }
-    }
-    private Train trainLookup(String train_id, Boolean findSelected){
-        if (!findSelected) {
-            for (Train train : message.getOld_trains()) {
-                if (train.getRn().equals(train_id)) {
-                    return train;
-                }
-            }
-        }else{
-            for (Train train : message.getOld_trains()) {
-                if (train.getSelected() && !train.getViewIcon()) {
-                    return train;
-                }
-            }
-        }
-        return null;
-    }
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public void plot_marker(Train train, HashMap<String, String > target_station){
-        final MapMarker mapMarker = new MapMarker(mMap, getApplicationContext(), message);
-        if (train == null){
-            mapMarker.addMarker(
-                    Double.parseDouble(Objects.requireNonNull(target_station.get("LAT"))),
-                    Double.parseDouble(Objects.requireNonNull(target_station.get("LON"))),
-                    "Station# "+target_station.get("MAP_ID"),
-                    "target",
-                    1f,
-                    false,
-                    true,
-                    false,
-                    target_station.get("STATION_NAME"), false);
-        }else {
-            if (train.getSelected()) {
-                if (!train.getViewIcon()) {
-                    mapMarker.addMarker(
-                            train.getLat(),
-                            train.getLon(),
-                            "Train# " + train.getRn(),
-                            train.getStatus().toLowerCase(),
-                            1f,
-                            true,
-                            false,
-                            false,
-                            " " + train.getTarget_eta() + "m",
-                            false).showInfoWindow();
-                }else{
-                    mapMarker.addMarker(
-                            train.getLat(),
-                            train.getLon(),
-                            "Train# " + train.getRn(),
-                            train.getStatus().toLowerCase(),
-                            1f,
-                            true,
-                            false,
-                            false,
-                            " " + train.getTarget_eta() + "m",
-                            true).showInfoWindow();
-
-                }
-            }else {
-                if (!train.getViewIcon()) {
-                    mapMarker.addMarker(
-                            train.getLat(),
-                            train.getLon(),
-                            "Train# " + train.getRn(),
-                            train.getTrain_type().toLowerCase(),
-                            1f,
-                            true,
-                            false,
-                            false,
-                            " " + train.getTarget_eta() + "m", false);
-
-                }
-            }
         }
-    }
+
+
 
 
 
@@ -267,14 +137,10 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         context = getApplicationContext();
         IsSharingLocation = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        api_caller = new API_Caller_Thread(message);
-        content_parser = new Content_Parser_Thread(getApplicationContext(), handler, message);
+        api_caller = new API_Caller_Thread(message, getApplicationContext(), handler);
         t1 = new Thread(api_caller);
-        t2 = new Thread(content_parser);
         message.setT1(t1);
-        message.setT2(t2);
         message.setApi_caller_thread(api_caller);
-        message.setContent_parser_thread(content_parser);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         SupportMapFragment mapFragment;
@@ -317,6 +183,11 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             cta_dataBase.close();
         }
     }
+
+
+
+
+
     @Override
     public void onRequestPermissionsResult(
             int requestCode,
@@ -405,8 +276,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         floatingActionButton.setOnClickListener(v -> {
             message.getT1().interrupt();
             message.getApi_caller_thread().cancel();
-            message.getT2().interrupt();
-            message.getContent_parser_thread().cancel();
             Intent intent = new Intent(MainActivity.this, ChooseTrainLineActivity.class);
             startActivity(intent);
         });
@@ -496,7 +365,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         ActionBar bar = getSupportActionBar();
         assert bar != null;
         Chicago_Transits chicago_transits = new Chicago_Transits();
-        setTitle("To: "+tracking_record.get("STATION_NAME")+".");
+        setTitle("To "+tracking_record.get("STATION_NAME")+".");
         bar.setBackgroundDrawable(new ColorDrawable(chicago_transits.GetBackgroundColor(station_type, getApplicationContext())));
 
         cta_dataBase.close();
@@ -506,7 +375,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         message.keepSending(true);
         message.setTarget_station(tracking_record);
         message.getT1().start();
-        message.getT2().start();
     }
 
     @Override
@@ -642,24 +510,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 //
 //    }
 
-
-    public void updateFragment(String frag_tag){
-        FragmentManager fragment_manager = mainPlaceHolder_fragment.getChildFragmentManager();
-        if (fragment_manager != null) {
-            Fragment TrainTimes_fragment = fragment_manager.findFragmentByTag(frag_tag); // e.g. f0
-            Fragment mapDetails_fragment = fragment_manager.findFragmentByTag(frag_tag); // e.g. f1
-            if (TrainTimes_fragment != null || mapDetails_fragment != null) {
-                Log.e("Frag Update", "Frag update");
-                FragmentTransaction fragmentTransaction = fragment_manager.beginTransaction();
-                fragmentTransaction.detach(TrainTimes_fragment);
-                fragmentTransaction.attach(TrainTimes_fragment);
-                fragmentTransaction.detach(mapDetails_fragment);
-                fragmentTransaction.attach(mapDetails_fragment);
-                fragmentTransaction.commitAllowingStateLoss();
-            }
-        }
-
-    }
 
 }
 

@@ -32,15 +32,15 @@ public class MapMarker  {
         float opacity = alpha;
         HashMap<String, Integer> colors = new HashMap<>();
         colors.put("blue", R.drawable.blue);
-        colors.put("purple", R.drawable.purple);
+        colors.put("p", R.drawable.purple);
         colors.put("pink", R.drawable.pink);
         colors.put("main", R.drawable.mainstation);
-        colors.put("green", R.drawable.green);
-        colors.put("brown", R.drawable.brown);
-        colors.put("orange", R.drawable.orange);
+        colors.put("g", R.drawable.green);
+        colors.put("brn", R.drawable.brown);
+        colors.put("org", R.drawable.orange);
         colors.put("red", R.drawable.red);
         colors.put("target", R.drawable.target);
-        colors.put("yellow", R.drawable.yellow);
+        colors.put("y", R.drawable.yellow);
         LatLng train_marker = new LatLng(lat, lon);
         int height = 140;
         int width = 140;
@@ -49,13 +49,13 @@ public class MapMarker  {
         BitmapDescriptor smallMarkerIcon = BitmapDescriptorFactory.fromBitmap(smallMarker);
         HashMap<String, Integer> train_colors = new HashMap<>();
         train_colors.put("blue", (int) BitmapDescriptorFactory.HUE_BLUE);
-        train_colors.put("purple", (int) BitmapDescriptorFactory.HUE_VIOLET);
+        train_colors.put("p", (int) BitmapDescriptorFactory.HUE_VIOLET);
         train_colors.put("pink", (int) BitmapDescriptorFactory.HUE_ROSE);
-        train_colors.put("green", (int) BitmapDescriptorFactory.HUE_GREEN);
-        train_colors.put("brown",(int) BitmapDescriptorFactory.HUE_CYAN);
-        train_colors.put("orange", (int) BitmapDescriptorFactory.HUE_ORANGE);
+        train_colors.put("g", (int) BitmapDescriptorFactory.HUE_GREEN);
+        train_colors.put("brn",(int) BitmapDescriptorFactory.HUE_CYAN);
+        train_colors.put("org", (int) BitmapDescriptorFactory.HUE_ORANGE);
         train_colors.put("red", (int) BitmapDescriptorFactory.HUE_RED);
-        train_colors.put("yellow", (int) BitmapDescriptorFactory.HUE_YELLOW);
+        train_colors.put("y", (int) BitmapDescriptorFactory.HUE_YELLOW);
 
         if (isTrain) {
 
