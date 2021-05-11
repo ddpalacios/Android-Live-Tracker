@@ -46,6 +46,8 @@ public class TrainStops implements Comparable<TrainStops>{
     private String arrT;
     private String staId ;
     private String stpId ;
+
+
     private String staNm ;
 
     public String getStaId() {

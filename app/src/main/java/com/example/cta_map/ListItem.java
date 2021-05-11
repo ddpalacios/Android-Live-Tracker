@@ -1,5 +1,7 @@
 package com.example.cta_map;
 
+import java.util.ArrayList;
+
 public class ListItem {
 
     public String getTrainLine() {
@@ -58,6 +60,16 @@ public class ListItem {
     private String train_dir_label;
     private String train_dir;
     private String title;
+
+    public ArrayList<String> getList_of_station_types() {
+        return list_of_station_types;
+    }
+
+    public void setList_of_station_types(ArrayList<String> list_of_station_types) {
+        this.list_of_station_types = list_of_station_types;
+    }
+
+    private ArrayList<String> list_of_station_types;
     private Double lat;
 
     public Double getLat() {

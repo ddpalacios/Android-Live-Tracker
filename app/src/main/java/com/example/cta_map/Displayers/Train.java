@@ -2,9 +2,10 @@ package com.example.cta_map.Displayers;
 
 import com.example.cta_map.DataBase.CTA_Stops;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Train implements Comparable< Train >{
+public class Train implements Comparable< Train >, Serializable {
 
     public Boolean getViewIcon() {
         return viewIcon;
@@ -14,27 +15,64 @@ public class Train implements Comparable< Train >{
         this.viewIcon = viewIcon;
     }
 
+    public Boolean getIsNotified() {
+        return isNotified;
+    }
+
+    public void setNotified(Boolean notified) {
+        isNotified = notified;
+    }
+
+    public String getTarget_station_name() {
+        return target_station_name;
+    }
+
+    public void setTarget_station_name(String target_station_name) {
+        this.target_station_name = target_station_name;
+    }
+
+    public int getIsNotifiedByAlarm() {
+        return isNotifiedByAlarm;
+    }
+    public Boolean getIsSch() {
+        return isSch;
+    }
+
+
+    public void setIsSch(Boolean isSch) {
+        this.isSch = isSch;
+    }
+
+    private Boolean isSch;
+
+    public void setIsNotifiedByAlarm(int isNotifiedByAlarm) {
+        this.isNotifiedByAlarm = isNotifiedByAlarm;
+    }
+
     /*
-    <train>
-                <rn>831</rn>
-                <destSt>30089</destSt>
-                <destNm>95th/Dan Ryan</destNm>
-                <trDr>5</trDr>
-                <nextStaId>41400</nextStaId>
-                <nextStpId>30270</nextStpId>
-                <nextStaNm>Roosevelt</nextStaNm>
-                <prdt>20201224 22:19:47</prdt>
-                <arrT>20201224 22:20:47</arrT>
-                <isApp>1</isApp>
-                <isDly>0</isDly>
-                <flags />
-                <lat>41.87678</lat>
-                <lon>-87.62756</lon>
-                <heading>178</heading>
-            </train>
+                <train>
+                            <rn>831</rn>
+                            <destSt>30089</destSt>
+                            <destNm>95th/Dan Ryan</destNm>
+                            <trDr>5</trDr>
+                            <nextStaId>41400</nextStaId>
+                            <nextStpId>30270</nextStpId>
+                            <nextStaNm>Roosevelt</nextStaNm>
+                            <prdt>20201224 22:19:47</prdt>
+                            <arrT>20201224 22:20:47</arrT>
+                            <isApp>1</isApp>
+                            <isDly>0</isDly>
+                            <flags />
+                            <lat>41.87678</lat>
+                            <lon>-87.62756</lon>
+                            <heading>178</heading>
+                        </train>
 
 
-     */
+                 */
+    private int isNotifiedByAlarm;
+    private String target_station_name;
+    private Boolean isNotified;
     private Boolean viewIcon;
     private String rn;
     private String destSt;

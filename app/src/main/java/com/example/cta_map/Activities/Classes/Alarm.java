@@ -1,6 +1,9 @@
 package com.example.cta_map.Activities.Classes;
 
-public class Alarm {
+import java.io.Serializable;
+import java.util.ArrayList;
+
+public class Alarm  implements Serializable {
     private Integer tues;
     private Integer wens;
     private Integer thur;
@@ -8,6 +11,16 @@ public class Alarm {
     private Integer sat;
     private String  map_id;
     private String hour;
+
+    public String getDirection() {
+        return direction;
+    }
+
+    public void setDirection(String direction) {
+        this.direction = direction;
+    }
+
+    private String direction;
 
     public String getAlarm_id() {
         return alarm_id;
@@ -36,6 +49,16 @@ public class Alarm {
     }
 
     private String min;
+
+    public ArrayList<Integer> getWeek_label_list() {
+        return week_label_list;
+    }
+
+    public void setWeek_label_list(ArrayList<Integer> week_label_list) {
+        this.week_label_list = week_label_list;
+    }
+
+    private ArrayList<Integer> week_label_list;
 
     public String getWeekLabel() {
         return weekLabel;

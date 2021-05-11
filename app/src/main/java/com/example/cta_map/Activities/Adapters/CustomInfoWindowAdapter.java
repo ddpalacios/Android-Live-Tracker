@@ -50,10 +50,12 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter{
 
         String rn = marker.getTitle();
         Train found_train = null;
-        for (Train train: all_trains){
-            if (train.getRn().equals(rn)){
-                found_train = train;
-                break;
+        if (all_trains != null) {
+            for (Train train : all_trains) {
+                if (train.getRn().equals(rn)) {
+                    found_train = train;
+                    break;
+                }
             }
         }
         if (found_train!=null){
@@ -77,9 +79,7 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter{
             recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
             CustomeWindowRV_Adapter customeWindowRV_adapter = new CustomeWindowRV_Adapter(context, message, inDisplay);
             recyclerView.setAdapter(customeWindowRV_adapter);
-            for (TrainStops stops : inDisplay){
-                Log.e("Remaining", stops.getStaNm() + " eta: "+ stops.getNextStopEtA()+"m");
-            }
+
 
 
         }

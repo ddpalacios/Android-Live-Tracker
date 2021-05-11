@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 //import com.example.cta_map.Activities.Navigation.MapsActivity;
+import com.example.cta_map.Activities.Classes.Station;
 import com.example.cta_map.Backend.Threading.Message;
 import com.example.cta_map.R;
 import com.google.android.gms.maps.GoogleMap;
@@ -26,69 +27,83 @@ public class MapMarker  {
         this.context = context;
     }
 
+    private  Integer getTrainMarkerColor(String status){
 
+        if (status.toLowerCase().equals("p")){ // You should never use the actual code as a variable.
+            // Make it easy for yourself and just use the actual name while decoding it
+            status= "purple";
 
-    public Marker addMarker(Double lat, Double lon, String snippet,String color, Float alpha, boolean isTrain, boolean isTarget, boolean isStation, String main_title, Boolean UseIcon) {
-        float opacity = alpha;
-        HashMap<String, Integer> colors = new HashMap<>();
-        colors.put("blue", R.drawable.blue);
-        colors.put("p", R.drawable.purple);
-        colors.put("pink", R.drawable.pink);
-        colors.put("main", R.drawable.mainstation);
-        colors.put("g", R.drawable.green);
-        colors.put("brn", R.drawable.brown);
-        colors.put("org", R.drawable.orange);
-        colors.put("red", R.drawable.red);
-        colors.put("target", R.drawable.target);
-        colors.put("y", R.drawable.yellow);
-        LatLng train_marker = new LatLng(lat, lon);
-        int height = 140;
-        int width = 140;
-        Bitmap b = BitmapFactory.decodeResource(this.context.getResources(), colors.get(color));
-        Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
-        BitmapDescriptor smallMarkerIcon = BitmapDescriptorFactory.fromBitmap(smallMarker);
+        }else if(status.toLowerCase().equals("org")){
+            status = "orange";
+
+        }else if(status.toLowerCase().equals("y")){
+            status= "yellow";
+
+        }else if(status.toLowerCase().equals("g")){
+            status = "green";
+        }else if(status.toLowerCase().equals("brn")){
+            status = "brown";
+
+        }
         HashMap<String, Integer> train_colors = new HashMap<>();
         train_colors.put("blue", (int) BitmapDescriptorFactory.HUE_BLUE);
-        train_colors.put("p", (int) BitmapDescriptorFactory.HUE_VIOLET);
+        train_colors.put("purple", (int) BitmapDescriptorFactory.HUE_VIOLET);
         train_colors.put("pink", (int) BitmapDescriptorFactory.HUE_ROSE);
-        train_colors.put("g", (int) BitmapDescriptorFactory.HUE_GREEN);
-        train_colors.put("brn",(int) BitmapDescriptorFactory.HUE_CYAN);
-        train_colors.put("org", (int) BitmapDescriptorFactory.HUE_ORANGE);
+        train_colors.put("green", (int) BitmapDescriptorFactory.HUE_GREEN);
+        train_colors.put("brown",(int) BitmapDescriptorFactory.HUE_CYAN);
+        train_colors.put("orange", (int) BitmapDescriptorFactory.HUE_ORANGE);
         train_colors.put("red", (int) BitmapDescriptorFactory.HUE_RED);
-        train_colors.put("y", (int) BitmapDescriptorFactory.HUE_YELLOW);
+        train_colors.put("yellow", (int) BitmapDescriptorFactory.HUE_YELLOW);
 
-        if (isTrain) {
 
-            try {
-                String TRAIN_ID = snippet.replaceAll("Train#", "");
-
-                if (!this.message.getSendingNotifications()) {
-                    return this.mMap.addMarker(new MarkerOptions().position(train_marker).title(main_title).snippet("Train# " + TRAIN_ID).icon(BitmapDescriptorFactory.defaultMarker(train_colors.get(color.toLowerCase()))).alpha(opacity));
-                }else{
-                    if (!UseIcon){
-                        return this.mMap.addMarker(new MarkerOptions().position(train_marker).title(main_title).snippet("Train# "+TRAIN_ID).icon(BitmapDescriptorFactory.defaultMarker(train_colors.get(color.toLowerCase()))).alpha(opacity));
-                    }else {
-                        return this.mMap.addMarker(new MarkerOptions().position(train_marker).title(main_title).snippet(snippet).icon(smallMarkerIcon));
-                    }
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-                return this.mMap.addMarker(new MarkerOptions().position(train_marker).title(main_title).snippet(snippet).icon(BitmapDescriptorFactory.defaultMarker(train_colors.get(color.toLowerCase()))).alpha(opacity));
-
-            }
-        }
-
-        else if (isTarget) {
-            return this.mMap.addMarker(new MarkerOptions().position(train_marker).title(main_title).snippet(snippet).icon(smallMarkerIcon));
-        }
-        else if (isStation){
-            return this.mMap.addMarker(new MarkerOptions().position(train_marker).title(main_title).snippet(snippet).icon(BitmapDescriptorFactory.defaultMarker(train_colors.get(color.toLowerCase()))).alpha(opacity));
-        }
-        else {
-            return null;
-        }
+        return train_colors.get(status.toLowerCase());
     }
 
 
+
+    public Marker addMarker(Train train, Station station, String snippet, Float opacity, String main_title) {
+        if (train !=null && train.getIsSch()){
+            return null;
+        }
+        String station_line = ((train == null) ?null : train.getRt());
+        Bitmap b;
+        int height = 140;
+        int width = 140;
+        if (station_line!=null) {
+            b = BitmapFactory.decodeResource(this.context.getResources(), new Chicago_Transits().getTrainImage(station_line));
+        }else{
+            b = BitmapFactory.decodeResource(this.context.getResources(), new Chicago_Transits().getTrainImage("target"));
+
+        }
+        Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+        BitmapDescriptor smallMarkerIcon = BitmapDescriptorFactory.fromBitmap(smallMarker);
+
+        if (train!=null){
+            String TRAIN_ID = snippet.replaceAll("Train#", "");
+
+            LatLng train_marker = new LatLng(train.getLat(), train.getLon());
+
+
+            if (train.getIsNotified() && train.getSelected()){
+                // if this is the train that is being notified - use icon
+                return this.mMap.addMarker(new MarkerOptions().position(train_marker).title(main_title).snippet(snippet).icon(smallMarkerIcon));
+            }else{
+                // otherwise, plot regular marker
+                Integer train_color = getTrainMarkerColor(station_line);
+                return this.mMap.addMarker(new MarkerOptions().position(train_marker).title(main_title).snippet("Train# " + TRAIN_ID).icon(BitmapDescriptorFactory.defaultMarker(train_color)).alpha(opacity));
+            }
+
+        }else if (station!=null){
+            LatLng station_marker = new LatLng(station.getLat(), station.getLon());
+            String line = message.getTarget_type();
+            if (!station.getIsTarget()){
+            return this.mMap.addMarker(new MarkerOptions().position(station_marker).title(main_title).snippet(snippet).icon(BitmapDescriptorFactory.defaultMarker(getTrainMarkerColor(line))).alpha(opacity));
+            }else{
+                return this.mMap.addMarker(new MarkerOptions().position(station_marker).title(main_title).snippet(snippet).icon(smallMarkerIcon));
+            }
+        }else{
+            return null;
+        }
+    }
 
 }

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:background="#a8a8a8"
+    android:paddingRight="16dp" >
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:textSize="30dp"
+        android:textColor="@color/colorPrimaryDark"
+        android:text="New Alarm"
+        />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/currentTime"
+            android:textSize="50dp"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimaryDark"
+            android:gravity="center"
+            android:layout_marginBottom="30dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="9:05 AM" />
+
+        <Spinner
+            android:id="@+id/line_selection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" />
+
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteTextView"
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:completionThreshold="1"
+            android:dropDownAnchor="@id/line_selection"
+            />
+
+
+<!--        <AutoCompleteTextView-->
+<!--            android:id="@+id/autoCompleteTextView"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_gravity="center"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="335dp"-->
+<!--            android:completionThreshold="1"-->
+<!--            android:dropDownAnchor="@id/line_selection"-->
+<!--            android:dropDownWidth="match_parent"-->
+<!--            android:dropDownHeight="300dp"-->
+<!--            android:hint="Search for station" />-->
+
+        <LinearLayout
+            android:id="@+id/day_of_week"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/sunday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="S" />
+
+            <CheckBox
+                android:id="@+id/monday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="M" />
+
+            <CheckBox
+                android:id="@+id/tuesday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="T" />
+
+            <CheckBox
+                android:id="@+id/wensday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="W" />
+
+            <CheckBox
+                android:id="@+id/thursday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="T" />
+
+            <CheckBox
+                android:id="@+id/friday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="F" />
+
+            <CheckBox
+                android:id="@+id/saterday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="S" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="50dp"
+            android:gravity="center|bottom"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/cancel_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dp"
+                android:layout_weight="1"
+                android:background="@color/red_100"
+                android:text="Cancel" />
+
+            <Button
+                android:id="@+id/save_button"
+                android:background="@color/green_700"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Save" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

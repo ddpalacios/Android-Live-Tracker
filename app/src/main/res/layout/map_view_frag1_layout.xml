@@ -1,6 +1,7 @@
 
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/user_frag1"
@@ -8,6 +9,13 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp" >
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/switch_dir_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:layout_alignParentRight="true"
+        app:srcCompat="@drawable/swap" />
 
     <TextView
 
@@ -15,6 +23,7 @@
         android:layout_alignParentLeft="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:textStyle="italic|bold"
         android:textSize="20dp"
         android:text="Train Status" />
@@ -22,7 +31,7 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/frag_rv"
-        android:layout_below="@+id/title"
+        android:layout_below="@+id/switch_dir_button"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

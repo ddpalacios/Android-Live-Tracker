@@ -1,4 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/user_frag2"
@@ -6,20 +8,135 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp" >
 
+    <TextView
+        android:id="@+id/textView18"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="20dp"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Currently Tracking" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/switch_dir_button"
+        android:layout_width="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:srcCompat="@drawable/swap" />
+
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/list_item"
+        android:layout_below="@id/switch_dir_button"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        app:cardUseCompatPadding="true"
+        android:layout_marginBottom="10dp"
+        app:cardPreventCornerOverlap="false"
+        tools:ignore="MissingConstraints"
+        android:focusable="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/final_destination"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:textColor="@color/colorPrimaryDark"
+                android:text="To Howard"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/train_image"
+                app:layout_constraintTop_toBottomOf="@+id/card_title"
+                app:layout_constraintVertical_bias="0.714" />
+
+            <TextView
+                android:id="@+id/status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:textColor="@color/colorPrimaryDark"
+                android:layout_marginRight="8dp"
+                android:textStyle="bold"
+                android:text="GREEN"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/status_image"
+                app:layout_constraintTop_toBottomOf="@+id/textView13"
+                app:layout_constraintVertical_bias="0.333" />
+
+            <ImageView
+                android:id="@+id/train_image"
+                android:layout_width="54dp"
+                android:layout_height="54dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/red" />
+
+            <ImageView
+                android:id="@+id/status_image"
+                android:layout_width="54dp"
+                android:layout_height="54dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/green" />
+
+            <TextView
+                android:id="@+id/train_eta"
+                android:layout_width="wrap_content"
+                android:textColor="@color/colorPrimaryDark"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textStyle="bold"
+                android:layout_marginEnd="12dp"
+                android:layout_marginRight="12dp"
+                android:text="Status"
+                app:layout_constraintEnd_toStartOf="@+id/status_image"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/card_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPrimaryDark"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:text="Granville"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@+id/train_image"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
 
     <TextView
-
         android:id="@+id/title"
         android:layout_alignParentLeft="true"
         android:layout_width="wrap_content"
+        android:layout_below="@+id/list_item"
+
         android:layout_height="wrap_content"
-        android:textStyle="italic|bold"
+        android:textColor="@color/colorPrimaryDark"
         android:textSize="20dp"
         android:text="Favorite Stations" />
 
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/frag_rv"
+        android:layout_marginTop="10dp"
         android:layout_below="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

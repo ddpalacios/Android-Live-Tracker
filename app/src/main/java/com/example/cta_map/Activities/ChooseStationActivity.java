@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 //import com.example.cta_map.Activities.Adapters.TrainLineAdapter;
 import com.example.cta_map.Activities.Adapters.TrainStationAdapter;
+import com.example.cta_map.Activities.Classes.Station;
 import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.ListItem;
@@ -106,11 +107,11 @@ public class ChooseStationActivity extends AppCompatActivity {
             StationList = new ArrayList<>();
             for (Object sta : all_station_list){
                 ListItem listItem = new ListItem();
-                HashMap<String, String> station = (HashMap<String, String>) sta;
+               Station station = (Station) sta;
                 listItem.setImage(chicago_transits.getTrainImage(tracking_station.get("train_line")));
-                listItem.setTitle(station.get(TITLE_NAME));
-                listItem.setTrain_dir_label(station.get("DIRECTION_ID"));
-                listItem.setMapID(station.get("MAP_ID"));
+                listItem.setTitle(station.getStop_name());
+                listItem.setTrain_dir_label(station.getDirection_id());
+                listItem.setMapID(station.getMap_id());
                 StationList.add(listItem);
             }
         }
@@ -147,11 +148,11 @@ public class ChooseStationActivity extends AppCompatActivity {
                         StationList.clear();
                         for (Object t : all_station_list){
                             ListItem listItem = new ListItem();
-                            HashMap<String, String> station = (HashMap<String, String>) t;
+                            Station station = (Station) t;
                             listItem.setImage(chicago_transits.getTrainImage(tracking_station.get("train_line")));
-                            listItem.setTitle(station.get(TITLE_NAME));
-                            listItem.setTrain_dir_label(station.get("DIRECTION_ID"));
-                            listItem.setMapID(station.get("MAP_ID"));
+                            listItem.setTitle(station.getStop_name());
+                            listItem.setTrain_dir_label(station.getDirection_id());
+                            listItem.setMapID(station.getMap_id());
                             StationList.add(listItem);
                         }
                         adapter.notifyDataSetChanged();
@@ -184,11 +185,11 @@ public class ChooseStationActivity extends AppCompatActivity {
                             StationList.clear();
                             for (Object t : all_station_list){
                                 ListItem listItem = new ListItem();
-                                HashMap<String, String> station = (HashMap<String, String>) t;
+                                Station station = (Station) t;
                                 listItem.setImage(chicago_transits.getTrainImage(tracking_station.get("train_line")));
-                                listItem.setTitle(station.get(TITLE_NAME));
-                                listItem.setTrain_dir_label(station.get("DIRECTION_ID"));
-                                listItem.setMapID(station.get("MAP_ID"));
+                                listItem.setTitle(station.getStop_name());
+                                listItem.setTrain_dir_label(station.getDirection_id());
+                                listItem.setMapID(station.getMap_id());
                                 StationList.add(listItem);
                             }
                             adapter.notifyDataSetChanged();

@@ -12,6 +12,7 @@ import android.util.Log;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 
+import com.example.cta_map.Activities.Classes.Station;
 import com.example.cta_map.Activities.MainActivity;
 import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.DataBase.CTA_Stops;
@@ -43,7 +44,7 @@ public class Content_Parser_Thread implements Runnable {
     private final Message msg;
     private volatile boolean cancelled = false;
 
-    HashMap<String, String> target_station;
+    Station target_station;
     private Handler handler;
 
     String TAG = "Content Parser";
@@ -161,13 +162,13 @@ public class Content_Parser_Thread implements Runnable {
         ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "MAP_ID = '"+this.msg.getTARGET_MAP_ID()+"'", null,null);
         cta_dataBase.close();
         if (record!=null){
-        HashMap<String,String> target_station_record = (HashMap<String, String>) record.get(0);
+       Station target_station_record = (Station) record.get(0);
         for (Train main_train : incoming_trains) {
             if (incoming_trains.size() > 0) {
                 ArrayList<TrainStops> remaining_stops = main_train.getRemaining_stops();
                 ArrayList<TrainStops> new_list = new ArrayList<>();
                 for (TrainStops remainining_train_stop : remaining_stops) {
-                    if (remainining_train_stop.getStaId().equals(target_station_record.get("MAP_ID"))) {
+                    if (remainining_train_stop.getStaId().equals(target_station_record.getMap_id())) {
                         new_list.add(remainining_train_stop);
                         break;
                     } else {

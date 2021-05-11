@@ -11,9 +11,6 @@
         android:background="#ff00"
         app:showAsAction="always" />
 
-
-    <item android:title="Get Data" android:id="@+id/getData" />
-    <item android:title="ClearData" android:id="@+id/clearData" />
     <item
         android:id="@+id/app_bar_search"
         android:icon="@drawable/ic_search_black_24dp"

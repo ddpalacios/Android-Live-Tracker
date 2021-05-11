@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/line_layout"
     android:layout_height="wrap_content">
 
@@ -24,52 +23,79 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/card_title"
+                android:id="@+id/final_destination"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-
-                android:layout_marginLeft="20dp"
-                android:text="TextView"
-                android:textSize="20sp"
-                android:textStyle="bold"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:text="To Howard"
+                android:textColor="@color/colorPrimaryDark"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/train_image"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.489" />
+                app:layout_constraintTop_toBottomOf="@+id/card_title"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:text="GREEN"
+                android:textColor="@color/colorPrimaryDark"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/status_image"
+                app:layout_constraintTop_toBottomOf="@+id/textView13"
+                app:layout_constraintVertical_bias="0.0" />
 
             <ImageView
                 android:id="@+id/train_image"
-                android:layout_width="74dp"
-
-                android:layout_height="67dp"
-
-                android:layout_marginStart="4dp"
-                android:layout_marginLeft="4dp"
-                android:scaleType="fitXY"
+                android:layout_width="54dp"
+                android:layout_height="54dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0"
                 app:srcCompat="@drawable/red" />
 
-            <TextView
-                android:id="@+id/title_eta"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
-                android:ellipsize="end"
-                android:lines="1"
-                android:scrollHorizontally="true"
-                android:singleLine="true"
-                android:text="TextView"
-                android:textSize="20sp"
-                android:textStyle="bold"
+            <ImageView
+                android:id="@+id/status_image"
+                android:layout_width="54dp"
+                android:layout_height="54dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.489" />
+                app:srcCompat="@drawable/green" />
+
+            <TextView
+                android:id="@+id/train_eta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:text="Status"
+                android:textStyle="bold"
+
+                android:textColor="@color/colorPrimaryDark"
+                app:layout_constraintEnd_toStartOf="@+id/status_image"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/card_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginTop="8dp"
+                android:text="Granville"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@+id/train_image"
+                app:layout_constraintTop_toTopOf="parent" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>

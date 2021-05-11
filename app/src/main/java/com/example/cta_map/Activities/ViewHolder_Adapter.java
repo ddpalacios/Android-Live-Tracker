@@ -14,18 +14,18 @@ public class ViewHolder_Adapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        Fragment fragment1 = new MapView_Fragment();
-        Fragment fragment2 = new AllStationView_Fragment();
-        Fragment fragment3 = new Alarms_Fragment();
-        Fragment fragment4 = new TrainTimes_Fragment();
+        Fragment mapView_fragment = new MapView_Fragment();
+        Fragment allStationView_fragment = new AllStationView_Fragment();
+        Fragment alarms_fragment = new Alarms_Fragment();
+        Fragment trainTimes_fragment = new TrainTimes_Fragment();
         if (position ==0){
-            return fragment1;
+            return mapView_fragment;
         }else if (position ==1){
-            return fragment4;
+            return trainTimes_fragment;
         }else if (position == 2){
-            return fragment2;
+            return allStationView_fragment;
         }else{
-            return fragment3;
+            return alarms_fragment;
         }
 
     }

@@ -1,11 +1,29 @@
 package com.example.cta_map.Displayers;
+import android.app.ActionBar;
+import android.app.ActivityManager;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
+import android.os.Handler;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.cta_map.Activities.Adapters.CustomInfoWindowAdapter;
+import com.example.cta_map.Activities.Classes.Alarm;
+import com.example.cta_map.Activities.Classes.Station;
+import com.example.cta_map.Activities.ExampleService;
+import com.example.cta_map.Activities.MainActivity;
+import com.example.cta_map.Activities.MyBroadCastReciever;
+import com.example.cta_map.Activities.TrainTimes_Adapter_frag;
+import com.example.cta_map.Backend.Threading.API_Caller_Thread;
 import com.example.cta_map.Backend.Threading.Message;
 import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.DataBase.CTA_Stops;
@@ -17,15 +35,22 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -33,32 +58,37 @@ import java.util.Objects;
 public class Chicago_Transits {
 
     public  Integer getTrainImage(String train_line){
-        if (train_line.toLowerCase().equals("purple")){
-            train_line = "p";
+        if (train_line!=null) {
+            if (train_line.toLowerCase().equals("purple")) {
+                train_line = "p";
 
-        }else if(train_line.toLowerCase().equals("orange")){
-            train_line = "org";
+            } else if (train_line.toLowerCase().equals("orange")) {
+                train_line = "org";
 
-        }else if(train_line.toLowerCase().equals("yellow")){
-            train_line = "y";
+            } else if (train_line.toLowerCase().equals("yellow")) {
+                train_line = "y";
 
-        }else if(train_line.toLowerCase().equals("green")){
-            train_line = "g";
-        }else if(train_line.toLowerCase().equals("brown")){
-            train_line = "brn";
+            } else if (train_line.toLowerCase().equals("green")) {
+                train_line = "g";
+            } else if (train_line.toLowerCase().equals("brown")) {
+                train_line = "brn";
 
+            }
+            HashMap<String, Integer> TrainLineKeyCodes = new HashMap<>();
+            train_line = train_line.toLowerCase().trim();
+            TrainLineKeyCodes.put("red", R.drawable.red);
+            TrainLineKeyCodes.put("blue", R.drawable.blue);
+            TrainLineKeyCodes.put("brn", R.drawable.brown);
+            TrainLineKeyCodes.put("g", R.drawable.green);
+            TrainLineKeyCodes.put("org", R.drawable.orange);
+            TrainLineKeyCodes.put("pink", R.drawable.pink);
+            TrainLineKeyCodes.put("p", R.drawable.purple);
+             TrainLineKeyCodes.put("target", R.drawable.target);
+
+            TrainLineKeyCodes.put("y", R.drawable.yellow);
+            return TrainLineKeyCodes.get(train_line.toLowerCase());
         }
-        HashMap<String, Integer> TrainLineKeyCodes  = new HashMap<>();
-        train_line = train_line.toLowerCase().trim();
-        TrainLineKeyCodes.put("red", R.drawable.red );
-        TrainLineKeyCodes.put("blue", R.drawable.blue);
-        TrainLineKeyCodes.put("brn", R.drawable.brown);
-        TrainLineKeyCodes.put("g", R.drawable.green);
-        TrainLineKeyCodes.put("org", R.drawable.orange);
-        TrainLineKeyCodes.put("pink", R.drawable.pink);
-        TrainLineKeyCodes.put("p", R.drawable.purple);
-        TrainLineKeyCodes.put("y", R.drawable.yellow);
-        return TrainLineKeyCodes.get(train_line);
+        return  R.drawable.red;
     }
 
 
@@ -85,6 +115,54 @@ public class Chicago_Transits {
 
 
     }
+
+ @RequiresApi(api = Build.VERSION_CODES.M)
+ public void scheduleAlarm(Context context, int dayOfWeek, Alarm alarm_record, String id, String alarm_id) {
+     int hours = Integer.parseInt(alarm_record.getHour());
+     int minutes = Integer.parseInt(alarm_record.getMin());
+     String hour_of_day = alarm_record.getTime().replace(":", "").replaceAll("[^A-Za-z]", "");
+     if (hour_of_day.toLowerCase().trim().equals("pm")) {
+         hours = hours + 12; // 24 hour format
+     }
+
+     Calendar calendar = Calendar.getInstance();
+     calendar.set(Calendar.DAY_OF_WEEK, dayOfWeek);
+     calendar.set(Calendar.HOUR_OF_DAY, hours);
+     calendar.set(Calendar.MINUTE, minutes);
+     calendar.set(Calendar.SECOND, 0);
+
+     Log.e("Alarm",calendar.getTimeInMillis()+" | "+ System.currentTimeMillis() );
+
+     // Check we aren't setting it in the past which would trigger it to fire instantly
+     if (calendar.getTimeInMillis() < System.currentTimeMillis()) {
+         calendar.add(Calendar.DAY_OF_YEAR, 7);
+         Log.e("Alarm", "Day: " + dayOfWeek + " Will first fire on: " + calendar.get(Calendar.DAY_OF_MONTH) + " at " + hours + ":" + minutes + ". Then every 7 days after");
+     }else{
+         Log.e("Alarm", "Day: " + dayOfWeek + " Will first fire on: " + calendar.get(Calendar.DAY_OF_MONTH) + " at " + hours + ":" + minutes + ". Then every 7 days after");
+
+     }
+
+    int days = (int) (calendar.getTimeInMillis() / 1000 * 60*60*24);
+     Log.e("Alarm","Alarm #"+id+ " is set in "+calendar.getTimeInMillis() + " or "+ days+ " days.");
+
+     // Set this to whatever you were planning to do at the given time
+     Intent intent = new Intent(context, MyBroadCastReciever.class);
+     intent.putExtra("alarm_id", alarm_id+"");
+
+     intent.putExtra("map_id", alarm_record.getMap_id());
+     intent.putExtra("direction", alarm_record.getDirection());
+     intent.putExtra("day_of_week_alarm_id", id);
+     intent.putExtra("station_type", alarm_record.getStationType());
+     intent.putExtra("day_of_week",dayOfWeek);
+
+
+     AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+     PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
+             Integer.parseInt(id), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+     alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+ }
+
+
     private void populateMarkers(Context context, ArrayList<Object> all_stations, String station_type){
         CTA_DataBase cta_dataBase = new CTA_DataBase(context);
         ArrayList<Markers> list_of_markers = new ArrayList<>();
@@ -104,6 +182,352 @@ public class Chicago_Transits {
         }
     }
 
+
+  public void CallStatusUpdate(Context context, Train train, Message message, String notification_message){
+
+        if (train !=null && train.getStatus() == null){
+            if (train.getTarget_eta() > 5 && !message.isScheduledGreenNotified()){
+                CallNotificationService(context, train, "Status: GREEN | Train #" + train.getRn() + " is scheduled to depart in " + train.getTarget_eta() + "m", message);
+                message.setScheduledGreenNotified(true);
+            }
+            else if (train.getTarget_eta() >=3 && train.getTarget_eta() <=5 && !message.isScheduledYellowNotified()){
+                CallNotificationService(context,  train, "Status: YELLOW |Train #"+train.getRn() + " is scheduled to depart in "+ train.getTarget_eta()+"m", message);
+                message.setScheduledYellowNotified(true);
+            }else {
+                if (!message.isScheduledRedNotified()) {
+                    CallNotificationService(context, train, "Status: RED | Train #" + train.getRn() + " is scheduled to depart in " + train.getTarget_eta() + "m", message);
+                    message.setScheduledRedNotified(true);
+                }
+            }
+        }else {
+            if (train != null) {
+                if (train.getStatus().equals("GREEN") && !message.getGreenNotified()) {
+                    message.setGreenNotified(true);
+                    CallNotificationService(context, train, notification_message, message);
+
+                } else if (train.getStatus().equals("YELLOW") && !message.getYellowNotified()) {
+                    message.setYellowNotified(true);
+                    CallNotificationService(context, train, notification_message, message);
+
+                } else if (train.getStatus().equals("RED")) {
+                    if (!message.getRedNotified()) {
+                        message.setRedNotified(true);
+                        CallNotificationService(context, train, notification_message, message);
+
+                    }
+                    if (train.getIsApp().equals("1") && !message.getApproachingNotified()) {
+                        Chicago_Transits chicago_transits = new Chicago_Transits();
+                        message.setApproachingNotified(true);
+                        if (MainActivity.mMap != null) {
+                            chicago_transits.ZoomIn(MainActivity.mMap, 15f, train.getLat(), train.getLon());
+                        }
+                        CallNotificationService(context, train, notification_message, message);
+
+                    } else if (message.getDoneNotified()) {
+                        CallNotificationService(context, train, notification_message, message);
+
+                    }
+                }
+            }else {
+                if (message.getDoneNotified()) {
+                        CallNotificationService(context, train, notification_message, message);
+
+                    }
+            }
+        }
+
+  }
+
+  @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+  public void plot_all_markers(Context context, Message message, GoogleMap mMap, ArrayList<Train> all_trains){
+        /*
+        Plots target station and all trains on maps
+         */
+        mMap.clear();
+        CTA_DataBase cta_dataBase = new CTA_DataBase(context);
+         ArrayList<Object> target_station_record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "MAP_ID = '" + message.getTARGET_MAP_ID() + "'", null, null);
+        Station target_station = (Station) target_station_record.get(0);
+        Chicago_Transits chicago_transits = new Chicago_Transits();
+        target_station.setIsTarget(true);
+        chicago_transits.plot_marker(context,message,mMap,null, target_station); // Plot Target Station
+
+      if (all_trains != null && all_trains.size() > 0) {
+          for (Train train : all_trains) {
+              Log.e("INCOMING", train.getRn() + "# | " + train.getRt() + " | " + train.getTarget_eta() + "m Selected? " + train.getSelected() + "| Notfifed?: " + train.getIsNotified() + " | Status?: "+ train.getStatus()+ " | Scheduled?:  "+ train.getIsSch());
+              plot_marker(context, message, mMap, train, null);
+          }
+      }
+        cta_dataBase.close();
+  }
+    private Station find(ArrayList<Station> stationArrayList,Station station) {
+        for (Station station1 : stationArrayList){
+            if (station1.getMap_id().equals(station.getMap_id())){
+                return station;
+            }
+        }
+        return null;
+
+    }
+
+    public   ArrayList<Station>  removeDuplicates(ArrayList<Object> record) {
+        ArrayList<Station> stationArrayList = new ArrayList<>();
+        ArrayList<Station> non_duplicated_station_list = new ArrayList<>();
+        if (record!=null){
+            for (Object r : record){
+                Station station = (Station) r;
+                stationArrayList.add(station);
+            }
+            for (Station station : stationArrayList){
+                Station found_station = find(non_duplicated_station_list, station);
+                if (found_station!=null){
+                    continue;
+                }else{
+                    non_duplicated_station_list.add(station);
+                }
+            }
+
+        }
+        return non_duplicated_station_list;
+    }
+    private void CallNotificationService(Context context, Train train,String notification_message, Message message){
+
+        if (train!=null) {
+            Intent serviceIntent = new Intent(context, ExampleService.class);
+            serviceIntent.putExtra("has_train", true);
+            String status;
+            status = train.getStatus();
+            serviceIntent.putExtra("train_status", status);
+            serviceIntent.getBooleanExtra("isDone", message.getDoneNotified());
+            serviceIntent.putExtra("map_id", train.getTarget_id());
+            serviceIntent.putExtra("train_type", train.getRt());
+            serviceIntent.putExtra("train_dir", train.getTrDr());
+            serviceIntent.putExtra("notification_message", notification_message);
+            ContextCompat.startForegroundService(context, serviceIntent);
+        }else{
+            Intent serviceIntent = new Intent(context, ExampleService.class);
+            serviceIntent.putExtra("has_train", false);
+            serviceIntent.putExtra("isDone", true);
+            ContextCompat.startForegroundService(context, serviceIntent);
+        }
+    }
+
+    public boolean isMyServiceRunning(Context context, Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    public void refresh(Fragment fragment){
+        if (fragment!=null) {
+            FragmentTransaction ft = fragment.getFragmentManager().beginTransaction();
+            ft.detach(fragment);
+            ft.attach(fragment);
+            ft.commitAllowingStateLoss();
+        }
+    }
+
+    public void stopService(Context context){
+        try {
+            context.stopService(new Intent(context, ExampleService.class));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+     public void reset(ArrayList<Train> trainList, Message message){
+        if (trainList!=null) {
+            for (Train train1 : trainList) {
+                train1.setSelected(false);
+                train1.setNotified(false);
+            }
+
+        }
+         // once we have selected a new train to track - we also reset its notification
+         // This allows the user to receive all 3-4 notifications
+         message.setYellowNotified(false);
+         message.setRedNotified(false);
+         message.setGreenNotified(false);
+         message.setApproachingNotified(false);
+    }
+
+    public int cancelRunningThreads(Message message){
+        if (message.getApi_caller_thread() != null && message.getT1()!=null){
+            message.getApi_caller_thread().cancel();
+            message.getT1().interrupt();
+            return 1;
+
+        }else{
+            return -1;
+        }
+
+    }
+
+
+    public String getDirectionLabel(String label){
+        String direction_label = null;
+        if (label.equals("N")){
+            direction_label = "North";
+        }else if (label.equals("E")){
+            direction_label = "East";
+
+
+        }else if (label.equals("S")){
+            direction_label = "South";
+
+        }else if (label.equals("W")){
+            direction_label = "West";
+        }else{
+            direction_label = "";
+        }
+
+        return direction_label;
+    }
+
+
+    public void callThreads(Context context, Handler handler, Message message, String dir, String station_type, String map_id, boolean fromAlarm){
+        if (new Chicago_Transits().isMyServiceRunning(context,new ExampleService().getClass())) {
+            stopService(context);
+        }
+        Log.e("TRACKING", "MESSAGE:  "+message);
+
+        API_Caller_Thread api_caller = new API_Caller_Thread(message, context, handler, fromAlarm);
+        message.setHandler(handler);
+        Thread t1 = new Thread(api_caller);
+        message.setDoneNotified(false);
+        message.setT1(t1);
+        message.setScheduledRedNotified(false);
+        message.setScheduledYellowNotified(false);
+        message.setScheduledGreenNotified(false);
+        message.setApproachingNotified(false);
+        message.setGreenNotified(false);
+        message.setRedNotified(false);
+        message.setYellowNotified(false);
+        message.setApi_caller_thread(api_caller);
+        CTA_DataBase cta_dataBase = new CTA_DataBase(context);
+        ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "MAP_ID = '"+map_id+"'", null,null);
+        ArrayList<Object> userfav_record = cta_dataBase.excecuteQuery("*", CTA_DataBase.USER_FAVORITES, CTA_DataBase.FAVORITE_MAP_ID + " ='"+map_id+"' AND "+CTA_DataBase.FAVORITE_STATION_TYPE +"= '"+station_type+"'", null,null);
+        Station tracking_record = (Station) record.get(0);
+        Log.e("TRACKING", "Starting to track: "+tracking_record.getStation_name()+".");
+        message.setTARGET_MAP_ID(tracking_record.getMap_id());
+        message.setDir(dir);
+        message.setTarget_name(tracking_record.getStation_name());
+        message.setTarget_type(station_type);
+        message.keepSending(true);
+        message.setTarget_station(tracking_record);
+        message.getT1().start();
+        Chicago_Transits chicago_transits = new Chicago_Transits();
+
+        if (MainActivity.bar != null && userfav_record !=null) {
+            HashMap<String, String> fav = (HashMap<String, String>) userfav_record.get(0);
+            MainActivity.bar.setTitle("Loading...");
+            MainActivity.bar.setBackgroundDrawable(new ColorDrawable(chicago_transits.GetBackgroundColor(fav.get(CTA_DataBase.FAVORITE_STATION_TYPE),context)));
+
+            if (MainActivity.mMap!=null) {
+                chicago_transits.ZoomIn(MainActivity.mMap, 12f, tracking_record.getLat(), tracking_record.getLon());
+            }
+        }
+        cta_dataBase.close();
+
+    }
+
+    public void setBarTitle(Context context, String stop_id, String train_line) {
+        if (stop_id !=null) {
+                CTA_DataBase cta_dataBase = new CTA_DataBase(context);
+                ArrayList<Object> record = cta_dataBase.excecuteQuery("*", CTA_DataBase.CTA_STOPS, "STOP_ID = '" + stop_id + "'", null, null);
+                if (record != null) {
+                    Station new_station = (Station) record.get(0);
+                    if (MainActivity.bar != null) {
+                        MainActivity.bar.setTitle(new_station.getStation_name() + " " + getDirectionLabel(new_station.getDirection_id()) + " Bound");
+                        MainActivity.bar.setBackgroundDrawable(new ColorDrawable(GetBackgroundColor(train_line, context)));
+
+                    }
+                }
+
+        }else{
+            if (MainActivity.bar != null) {
+                MainActivity.bar.setTitle("No Trains.");
+                MainActivity.bar.setBackgroundDrawable(new ColorDrawable(GetBackgroundColor(train_line, context)));
+
+            }
+
+
+            CTA_DataBase cta_dataBase = new CTA_DataBase(context);
+
+
+
+
+            cta_dataBase.close();
+        }
+    }
+
+
+
+    public boolean StartNotificationServices(Context context,Message message, ArrayList<Train> current_incoming_trains) {
+        CTA_DataBase cta_dataBase = new CTA_DataBase(context);
+        ArrayList<Object> current_tracking_train = cta_dataBase.excecuteQuery("*", CTA_DataBase.TRAIN_TRACKER, null, null, null);
+        cta_dataBase.close();
+        // if we are tracking a specific train...
+        if (current_tracking_train != null){
+            HashMap<String, String> current_notified_train = (HashMap<String, String>) current_tracking_train.get(0);
+            Log.e("INCOMING", "Tracking: "+current_notified_train.get("TRAIN_ID") + " | "+ current_notified_train.get("TRAIN_TYPE"));
+            Chicago_Transits chicago_transits = new Chicago_Transits();
+            Train selected_train = findTrain(current_incoming_trains, current_notified_train);
+            if (selected_train != null){
+                Log.e("INCOMING", "FOUND: "+current_notified_train.get("TRAIN_ID") + " | "+ current_notified_train.get("TRAIN_TYPE"));
+                // if we found the train under current API Call, it is still in scope therefore - send status update
+                String notification_message = "Train #" + selected_train.getRn()
+                        + " | " + selected_train.getTarget_eta() +"m away!";
+//                String notification_message = "Train #" + selected_train.getRn()
+//                        + " | " + selected_train.getTarget_eta()
+//                        + "m. To"
+//                        + selected_train.getTarget_station_name()
+//                        + " " + selected_train.getRt()
+//                        + " Line. STATUS: " + selected_train.getStatus();
+                chicago_transits.CallStatusUpdate(context, selected_train, message, notification_message);
+                return true;
+            }else{
+                // otherwise - the train is no longer in scope and we stop current services
+                Log.e("TRACKING_TRAIN", "NOT FOUND: "+current_notified_train.get("TRAIN_ID") + " | "+ current_notified_train.get("TRAIN_TYPE"));
+                if (current_notified_train.get("TRAIN_DIR").equals(current_incoming_trains.get(0).getTrDr())){
+                    cta_dataBase = new CTA_DataBase(context);
+                    cta_dataBase.delete_all_records(CTA_DataBase.TRAIN_TRACKER);
+                    cta_dataBase.close();
+             }
+                if (chicago_transits.isMyServiceRunning(context, new ExampleService().getClass())) {
+//                    chicago_transits.stopService(context);
+                    message.setDoneNotified(true);
+                    chicago_transits.CallStatusUpdate(context, selected_train, message, "Train no longer visible.");
+
+
+                }
+
+                return false;
+            }
+        }else {
+            Log.e("TRACKING_TRAIN", "Tracking: N/A");
+
+        }
+        return false;
+    }
+
+
+    private Train findTrain(ArrayList<Train> current_incoming_trains, HashMap<String, String> current_notified_train) {
+        Train selected_train = null;
+        for (Train incoming_train : current_incoming_trains) {
+            if (incoming_train.getRn().equals(current_notified_train.get("TRAIN_ID"))) {
+                selected_train = incoming_train;
+                Log.e("Notification train", "#" + selected_train.getRn() + " Is being notified |" + selected_train.getRt() + " line.");
+                break;
+            }
+        }
+        return selected_train;
+    }
 
 
 
@@ -376,7 +800,7 @@ public class Chicago_Transits {
             cta_stops.setLAT(Double.parseDouble(lat));
             cta_stops.setLON(Double.parseDouble(lon));
 
-            sqlite.commit(cta_stops, "cta_stops");
+            sqlite.commit(cta_stops, CTA_DataBase.CTA_STOPS);
 
             row++;
 
@@ -460,7 +884,6 @@ public class Chicago_Transits {
     </eta>
  */
         Train train = new Train();
-        try {
 
             String staId = get_xml_tag_value(each_train, "staId");
             String stpId = get_xml_tag_value(each_train, "stpId");
@@ -476,10 +899,16 @@ public class Chicago_Transits {
             String isApp = get_xml_tag_value(each_train, "isApp");
             String isDly= get_xml_tag_value(each_train, "isDly");
             String isFlt = get_xml_tag_value(each_train, "isFlt");
+            String isSch = get_xml_tag_value(each_train, "isSch");
             String lat = get_xml_tag_value(each_train, "lat");
             String lon= get_xml_tag_value(each_train, "lon");
             String heading= get_xml_tag_value(each_train, "heading");
 
+            if (isSch.equals("1")){
+                train.setIsSch(true);
+            }else{
+                train.setIsSch(false);
+            }
 
             train.setRn(rn);
             train.setViewIcon(false);
@@ -501,14 +930,14 @@ public class Chicago_Transits {
             train.setIsDly(isDly);
             train.setDestSt(destSt);
             train.setIsFlt(isFlt);
-            train.setLat(Double.parseDouble(lat.trim()));
-            train.setLon(Double.parseDouble(lon.trim()));
 
-
-        }catch (Exception e){
-            return null;
-        }
-
+            if (lat == null && lon == null && heading == null){
+                train.setLat(null);
+                train.setLon(null);
+            }else {
+                train.setLat(Double.parseDouble(lat.trim()));
+                train.setLon(Double.parseDouble(lon.trim()));
+            }
         return train;
     }
 
@@ -521,64 +950,28 @@ public class Chicago_Transits {
 
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public void plot_marker(Context context, Message message, GoogleMap mMap, Train train, HashMap<String, String > target_station){
+    public void plot_marker(Context context, Message message, GoogleMap mMap, Train train, Station target_station){
         MapMarker mapMarker = new MapMarker(mMap, context, message);
         CustomInfoWindowAdapter adapter = new CustomInfoWindowAdapter(context, message,"Test");
         mMap.setInfoWindowAdapter(adapter);
-        if (train == null){
-            mapMarker.addMarker(
-                    Double.parseDouble(Objects.requireNonNull(target_station.get("LAT"))),
-                    Double.parseDouble(Objects.requireNonNull(target_station.get("LON"))),
-                    "Station# "+target_station.get("MAP_ID"),
-                    "target",
-                    1f,
-                    false,
-                    true,
-                    false,
-                    target_station.get("STATION_NAME"), false);
-        }else {
-            if (train.getSelected()) {
-                if (!train.getViewIcon()) {
-                    mapMarker.addMarker(
-                            train.getLat(),
-                            train.getLon(),
-                            "Train# " + train.getRn(),
-                            train.getRt().toLowerCase(),
-                            1f,
-                            true,
-                            false,
-                            false,
-                            train.getRn(),
-                            false).showInfoWindow();
-                }else{
-                    mapMarker.addMarker(
-                            train.getLat(),
-                            train.getLon(),
-                            "Train# " + train.getRn(),
-                            train.getStatus().toLowerCase(),
-                            1f,
-                            true,
-                            false,
-                            false,
-                            train.getRn(),
-                            true).showInfoWindow();
-
+        if (train!=null) {
+            if (train.getSelected() && train.getIsNotified()) {
+                Marker marker = mapMarker.addMarker(train, target_station, "Train# " + train.getRn(), 1f, train.getRn());
+                if (marker!=null){
+                    marker.showInfoWindow();
                 }
-            }else {
-                if (!train.getViewIcon()) {
-                    mapMarker.addMarker(
-                            train.getLat(),
-                            train.getLon(),
-                            "Train# " + train.getRn(),
-                            train.getRt().toLowerCase(),
-                            1f,
-                            true,
-                            false,
-                            false,
-                            train.getRn(), false);
-
+            }else if (train.getSelected()){
+                Marker marker = mapMarker.addMarker(train, target_station, "Train# " + train.getRn(), 1f, train.getRn());
+                if (marker!=null){
+                marker.showInfoWindow();
                 }
+            }else{
+                mapMarker.addMarker(train, target_station, "Train# " + train.getRn(), 1f, train.getRn());
+
             }
+            }else if (target_station != null){
+            mapMarker.addMarker(train, target_station,   "Station# "+target_station.getMap_id(), 1f, target_station.getStation_name());
+
         }
     }
 
@@ -609,7 +1002,6 @@ public class Chicago_Transits {
  */
         TrainStops train = new TrainStops();
         try {
-
             String staId = get_xml_tag_value(each_train, "staId");
             String stpId = get_xml_tag_value(each_train, "stpId");
             String staNm = get_xml_tag_value(each_train, "staNm");
@@ -617,12 +1009,12 @@ public class Chicago_Transits {
             String rn = get_xml_tag_value(each_train, "rn");
             String rt = get_xml_tag_value(each_train, "rt");
             String destSt = get_xml_tag_value(each_train, "destSt");
-            String destNm= get_xml_tag_value(each_train, "destNm");
+            String destNm = get_xml_tag_value(each_train, "destNm");
             String trDr = get_xml_tag_value(each_train, "trDr");
-            String prdt= get_xml_tag_value(each_train, "prdt");
+            String prdt = get_xml_tag_value(each_train, "prdt");
             String arrT = get_xml_tag_value(each_train, "arrT");
             String isApp = get_xml_tag_value(each_train, "isApp");
-            String isDly= get_xml_tag_value(each_train, "isDly");
+            String isDly = get_xml_tag_value(each_train, "isDly");
             String isFlt = get_xml_tag_value(each_train, "isFlt");
 
 
@@ -639,17 +1031,18 @@ public class Chicago_Transits {
 
 
             String date1 = getDate(prdt.split(" ")[0]);
-            train.setPrdt(date1+" "+prdt.split(" ")[1]);
+            train.setPrdt(date1 + " " + prdt.split(" ")[1]);
             String date2 = getDate(arrT.split(" ")[0]);
-            train.setArrT(date2 +" " +arrT.split(" ")[1]);
+            train.setArrT(date2 + " " + arrT.split(" ")[1]);
 
             train.setIsApp(isApp);
             train.setIsDly(isDly);
             train.setDestSt(destSt);
             train.setIsFlt(isFlt);
+        }catch (Exception e){
+            return null;
+        }
 
-
-        }catch (Exception e){return null;}
 
         return train;
     }
@@ -668,8 +1061,15 @@ public class Chicago_Transits {
 
     private String get_xml_tag_value(String raw_xml, String startTag){
         String end_tag = "</"+startTag+">";
+        String item = null;
+        try{
+           item = (StringUtils.substringBetween(raw_xml,"<"+startTag+">", end_tag) !=null ? StringUtils.substringBetween(raw_xml,"<"+startTag+">", end_tag).trim() : null);
+        }catch (Exception e){
+            e.printStackTrace();
+//            Log.e("API CALLER", "Could not find end tag of "+ startTag);
+        }
+        return item;
 
-        return StringUtils.substringBetween(raw_xml,"<"+startTag+">", end_tag).trim();
     }
 
 
@@ -696,18 +1096,34 @@ public class Chicago_Transits {
 
 
     public Integer getDayOfWeekNum(String dayOfWeek){
+        if (dayOfWeek.trim().equals("")){
+            return null;
+        }
         HashMap<String, Integer> week = new HashMap<>();
-        week.put("mon", 2);
-        week.put("tues", 3);
-        week.put("wen", 4);
-        week.put("thu", 5);
-        week.put("fri", 6);
-        week.put("sat", 7);
-        week.put("sun", 1);
-        return week.get(dayOfWeek.toLowerCase());
+        week.put("mon", Calendar.MONDAY);
+        week.put("tue", Calendar.TUESDAY);
+        week.put("wen", Calendar.WEDNESDAY);
+        week.put("thu", Calendar.THURSDAY);
+        week.put("fri", Calendar.FRIDAY);
+        week.put("sat", Calendar.SATURDAY);
+        week.put("sun", Calendar.SUNDAY);
+        return week.get(dayOfWeek.toLowerCase().trim());
 
 
 
+    }
+
+    public String train_line_code_to_regular(String station_type) {
+        HashMap<String, String> TrainLineKeyCodes = new HashMap<>();
+        TrainLineKeyCodes.put("red", "Red");
+        TrainLineKeyCodes.put("blue", "Blue");
+        TrainLineKeyCodes.put("brn", "Brown");
+        TrainLineKeyCodes.put("g", "Green");
+        TrainLineKeyCodes.put("org", "Orange");
+        TrainLineKeyCodes.put("pink", "Pink");
+        TrainLineKeyCodes.put("p", "Purple");
+        TrainLineKeyCodes.put("y", "Yellow");
+        return TrainLineKeyCodes.get(station_type.toLowerCase());
     }
 
     public String TrainLineKeys(String station_type){
@@ -720,7 +1136,6 @@ public class Chicago_Transits {
         TrainLineKeyCodes.put("pink", "pink");
         TrainLineKeyCodes.put("purple", "p");
         TrainLineKeyCodes.put("yellow", "y");
-
         return TrainLineKeyCodes.get(station_type.toLowerCase());
 
 
@@ -728,7 +1143,36 @@ public class Chicago_Transits {
     }
 
 
+    public Integer getStatusColor(String color){
+        if (color !=null){
+            HashMap<String, Integer> TrainLineKeyCodes = new HashMap<>();
+            TrainLineKeyCodes.put("red", R.drawable.red_color);
+            TrainLineKeyCodes.put("green", R.drawable.green_color);
+            TrainLineKeyCodes.put("yellow", R.drawable.yellow_color);
+
+        return TrainLineKeyCodes.get(color.toLowerCase());
+        }
+        return R.drawable.none_image;
+    }
+
+
     public Integer GetBackgroundColor(String color, Context context) {
+          if (color!=null) {
+              if (color.toLowerCase().equals("p")) {
+                  color = "purple";
+
+              } else if (color.toLowerCase().equals("org")) {
+                  color = "orange";
+
+              } else if (color.toLowerCase().equals("y")) {
+                  color = "yellow";
+
+              } else if (color.toLowerCase().equals("g")) {
+                  color = "green";
+              } else if (color.toLowerCase().equals("brn")) {
+                  color = "brown";
+              }
+          }
         HashMap<String, Integer> TrainLineKeyCodes = new HashMap<>();
         TrainLineKeyCodes.put("red", context.getResources().getColor(R.color.red_100));
         TrainLineKeyCodes.put("blue", context.getResources().getColor(R.color.blue_100));
@@ -808,4 +1252,102 @@ public class Chicago_Transits {
     }
 
 
+    private String[] callApi(String url) throws IOException {
+        final Document TRAIN_RESPONSE = Jsoup.connect(url).get(); // JSOUP to webscrape XML
+        return TRAIN_RESPONSE.select("eta").outerHtml().split("</eta>");
+    }
+
+
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public ArrayList<Train> call_cta_rest(Message msg)  {
+        Chicago_Transits chicago_transits = new Chicago_Transits();
+        ArrayList<Train> all_incoming_trains = null;
+        String train_rn;
+        SimpleDateFormat dateFormat;
+
+        try {
+            String trains_heading_to_station_url = "https://lapi.transitchicago.com/api/1.0/ttarrivals.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&mapid="+msg.getTARGET_MAP_ID();
+            final String[] train_list = callApi(trains_heading_to_station_url);
+            all_incoming_trains = new ArrayList<>();
+            if (train_list!=null) {
+                for (String raw_train : train_list) {
+                    Train train = chicago_transits.get_train_info(raw_train);
+                    if (train != null) {
+                        train.setTarget_id(msg.getTARGET_MAP_ID());
+                        if (train.getTrDr().equals(msg.getDir())) { // Filter list based on target direction
+                            //get train eta to target
+                            dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                            Date parsedArrivalTime = dateFormat.parse(train.getArrT());
+                            Date parsePredictedTime = dateFormat.parse(train.getPrdt());
+                            long diff = parsedArrivalTime.getTime() - parsePredictedTime.getTime();
+                            if (diff < 0){
+                                diff = parsePredictedTime.getTime() - parsedArrivalTime.getTime();
+                            }
+                            long eta_in_minutes = diff / (60 * 1000) % 60;
+                            train.setTarget_eta((int) eta_in_minutes);
+                            train_rn = train.getRn();
+                            String[] remaining_stops = callApi("https://lapi.transitchicago.com/api/1.0/ttfollow.aspx?key=94202b724e284d4eb8db9c5c5d074dcd&runnumber=" + train_rn);
+                            ArrayList<TrainStops> remaining_stations = new ArrayList<>();
+                            for (String raw_stop : remaining_stops) {
+                                TrainStops remaining_trainStop = chicago_transits.get_remaining_train_stop_info(raw_stop);
+                                parsedArrivalTime = dateFormat.parse(remaining_trainStop.getArrT());
+                                parsePredictedTime = dateFormat.parse(remaining_trainStop.getPrdt());
+                                diff = parsedArrivalTime.getTime() - parsePredictedTime.getTime();
+                                eta_in_minutes = diff / (60 * 1000) % 60;
+                                remaining_trainStop.setNextStopEtA((int) eta_in_minutes);
+                                remaining_stations.add(remaining_trainStop);
+                            }
+                            train.setSelected(false);
+                            train.setNotified(false);
+                            train.setRemaining_stops(remaining_stations);
+                            all_incoming_trains.add(train);
+                        }
+                    }
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return all_incoming_trains;
+    }
+
+//    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+//    public void activateTrain(Context context, Message message,  GoogleMap mMap, Train train) {
+//        Chicago_Transits chicago_transits = new Chicago_Transits();
+//        if (!train.getIsNotified()){ // if this train is not currently being notified - notify it!
+//            CTA_DataBase cta_dataBase = new CTA_DataBase(context);
+//            // Setting selected train for notifications
+//            train.setSelected(true);
+//            train.setNotified(true);
+//
+//            chicago_transits.plot_all_markers(context, message, mMap, message.getOld_trains());
+//
+//
+//            cta_dataBase.delete_all_records(CTA_DataBase.TRAIN_TRACKER); // resets all train tracking
+//            cta_dataBase.commit(train, CTA_DataBase.TRAIN_TRACKER); // Commiting a new train to track
+//            cta_dataBase.close();
+//
+//
+//        }else{
+//            CTA_DataBase cta_dataBase = new CTA_DataBase(context);
+//            // if we reselect our train tracking train then turn it off!
+//            train.setNotified(false);
+//            train.setSelected(false);
+//            chicago_transits.plot_all_markers(context, message, mMap, message.getOld_trains());
+//
+//            cta_dataBase.delete_all_records(CTA_DataBase.TRAIN_TRACKER);
+//
+//            //TODO: Add condition to check if there is a service running before stopping a service
+//            chicago_transits.stopService(context);
+//            cta_dataBase.close();
+//
+//        }
+
+
+
+
+
+
+//    }
 }

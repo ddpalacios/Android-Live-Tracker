@@ -1,27 +1,41 @@
 package com.example.cta_map.Backend.Threading;
 
-import android.content.Context;
 import android.os.Handler;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.cta_map.Activities.Classes.Station;
 import com.example.cta_map.Activities.TrainTimes_Adapter_frag;
 import com.example.cta_map.Displayers.Train;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.TreeMap;
 
 public class Message implements Serializable {
+    public Boolean getDoneNotified() {
+        return isDoneNotified;
+    }
 
+    public void setDoneNotified(Boolean doneNotified) {
+        isDoneNotified = doneNotified;
+    }
+
+    private Boolean isDoneNotified;
+
+    public Boolean getDestoryed() {
+        return isDestoryed;
+    }
+
+    public void setDestoryed(Boolean destoryed) {
+        isDestoryed = destoryed;
+    }
 
     /*
-    Object that Interacts with threads
+        Object that Interacts with threads
 
-     */
-
+         */
+    private Boolean isDestoryed;
     public TrainTimes_Adapter_frag getTrainTimes_adapter_frag() {
         return trainTimes_adapter_frag;
     }
@@ -29,6 +43,26 @@ public class Message implements Serializable {
     public void setTrainTimes_adapter_frag(TrainTimes_Adapter_frag trainTimes_adapter_frag) {
         this.trainTimes_adapter_frag = trainTimes_adapter_frag;
     }
+
+    public Handler getHandler() {
+        return handler;
+    }
+
+    public void setHandler(Handler handler) {
+        this.handler = handler;
+    }
+
+    private Handler handler;
+
+    public String getStop_id() {
+        return stop_id;
+    }
+
+    public void setStop_id(String stop_id) {
+        this.stop_id = stop_id;
+    }
+
+    private String stop_id;
 
     TrainTimes_Adapter_frag trainTimes_adapter_frag;
     API_Caller_Thread api_caller_thread;
@@ -65,9 +99,67 @@ public class Message implements Serializable {
         this.t2 = t2;
     }
 
-    Content_Parser_Thread content_parser_thread;
-    Thread t1;
-    Thread t2;
+    public Train getNearestTrain() {
+        return nearestTrain;
+    }
+
+    public void setNearestTrain(Train nearestTrain) {
+        this.nearestTrain = nearestTrain;
+    }
+
+    private Train nearestTrain;
+    private Content_Parser_Thread content_parser_thread;
+    private Thread t1;
+    private Thread t2;
+    private Boolean redNotified;
+
+    public Boolean getApproachingNotified() {
+        return isApproachingNotified;
+    }
+
+    public void setApproachingNotified(Boolean approachingNotified) {
+        isApproachingNotified = approachingNotified;
+    }
+
+    private Boolean isApproachingNotified;
+
+    public Boolean getRedNotified() {
+        return redNotified;
+    }
+
+    public void setRedNotified(Boolean redNotified) {
+        this.redNotified = redNotified;
+    }
+
+    public Boolean getYellowNotified() {
+        return yellowNotified;
+    }
+
+    public void setYellowNotified(Boolean yellowNotified) {
+        this.yellowNotified = yellowNotified;
+    }
+
+    public Boolean getGreenNotified() {
+        return greenNotified;
+    }
+
+    public void setGreenNotified(Boolean greenNotified) {
+        this.greenNotified = greenNotified;
+    }
+
+    private Boolean yellowNotified;
+    private Boolean greenNotified;
+
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    private String status;
 
 
     public Boolean getDirectionChanged() {
@@ -89,15 +181,24 @@ public class Message implements Serializable {
     }
 
 
-    public HashMap<String, String> getTarget_station() {
+    public Station getTarget_station() {
         return target_station;
     }
 
-    public void setTarget_station(HashMap<String, String> target_station) {
+    public void setTarget_station(Station target_station) {
         this.target_station = target_station;
     }
 
-    private HashMap<String, String> target_station;
+    public String getFinalDest() {
+        return finalDest;
+    }
+
+    public void setFinalDest(String finalDest) {
+        this.finalDest = finalDest;
+    }
+
+    private String finalDest;
+    private Station target_station;
     private  Boolean IsSendingNotifications;
     private ArrayList<Train> incoming_trains;
     private String targetDir;
@@ -116,7 +217,34 @@ public class Message implements Serializable {
     public ArrayList<Train> getOld_trains() {
         return old_trains;
     }
+    private boolean ScheduledGreenNotified;
+    private boolean ScheduledYellowNotified;
 
+    public boolean isScheduledGreenNotified() {
+        return ScheduledGreenNotified;
+    }
+
+    public void setScheduledGreenNotified(boolean scheduledGreenNotified) {
+        ScheduledGreenNotified = scheduledGreenNotified;
+    }
+
+    public boolean isScheduledYellowNotified() {
+        return ScheduledYellowNotified;
+    }
+
+    public void setScheduledYellowNotified(boolean scheduledYellowNotified) {
+        ScheduledYellowNotified = scheduledYellowNotified;
+    }
+
+    public boolean isScheduledRedNotified() {
+        return ScheduledRedNotified;
+    }
+
+    public void setScheduledRedNotified(boolean scheduledRedNotified) {
+        ScheduledRedNotified = scheduledRedNotified;
+    }
+
+    private boolean ScheduledRedNotified;
     public void setOld_trains(ArrayList<Train> old_trains) {
         this.old_trains = old_trains;
     }

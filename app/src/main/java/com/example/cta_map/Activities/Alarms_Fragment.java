@@ -18,11 +18,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.cta_map.Activities.Classes.Alarm;
 import com.example.cta_map.Activities.Classes.RecordView;
+import com.example.cta_map.Activities.Classes.Station;
+import com.example.cta_map.Backend.Threading.Message;
 import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.Displayers.Chicago_Transits;
-import com.example.cta_map.Displayers.NotificationBuilder;
-import com.example.cta_map.ListItem;
 import com.example.cta_map.R;
 
 import java.util.ArrayList;
@@ -63,40 +64,46 @@ public class Alarms_Fragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         Button add_alarm = view.findViewById(R.id.add_alarm);
-//        Button test_notification = view.findViewById(R.id.test_notification);
-//
-//        test_notification.setOnClickListener(v -> {
-//            NotificationBuilder notificationBuilder = new NotificationBuilder(myContext, new Intent(myContext, MainActivity.class));
-//            notificationBuilder.notificationDialog("ALARM GOING OFF", "Its off!", null);
-//        });
 
         add_alarm.setOnClickListener(v -> {
-            startActivity(new Intent(myContext, Pop.class));
+            // Activity to new alarm
+            Message message = MainActivity.message;
+            if (message.getT1()!=null) {
+              new Chicago_Transits().cancelRunningThreads(message);
+            }
+            Intent intent = new Intent(myContext, NewAlarmSetUp.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
         });
 
 
         CTA_DataBase cta_dataBase = new CTA_DataBase(myContext);
         ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "ALARMS", null, null, null);
-        Chicago_Transits chicago_transits = new Chicago_Transits();
         if (record != null) {
-            ArrayList<RecordView> arrayList = new ArrayList<>();
+            ArrayList<Alarm> alarm_list = new ArrayList<>();
             for (int i = 0; i < record.size(); i++) {
-                HashMap<String,String> current_live_train = (HashMap<String, String>) record.get(i);
-                if (current_live_train.get("STATION_TYPE") == null){
-                    continue;
-                }
-               RecordView listItem = new RecordView();
-               listItem.setImage(chicago_transits.getTrainImage(current_live_train.get("STATION_TYPE")));
-               listItem.setMain_title(current_live_train.get("STATION_NAME") );
-                listItem.setTitle1(current_live_train.get("TIME"));
-                listItem.setTitle2(current_live_train.get("WEEK_LABEL"));
-                listItem.setAlarm_id(current_live_train.get("ALARM_ID"));
-                arrayList.add(listItem);
+                HashMap<String,String> current_alarm = (HashMap<String, String>) record.get(i);
+                Alarm alarm = new Alarm();
+                alarm.setAlarm_id(current_alarm.get(CTA_DataBase.ALARM_ID));
+
+                alarm.setWeekLabel(current_alarm.get(CTA_DataBase.WEEK_LABEL));
+                alarm.setMap_id(current_alarm.get(CTA_DataBase.ALARM_MAP_ID));
+                ArrayList<Object> station = cta_dataBase.excecuteQuery("*", CTA_DataBase.CTA_STOPS, "MAP_ID = '"+ alarm.getMap_id()+"'" , null, null);
+                Station record_station = (Station) station.get(0);
+
+                alarm.setMin(current_alarm.get(CTA_DataBase.MIN));
+                alarm.setHour(current_alarm.get(CTA_DataBase.HOUR));
+                alarm.setTime(current_alarm.get(CTA_DataBase.TIME));
+                alarm.setStation_name(record_station.getStation_name());
+                alarm.setStationType(current_alarm.get(CTA_DataBase.ALARM_STATION_TYPE));
+                alarm.setIsRepeating(Integer.parseInt(current_alarm.get(CTA_DataBase.WILL_REPEAT)));
+                alarm_list.add(alarm);
 
             }
-            MainActivity mainActivity = (MainActivity)getActivity();
-            recyclerView.setAdapter(new Alarm_RecyclerView_Adapter_frag1(arrayList, mainActivity));
+            recyclerView.setAdapter(new Alarm_RecyclerView_Adapter_frag1(alarm_list,myContext));
         }
+        cta_dataBase.close();
+
     }
 }
 

@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.cta_map.Activities.Classes.Station;
 import com.example.cta_map.Backend.Threading.API_Caller_Thread;
 import com.example.cta_map.Backend.Threading.Content_Parser_Thread;
 import com.example.cta_map.Backend.Threading.Message;
@@ -30,9 +32,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class RecyclerView_Adapter_frag2 extends RecyclerView.Adapter<RecyclerView_Adapter_frag2.ItemHolder> {
-    ArrayList<ListItem> contactsList;
+    ArrayList<ListItem> StationList;
     Context Maincontext;
-    ListItem contact;
+    ListItem selected_station;
     Thread t1,t2;
     Handler handler;
     API_Caller_Thread api_caller;
@@ -44,8 +46,8 @@ public class RecyclerView_Adapter_frag2 extends RecyclerView.Adapter<RecyclerVie
     GoogleMap mMap;
 
 
-    public RecyclerView_Adapter_frag2(HashMap<String, Object> threadHashMap, Context Maincontext, ArrayList<ListItem> contactsList, FusedLocationProviderClient fusedLocationClient, ActionBar actionBar, GoogleMap mMap){
-        this.contactsList = contactsList;
+    public RecyclerView_Adapter_frag2(HashMap<String, Object> threadHashMap, Context Maincontext, ArrayList<ListItem> StationList, FusedLocationProviderClient fusedLocationClient, ActionBar actionBar, GoogleMap mMap){
+        this.StationList = StationList;
         this.Maincontext = Maincontext;
         this.threadHashMap = threadHashMap;
         this.fusedLocationClient = fusedLocationClient;
@@ -68,37 +70,33 @@ public class RecyclerView_Adapter_frag2 extends RecyclerView.Adapter<RecyclerVie
         handler =  (Handler) threadHashMap.get("handler");
         message = (Message) threadHashMap.get("message");
         api_caller = (API_Caller_Thread) threadHashMap.get("api_caller");
-//        content_parser = (Content_Parser_Thread) threadHashMap.get("content_parser");
 
-        contact = this.contactsList.get(position);
-//        holder.direction_id.setText(contact.getDirection_id());
-        holder.t1.setText(contact.getTitle());
-        holder.imageView.setImageResource(contact.getImage());
+        selected_station= this.StationList.get(position);
+        holder.t1.setText(selected_station.getTitle());
+        holder.imageView.setImageResource(selected_station.getImage());
         holder.list_item.setOnLongClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(Maincontext);
             builder.setCancelable(true);
             builder.setTitle("Remove Station");
-            contact = this.contactsList.get(position);
-            builder.setMessage("Delete "+ contact.getTitle()+"?");
+            selected_station = this.StationList.get(position);
+            builder.setMessage("Delete "+ selected_station.getTitle()+"?");
             builder.setPositiveButton("Confirm",
                     (dialog, which) -> {
                         CTA_DataBase cta_dataBase = new CTA_DataBase(Maincontext);
                         ArrayList<Object> user_tracking_record = cta_dataBase.excecuteQuery("*", "USER_FAVORITES", "ISTRACKING = '1'", null,null);
                         if (user_tracking_record!=null){
                             HashMap<String, String> currentTrackingStation = (HashMap<String, String>) user_tracking_record.get(0);
-                            if (currentTrackingStation.get("FAVORITE_MAP_ID").equals(contact.getMapID())){
+                            if (currentTrackingStation.get("FAVORITE_MAP_ID").equals(selected_station.getMapID())){
                                 if (t1 != null) {
                                    message.getApi_caller_thread().cancel();
                                     message.getT1().interrupt();
-//                                    content_parser.cancel();
-//                                    t2.interrupt();
                                 }
                             }
                         }
-                        String[] values = new String[]{contact.getMapID(),contact.getTrainLine().toLowerCase().trim(), contact.getTrain_dir_label()};
+                        String[] values = new String[]{selected_station.getMapID(),selected_station.getTrainLine().toLowerCase().trim(), selected_station.getTrain_dir_label()};
                         cta_dataBase.delete_record("USER_FAVORITES",
                                 "FAVORITE_MAP_ID = ? AND STATION_TYPE = ? AND STATION_DIR_LABEL = ?", values );
-                        this.contactsList.remove(position);
+                        this.StationList.remove(position);
                         notifyItemRemoved(position);
                         notifyDataSetChanged();
                         cta_dataBase.close();
@@ -112,40 +110,50 @@ public class RecyclerView_Adapter_frag2 extends RecyclerView.Adapter<RecyclerVie
         });
 
         holder.list_item.setOnClickListener(v -> {
-            contact = this.contactsList.get(position);
+            Chicago_Transits chicago_transits = new Chicago_Transits();
+            selected_station = this.StationList.get(position);
             CTA_DataBase cta_dataBase = new CTA_DataBase(Maincontext);
-            ArrayList<Object> user_tracking_record = cta_dataBase.excecuteQuery("*", "USER_FAVORITES", "ISTRACKING = '1'", null,null);
-            ArrayList<Object> selected_station_record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "MAP_ID = '"+contact.getMapID()+"'", null,null);
-            if (selected_station_record !=null && user_tracking_record == null) {  // if there is no station being tracked...
-                HashMap<String, String> target_station = (HashMap<String, String>) selected_station_record .get(0);
-                cta_dataBase.update("USER_FAVORITES", "ISTRACKING", "1", "FAVORITE_MAP_ID = " + "'"+contact.getMapID()+"'");
-                Log.e("TRACKING", target_station.get("STATION_NAME")+".");
-                callThreads(target_station);
-                cta_dataBase.close();
-            } else{
-                HashMap<String, String> currentTrackingStation = (HashMap<String, String>) user_tracking_record.get(0);
-                if (!currentTrackingStation.get("FAVORITE_MAP_ID").equals(contact.getMapID())) { // As long as its not the same item that's being tracked...
-                    cta_dataBase.update("USER_FAVORITES", "ISTRACKING", "0", "FAVORITE_MAP_ID = " +"'" + currentTrackingStation.get("FAVORITE_MAP_ID") + "'");
-                    if (threadHashMap.get("t1") != null) {
-                        message.getApi_caller_thread().cancel();
-                        message.getT1().interrupt();
+            ArrayList<Object> current_userFavorite_tracking_record = cta_dataBase.excecuteQuery("*", "USER_FAVORITES", "ISTRACKING = '1'", null,null);
+
+            if (current_userFavorite_tracking_record == null) {  // if there is NO station being tracked...
+                cta_dataBase.update("USER_FAVORITES", "ISTRACKING", "1", "FAVORITE_MAP_ID = '"+selected_station.getMapID()+"'");
+
+                chicago_transits.callThreads(Maincontext, handler, message, selected_station.getTrain_dir(), selected_station.getTrainLine(), selected_station.getMapID(),false);
+
+            }else{
+                // if there IS a station being tracked...
+                // make sure the selected item its NOT the same item that's being tracked...
+                HashMap<String, String> fav_station = (HashMap<String, String>)  current_userFavorite_tracking_record.get(0);
+                if (!selected_station.getMapID().equals(fav_station.get(CTA_DataBase.FAVORITE_MAP_ID))){
+                    // if we have selected a new station... cancel current running threads and run new threads for new station
+
+                    //Switch boolean to OFF for current running station
+                    cta_dataBase.update("USER_FAVORITES", "ISTRACKING", "0", "FAVORITE_MAP_ID = '" + fav_station.get(CTA_DataBase.FAVORITE_MAP_ID) + "'");
+                    if (message.getT1() != null) {
+                        int res = chicago_transits.cancelRunningThreads(message);
+                        try {
+                            message.getT1().join();
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                        if (res > 0){
+                            MainActivity.LogMessage("Threads were stopped!");
+                        }
+                        //Switch boolean to ON for new running station
+                        cta_dataBase.update("USER_FAVORITES", "ISTRACKING", "1", "FAVORITE_MAP_ID = " +
+                                "'" + selected_station.getMapID() + "'"); // New station being tracked
+
+
+                        chicago_transits.callThreads(Maincontext, handler, message, selected_station.getTrain_dir(), selected_station.getTrainLine(), selected_station.getMapID(),false);
+                        MainActivity.LogMessage("New station tracking: "+ selected_station.getTitle());
+
                     }
-                    cta_dataBase.update("USER_FAVORITES", "ISTRACKING", "1", "FAVORITE_MAP_ID = " +
-                            "'" + contact.getMapID() + "'"); // New station being tracked
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "MAP_ID = '"+contact.getMapID()+"'", null,null);
-                    if (record!=null) {
-                        HashMap<String, String> target_station = (HashMap<String, String>) record.get(0);
-                        Log.e("NEW TRACKING", target_station.get("STATION_NAME") + ".");
-                        callThreads(target_station);
-                    }
+
                 }
+
             }
             cta_dataBase.close();
+
         });
     }
 
@@ -154,35 +162,9 @@ public class RecyclerView_Adapter_frag2 extends RecyclerView.Adapter<RecyclerVie
 
     @Override
     public int getItemCount() {
-        return this.contactsList.size();
+        return this.StationList.size();
     }
 
-
-    private void callThreads(HashMap<String, String> target_station){
-        mMap.clear();
-        message.getApi_caller_thread().cancel();
-        message.getT1().interrupt();
-        CTA_DataBase cta_dataBase = new CTA_DataBase(Maincontext);
-        Chicago_Transits chicago_transits = new Chicago_Transits();
-        message.setTARGET_MAP_ID(target_station.get("MAP_ID"));
-        message.setDir(contact.getTrain_dir());
-        message.setTarget_name(target_station.get("STATION_NAME"));
-        message.setTarget_type(contact.getTrainLine());
-        ArrayList<Object> user_tracking_record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "MAP_ID = '" + target_station.get("MAP_ID") + "'", null, null);
-        HashMap<String, String> tracking_station = (HashMap<String, String>) user_tracking_record.get(0);
-        cta_dataBase.close();
-        assert actionBar != null;
-        message.keepSending(true);
-        message.setTarget_station(target_station);
-        api_caller = new API_Caller_Thread(message, Maincontext, handler);
-        t1 = new Thread(api_caller);
-        message.setT1(t1);
-        message.setApi_caller_thread(api_caller);
-        message.getT1().start();
-        actionBar.setTitle("To "+target_station.get("STATION_NAME")+".");
-        actionBar.setBackgroundDrawable(new ColorDrawable(chicago_transits.GetBackgroundColor(contact.getTrainLine(), Maincontext)));
-        chicago_transits.ZoomIn(mMap, 12f, Double.parseDouble(tracking_station.get("LAT")), Double.parseDouble(tracking_station.get("LON")));
-    }
 
     public static class ItemHolder extends RecyclerView.ViewHolder {
         TextView t1;

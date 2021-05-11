@@ -11,19 +11,24 @@ import androidx.annotation.Nullable;
 
 import com.example.cta_map.Activities.Classes.Alarm;
 import com.example.cta_map.Activities.Classes.FavoriteStation;
+import com.example.cta_map.Activities.Classes.Station;
 import com.example.cta_map.Activities.UserLocation;
+import com.example.cta_map.Displayers.Train;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 
 public class CTA_DataBase extends SQLiteOpenHelper {
-    public static final String Markers = "MARKERS";
-    public static final String marker_id = "marker_id";
-    public static final String marker_lat = "marker_lat";
-    public static final String marker_lon = "marker_lon";
-    public static final String marker_name = "marker_name";
-    public static final String marker_type = "marker_type";
+    public static final String TRAIN_TRACKER = "TRAIN_TRACKER";
+    public static final String TRAIN_ID = "TRAIN_ID";
+    public static final String TRAIN_MAP_ID = "MAP_ID";
+    public static final String TRAIN_DIR = "TRAIN_DIR";
+    public static final String TRAIN_TYPE = "TRAIN_TYPE";
+    public static final String TRAIN_NOTIFIED_BY_ALARM = "NOTIFIED_BY_ALARM";
+
+
+
 
     public static final String L_STOPS = "L_STOPS";
     public static final String STOPID = "STOPID"; // auto
@@ -43,7 +48,7 @@ public class CTA_DataBase extends SQLiteOpenHelper {
     public static final String EXPRESS = "EXPRESS";
 
 
-    public  final String CTA_STOPS = "CTA_STOPS";
+    public static final String CTA_STOPS = "CTA_STOPS";
     public  final String ID = "ID";
     public  final String STOP_ID = "STOP_ID";
     public  final String DIRECTION_ID = "DIRECTION_ID";
@@ -64,33 +69,36 @@ public class CTA_DataBase extends SQLiteOpenHelper {
     public final String LON = "LON";
 
 
-    public final String USER_FAVORITES = "USER_FAVORITES";
-    public  final String FAVORITE_STOP_ID = "STOP_ID";
-    public final String FAVORITE_MAP_ID = "FAVORITE_MAP_ID";
-    public  final String FAVORITE_STATION_TYPE = "STATION_TYPE";
-    public  final String FAVORITE_STATION_NAME = "STATION_NAME";
-    public  final String FAVORITE_STATION_DIRECTION = "STATION_DIR";
-    public  final String FAVORITE_STATION_DIRECTION_LABEL = "STATION_DIR_LABEL";
-    public  final String ISTRACKING = "ISTRACKING";
+    public static final  String USER_FAVORITES = "USER_FAVORITES";
+    public static final String FAVORITE_STATION_ID = "FAVORITE_STATION_ID";
+    public  static final String FAVORITE_STOP_ID = "STOP_ID";
+    public static final String FAVORITE_MAP_ID = "FAVORITE_MAP_ID";
+    public  static final String FAVORITE_STATION_TYPE = "STATION_TYPE";
+    public  static final String FAVORITE_STATION_NAME = "STATION_NAME";
+    public  static final String FAVORITE_STATION_DIRECTION = "STATION_DIR";
+    public  static final String FAVORITE_STATION_DIRECTION_LABEL = "STATION_DIR_LABEL";
+    public  static final String ISTRACKING = "ISTRACKING";
 
 
-    public final String USER_LOCATION = "USER_LOCATION";
+    public static final  String USER_LOCATION = "USER_LOCATION";
     public  final String USER_LOCATION_ID = "STOP_ID";
     public final String HAS_LOCATION = "HAS_LOCATION";
     public  final String USER_LAT = "USER_LAT";
     public final String USER_LON = "USER_LON";
 
 
-    public final String ALARMS = "ALARMS";
-    public  final String ALARM_ID = "ALARM_ID";
-    public final String ALARM_STATION_TYPE = "STATION_TYPE";
-    public final String ALARM_STATION_NAME = "STATION_NAME";
-    public final String ALARM_MAP_ID = "MAP_ID";
+    public static final  String ALARMS = "ALARMS";
+    public static final String ALARM_ID = "ALARM_ID";
+    public static final String ALARM_STATION_TYPE = "STATION_TYPE";
+    public static final String ALARM_STATION_NAME = "STATION_NAME";
+    public  static final String ALARM_MAP_ID = "MAP_ID";
 
-    public final String WILL_REPEAT = "WILL_REPEAT";
-    public  final String TIME = "TIME";
-    public  final String HOUR = "HOUR";
-    public  final String MIN = "MIN";
+    public static final String WILL_REPEAT = "WILL_REPEAT";
+    public static final String TIME = "TIME";
+    public static final String ALARM_DIRECTION = "DIRECTION";
+
+    public static final String HOUR = "HOUR";
+    public static final String MIN = "MIN";
 
     public final String MON = "MON";
     public final String TUES = "TUES";
@@ -99,7 +107,7 @@ public class CTA_DataBase extends SQLiteOpenHelper {
     public final String FRI = "FRI";
     public final String SAT = "SAT";
     public final String SUN = "SUN";
-    public final String WEEK_LABEL = "WEEK_LABEL";
+    public static final String WEEK_LABEL = "WEEK_LABEL";
 
 
 
@@ -110,9 +118,9 @@ public class CTA_DataBase extends SQLiteOpenHelper {
 
 
     public CTA_DataBase(@Nullable Context context) {
-        super(context, "CTA_DATABASE", null, 40);
+        super(context, "CTA_DATABASE", null, 70);
         SQLiteDatabase db = this.getWritableDatabase();
-        createMarkersTable(db);
+        createTrainTrackingTable(db);
 
 
 
@@ -127,19 +135,21 @@ public class CTA_DataBase extends SQLiteOpenHelper {
         create_L_stops_table(db);
         create_userLocation_table(db);
         create_alarm_table(db);
+        createTrainTrackingTable(db);
+
 
         Log.e("SQLITE", "CREATED TABLES");
     }
 
 
-    public void createMarkersTable(SQLiteDatabase db){
-        String marker_table = "CREATE TABLE IF NOT EXISTS "+ Markers+ "("
-                + marker_id+ " INTEGER PRIMARY KEY,"
-                + marker_name + " TEXT,"
-                + marker_type + " TEXT,"
-                + marker_lat + " TEXT,"
-                + marker_lon + " TEXT)";
-        db.execSQL(marker_table);
+    public void createTrainTrackingTable(SQLiteDatabase db){
+        String tracker_table = "CREATE TABLE IF NOT EXISTS "+ TRAIN_TRACKER+ " ("
+                + TRAIN_ID+ " TEXT PRIMARY KEY, "
+                + TRAIN_MAP_ID + " TEXT, "
+                + TRAIN_DIR + " TEXT, "
+                + TRAIN_NOTIFIED_BY_ALARM + " INTEGER, "
+                + TRAIN_TYPE + " TEXT)";
+        db.execSQL(tracker_table);
     }
 
    public void  create_L_stops_table(SQLiteDatabase db){
@@ -165,6 +175,7 @@ public class CTA_DataBase extends SQLiteOpenHelper {
                 + ALARM_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + ALARM_STATION_TYPE + " TEXT, "
                 + ALARM_STATION_NAME + " TEXT, "
+                + ALARM_DIRECTION + " TEXT, "
                 + TIME + " TEXT, "
                 + HOUR + " TEXT, "
                 + MIN + " TEXT, "
@@ -232,7 +243,8 @@ public class CTA_DataBase extends SQLiteOpenHelper {
 
     public void createUserFavorites(SQLiteDatabase db){
         String user_favorites = "CREATE TABLE IF NOT EXISTS " + USER_FAVORITES +
-                "(" + FAVORITE_STOP_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "(" + FAVORITE_STATION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                FAVORITE_STOP_ID + " TEXT, " +
                 FAVORITE_MAP_ID + " TEXT, " +
                 FAVORITE_STATION_TYPE + " TEXT, " +
                 FAVORITE_STATION_DIRECTION + " TEXT, " +
@@ -246,11 +258,11 @@ public class CTA_DataBase extends SQLiteOpenHelper {
 
 
     public void commit(Object item, String table_name){
-        if (table_name.equals("cta_stops")){
+        if (table_name.equals(CTA_STOPS)){
             CTA_Stops station = (CTA_Stops) item;
             add_cta_stations_to_cta_table(station);
 
-        }else if (table_name.equals("USER_FAVORITES")){
+        }else if (table_name.equals(USER_FAVORITES)){
             FavoriteStation station = (FavoriteStation) item;
            add_user_favorites(station);
 
@@ -261,13 +273,13 @@ public class CTA_DataBase extends SQLiteOpenHelper {
         }else if (table_name.equals("L_STOPS")){
             L_stops station = (L_stops) item;
             add_L_stop(station);
-        }else if (table_name.equals(Markers)){
-            Markers marker = (Markers) item;
-            addMarker(marker);
-        }else if (table_name.equals("USER_LOCATION")){
+        }else if (table_name.equals(TRAIN_TRACKER)){
+            Train train = (Train) item;
+            addTrackingTrain(train);
+        }else if (table_name.equals(USER_LOCATION)){
             UserLocation userLocation = (UserLocation) item;
             addUserLocation(userLocation);
-        }else if (table_name.equals("ALARMS")){
+        }else if (table_name.equals(ALARMS)){
             Alarm new_alarm = (Alarm) item;
             addAlarm(new_alarm);
         }
@@ -280,6 +292,7 @@ public class CTA_DataBase extends SQLiteOpenHelper {
         values.put(TIME, alarm.getTime());
         values.put(HOUR, alarm.getHour());
         values.put(MIN, alarm.getMin());
+        values.put(ALARM_DIRECTION, alarm.getDirection());
         values.put(ALARM_MAP_ID, alarm.getMap_id());
         values.put(ALARM_STATION_TYPE, alarm.getStationType());
         values.put(ALARM_STATION_NAME, alarm.getStationName());
@@ -315,15 +328,17 @@ public class CTA_DataBase extends SQLiteOpenHelper {
     }
 
 
-    private void addMarker(Markers markers){
+    private void addTrackingTrain(Train train){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(marker_id, markers.getMarker_id());
-        values.put(marker_name, markers.getMarker_name());
-        values.put(marker_type, markers.getMarker_type());
-        values.put(marker_lat, markers.getMarker_lat());
-        values.put(marker_lon, markers.getMarker_lon());
-        db.insert(Markers, null, values);
+        if (train!=null) {
+            values.put(TRAIN_ID, train.getRn());
+            values.put(TRAIN_MAP_ID, train.getTarget_id());
+            values.put(TRAIN_DIR, train.getTrDr());
+            values.put(TRAIN_TYPE, train.getRt());
+            values.put(TRAIN_NOTIFIED_BY_ALARM, train.getIsNotifiedByAlarm());
+            db.insert(TRAIN_TRACKER, null, values);
+        }
         db.close();
 
     }
@@ -481,8 +496,54 @@ public class CTA_DataBase extends SQLiteOpenHelper {
             query = query +" ORDER BY "+ col_orderBy + " ASC";
             record = getRecord(query);
         }
+        if (table_name.equals(CTA_STOPS)) {
+            ArrayList<Object> new_record = new ArrayList<>();
+            if (record!=null) {
+                for (Object r : record) {
+                    HashMap<String, String> station = (HashMap<String, String>) r;
+                    Station new_station = new Station();
+                    new_station.setIsTarget(false);
+                    new_station.setLat(Double.parseDouble(station.get("LAT")));
+                    new_station.setLon(Double.parseDouble(station.get("LON")));
+                    new_station.setStation_name(station.get("STATION_NAME"));
+                    new_station.setStop_name(station.get("STOP_NAME"));
+                    new_station.setMap_id(station.get("MAP_ID"));
+                    new_station.setStop_id(station.get("STOP_ID"));
+                    new_station.setDirection_id(station.get("DIRECTION_ID"));
+                    ArrayList<String> list_of_station_types = findAllStationTypes(station);
+                    new_station.setStation_type_list(list_of_station_types);
+                    if (list_of_station_types.size() > 1) {
+                        new_station.setStation_type(null);
+                    } else {
+                        if (list_of_station_types.size() > 0) {
+                            new_station.setStation_type(list_of_station_types.get(0));
+                        } else {
+                            new_station.setStation_type(null);
 
+                        }
+                    }
+                    new_record.add(new_station);
+                }
+            }else{
+                Object r = record;
+            }
+            record = new_record;
+        }
         return record;
+    }
+
+    private ArrayList<String> findAllStationTypes(HashMap<String, String> station) {
+        ArrayList<String> list_of_station_types=  new ArrayList<>();
+        if (station.get(RED).equals("1")){list_of_station_types.add("Red");}
+        if (station.get(BLUE).equals("1")){list_of_station_types.add("Blue");}
+        if (station.get(G).equals("1")){list_of_station_types.add("Green");}
+        if (station.get(Y).equals("1")){list_of_station_types.add("Yellow");}
+        if (station.get(BRN).equals("1")){list_of_station_types.add("Brown");}
+        if (station.get(PINK).equals("1")){list_of_station_types.add("Pink");}
+        if (station.get(ORG).equals("1")){list_of_station_types.add("Orange");}
+        if (station.get(P).equals("1")){list_of_station_types.add("Purple");}
+
+        return  list_of_station_types;
     }
 
     @Override

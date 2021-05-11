@@ -29,7 +29,6 @@ import java.util.HashMap;
 public class CustomeWindowRV_Adapter extends RecyclerView.Adapter<CustomeWindowRV_Adapter.ItemHolder>  {
     ArrayList<TrainStops> TrainList;
     Message message;
-    GoogleMap mMap;
     Context context;
     public CustomeWindowRV_Adapter(Context context, Message message, ArrayList<TrainStops> contactsList){
         this.TrainList= contactsList;
@@ -50,29 +49,16 @@ public class CustomeWindowRV_Adapter extends RecyclerView.Adapter<CustomeWindowR
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull CustomeWindowRV_Adapter.ItemHolder holder, int position) {
-        TrainStops train = this.TrainList.get(position);
-        holder.main_title.setText("To "+ train.getStaNm());
-        holder.subtitle.setText(train.getNextStopEtA()+"m");
-//        holder.imageView.setImageResource(new Chicago_Transits().getTrainImage(train.getRt()));
-//
-//        holder.item.setOnClickListener(v -> {
-//            mMap.clear();
-//            for (Train train1: this.message.getOld_trains()){
-//                train1.setSelected(false);
-//            }
-//            train.setSelected(true);
-//            CTA_DataBase cta_dataBase = new CTA_DataBase(this.context);
-//            ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "MAP_ID = '"+train.getTarget_id()+"'", null,null);
-//            HashMap<String, String> target_station = (HashMap<String, String>) record.get(0);
-//
-//            Chicago_Transits chicago_transits = new Chicago_Transits();
-//            chicago_transits.plot_marker(context,this.message,mMap, null, target_station);
-//            chicago_transits.ZoomIn(mMap, 12f, train.getLat(), train.getLon());
-//            for (Train train1 : this.message.getOld_trains()){
-//                chicago_transits.plot_marker(context,this.message,mMap, train1, null);
-//                Log.e("TRAIN", "IS Selected: "+ train1.getSelected()+ " #"+train1.getRn());
-//            }
-//        });
+        if (this.TrainList.size() == 0 || this.TrainList == null){
+            holder.main_title.setText("Unable to find predictions.");
+            holder.subtitle.setText("");
+        }else {
+
+            TrainStops train = this.TrainList.get(position);
+            holder.main_title.setText("To " + train.getStaNm());
+            holder.subtitle.setText(train.getNextStopEtA() + "m");
+        }
+
     }
 
 

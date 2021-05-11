@@ -9,6 +9,7 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/list_item"
+        android:background="@drawable/cardview_body"
         android:foreground="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:layout_width="fill_parent"
@@ -28,7 +29,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-
+                android:textColor="@color/colorPrimaryDark"
                 android:layout_marginLeft="20dp"
                 android:text="TextView"
                 android:textSize="20sp"
@@ -41,9 +42,7 @@
             <ImageView
                 android:id="@+id/train_image"
                 android:layout_width="74dp"
-
                 android:layout_height="67dp"
-
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:scaleType="fitXY"

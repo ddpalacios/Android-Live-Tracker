@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp" >
+
+
+
+
+    <TextView
+        android:id="@+id/currentTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="9:05 AM"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="50dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/changeTimeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="17dp"
+        android:layout_marginTop="25dp"
+        android:layout_toRightOf="@id/currentTime"
+        android:text="Change Time > "
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textView15"
+        android:layout_marginTop="15dp"
+        android:textStyle="bold"
+        android:layout_below="@id/willRepeat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Day of week" />
+
+
+    <CheckBox
+        android:id="@+id/willRepeat"
+        android:layout_below="@id/currentTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Repeating Alarm?" />
+
+    <LinearLayout
+        android:id="@+id/day_of_week"
+        android:layout_below="@id/willRepeat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="45dp"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/sunday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="S" />
+
+        <CheckBox
+            android:id="@+id/monday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="M" />
+
+        <CheckBox
+            android:id="@+id/tuesday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="T" />
+
+        <CheckBox
+            android:id="@+id/wensday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="W" />
+
+        <CheckBox
+            android:id="@+id/thursday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="T" />
+
+        <CheckBox
+            android:id="@+id/friday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="F" />
+
+        <CheckBox
+            android:id="@+id/saterday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="S" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView20"
+        android:textStyle="bold"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="20dp"
+        android:layout_below="@id/day_of_week"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Station" />
+
+
+    <Spinner
+        android:layout_marginTop="15dp"
+        android:id="@+id/spinner2"
+        android:layout_below="@id/textView20"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+
+
+    <LinearLayout
+            android:layout_below="@id/spinner2"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:weightSum="5"
+            android:orientation="vertical">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/all_station_lookup_rv"
+                android:layout_weight = "5"
+                android:layout_width="match_parent"
+                android:layout_height="0dp" />
+
+                <Button
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/main_save_button"
+                    android:background="@drawable/custom_ripple"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Save" />
+        </LinearLayout>
+
+
+
+
+
+</RelativeLayout>

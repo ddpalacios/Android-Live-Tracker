@@ -30,13 +30,12 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="4dp"
-                android:text="TextView"
                 android:textSize="20sp"
                 android:maxLength="25"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/title_2"
+                app:layout_constraintBottom_toTopOf="@+id/subtitle"
                 app:layout_constraintStart_toEndOf="@+id/train_image"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -59,7 +58,6 @@
 
                 android:layout_marginStart="24dp"
                 android:layout_marginLeft="24dp"
-                android:text="TextView"
                 android:textSize="15sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -82,7 +80,7 @@
                 app:srcCompat="@drawable/red" />
 
             <TextView
-                android:id="@+id/title_2"
+                android:id="@+id/subtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"

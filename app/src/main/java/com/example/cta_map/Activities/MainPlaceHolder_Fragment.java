@@ -31,6 +31,13 @@ public class MainPlaceHolder_Fragment extends Fragment implements Serializable  
     ViewHolder_Adapter ViewHolder_Adapter;
     ViewPager2 viewPager;
     TabLayout tabLayout;
+
+    /*
+    This is our viewpager - this sets up our tabbed layout which is held using our Viewholder adapter
+
+
+     */
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
