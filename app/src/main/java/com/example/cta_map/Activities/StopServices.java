@@ -52,7 +52,12 @@ public class StopServices   extends BroadcastReceiver {
                 cta_dataBase.close();
                 chicago_transits.callThreads(context, message.getHandler() ,message, dir, type, map_id, false);
             }else{
+                CTA_DataBase cta_dataBase = new CTA_DataBase(context);
+
+                cta_dataBase.delete_all_records(CTA_DataBase.TRAIN_TRACKER);
                 Log.e("Notification", "App was destroyed");
+                cta_dataBase.close();
+
             }
 
         }

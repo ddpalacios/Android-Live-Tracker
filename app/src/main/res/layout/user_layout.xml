@@ -8,6 +8,7 @@
     android:layout_height="match_parent"
     tools:ignore="ExtraText">
 
+
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_layout"
         android:layout_width="match_parent"
@@ -24,6 +25,11 @@
 
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+            <ListView
+                android:id="@+id/search_items_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
 
             <fragment
                 android:id="@+id/map"

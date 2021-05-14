@@ -129,6 +129,9 @@ public class TrainTimes_Adapter_frag extends RecyclerView.Adapter<TrainTimes_Ada
 
 
             holder.item.setOnClickListener(v -> {
+                if (train.getIsApp().equals("1")){
+                    chicago_transits.ZoomIn(mMap, 20f, train.getLat(), train.getLon());
+                }
                 if (!train.getSelected()) {
                     // if the train is NOT selected - reset all trains
                     for (Train train1 : this.current_incoming_trains) {

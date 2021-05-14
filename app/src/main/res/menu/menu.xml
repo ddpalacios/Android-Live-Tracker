@@ -4,6 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".Activities.MainActivity">
 
+    <item android:title="Settings" android:id="@+id/user_settings" />
+    <item android:title="Get Data" android:id="@+id/getData" />
+    <item android:title="ClearData" android:id="@+id/clearData" />
     <item
         android:id="@+id/spinner"
         android:title="ActionBar Spinner"
@@ -11,15 +14,12 @@
         android:background="#ff00"
         app:showAsAction="always" />
 
-
-    <item android:title="Get Data" android:id="@+id/getData" />
-    <item android:title="ClearData" android:id="@+id/clearData" />
     <item
         android:id="@+id/app_bar_search"
         android:icon="@drawable/ic_search_black_24dp"
         android:orderInCategory="201"
         android:title="Search"
+
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="always" />
-
 </menu>

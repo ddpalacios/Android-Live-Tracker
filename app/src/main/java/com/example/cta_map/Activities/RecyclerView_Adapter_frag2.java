@@ -132,7 +132,7 @@ public class RecyclerView_Adapter_frag2 extends RecyclerView.Adapter<RecyclerVie
                     if (message.getT1() != null) {
                         int res = chicago_transits.cancelRunningThreads(message);
                         try {
-                            message.getT1().join();
+                            message.getT1().join(MainActivity.TIMEOUT);
                         }catch (Exception e){
                             e.printStackTrace();
                         }
