@@ -1079,6 +1079,7 @@ public class Chicago_Transits {
         <heading>358</heading>
     </eta>
  */
+
         Train train = new Train();
 
             String staId = get_xml_tag_value(each_train, "staId");
@@ -1117,10 +1118,12 @@ public class Chicago_Transits {
             train.setStpDe(stpDe);
             train.setRt(rt);
 
+
             String date1 = getDate(prdt.split(" ")[0]);
             train.setPrdt(date1+" "+prdt.split(" ")[1]);
             String date2 = getDate(arrT.split(" ")[0]);
             train.setArrT(date2 +" " +arrT.split(" ")[1]);
+
             train.setIsApp(isApp);
             train.setHeading(heading);
             train.setIsDly(isDly);

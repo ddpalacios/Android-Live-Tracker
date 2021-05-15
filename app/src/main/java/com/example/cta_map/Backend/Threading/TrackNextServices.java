@@ -27,7 +27,7 @@ public class TrackNextServices extends BroadcastReceiver {
         }
         int incoming_train_list_size = current_incoming_trains.size();
         Train new_train;
-        if (is_retrieving_first_nearest_train){
+        if (is_retrieving_first_nearest_train!= null && is_retrieving_first_nearest_train){
             new_train = current_incoming_trains.get(0); // Find nearest train if train is out of scope to reset
 
         }else{ // if train is still in scope - give option to keep tracking next train

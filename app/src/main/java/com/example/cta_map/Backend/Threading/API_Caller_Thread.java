@@ -199,21 +199,28 @@ public class API_Caller_Thread implements Runnable {
 
         if (train_list != null) {
             for (String raw_train : train_list) {
+                if (raw_train.trim().equals("")){
+                    continue;
+                }
                 Train train = chicago_transits.get_train_info(raw_train);
-                if (train != null) {
+                if (train != null && train.getRn()!=null) {
                     train.setTarget_id(msg.getTARGET_MAP_ID());
                     if (train.getTrDr().equals(msg.getDir())) { // Filter list based on target direction
                         //get train eta to target
                         msg.setStop_id(train.getStpId());
                         dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                        Date parsedArrivalTime = dateFormat.parse(train.getArrT());
-                        Date parsePredictedTime = dateFormat.parse(train.getPrdt());
-                        long diff = parsedArrivalTime.getTime() - parsePredictedTime.getTime();
-                        if (diff < 0) {
-                            diff = parsePredictedTime.getTime() - parsedArrivalTime.getTime();
+                        if (train.getArrT()!=null && train.getPrdt()!=null) {
+                            Date parsedArrivalTime = dateFormat.parse(train.getArrT());
+                            Date parsePredictedTime = dateFormat.parse(train.getPrdt());
+                            long diff = parsedArrivalTime.getTime() - parsePredictedTime.getTime();
+                            if (diff < 0) {
+                                diff = parsePredictedTime.getTime() - parsedArrivalTime.getTime();
+                            }
+                            long eta_in_minutes = diff / (60 * 1000) % 60;
+
+                            train.setTarget_eta((int) eta_in_minutes);
                         }
-                        long eta_in_minutes = diff / (60 * 1000) % 60;
-                        train.setTarget_eta((int) eta_in_minutes);
+
                         String[] remaining_stops = null;
                         try {
                             train_rn = train.getRn();
@@ -228,10 +235,10 @@ public class API_Caller_Thread implements Runnable {
                             for (String raw_stop : remaining_stops) {
                                 TrainStops remaining_trainStop = chicago_transits.get_remaining_train_stop_info(raw_stop);
                                 if (remaining_trainStop != null) {
-                                    parsedArrivalTime = dateFormat.parse(remaining_trainStop.getArrT());
-                                    parsePredictedTime = dateFormat.parse(remaining_trainStop.getPrdt());
-                                    diff = parsedArrivalTime.getTime() - parsePredictedTime.getTime();
-                                    eta_in_minutes = diff / (60 * 1000) % 60;
+                                    Date parsedArrivalTime = dateFormat.parse(remaining_trainStop.getArrT());
+                                    Date parsePredictedTime = dateFormat.parse(remaining_trainStop.getPrdt());
+                                    long diff = parsedArrivalTime.getTime() - parsePredictedTime.getTime();
+                                    long eta_in_minutes = diff / (60 * 1000) % 60;
                                     remaining_trainStop.setNextStopEtA((int) eta_in_minutes);
                                     remaining_stations.add(remaining_trainStop);
                                 }
