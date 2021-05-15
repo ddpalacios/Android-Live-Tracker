@@ -1,39 +1,24 @@
-package com.example.cta_map.Activities;
+package com.example.cta_map.Backend.Threading;
 
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
-import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
 import android.util.Log;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.ActionBar;
 
 import com.example.cta_map.Activities.Classes.Alarm;
-import com.example.cta_map.Backend.Threading.API_Caller_Thread;
-import com.example.cta_map.Backend.Threading.Content_Parser_Thread;
-import com.example.cta_map.Backend.Threading.Message;
+import com.example.cta_map.Activities.MainActivity;
 import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.Displayers.NotificationBuilder;
 import com.example.cta_map.Displayers.Train;
-import com.example.cta_map.Displayers.TrainStops;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 
 public class MyBroadCastReciever extends BroadcastReceiver {
@@ -107,28 +92,30 @@ public class MyBroadCastReciever extends BroadcastReceiver {
 
 
 
-            if (chicago_transits.isMyServiceRunning(main_context,new ExampleService().getClass())) {
+            if (chicago_transits.isMyServiceRunning(main_context,new MainNotificationService().getClass())) {
                 chicago_transits.stopService(main_context); // stopping a service if one currently exists
             }
 
             if (message.getT1() != null && current_user_tracking_record != null) { // This is the case when we have the main activity previously declared
-                int res = new Chicago_Transits().cancelRunningThreads(message); // cancel current running threads
-                if (res > 0) {
-                    if (message.getT1().isAlive()) {
-                        message.getT1().interrupt();
-                    } else {
-                        MainActivity.LogMessage("Thread not alive.");
-                    }
-                    try {
-                        API_Caller_Thread.msg.getT1().join(MainActivity.TIMEOUT);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    if (message.getHandler()!=null){ // if the main activity is open, use handler from UI Thread
-                        handler = message.getHandler();
-                    }
-                    new Chicago_Transits().callThreads(main_context, handler, message,direction,station_type, map_id, true);
-                }
+//                int res = new Chicago_Transits().cancelRunningThreads(message); // cancel current running threads
+//                if (res > 0) {
+//                    if (message.getT1().isAlive()) {
+//                        message.getT1().interrupt();
+//                    } else {
+//                        MainActivity.LogMessage("Thread not alive.");
+//                    }
+//                    try {
+//                        API_Caller_Thread.msg.getT1().join(MainActivity.TIMEOUT);
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                    if (message.getHandler()!=null){ // if the main activity is open, use handler from UI Thread
+//                        handler = message.getHandler();
+//                    }
+//                }
+                chicago_transits.StopThreads(message, context);
+                chicago_transits.callThreads(main_context, handler, message,direction,station_type, map_id, true);
+
             }else{
                 // if the app has not been started
                 Log.e(TAG, "STARTING FRESH FROM ALARM");

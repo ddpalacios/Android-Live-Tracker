@@ -2,9 +2,10 @@ package com.example.cta_map.Displayers;
 
 import com.example.cta_map.DataBase.CTA_Stops;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class TrainStops implements Comparable<TrainStops>{
+public class TrainStops implements Serializable {
 
     public Boolean getViewIcon() {
         return viewIcon;
@@ -349,14 +350,5 @@ public class TrainStops implements Comparable<TrainStops>{
         this.heading = heading;
     }
 
-    @Override
-    public String toString() {
-        return "Train [id=" + this.getTarget_eta() + "]";
-    }
 
-
-    @Override
-    public int compareTo(TrainStops o) {
-        return this.getTarget_eta().compareTo(o.getTarget_eta());
-    }
 }

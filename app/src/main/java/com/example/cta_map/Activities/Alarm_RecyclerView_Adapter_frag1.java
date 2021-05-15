@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -21,15 +20,15 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cta_map.Activities.Classes.Alarm;
-import com.example.cta_map.Activities.Classes.RecordView;
 import com.example.cta_map.Backend.Threading.API_Caller_Thread;
+import com.example.cta_map.Backend.Threading.MainNotificationService;
 import com.example.cta_map.Backend.Threading.Message;
+import com.example.cta_map.Backend.Threading.MyBroadCastReciever;
 import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.R;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Objects;
 
 public class Alarm_RecyclerView_Adapter_frag1 extends RecyclerView.Adapter<Alarm_RecyclerView_Adapter_frag1.ItemHolder>  {
@@ -85,7 +84,7 @@ public class Alarm_RecyclerView_Adapter_frag1 extends RecyclerView.Adapter<Alarm
                     e.printStackTrace();
                 }}
 
-            if (new Chicago_Transits().isMyServiceRunning(context,new ExampleService().getClass())){
+            if (new Chicago_Transits().isMyServiceRunning(context,new MainNotificationService().getClass())){
                 new Chicago_Transits().stopService(context);
             }
 

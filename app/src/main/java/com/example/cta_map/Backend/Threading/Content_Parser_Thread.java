@@ -186,7 +186,7 @@ public class Content_Parser_Thread implements Runnable {
                 }
             }
         }
-            Collections.sort(incoming_trains);
+//            Collections.sort(incoming_trains);
         }
     }
 

@@ -17,6 +17,35 @@ public class Message implements Serializable {
         return isDoneNotified;
     }
 
+    public Boolean getIs_retrieving_first_nearest_train() {
+        return is_retrieving_first_nearest_train;
+    }
+
+    public void setIs_retrieving_first_nearest_train(Boolean is_retrieving_first_nearest_train) {
+        this.is_retrieving_first_nearest_train = is_retrieving_first_nearest_train;
+    }
+
+    private Boolean is_retrieving_first_nearest_train;
+    public Train getCurrentNotificationTrain() {
+        return currentNotificationTrain;
+    }
+
+    public void setCurrentNotificationTrain(Train currentNotificationTrain) {
+        this.currentNotificationTrain = currentNotificationTrain;
+    }
+
+    private Train currentNotificationTrain;
+
+    public Boolean getMadeBroadcastSwitch() {
+        return madeBroadcastSwitch;
+    }
+
+    public void setMadeBroadcastSwitch(Boolean madeBroadcastSwitch) {
+        this.madeBroadcastSwitch = madeBroadcastSwitch;
+    }
+
+    private Boolean madeBroadcastSwitch;
+
     public void setDoneNotified(Boolean doneNotified) {
         isDoneNotified = doneNotified;
     }
@@ -35,7 +64,92 @@ public class Message implements Serializable {
         Object that Interacts with threads
 
          */
+
+    public Boolean getAlarmTriggered() {
+        return AlarmTriggered;
+    }
+
+    public void setAlarmTriggered(Boolean alarmTriggered) {
+        AlarmTriggered = alarmTriggered;
+    }
+
+    Boolean AlarmTriggered;
+    Double user_lat;
+
+    public Train getNew_next_train_to_track() {
+        return new_next_train_to_track;
+    }
+
+    public void setNew_next_train_to_track(Train new_next_train_to_track) {
+        this.new_next_train_to_track = new_next_train_to_track;
+    }
+
+    Train new_next_train_to_track;
+
+    public Double getUser_lat() {
+        return user_lat;
+    }
+
+    public Boolean getInMinutes() {
+        return inMinutes;
+    }
+
+    public void setInMinutes(Boolean inMinutes) {
+        this.inMinutes = inMinutes;
+    }
+
+    public Boolean getInStations() {
+        return inStations;
+    }
+
+    public void setInStations(Boolean inStations) {
+        this.inStations = inStations;
+    }
+
+    Boolean inMinutes, inStations;
+
+    public void setUser_lat(Double user_lat) {
+        this.user_lat = user_lat;
+    }
+
+    public Double getUser_lon() {
+        return user_lon;
+    }
+
+    public void setUser_lon(Double user_lon) {
+        this.user_lon = user_lon;
+    }
+
+    Double user_lon;
+    public Boolean getSharingFullConnection() {
+        return isSharingFullConnection;
+    }
+
+    public void setSharingFullConnection(Boolean sharingFullConnection) {
+        isSharingFullConnection = sharingFullConnection;
+    }
+
+    Boolean isSharingFullConnection;
+
+    private String notification_message, notification_subtitle;
     private Boolean isDestoryed;
+
+    public String getNotification_message() {
+        return notification_message;
+    }
+
+    public void setNotification_message(String notification_message) {
+        this.notification_message = notification_message;
+    }
+
+    public String getNotification_subtitle() {
+        return notification_subtitle;
+    }
+
+    public void setNotification_subtitle(String notification_subtitle) {
+        this.notification_subtitle = notification_subtitle;
+    }
+
     public TrainTimes_Adapter_frag getTrainTimes_adapter_frag() {
         return trainTimes_adapter_frag;
     }

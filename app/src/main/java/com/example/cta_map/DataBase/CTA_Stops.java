@@ -1,10 +1,11 @@
 package com.example.cta_map.DataBase;
 
+import java.io.Serializable;
 import java.nio.DoubleBuffer;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class CTA_Stops {
+public class CTA_Stops implements Serializable {
     public String STOP_ID = "STOP_ID";
     public String DIRECTION_ID = "DIRECTION_ID";
     public String STOP_NAME = "STOP_NAME";

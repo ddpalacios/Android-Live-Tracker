@@ -83,6 +83,8 @@ public class TrainTimes_Fragment extends Fragment {
                     message.setDir("1");
                 }
             }
+            message.getT1().interrupt();
+
 
 
         });

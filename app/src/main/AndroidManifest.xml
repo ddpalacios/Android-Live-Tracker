@@ -91,19 +91,32 @@
         </activity>
 
         <receiver
-            android:name=".Activities.MyBroadCastReciever"
+            android:name=".Backend.Threading.MyBroadCastReciever"
             android:enabled="true"
             android:exported="true"
             />
 
         <receiver
-            android:name=".Activities.StopServices"
+            android:name=".Backend.Threading.StopServices"
+            android:enabled="true"
+            android:exported="true"
+            />
+
+        <receiver
+            android:name=".Backend.Threading.SwitchDirection_Services"
             android:enabled="true"
             android:exported="true"
             />
 
 
-        <service android:name=".Activities.ExampleService"
+        <receiver
+            android:name=".Backend.Threading.TrackNextServices"
+            android:enabled="true"
+            android:exported="true"
+            />
+
+
+        <service android:name=".Backend.Threading.MainNotificationService"
             android:foregroundServiceType="location"
             />
 

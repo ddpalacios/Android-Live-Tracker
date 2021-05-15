@@ -21,9 +21,9 @@ import android.os.Build;
 import android.os.Bundle;
 
 import com.example.cta_map.Activities.Classes.Station;
-import com.example.cta_map.Activities.Classes.UserSettings;
 import com.example.cta_map.Backend.Threading.API_Caller_Thread;
 import com.example.cta_map.Backend.Threading.Content_Parser_Thread;
+import com.example.cta_map.Backend.Threading.MainNotificationService;
 import com.example.cta_map.Backend.Threading.Message;
 import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.Displayers.Chicago_Transits;
@@ -106,8 +106,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         if (current_incoming_trains != null && current_incoming_trains.size() > 0) {
             ActionBar bar = getSupportActionBar();
             assert bar != null;
-            CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
-            cta_dataBase.close();
             boolean isBeingNotified = new Chicago_Transits().StartNotificationServices(getApplicationContext(), message,current_incoming_trains);
             UpdateFragments(current_incoming_trains);
         }else{
@@ -169,6 +167,8 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         message.setDestoryed(false);
         message.setDoneNotified(false);
         bar = getSupportActionBar();
+        message.setMadeBroadcastSwitch(false);
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -271,6 +271,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                     ArrayList<Object> userLocationRecord1 = cta_dataBase.excecuteQuery("*", CTA_DataBase.USER_LOCATION, CTA_DataBase.HAS_LOCATION + "= '1'", null, null);
                     if (userLocationRecord1!= null) {
                         ToastMessage(getApplicationContext(), "Is FULLY Sharing Location");
+                        message.setSharingFullConnection(true);
 
                         Double test_lat = 41.88574 ;
                         Double test_lon = -87.627835;
@@ -279,6 +280,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                         cta_dataBase.update("USER_LOCATION", CTA_DataBase.USER_LAT, test_lat + "", "HAS_LOCATION= '1'");
                         cta_dataBase.update("USER_LOCATION", CTA_DataBase.USER_LON, test_lon + "", "HAS_LOCATION = '1'");
                     }else{
+                        message.setSharingFullConnection(false);
                         ToastMessage(getApplicationContext(), "NOT Sharing Location");
                     }
                 } else {
@@ -287,6 +289,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                     new_userLocation.setLat(location.getLatitude());
                     new_userLocation.setLon(location.getLongitude());
                     new_userLocation.setHasLocation(1);
+                    message.setSharingFullConnection(true);
                     cta_dataBase.commit(new_userLocation, CTA_DataBase.USER_LOCATION);
                 }
                 cta_dataBase.close();
@@ -334,13 +337,13 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                 Station target_station = (Station) record.get(0);
 
 
-                if (!new Chicago_Transits().isMyServiceRunning(getApplicationContext(),new ExampleService().getClass())) {
+                if (!new Chicago_Transits().isMyServiceRunning(getApplicationContext(),new MainNotificationService().getClass())) {
                     // If NO services are running, Call threads.
                     new Chicago_Transits().callThreads(getApplicationContext(), handler, message, tracking_station.get("TRAIN_DIR"), tracking_station.get("TRAIN_TYPE"), tracking_station.get("MAP_ID"),false);
                 }else{
                         // Otherwise, we need to cancel our current threads then start new ones
                     Chicago_Transits chicago_transits = new Chicago_Transits();
-                    chicago_transits.StopThreads(API_Caller_Thread.msg);
+                    chicago_transits.StopThreads(API_Caller_Thread.msg, context);
                     chicago_transits.callThreads(getApplicationContext(), handler, message, tracking_station.get("TRAIN_DIR"), tracking_station.get("TRAIN_TYPE"), tracking_station.get("MAP_ID"),false);
                 }
 
@@ -362,7 +365,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                 // No stations selected or being tracked
                 setTitle("Select a station.");
                 bar.setBackgroundDrawable(new ColorDrawable(new Chicago_Transits().GetBackgroundColor("red", getApplicationContext())));
-                API_Caller_Thread api_caller = new API_Caller_Thread(message, context, handler, false);
+                API_Caller_Thread api_caller = new API_Caller_Thread(message, context, handler);
                 Thread t1 = new Thread(api_caller);
                 message.setT1(t1);
                 message.setApi_caller_thread(api_caller);
@@ -412,7 +415,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 Chicago_Transits chicago_transits = new Chicago_Transits();
-                if (!chicago_transits.isMyServiceRunning(context, new ExampleService().getClass()) && message.getT1().isAlive())
+                if (!chicago_transits.isMyServiceRunning(context, new MainNotificationService().getClass()) && message.getT1().isAlive())
                 {
                     new Chicago_Transits().cancelRunningThreads(message);
                     message.getT1().interrupt();
@@ -676,7 +679,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     {
         super.onDestroy();
         message.setDestoryed(true);
-        if (!new Chicago_Transits().isMyServiceRunning(getApplicationContext(),new ExampleService().getClass())) {
+        if (!new Chicago_Transits().isMyServiceRunning(getApplicationContext(),new MainNotificationService().getClass())) {
             // force stop application if no service is running
             int id = android.os.Process.myPid();
             android.os.Process.killProcess(id);

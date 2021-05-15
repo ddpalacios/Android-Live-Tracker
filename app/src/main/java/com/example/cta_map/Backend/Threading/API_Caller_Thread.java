@@ -43,11 +43,10 @@ public class API_Caller_Thread implements Runnable {
     public static Boolean AlarmTriggered = false;
     private volatile boolean cancelled = false;
 
-    public API_Caller_Thread(Message msg, Context context, Handler handler, boolean fromAlarm) {
+    public API_Caller_Thread(Message msg, Context context, Handler handler) {
         API_Caller_Thread.msg = msg;
         this.context = context;
         this.handler = handler;
-        this.fromAlarm = fromAlarm;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -55,11 +54,13 @@ public class API_Caller_Thread implements Runnable {
     public void run() {
         Log.e("API CALLER", "NEW THREADS ARE STARTING");
         synchronized (msg) {
+            CTA_DataBase cta_dataBase = new CTA_DataBase(this.context);
             while (msg.IsSending()) {
                 if (cancelled) {
                     break;
                 }
-                CTA_DataBase cta_dataBase = new CTA_DataBase(this.context);
+                ArrayList<Object> tracking_record = cta_dataBase.excecuteQuery("*", CTA_DataBase.TRAIN_TRACKER, null, null, null);
+
                 ArrayList<Train> new_incoming_trains = null;
                 try {
                     new_incoming_trains = call_cta_rest();
@@ -67,33 +68,25 @@ public class API_Caller_Thread implements Runnable {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                ArrayList<Object> tracking_record = cta_dataBase.excecuteQuery("*", CTA_DataBase.TRAIN_TRACKER, null, null, null);
-                cta_dataBase.close();
-                if (tracking_record != null && new_incoming_trains != null) { // from service intent
-                    HashMap<String, String> current_tracking_train = (HashMap<String, String>) tracking_record.get(0);
-                    for (Train train : new_incoming_trains) {
-                        if (train.getRn().equals(current_tracking_train.get("TRAIN_ID"))) {
-                            train.setNotified(true);
-                            train.setSelected(true);
-                            msg.setOld_trains(new_incoming_trains);
-                            break;
-                        }
-                    }
-                }
-                if (new_incoming_trains.size() > 0) {
-                    msg.setFinalDest(new_incoming_trains.get(0).getDestNm());
-                    msg.setNearestTrain(new_incoming_trains.get(0));
-                } else {
-                    msg.setNearestTrain(null);
-                }
+                set_up_new_incoming_trains_with_notification_train(tracking_record, new_incoming_trains); // sets up notification trains
+                Train default_nearest_train = set_up_default_nearest_train(new_incoming_trains); // sets default nearest train for viewing on screen
 
-
-                if (tracking_record == null && new_incoming_trains != null && fromAlarm) {
-                    // we need to set the nearest train if we are calling from an alarm
-                    cta_dataBase.commit(new_incoming_trains.get(0), CTA_DataBase.TRAIN_TRACKER);
-                    fromAlarm = false;
+                if (msg.getMadeBroadcastSwitch()!= null && msg.getMadeBroadcastSwitch()){ // if a switch was triggered from notification (switch directions)
+                    Log.e("Service", "MADE SWITCH");
+                    cta_dataBase.delete_all_records(CTA_DataBase.TRAIN_TRACKER);
+                    cta_dataBase.commit(default_nearest_train, CTA_DataBase.TRAIN_TRACKER);
+                    msg.setMadeBroadcastSwitch(false);
                     msg.getT1().interrupt();
                 }
+                if (msg.getAlarmTriggered() != null && msg.getAlarmTriggered()){
+                    // we need to set the nearest train if we are calling from an alarm
+                    cta_dataBase.delete_all_records(CTA_DataBase.TRAIN_TRACKER);
+                    cta_dataBase.commit(default_nearest_train, CTA_DataBase.TRAIN_TRACKER);
+                    msg.setAlarmTriggered(false);
+                    msg.getT1().interrupt();
+
+                }
+
                 msg.setIncoming_trains(new_incoming_trains);
                 setStatus(new_incoming_trains, msg); // Set train status
                 send_to_UI("new_incoming_trains", new_incoming_trains);
@@ -109,9 +102,36 @@ public class API_Caller_Thread implements Runnable {
                     }
                 }
             }
-
+            cta_dataBase.close();
         }
         Log.e(TAG, "Thread is Killed.");
+    }
+
+    private Train set_up_default_nearest_train(ArrayList<Train> new_incoming_trains) {
+        if (new_incoming_trains.size() > 0) {
+            msg.setFinalDest(new_incoming_trains.get(0).getDestNm());
+            msg.setNearestTrain(new_incoming_trains.get(0));
+            return new_incoming_trains.get(0);
+        } else {
+            msg.setNearestTrain(null);
+            return null;
+        }
+    }
+
+    private void set_up_new_incoming_trains_with_notification_train(ArrayList<Object> tracking_record, ArrayList<Train> new_incoming_trains) {
+        if (tracking_record != null && new_incoming_trains != null) { // setting up new incoming trains
+            HashMap<String, String> current_tracking_train = (HashMap<String, String>) tracking_record.get(0);
+            for (Train train : new_incoming_trains) {
+                if (train.getRn().equals(current_tracking_train.get("TRAIN_ID"))) {
+                    train.setNotified(true);
+                    train.setSelected(true);
+                    msg.setOld_trains(new_incoming_trains);
+                    break;
+                }
+            }
+        }else{
+            msg.setOld_trains(new_incoming_trains);
+        }
     }
 
     private ArrayList<Train> proceess_new_trains(ArrayList<Train> new_incoming_trains) {
@@ -248,43 +268,58 @@ public class API_Caller_Thread implements Runnable {
     private void setStatus(ArrayList<Train> incoming_trains, Message message) {
         CTA_DataBase cta_dataBase = new CTA_DataBase(this.context);
         ArrayList<Object> user_location_record = cta_dataBase.excecuteQuery("*", CTA_DataBase.USER_LOCATION, CTA_DataBase.HAS_LOCATION + "= '1'", null, null);
-        ArrayList<Object> settings_record = cta_dataBase.excecuteQuery("*", CTA_DataBase.USER_SETTINGS, null, null, null);
-        ArrayList<Object> cta_record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "MAP_ID = '" + this.msg.getTARGET_MAP_ID() + "'", null, null);
-        if (cta_record != null) {
-            Chicago_Transits chicago_transits = new Chicago_Transits();
+        Chicago_Transits chicago_transits = new Chicago_Transits();
+
+
+        if (incoming_trains!=null && incoming_trains.size() > 0) {
+            ArrayList<Object> cta_record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "MAP_ID = '" + incoming_trains.get(0).getTarget_id() + "'", null, null);
             Station target_station_record = (Station) cta_record.get(0);
             Integer user_eta_from_station = chicago_transits.getUserEstimatedTimeArrivalToStation(user_location_record, target_station_record);
             message.setTarget_name(target_station_record.getStation_name());
             for (Train main_train : incoming_trains) {
                 main_train.setTarget_station_name(target_station_record.getStation_name());
-                if (settings_record !=null) {
-                    Integer main_train_eta = main_train.getTarget_eta();
-                    String specific_tracking_type = getSpecificTrackingType();
-                    UserSettings userSettings = (UserSettings) settings_record.get(0);
-                    if (specific_tracking_type != null && !main_train.getIsSch()){
-                        if (specific_tracking_type.equals(UserSettings_Form.STATIONS_ITEM)){
-                            ArrayList<TrainStops> remaining_stations_till_target = get_RemainingStations_till_target(main_train, target_station_record);
-                            // if tracking based off stations
-                            SetTrueStatusBasedOn(userSettings, main_train, remaining_stations_till_target.size(), user_eta_from_station);
+                String specific_tracking_type = getSpecificTrackingType();
+                if (specific_tracking_type != null && !main_train.getIsSch()) {
 
-                        }else {
-                            // if tracking based off minutes
-                            SetTrueStatusBasedOn(userSettings, main_train, main_train_eta , user_eta_from_station);
-                        }
-                    }else{
-                        main_train.setStatus(null);
-                    }
+                    ArrayList<TrainStops> remaining_stations_till_target = get_RemainingStations_till_target(main_train, target_station_record);
+                    Integer threshold = (specific_tracking_type.equals(UserSettings_Form.STATIONS_ITEM) ? remaining_stations_till_target.size() : main_train.getTarget_eta());
+                    SetTrueStatusBasedOn(main_train, threshold, user_eta_from_station);
+
                 }
             }
-            Collections.sort(incoming_trains);
-            cta_dataBase.close();
-        }else{
-            MainActivity.ToastMessage(context, "ERROR. No station FOUND");
         }
-
+//                main_train.setTarget_station_name(target_station_record.getStation_name());
+//                if (settings_record !=null) {
+//                    Integer main_train_eta = main_train.getTarget_eta();
+//                    String specific_tracking_type = getSpecificTrackingType();
+//                    UserSettings userSettings = (UserSettings) settings_record.get(0);
+//                    if (specific_tracking_type != null && !main_train.getIsSch()){
+//                        if (specific_tracking_type.equals(UserSettings_Form.STATIONS_ITEM)){
+//                            ArrayList<TrainStops> remaining_stations_till_target = get_RemainingStations_till_target(main_train, target_station_record);
+//                            // if tracking based off stations
+//                            SetTrueStatusBasedOn(userSettings, main_train, remaining_stations_till_target.size(), user_eta_from_station);
+//
+//                        }else {
+//                            // if tracking based off minutes
+//                            SetTrueStatusBasedOn(userSettings, main_train, main_train_eta , user_eta_from_station);
+//                        }
+//                    }else{
+//                        main_train.setStatus(null);
+//                    }
+//                }
+//            }
+//            cta_dataBase.close();
+//        }else{
+//            MainActivity.ToastMessage(context, "ERROR. No station FOUND");
+//        }
+        cta_dataBase.close();
     }
 
-    private void SetTrueStatusBasedOn(UserSettings userSettings, Train main_train, Integer selected_threshold,Integer user_eta_from_station){
+    private void SetTrueStatusBasedOn( Train main_train, Integer selected_threshold,Integer user_eta_from_station){
+        CTA_DataBase cta_dataBase = new CTA_DataBase(context);
+        ArrayList<Object> settings_record = cta_dataBase.excecuteQuery("*", CTA_DataBase.USER_SETTINGS, null, null, null);
+        cta_dataBase.close();
+        UserSettings userSettings = (UserSettings) settings_record.get(0);
         Integer default_green = Integer.parseInt(userSettings.getGreen_limit());
         Integer default_yellow = Integer.parseInt(userSettings.getYellow_limit());
         Integer main_train_eta = main_train.getTarget_eta();
@@ -327,8 +362,23 @@ public class API_Caller_Thread implements Runnable {
             }
 
         }else{
+            if (main_train.getStatus() == null){
+                Log.e("API", "TRAIN WITH NULL STATUS");
+                String train_status = main_train.getStatus();
+                main_train.setStatus("GREEN");
+
+            }
             main_train.setStatus("GREEN");
+
         }
+
+        if (main_train.getStatus() == null){
+            main_train.setStatus("GREEN");
+            Log.e("API", "TRAIN WITH NULL STATUS");
+
+        }
+
+
     }
 
     private String getSpecificTrackingType() {
