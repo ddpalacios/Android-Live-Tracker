@@ -58,7 +58,7 @@ public class TrainTimes_Adapter_frag extends RecyclerView.Adapter<TrainTimes_Ada
     @Override
     public TrainTimes_Adapter_frag.ItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.train_times_card_view_layout, parent, false);
+        View view = inflater.inflate(R.layout.tracking_station_card_view, parent, false);
 
         return new ItemHolder(view);
     }
@@ -70,16 +70,21 @@ public class TrainTimes_Adapter_frag extends RecyclerView.Adapter<TrainTimes_Ada
         CTA_DataBase cta_dataBase = new CTA_DataBase(context);
         Chicago_Transits chicago_transits = new Chicago_Transits();
 
+
+
         holder.item.setCardBackgroundColor(Color.parseColor("#FFFFFF")); //Each time fragment gets 'refreshed', we are resetting background color to white
 
         // if we are building train cards...
         if (this.current_incoming_trains!=null) {
             Train train = this.current_incoming_trains.get(position); // We are plotting all trains in list with iteration
 
+
+
+
             createTrainCard(holder, train); // Creates our main title, image, and subtitle
             // if one of our trains is being notified - change the background color
             if (train.getIsNotified()) {
-                holder.item.setCardBackgroundColor(Color.parseColor("#F44336"));
+                holder.item.setBackgroundColor(Color.parseColor(MainActivity.BACKGROUND_COLOR_STRING));
             }
 
             holder.item.setOnLongClickListener(v -> {
@@ -129,6 +134,9 @@ public class TrainTimes_Adapter_frag extends RecyclerView.Adapter<TrainTimes_Ada
 
 
             holder.item.setOnClickListener(v -> {
+                if (train== null || train.getLat() ==null || train.getLon() == null){
+                    return;
+                }
                 if (train.getIsApp().equals("1")){
                     chicago_transits.ZoomIn(mMap, 20f, train.getLat(), train.getLon());
                 }
@@ -157,7 +165,7 @@ public class TrainTimes_Adapter_frag extends RecyclerView.Adapter<TrainTimes_Ada
             Station station= this.stationList.get(position); // We are plotting all trains in list with iteration
             createStationCard(holder, station); // Creates our main title
             if (this.alarm.getAlarm_id()!=null && station.getMap_id().equals(alarm.getMap_id())){
-                holder.item.setCardBackgroundColor(Color.parseColor("#F44336"));
+                holder.item.setBackgroundColor(Color.parseColor(MainActivity.BACKGROUND_COLOR_STRING));
             }else{
                 holder.item.setCardBackgroundColor(Color.parseColor("#FFFFFF")); //Each time fragment gets 'refreshed', we are resetting background color to white
             }
@@ -191,9 +199,6 @@ public class TrainTimes_Adapter_frag extends RecyclerView.Adapter<TrainTimes_Ada
                        notifyDataSetChanged();
                        NewAlarmSetUp.bar.setTitle(station.getStation_name());
                    }
-
-
-
                }
            });
 
@@ -229,45 +234,138 @@ public class TrainTimes_Adapter_frag extends RecyclerView.Adapter<TrainTimes_Ada
     @SuppressLint("SetTextI18n")
     private void createTrainCard(ItemHolder holder, Train train) {
         Chicago_Transits chicago_transits = new Chicago_Transits();
+        final float scale = context.getResources().getDisplayMetrics().density;
         holder.main_title.setText("To "+ train.getDestNm()); // Set its main title
-        holder.train_line_subtitle.setText((train.getRt() !=null ? chicago_transits.train_line_code_to_regular(train.getRt()) : "N/A"));
-        if (train.getIsSch()){
+        holder.train_line.setText((train.getRt() !=null ? chicago_transits.train_line_code_to_regular(train.getRt()) +" line" : "N/A"));
+        holder.train_line.setTextColor(Color.parseColor(getColor(train.getRt())));
+        holder.imageView.setImageResource(chicago_transits.getTrainImage(train.getRt()));
+        holder.isSch.setTextSize((int) (7 * scale + 0.5f));
+        holder.train_eta.setTextSize(7 * scale + 0.5f);
+
+        if (train.getIsApp().equals("1")){
+            holder.train_eta.setText("Due");
+            holder.train_eta.setTextColor(Color.parseColor("#FF0000"));
+
+        }else{
+            holder.train_eta.setText(train.getTarget_eta() +"m");
+        }
+
+
+        if (train.getIsSch()){ // if its scheduled and delayed
+            holder.main_title.setWidth((int) (100 * scale + 0.5f));
             if (train.getIsDly().equals("1")) {
                 holder.isSch.setText("Delayed");
+                holder.train_eta.setTextColor(Color.parseColor("#FF0000"));
+
             }else{
                 holder.isSch.setText("Scheduled");
+                holder.train_eta.setTextColor(Color.parseColor("#3367D6"));
+
             }
-        }
-        else if (train.getIsDly().equals("1")){
+        }  else if (train.getIsDly().equals("1")){ // if its just delayed
+            holder.main_title.setWidth((int) (100 * scale + 0.5f));
             holder.isSch.setText("Delayed");
         }
         else{
-            holder.isSch.setVisibility(View.INVISIBLE);
+            holder.isSch.setVisibility(View.INVISIBLE); // if neither, make invisible
         }
-
-
-
         if (train.getIsApp().equals("1")){
-            holder.subtitle.setText("Due");
+            holder.train_eta.setText("Due");
         }else{
-            holder.subtitle.setText(train.getTarget_eta() +"m");
+            holder.train_eta.setText(train.getTarget_eta() +"m");
         }
-        holder.imageView.setImageResource(new Chicago_Transits().getTrainImage(train.getRt()));
+
+
+        if (train.getIsDly().equals("1") || train.getIsApp().equals("1")) {
+            holder.isSch.setTextColor(Color.parseColor("#FF0000"));
+        }
+//
+//        holder.main_title.setText("To "+ train.getDestNm()); // Set its main title
+//        holder.train_line_subtitle.setText((train.getRt() !=null ? chicago_transits.train_line_code_to_regular(train.getRt()) +" line" : "N/A"));
+//
+//        if (train.getIsSch()){
+//            if (train.getIsDly().equals("1")) {
+//                holder.isSch.setText("Delayed");
+//            }else{
+//                holder.isSch.setText("Scheduled");
+//            }
+//        }
+//        else if (train.getIsDly().equals("1")){
+//            holder.isSch.setText("Delayed");
+//        }
+//        else{
+//            holder.isSch.setVisibility(View.INVISIBLE);
+//        }
+//
+//
+//
+//        if (train.getIsApp().equals("1")){
+//            holder.subtitle.setText("Due");
+//        }else{
+//            holder.subtitle.setText(train.getTarget_eta() +"m");
+//        }
+//
+//
+//        holder.subtitle.setTextSize(7 * scale + 0.5f);
+//        holder.isSch.setTextSize((int) (7 * scale + 0.5f));
+//        if (train.getIsDly().equals("1") || train.getIsApp().equals("1")) {
+//            holder.isSch.setTextColor(Color.parseColor("#FF0000"));
+//            holder.subtitle.setTextColor(Color.parseColor("#FF0000"));
+//
+//        }
+//
+//        else if (train.getIsDly().equals("1")&& train.getIsSch()) {
+//            holder.main_title.setWidth((int) (100 * scale + 0.5f));
+//            if (train.getIsSch()){
+//                holder.main_title.setWidth((int) (120 * scale + 0.5f));
+//                holder.subtitle.setTextColor(Color.parseColor("#FF0000"));
+//                holder.isSch.setTextColor(Color.parseColor("#FF0000"));
+//            }
+//        }
+//
+//        else if (train.getIsSch()) {
+//            holder.main_title.setWidth((int) (100 * scale + 0.5f));
+//            holder.subtitle.setTextColor(Color.parseColor("#3367D6"));
+//        }
+//
+//        holder.train_line_subtitle.setTextColor(Color.parseColor(getColor(train.getRt())));
+//
+//        holder.imageView.setImageResource(new Chicago_Transits().getTrainImage(train.getRt()));
 
     }
 
+    private String getColor(String train_line){
+        HashMap<String, String> TrainLineKeyCodes = new HashMap<>();
+        TrainLineKeyCodes.put("red","#F44336");
+        TrainLineKeyCodes.put("blue","#384cff");
+        TrainLineKeyCodes.put("brn", "#a34700");
+        TrainLineKeyCodes.put("g", "#0B8043");
+        TrainLineKeyCodes.put("org", "#ffad33");
+        TrainLineKeyCodes.put("y", "#b4ba0b");
+
+        TrainLineKeyCodes.put("pink","#ff66ed");
+        TrainLineKeyCodes.put("p","#673AB7");
+        return TrainLineKeyCodes.get(train_line.toLowerCase().trim());
+
+    }
+
+
     public static class ItemHolder extends RecyclerView.ViewHolder {
-        TextView main_title, subtitle, isSch, train_line_subtitle;
+        TextView main_title, train_eta, isSch, train_line;
         ImageView imageView;
         CardView item;
         public ItemHolder(@NonNull View itemView) {
             super(itemView);
-            train_line_subtitle = (TextView) itemView.findViewById(R.id.train_line_subtitle);
+            train_line = (TextView) itemView.findViewById(R.id.train_line_subtitle);
             isSch = (TextView) itemView.findViewById(R.id.isSch);
             item = (CardView) itemView.findViewById(R.id.list_item);
-            main_title = (TextView) itemView.findViewById(R.id.card_title);
-            subtitle = (TextView) itemView.findViewById(R.id.title_eta);
+            main_title = (TextView) itemView.findViewById(R.id.title_item);
+            train_eta = (TextView) itemView.findViewById(R.id.title_eta);
+            train_eta.setVisibility(View.VISIBLE);
+            train_line.setVisibility(View.VISIBLE);
+            isSch.setVisibility(View.VISIBLE);
             imageView = (ImageView) itemView.findViewById(R.id.train_image);
+
         }
     }
 

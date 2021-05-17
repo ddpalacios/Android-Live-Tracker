@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import com.example.cta_map.Activities.MainActivity;
+import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.Displayers.Train;
 import com.example.cta_map.R;
 
@@ -61,7 +62,7 @@ public class MainNotificationService extends Service {
                 .setContentIntent(onClick_notification_pendingIntent) // On tap response
                 .addAction(default_image, "Dismiss", dismiss_pendingIntent); // Always visible
         notificationBuilder.setSmallIcon(default_image);
-        notificationBuilder.setColor(getResources().getColor(getColor("green"))); // notification image color
+        notificationBuilder.setColor(getResources().getColor(getColor("red"))); // notification image color
         if (willUpdate){
             notificationBuilder.setOnlyAlertOnce(true);
         }
@@ -79,7 +80,7 @@ public class MainNotificationService extends Service {
             notificationBuilder.setSmallIcon(default_image);
             String train_status = (CURRENT_NOTIFICATION_TRAIN!= null && CURRENT_NOTIFICATION_TRAIN.getStatus() != null ? CURRENT_NOTIFICATION_TRAIN.getStatus() : "red");
             notificationBuilder.setSmallIcon(default_image);
-            notificationBuilder.setColor(getResources().getColor(getColor(train_status.toLowerCase().trim()))); // notification image color
+            notificationBuilder.setColor(getResources().getColor(new Chicago_Transits().getTrainColor(CURRENT_NOTIFICATION_TRAIN.getRt()))); // notification image color
 
 
         } else {

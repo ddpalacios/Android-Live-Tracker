@@ -21,6 +21,7 @@ import android.os.Build;
 import android.os.Bundle;
 
 import com.example.cta_map.Activities.Classes.Station;
+import com.example.cta_map.Activities.Classes.UserSettings;
 import com.example.cta_map.Backend.Threading.API_Caller_Thread;
 import com.example.cta_map.Backend.Threading.Content_Parser_Thread;
 import com.example.cta_map.Backend.Threading.MainNotificationService;
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     private String main_train_line;
     public  boolean destroyed = false;
     public  static int TIMEOUT = 2000;
-    public static String BACKGROUND_COLOR_STRING = "#F44336";
+    public static String BACKGROUND_COLOR_STRING = "#fffea8";
     public  boolean isActive;
     public static int check =0;
     Content_Parser_Thread content_parser;
@@ -134,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             IsSharingLocation = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
             CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
             ArrayList<Object> UserLocation = cta_dataBase.excecuteQuery("*", "USER_LOCATION", "HAS_LOCATION = '1'", null, null);
-            if (UserLocation!=null){
+             if (UserLocation!=null){
                 ToastMessage(getApplicationContext(), "Fully Sharing Location.");
             }else{
                 ToastMessage(getApplicationContext(), "Not Sharing Location.");
@@ -188,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         mainPlaceHolder_fragment = new MainPlaceHolder_Fragment();
         ft.replace(R.id.place_holder, mainPlaceHolder_fragment, "main_place_holder_frag");
         ft.commit();
-        initializeView();
+//        initializeView();
         Start();
     }
 
@@ -196,12 +197,27 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     private void Start() {
         IsSharingLocation = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
         CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
+        ArrayList<Object> sett = cta_dataBase.excecuteQuery("*", CTA_DataBase.USER_SETTINGS, null,null,null);
+        ArrayList<Object> loc = cta_dataBase.excecuteQuery("*", CTA_DataBase.USER_LOCATION, null,null,null);
         if (IsSharingLocation < 0 ){
+            if (sett!=null && loc!= null){
+                // always reset if not sharing location
+                cta_dataBase.update(CTA_DataBase.USER_SETTINGS, CTA_DataBase.IS_SHARING_LOC, "0", CTA_DataBase.IS_SHARING_LOC + " = '1'");
+                cta_dataBase.update(CTA_DataBase.USER_LOCATION, CTA_DataBase.HAS_LOCATION, "0", CTA_DataBase.HAS_LOCATION + " = '1'");
+                cta_dataBase.update(CTA_DataBase.USER_LOCATION, CTA_DataBase.USER_LAT, " ", CTA_DataBase.HAS_LOCATION + " = '1'");
+                cta_dataBase.update(CTA_DataBase.USER_LOCATION, CTA_DataBase.USER_LON, " ", CTA_DataBase.HAS_LOCATION + " = '1'");
+            }
             Toast.makeText(getApplicationContext(), "Location Permission NOT Granted.", Toast.LENGTH_SHORT).show();
         }else {
             Toast.makeText(getApplicationContext(), "Location Permission Granted.", Toast.LENGTH_SHORT).show();
             // if user settings is set to ON - update user location
-            updatetUserLocation();
+            if (sett!=null && loc!= null) {
+                UserSettings userSettings = (UserSettings) sett.get(0);
+                HashMap<String, String> user_loc = (HashMap<String, String>) loc.get(0);
+                if (userSettings.getIs_sharing_loc().equals("1") && user_loc.get(CTA_DataBase.HAS_LOCATION).equals("1")){
+                    updatetUserLocation();
+                }
+            }
         }
         cta_dataBase.close();
 

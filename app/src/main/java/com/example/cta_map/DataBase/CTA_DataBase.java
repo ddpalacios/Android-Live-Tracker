@@ -28,6 +28,8 @@ public class CTA_DataBase extends SQLiteOpenHelper {
     public static final String TRAIN_MAP_ID = "MAP_ID";
     public static final String TRAIN_DIR = "TRAIN_DIR";
     public static final String TRAIN_TYPE = "TRAIN_TYPE";
+    public static final String TRAIN_ETA = "TRAIN_ETA";
+
     public static final String TRAIN_NOTIFIED_BY_ALARM = "NOTIFIED_BY_ALARM";
 
     public static final String USER_SETTINGS_ID = "USER_SETTINGS_ID";
@@ -135,7 +137,7 @@ public class CTA_DataBase extends SQLiteOpenHelper {
 
 
     public CTA_DataBase(@Nullable Context context) {
-        super(context, "CTA_DATABASE", null, 85);
+        super(context, "CTA_DATABASE", null, 90);
         SQLiteDatabase db = this.getWritableDatabase();
         createTrainTrackingTable(db);
         createUserSettingsTable(db);
@@ -168,6 +170,7 @@ public class CTA_DataBase extends SQLiteOpenHelper {
                 + TRAIN_ID+ " TEXT PRIMARY KEY, "
                 + TRAIN_MAP_ID + " TEXT, "
                 + TRAIN_DIR + " TEXT, "
+                + TRAIN_ETA + " TEXT, "
                 + TRAIN_NOTIFIED_BY_ALARM + " INTEGER, "
                 + TRAIN_TYPE + " TEXT)";
         db.execSQL(tracker_table);
@@ -394,6 +397,7 @@ public class CTA_DataBase extends SQLiteOpenHelper {
         if (train!=null) {
             values.put(TRAIN_ID, train.getRn());
             values.put(TRAIN_MAP_ID, train.getTarget_id());
+            values.put(TRAIN_ETA, train.getTarget_eta());
             values.put(TRAIN_DIR, train.getTrDr());
             values.put(TRAIN_TYPE, train.getRt());
             values.put(TRAIN_NOTIFIED_BY_ALARM, train.getIsNotifiedByAlarm());

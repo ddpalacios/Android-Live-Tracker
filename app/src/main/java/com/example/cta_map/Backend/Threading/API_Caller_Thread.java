@@ -78,13 +78,14 @@ public class API_Caller_Thread implements Runnable {
                     msg.setMadeBroadcastSwitch(false);
                     msg.getT1().interrupt();
                 }
+
                 if (msg.getAlarmTriggered() != null && msg.getAlarmTriggered()){
                     // we need to set the nearest train if we are calling from an alarm
+                    Log.e("API", "ALARM TRIGGERED FROM API - Tracking: "+ default_nearest_train.getStaNm() + " "+ default_nearest_train.getRt()+" line.");
                     cta_dataBase.delete_all_records(CTA_DataBase.TRAIN_TRACKER);
                     cta_dataBase.commit(default_nearest_train, CTA_DataBase.TRAIN_TRACKER);
                     msg.setAlarmTriggered(false);
                     msg.getT1().interrupt();
-
                 }
 
                 msg.setIncoming_trains(new_incoming_trains);
@@ -180,6 +181,8 @@ public class API_Caller_Thread implements Runnable {
         Chicago_Transits chicago_transits = new Chicago_Transits();
         ArrayList<Train> all_incoming_trains = null;
         String train_rn;
+        CTA_DataBase cta_dataBase = new CTA_DataBase(context);
+        ArrayList<Object> tracking_record = cta_dataBase.excecuteQuery("*", CTA_DataBase.TRAIN_TRACKER, null, null, null);
         SimpleDateFormat dateFormat;
         String[] train_list = null;
         ArrayList<String> remaining_stops_url_list = new ArrayList<>();
@@ -217,8 +220,20 @@ public class API_Caller_Thread implements Runnable {
                                 diff = parsePredictedTime.getTime() - parsedArrivalTime.getTime();
                             }
                             long eta_in_minutes = diff / (60 * 1000) % 60;
-
                             train.setTarget_eta((int) eta_in_minutes);
+
+                            if (tracking_record!=null){
+                                HashMap<String, String> notification_train = (HashMap<String, String>) tracking_record.get(0);
+                                if (notification_train.get(CTA_DataBase.TRAIN_ID).equals(train.getRn())){
+                                    // Updating train eta of current notification train
+                                    cta_dataBase.update(CTA_DataBase.TRAIN_TRACKER, CTA_DataBase.TRAIN_ETA,
+                                            train.getTarget_eta()+"",
+                                            CTA_DataBase.TRAIN_ID +" = '"+train.getRn()+"'");
+                                }
+                            }
+
+
+
                         }
 
                         String[] remaining_stops = null;
@@ -244,9 +259,11 @@ public class API_Caller_Thread implements Runnable {
                                 }
                             }
                         }
+                        getUserInformation(train);
                         train.setSelected(false);
                         train.setNotified(false);
                         train.setRemaining_stops(remaining_stations);
+                        cta_dataBase.close();
                         all_incoming_trains.add(train);
                     }
                 }
@@ -258,6 +275,37 @@ public class API_Caller_Thread implements Runnable {
 
         }
         return proceess_new_trains(all_incoming_trains);
+    }
+
+    private void getUserInformation(Train train) {
+        Chicago_Transits chicago_transits=  new Chicago_Transits();
+        CTA_DataBase cta_dataBase= new CTA_DataBase(context);
+        ArrayList<Object> user_location_record = cta_dataBase.excecuteQuery("*", CTA_DataBase.USER_LOCATION, CTA_DataBase.HAS_LOCATION + " = '1'", null, null);
+        ArrayList<Object> station_record = cta_dataBase.excecuteQuery("*", CTA_DataBase.CTA_STOPS, CTA_DataBase.TRAIN_MAP_ID + " = '"+msg.getTARGET_MAP_ID()+"'", null,null);
+        if (user_location_record!=null) {
+            HashMap<String, String> user_location = (HashMap<String, String>) user_location_record.get(0);
+            if (!user_location.get(CTA_DataBase.USER_LAT).isEmpty() || !user_location.get(CTA_DataBase.USER_LON).isEmpty()) {
+                train.setSharingLoc(true);
+                Station target_station = (Station) station_record.get(0);
+                Double user_lat = Double.parseDouble(user_location.get(CTA_DataBase.USER_LAT));
+                Double user_lon = Double.parseDouble(user_location.get(CTA_DataBase.USER_LON));
+                Double target_lat = target_station.getLat();
+                Double target_lon = target_station.getLon();
+                Double user_to_target_distance = chicago_transits.calculate_coordinate_distance(user_lat, user_lon, target_lat, target_lon);
+                Time time = new Time();
+                int user_eta = time.get_estimated_time_arrival(3, user_to_target_distance);
+                train.setUser_lat(user_lat);
+                train.setUser_lon(user_lon);
+                train.setUser_to_target_distance(user_to_target_distance);
+                train.setUser_to_target_eta(user_eta);
+            }else{
+                train.setSharingLoc(false);
+            }
+        }else{
+            train.setSharingLoc(false);
+        }
+
+        cta_dataBase.close();
     }
 
     public void send_to_UI(String key, ArrayList<Train> trainArrayList) {

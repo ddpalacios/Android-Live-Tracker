@@ -51,7 +51,7 @@ public class NewAlarmSetUp extends AppCompatActivity {
     Menu menu;
     ArrayAdapter<String> adapter1;
     Alarm alarm;
-    Button main_save_btn;
+//    Button main_save_btn;
     TrainTimes_Adapter_frag trainTimes_adapter_frag;
 
 
@@ -59,7 +59,7 @@ public class NewAlarmSetUp extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.alarm_setup_popup_layout3);
+        setContentView(R.layout.alarm_setup_popup_layout2);
         mon = findViewById(R.id.monday);
         tues = findViewById(R.id.tuesday);
         wen = findViewById(R.id.wensday);
@@ -71,17 +71,17 @@ public class NewAlarmSetUp extends AppCompatActivity {
         TextView currentTime = findViewById(R.id.currentTime);
         bar = getSupportActionBar();
         bar.setDisplayHomeAsUpEnabled(true);
-        main_save_btn = findViewById(R.id.main_save_button);
+//        main_save_btn = findViewById(R.id.main_save_button);
 
         if (alarm != null && alarm.getAlarm_id() ==null){
             setTitle("New Alarm");
             buildView(alarm);
-            main_save_btn.setVisibility(View.GONE);
+//            main_save_btn.setVisibility(View.GONE);
 
         } else if (alarm != null && alarm.getAlarm_id() !=null){
             bar.setTitle(alarm.getStationName());
             buildView(alarm);
-            main_save_btn.setVisibility(View.VISIBLE);
+//            main_save_btn.setVisibility(View.VISIBLE);
 
         } else{
             // sets our text view
@@ -94,7 +94,7 @@ public class NewAlarmSetUp extends AppCompatActivity {
             String time_format = getTimeFormat(hour, min); // Formats our current time
             currentTime.setText(time_format);
             bar.setBackgroundDrawable(new ColorDrawable(new Chicago_Transits().GetBackgroundColor("Blue",getApplicationContext())));
-            main_save_btn.setVisibility(View.GONE);
+//            main_save_btn.setVisibility(View.GONE);
 
         }
         initializeView(); // Sets up out intractable views
@@ -237,33 +237,33 @@ public class NewAlarmSetUp extends AppCompatActivity {
                 addDay("sat", alarm,true);
             }
         });
-
-
-        main_save_btn.setOnClickListener(v -> {
-            cta_dataBase.update("ALARMS", "HOUR", alarm.getHour(), "ALARM_ID = '" + alarm.getAlarm_id() + "'");
-            cta_dataBase.update("ALARMS", "MIN", alarm.getMin(), "ALARM_ID = '" + alarm.getAlarm_id() + "'");
-            cta_dataBase.update("ALARMS", "TIME", alarm.getTime(), "ALARM_ID = '" + alarm.getAlarm_id() + "'");
-            cta_dataBase.update("ALARMS", "MAP_ID", alarm.getMap_id(), "ALARM_ID = '" + alarm.getAlarm_id() + "'");
-            cta_dataBase.update("ALARMS", CTA_DataBase.WILL_REPEAT, alarm.getIsRepeating()+"", "ALARM_ID = '" + alarm.getAlarm_id() + "'");
-            cta_dataBase.update("ALARMS", CTA_DataBase.WEEK_LABEL, getWeeklyLabel(alarm)+"", "ALARM_ID = '" + alarm.getAlarm_id() + "'");
-            if (willRepeat.isChecked()){
-                Chicago_Transits chicago_transits = new Chicago_Transits();
-                String[] days = alarm.getWeekLabel().split(",");
-                int count = 0;
-                for (String day_of_week : days){
-                    count+=1;
-                    Integer day_to_int = chicago_transits.getDayOfWeekNum(day_of_week);
-                    if(day_to_int!=null) {
-                        chicago_transits.scheduleAlarm(getApplicationContext(), day_to_int, alarm, alarm.getAlarm_id() + count, alarm.getAlarm_id());
-                    }
-                }
-            }
-            Intent intent1 = new Intent(NewAlarmSetUp.this, MainActivity.class);
-            startActivity(intent1);
-
-
-
-        });
+//
+//
+//        main_save_btn.setOnClickListener(v -> {
+//            cta_dataBase.update("ALARMS", "HOUR", alarm.getHour(), "ALARM_ID = '" + alarm.getAlarm_id() + "'");
+//            cta_dataBase.update("ALARMS", "MIN", alarm.getMin(), "ALARM_ID = '" + alarm.getAlarm_id() + "'");
+//            cta_dataBase.update("ALARMS", "TIME", alarm.getTime(), "ALARM_ID = '" + alarm.getAlarm_id() + "'");
+//            cta_dataBase.update("ALARMS", "MAP_ID", alarm.getMap_id(), "ALARM_ID = '" + alarm.getAlarm_id() + "'");
+//            cta_dataBase.update("ALARMS", CTA_DataBase.WILL_REPEAT, alarm.getIsRepeating()+"", "ALARM_ID = '" + alarm.getAlarm_id() + "'");
+//            cta_dataBase.update("ALARMS", CTA_DataBase.WEEK_LABEL, getWeeklyLabel(alarm)+"", "ALARM_ID = '" + alarm.getAlarm_id() + "'");
+//            if (willRepeat.isChecked()){
+//                Chicago_Transits chicago_transits = new Chicago_Transits();
+//                String[] days = alarm.getWeekLabel().split(",");
+//                int count = 0;
+//                for (String day_of_week : days){
+//                    count+=1;
+//                    Integer day_to_int = chicago_transits.getDayOfWeekNum(day_of_week);
+//                    if(day_to_int!=null) {
+//                        chicago_transits.scheduleAlarm(getApplicationContext(), day_to_int, alarm, alarm.getAlarm_id() + count, alarm.getAlarm_id());
+//                    }
+//                }
+//            }
+//            Intent intent1 = new Intent(NewAlarmSetUp.this, MainActivity.class);
+//            startActivity(intent1);
+//
+//
+//
+//        });
 
 
     }

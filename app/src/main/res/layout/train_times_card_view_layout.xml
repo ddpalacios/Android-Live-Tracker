@@ -28,6 +28,7 @@
 
             <TextView
                 android:id="@+id/card_title"
+                android:text="text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -59,6 +60,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="4dp"
+                android:text="text"
                 android:layout_marginRight="4dp"
                 android:ellipsize="end"
                 android:lines="1"
@@ -80,6 +82,7 @@
                 android:textColor="@color/blue_700"
                 android:textSize="15sp"
                 android:textStyle="bold"
+                android:text="text"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.698"
@@ -94,6 +97,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:textSize="15sp"
+                android:text="text"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/train_image"
                 app:layout_constraintTop_toBottomOf="@+id/card_title"

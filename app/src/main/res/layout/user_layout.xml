@@ -57,17 +57,17 @@
 
         />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/AddStationFloatingButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
+<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--        android:id="@+id/AddStationFloatingButton"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="bottom|right"-->
 
-        android:backgroundTint="@color/blue_700"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="10dp"
-        android:clickable="true"
-        app:srcCompat="@android:drawable/ic_input_add" />
+<!--        android:backgroundTint="@color/blue_700"-->
+<!--        android:layout_marginRight="10dp"-->
+<!--        android:layout_marginBottom="10dp"-->
+<!--        android:clickable="true"-->
+<!--        app:srcCompat="@android:drawable/ic_input_add" />-->
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.SearchView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -45,7 +46,9 @@ public class ChooseStationActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         Chicago_Transits chicago_transits = new Chicago_Transits();
 
-        setContentView(R.layout.activity_choose_station);
+        setContentView(R.layout.activity_choose_line);
+        TextView page_title = findViewById(R.id.title);
+        page_title.setText("Choose A Stop");
         RecyclerView recyclerView = findViewById(R.id.list_of_train_lines);
         Bundle bundle = getIntent().getExtras();
         tracking_station = (HashMap<String, String>) bundle.getSerializable("tracking_station");
@@ -109,7 +112,7 @@ public class ChooseStationActivity extends AppCompatActivity {
                 ListItem listItem = new ListItem();
                Station station = (Station) sta;
                 listItem.setImage(chicago_transits.getTrainImage(tracking_station.get("train_line")));
-                listItem.setTitle(station.getStop_name());
+                listItem.setTitle(station.getStation_name());
                 listItem.setTrain_dir_label(station.getDirection_id());
                 listItem.setMapID(station.getMap_id());
                 StationList.add(listItem);

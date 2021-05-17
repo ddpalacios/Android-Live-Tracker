@@ -12,15 +12,10 @@ import com.example.cta_map.Displayers.Chicago_Transits;
 public class StopServices   extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-            Message message = API_Caller_Thread.msg;
-
+            Message message = (MainActivity.message!=null ? MainActivity.message : API_Caller_Thread.msg);
             Chicago_Transits chicago_transits = new Chicago_Transits();
             chicago_transits.reset(message.getOld_trains(), message);
-            message.getT1().interrupt();
             chicago_transits.StopThreads(message, context); // stops current threads
-            if (chicago_transits.isMyServiceRunning(context,new MainNotificationService().getClass())){
-                chicago_transits.stopService(context);
-            }
 
             if (!MainActivity.message.getDestoryed()){ // If main activity has been started...
                 message = MainActivity.message;
@@ -30,8 +25,6 @@ public class StopServices   extends BroadcastReceiver {
                 CTA_DataBase cta_dataBase = new CTA_DataBase(context);
                 cta_dataBase.delete_all_records(CTA_DataBase.TRAIN_TRACKER);
                 cta_dataBase.close();
-                chicago_transits.reset(message.getOld_trains(), message);
-                message.getT1().interrupt();
                 chicago_transits.callThreads(context, message.getHandler() ,message, dir, type, map_id, false);
             }else{
                 CTA_DataBase cta_dataBase = new CTA_DataBase(context);

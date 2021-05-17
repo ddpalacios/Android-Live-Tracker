@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -48,6 +49,10 @@ public class TrainStationAdapter extends RecyclerView.Adapter<TrainStationAdapte
     @Override
     public void onBindViewHolder(@NonNull TrainStationAdapter.ItemHolder holder, int position) {
         final ListItem listItem = this.contactsList.get(position);
+//        final float scale =this.context.getResources().getDisplayMetrics().density;
+//        int pixels = (int) (150 * scale + 0.5f);
+//        holder.t1.setWidth(pixels);
+
         holder.t1.setText(listItem.getTitle());
         holder.imageView.setImageResource(listItem.getImage());
         holder.item.setOnClickListener(v -> {

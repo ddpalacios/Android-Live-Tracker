@@ -3,6 +3,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -31,9 +32,11 @@ public class ChooseTrainDirectionActivity extends AppCompatActivity {
 
         HashMap<String, String> tracking_station = (HashMap<String, String>) bundle.getSerializable("tracking_station");
 
-        setContentView(R.layout.activity_choose_direction);
+        setContentView(R.layout.activity_choose_line);
         RecyclerView recyclerView = findViewById(R.id.list_of_train_lines);
         ArrayList<ListItem> arrayList = new ArrayList<>();
+        TextView page_title = findViewById(R.id.title);
+        page_title.setText("Choose A Direction");
 
         String train_line = tracking_station.get("train_line");
         CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());

@@ -53,7 +53,7 @@ public class UserSettings_Form extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.user_settings);
+        setContentView(R.layout.user_settings_2);
         setTitle("Settings");
         ActionBar bar = getSupportActionBar();
         bar.setDisplayHomeAsUpEnabled(true);

@@ -350,7 +350,7 @@ public class Message implements Serializable {
         ScheduledYellowNotified = scheduledYellowNotified;
     }
 
-    public boolean isScheduledRedNotified() {
+    public boolean isScheduledNotified() {
         return ScheduledRedNotified;
     }
 
@@ -359,6 +359,26 @@ public class Message implements Serializable {
     }
 
     private boolean ScheduledRedNotified;
+
+    public boolean isDelayedNotified() {
+        return isDelayedNotified;
+    }
+
+    public void setDelayedNotified(boolean delayedNotified) {
+        isDelayedNotified = delayedNotified;
+    }
+
+    public void setScheduledNotified(boolean scheduledNotified) {
+        isScheduledNotified = scheduledNotified;
+    }
+
+    public boolean getScheduledNotified() {
+        return isScheduledNotified;
+    }
+
+    private  boolean isDelayedNotified, isScheduledNotified;
+
+
     public void setOld_trains(ArrayList<Train> old_trains) {
         this.old_trains = old_trains;
     }

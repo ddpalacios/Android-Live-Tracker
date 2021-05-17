@@ -1,5 +1,6 @@
 package com.example.cta_map.Activities;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
@@ -44,7 +45,7 @@ public class MapView_Adapter_frag extends RecyclerView.Adapter<MapView_Adapter_f
     @Override
     public MapView_Adapter_frag.ItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.map_card_view_layout, parent, false);
+        View view = inflater.inflate(R.layout.tracking_station_card_view, parent, false);
 
         return new ItemHolder(view);
     }
@@ -56,18 +57,18 @@ public class MapView_Adapter_frag extends RecyclerView.Adapter<MapView_Adapter_f
             Chicago_Transits chicago_transits = new Chicago_Transits();
 
         Train train = this.current_incoming_trains.get(position); // We are plotting all trains in list with iteration
-        holder.item.setCardBackgroundColor(Color.parseColor("#FFFFFF")); //Each time fragment gets 'refreshed', we are resetting background color to white
+        holder.cardViewitem.setCardBackgroundColor(Color.parseColor("#FFFFFF")); //Each time fragment gets 'refreshed', we are resetting background color to white
         createTrainCard(holder, train); // Creates our main title, image, and subtitle
 
         // if one of our trains is being notified - change the background color
         if (train.getIsNotified()){
-            holder.item.setCardBackgroundColor(Color.parseColor("#F44336"));
+            holder.cardViewitem.setCardBackgroundColor(Color.parseColor(MainActivity.BACKGROUND_COLOR_STRING));
         }
 
-        holder.item.setOnLongClickListener(v -> {
+        holder.cardViewitem.setOnLongClickListener(v -> {
             if (!train.getIsNotified()){ // if this train is not currently being notified - notify it!
                 chicago_transits.reset(this.current_incoming_trains,message); // Resets all trains + its notifications handler
-                holder.item.setCardBackgroundColor(Color.parseColor(MainActivity.BACKGROUND_COLOR_STRING));
+                holder.cardViewitem.setCardBackgroundColor(Color.parseColor(MainActivity.BACKGROUND_COLOR_STRING));
                 // Setting selected train for notifications
                 train.setSelected(true);
                 train.setNotified(true);
@@ -110,7 +111,10 @@ public class MapView_Adapter_frag extends RecyclerView.Adapter<MapView_Adapter_f
 
         });
 
-        holder.item.setOnClickListener(v -> {
+        holder.cardViewitem.setOnClickListener(v -> {
+            if (train== null || train.getLat() ==null || train.getLon() == null){
+                return;
+            }
             if (train.getIsApp().equals("1")){
                 chicago_transits.ZoomIn(mMap, 20f, train.getLat(), train.getLon());
             }
@@ -139,14 +143,70 @@ public class MapView_Adapter_frag extends RecyclerView.Adapter<MapView_Adapter_f
 
     }
 
+    @SuppressLint("SetTextI18n")
     private void createTrainCard(ItemHolder holder, Train train) {
         Chicago_Transits chicago_transits = new Chicago_Transits();
+        final float scale = context.getResources().getDisplayMetrics().density;
+        holder.main_title.setText("To "+ train.getDestNm()); // Set its main title
+        holder.train_line.setText((train.getRt() !=null ? chicago_transits.train_line_code_to_regular(train.getRt()) +" line" : "N/A"));
+        holder.train_line.setTextColor(Color.parseColor(getColor(train.getRt())));
         holder.imageView.setImageResource(chicago_transits.getTrainImage(train.getRt()));
-        holder.main_title.setText("To "+ train.getDestNm());
-        holder.subtitle.setText("Status: "+(train.getStatus()!=null ? train.getStatus() : "N/A"));
-        holder.line.setText(train.getRt()+" Line");
-        holder.train_eta.setText(train.getTarget_eta()+"m");
+        holder.isSch.setTextSize((int) (7 * scale + 0.5f));
+        holder.train_eta.setTextSize(7 * scale + 0.5f);
+
+
+        if (train.getIsSch()){ // if its scheduled and delayed
+            holder.main_title.setWidth((int) (100 * scale + 0.5f));
+            if (train.getIsDly().equals("1")) {
+                holder.isSch.setText("Delayed");
+                holder.train_eta.setTextColor(Color.parseColor("#FF0000"));
+
+            }else{
+                holder.isSch.setText("Scheduled");
+                holder.train_eta.setTextColor(Color.parseColor("#3367D6"));
+
+            }
+        }
+        else if (train.getIsDly().equals("1")){ // if its just delayed
+            holder.main_title.setWidth((int) (100 * scale + 0.5f));
+            holder.isSch.setText("Delayed");
+            holder.train_eta.setTextColor(Color.parseColor("#FF0000"));
+        }
+        else{
+            holder.isSch.setVisibility(View.INVISIBLE); // if neither, make invisible
+        }
+
+        if (train.getIsApp().equals("1")){
+            holder.train_eta.setText("Due");
+        }else{
+            holder.train_eta.setText(train.getTarget_eta() +"m");
+        }
+
+
+
+
+
+
+
+
+
         holder.status_image.setImageResource(chicago_transits.getStatusColor(train.getStatus()));
+        holder.status_label.setText(chicago_transits.getStatusMessage(train.getStatus()));
+
+        if (train.getStatus() == null){
+            holder.status_label.setText("");
+            holder.status_image.setVisibility(View.INVISIBLE);
+
+        }else{
+            holder.status_image.setVisibility(View.VISIBLE);
+            holder.status_label.setTextColor(Color.parseColor(getColor(chicago_transits.TrainLineKeys(train.getStatus()))));
+        }
+
+
+         if (train.getIsDly().equals("1") || train.getIsApp().equals("1")) {
+            holder.isSch.setTextColor(Color.parseColor("#FF0000"));
+        }
+
     }
 
 
@@ -155,18 +215,26 @@ public class MapView_Adapter_frag extends RecyclerView.Adapter<MapView_Adapter_f
         return this.current_incoming_trains.size();
     }
     public static class ItemHolder extends RecyclerView.ViewHolder {
-        TextView main_title, subtitle, line, train_eta;
+        TextView main_title, isSch, train_line, train_eta, status_label;
         ImageView imageView, status_image;
-        CardView item;
+        CardView cardViewitem;
         public ItemHolder(@NonNull View itemView) {
             super(itemView);
-            train_eta = (TextView) itemView.findViewById(R.id.train_eta);
-            item = (CardView) itemView.findViewById(R.id.list_item);
-            line = (TextView) itemView.findViewById(R.id.final_destination);
-            main_title = (TextView) itemView.findViewById(R.id.card_title);
-            subtitle = (TextView) itemView.findViewById(R.id.status);
             imageView = (ImageView) itemView.findViewById(R.id.train_image);
-            status_image = (ImageView) itemView.findViewById(R.id.status_image);
+            main_title = (TextView) itemView.findViewById(R.id.title_item);
+            train_line = (TextView) itemView.findViewById(R.id.train_line_subtitle);
+            train_eta = (TextView) itemView.findViewById(R.id.title_eta);
+            status_image = (ImageView) itemView.findViewById(R.id.StatusImage);
+            status_label = (TextView) itemView.findViewById(R.id.status_label);
+            isSch = (TextView) itemView.findViewById(R.id.isSch);
+
+            train_line.setVisibility(View.VISIBLE);
+            train_eta.setVisibility(View.VISIBLE);
+            status_image.setVisibility(View.VISIBLE);
+            status_label.setVisibility(View.VISIBLE);
+            isSch.setVisibility(View.VISIBLE);
+
+            cardViewitem = (CardView) itemView.findViewById(R.id.list_item);
 
         }
     }
@@ -185,6 +253,22 @@ public class MapView_Adapter_frag extends RecyclerView.Adapter<MapView_Adapter_f
         for (Train train1 : this.message.getOld_trains()){
             chicago_transits.plot_marker(context,this.message,mMap, train1, null);
         }
+    }
+
+
+    private String getColor(String train_line){
+        HashMap<String, String> TrainLineKeyCodes = new HashMap<>();
+        TrainLineKeyCodes.put("red","#F44336");
+        TrainLineKeyCodes.put("blue","#384cff");
+        TrainLineKeyCodes.put("brn", "#a34700");
+        TrainLineKeyCodes.put("g", "#0B8043");
+        TrainLineKeyCodes.put("org", "#ffad33");
+        TrainLineKeyCodes.put("y", "#b4ba0b");
+
+        TrainLineKeyCodes.put("pink","#ff66ed");
+        TrainLineKeyCodes.put("p","#673AB7");
+        return TrainLineKeyCodes.get(train_line.toLowerCase().trim());
+
     }
 
 

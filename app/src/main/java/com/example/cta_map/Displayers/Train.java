@@ -45,6 +45,26 @@ public class Train implements  Serializable {
 
     private Boolean isSch;
 
+    public Boolean getSharingLoc() {
+        return isSharingLoc;
+    }
+
+    public void setSharingLoc(Boolean sharingLoc) {
+        isSharingLoc = sharingLoc;
+    }
+
+    private Boolean isSharingLoc;
+
+    public Integer getUser_to_target_eta() {
+        return user_to_target_eta;
+    }
+
+    public void setUser_to_target_eta(Integer user_to_target_eta) {
+        this.user_to_target_eta = user_to_target_eta;
+    }
+
+    private Integer user_to_target_eta;
+
     public void setIsNotifiedByAlarm(int isNotifiedByAlarm) {
         this.isNotifiedByAlarm = isNotifiedByAlarm;
     }

@@ -2,6 +2,8 @@ package com.example.cta_map.Activities;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,6 +27,8 @@ public class ChooseTrainLineActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         setTitle("Add New Route");
         setContentView(R.layout.activity_choose_line);
+        TextView page_title = findViewById(R.id.title);
+        page_title.setText("Choose A Route");
         RecyclerView recyclerView = findViewById(R.id.list_of_train_lines);
         ArrayList<ListItem> arrayList = new ArrayList<>();
         int[] images = {

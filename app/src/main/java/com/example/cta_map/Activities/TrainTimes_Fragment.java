@@ -70,7 +70,6 @@ public class TrainTimes_Fragment extends Fragment {
             MainActivity.bar.setTitle("Switching Directions...");
             message.getT1().interrupt();
             String dir = message.getDir();
-
             message.setGreenNotified(false);
             message.setYellowNotified(false);
             message.setRedNotified(false);
@@ -83,12 +82,9 @@ public class TrainTimes_Fragment extends Fragment {
                     message.setDir("1");
                 }
             }
-            message.getT1().interrupt();
-
 
 
         });
-
 
         if (current_incoming_trains!=null) {
             trainTimes_adapter_frag = new TrainTimes_Adapter_frag(context,message,current_incoming_trains, null,recyclerView, null);

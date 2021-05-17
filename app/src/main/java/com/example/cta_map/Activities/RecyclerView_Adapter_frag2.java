@@ -60,7 +60,7 @@ public class RecyclerView_Adapter_frag2 extends RecyclerView.Adapter<RecyclerVie
     public ItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view;
-            view = inflater.inflate(R.layout.all_fav_stations_card_layout, parent, false);
+            view = inflater.inflate(R.layout.tracking_station_card_view, parent, false);
 
         return new ItemHolder(view);
     }
@@ -70,8 +70,16 @@ public class RecyclerView_Adapter_frag2 extends RecyclerView.Adapter<RecyclerVie
         handler =  (Handler) threadHashMap.get("handler");
         message = (Message) threadHashMap.get("message");
         api_caller = (API_Caller_Thread) threadHashMap.get("api_caller");
-
         selected_station= this.StationList.get(position);
+        final float scale = Maincontext.getResources().getDisplayMetrics().density;
+        int pixels = (int) (8 * scale + 0.5f);
+        holder.direction_id.setTextSize(pixels);
+
+        final float scale1 = Maincontext.getResources().getDisplayMetrics().density;
+        int pixels1 = (int) (250 * scale + 0.5f);
+        holder.t1.setWidth(pixels1);
+
+        holder.direction_id.setText(selected_station.getDirection_id());
         holder.t1.setText(selected_station.getTitle());
         holder.imageView.setImageResource(selected_station.getImage());
         holder.list_item.setOnLongClickListener(v -> {
@@ -167,13 +175,15 @@ public class RecyclerView_Adapter_frag2 extends RecyclerView.Adapter<RecyclerVie
 
 
     public static class ItemHolder extends RecyclerView.ViewHolder {
-        TextView t1;
+        TextView t1, direction_id;
         ImageView imageView;
         CardView list_item;
         public ItemHolder(@NonNull View itemView) {
             super(itemView);
+            direction_id = (TextView) itemView.findViewById(R.id.title_eta);
+            direction_id.setVisibility(View.VISIBLE);
             list_item = (CardView) itemView.findViewById(R.id.list_item);
-            t1 = (TextView) itemView.findViewById(R.id.card_title);
+            t1 = (TextView) itemView.findViewById(R.id.title_item);
             imageView = (ImageView) itemView.findViewById(R.id.train_image);
         }
     }

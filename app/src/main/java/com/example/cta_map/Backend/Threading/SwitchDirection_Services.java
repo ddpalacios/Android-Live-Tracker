@@ -13,30 +13,18 @@ import com.example.cta_map.Displayers.Chicago_Transits;
 public class SwitchDirection_Services extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        Message message;
+        Message message = (MainActivity.message !=null ? MainActivity.message : API_Caller_Thread.msg);
         Chicago_Transits chicago_transits = new Chicago_Transits();
 
-        if (!MainActivity.message.getDestoryed()) { // If main activity has been started...
-            message = MainActivity.message;
-            Excecuteswitch(message);
-            message.setMadeBroadcastSwitch(true);
 
-        }else{
-            message = API_Caller_Thread.msg;
-            Excecuteswitch(message);
-            message.setMadeBroadcastSwitch(true);
-
-        }
         if (message.getT1().isAlive()) { // This is the case when we have the main activity previously declared
             chicago_transits.StopThreads(message, context);
-            message.getT1().interrupt();
-
-            chicago_transits.callThreads(context, message.getHandler(), message,message.getDir(), message.getTarget_type(), message.getTarget_station().getMap_id(), true);
+            Excecuteswitch(message);
+            chicago_transits.callThreads(context, message.getHandler(), message,message.getDir(), message.getTarget_type(), message.getTarget_station().getMap_id(), false);
         }else{
-            message.getT1().interrupt();
-
             // if the app has not been started
-            chicago_transits.callThreads(context, message.getHandler(), message,message.getDir(), message.getTarget_type(), message.getTarget_station().getMap_id(), true);
+            Excecuteswitch(message);
+            chicago_transits.callThreads(context, message.getHandler(), message,message.getDir(), message.getTarget_type(), message.getTarget_station().getMap_id(), false);
 
         }
 
@@ -52,6 +40,7 @@ public class SwitchDirection_Services extends BroadcastReceiver {
         message.setYellowNotified(false);
         message.setRedNotified(false);
         message.setApproachingNotified(false);
+        message.setDoneNotified(false);
         if (dir !=null) {
             if (dir.equals("1")) {
                 message.setDir("5");
@@ -59,6 +48,7 @@ public class SwitchDirection_Services extends BroadcastReceiver {
                 message.setDir("1");
             }
         }
+        message.setMadeBroadcastSwitch(true);
         Log.e("Service", "Direction changed to "+ message.getDir());
 
     }
