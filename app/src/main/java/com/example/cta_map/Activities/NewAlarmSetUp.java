@@ -1,5 +1,10 @@
 package com.example.cta_map.Activities;
+import android.app.AlarmManager;
+import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,25 +17,34 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cta_map.Activities.Classes.Alarm;
 import com.example.cta_map.Activities.Classes.Station;
+import com.example.cta_map.Backend.Threading.MyBroadCastReciever;
 import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.R;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -38,6 +52,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class NewAlarmSetUp extends AppCompatActivity {
@@ -48,18 +63,25 @@ public class NewAlarmSetUp extends AppCompatActivity {
     RecyclerView recyclerView;
     Spinner main_dest_spinner;
     String main_train_line;
+    CheckBox isrepeating;
     Menu menu;
+    public static HashMap<String, String> tracking_station;
     ArrayAdapter<String> adapter1;
-    Alarm alarm;
+    public static Alarm alarm;
 //    Button main_save_btn;
     TrainTimes_Adapter_frag trainTimes_adapter_frag;
+    Boolean isNew = true;
 
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.alarm_setup_popup_layout2);
+        alarm = (Alarm) getIntent().getSerializableExtra("alarm");
+        setContentView(R.layout.alarm_setup_popup_layout3);
+        isrepeating = findViewById(R.id.willRepeat);
+        bar = getSupportActionBar();
+        TextView dest_name = findViewById(R.id.dest_name);
+        bar.setDisplayHomeAsUpEnabled(true);
         mon = findViewById(R.id.monday);
         tues = findViewById(R.id.tuesday);
         wen = findViewById(R.id.wensday);
@@ -67,45 +89,432 @@ public class NewAlarmSetUp extends AppCompatActivity {
         fri = findViewById(R.id.friday);
         sat = findViewById(R.id.saterday);
         sun = findViewById(R.id.sunday);
-        alarm = (Alarm) getIntent().getSerializableExtra("alarm");
+        tracking_station = (HashMap<String, String>) getIntent().getSerializableExtra("tracking_station");
+        LocalDateTime now = LocalDateTime.now();
         TextView currentTime = findViewById(R.id.currentTime);
-        bar = getSupportActionBar();
-        bar.setDisplayHomeAsUpEnabled(true);
-//        main_save_btn = findViewById(R.id.main_save_button);
+        Calendar rightNow = Calendar.getInstance();
+        Intent intent = new Intent(NewAlarmSetUp.this, Timer.class);
+        intent.putExtra("alarm", alarm);
+        TextView changeTimeText = findViewById(R.id.changeTimeText); // Alarm set up
+        changeTimeText.setOnClickListener(v -> startActivity(intent));
+        currentTime.setOnClickListener(v -> startActivity(intent));
+        String time_format;
 
-        if (alarm != null && alarm.getAlarm_id() ==null){
-            setTitle("New Alarm");
-            buildView(alarm);
-//            main_save_btn.setVisibility(View.GONE);
 
-        } else if (alarm != null && alarm.getAlarm_id() !=null){
-            bar.setTitle(alarm.getStationName());
-            buildView(alarm);
-//            main_save_btn.setVisibility(View.VISIBLE);
+        ActionBar bar = getSupportActionBar();
+        assert bar != null;
+        Chicago_Transits chicago_transits = new Chicago_Transits();
 
-        } else{
-            // sets our text view
-            setTitle("New Alarm");
+        if (alarm == null){
+            setTitle("Finish New Alarm");
+
+            int hour, min;
             alarm = new Alarm();
-            alarm.setWeek_label_list(new ArrayList<>());
-            Calendar rightNow = Calendar.getInstance();
-            int hour = rightNow.get(Calendar.HOUR_OF_DAY);
-            int min = rightNow.get(Calendar.MINUTE);
-            String time_format = getTimeFormat(hour, min); // Formats our current time
+            alarm.setIsOn("1");
+            alarm.setIsRepeating(1);
+            dest_name.setText("To "+tracking_station.get("main_station_name"));
+            alarm.setMap_id(tracking_station.get("target_map_id"));
+            alarm.setStation_name(tracking_station.get("target_station_name"));
+            alarm.setStationType(tracking_station.get("train_line"));
+            alarm.setDirection(tracking_station.get("train_dir"));
+            bar.setBackgroundDrawable(new ColorDrawable(chicago_transits.GetBackgroundColor(tracking_station.get("train_line"), getApplicationContext())));
+            hour = rightNow.get(Calendar.HOUR_OF_DAY);
+            min = rightNow.get(Calendar.MINUTE);
+            time_format = getTimeFormat(hour, min); // Formats our current time
             currentTime.setText(time_format);
-            bar.setBackgroundDrawable(new ColorDrawable(new Chicago_Transits().GetBackgroundColor("Blue",getApplicationContext())));
-//            main_save_btn.setVisibility(View.GONE);
+            alarm.setHour(hour+"");
+            alarm.setMin(min+"");
+            alarm.setTime(time_format);
+            alarm.setWeek_label_list(new ArrayList<Integer>());
+        }else{
+            setTitle("Edit Alarm");
+            dest_name.setText("");
+            bar.setBackgroundDrawable(new ColorDrawable(chicago_transits.GetBackgroundColor(alarm.getStationType(), getApplicationContext())));
+
+            currentTime.setText(alarm.getTime());
+            alarm.setWeek_label_list(new ArrayList<Integer>());
 
         }
-        initializeView(); // Sets up out intractable views
-        CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
-        ArrayList<Object> record = cta_dataBase.excecuteQuery("*", CTA_DataBase.CTA_STOPS, "BLUE = '1'",null,null);
-        ArrayList<Station> non_duplicated_station_list = new Chicago_Transits().removeDuplicates(record);
-        trainTimes_adapter_frag = new TrainTimes_Adapter_frag(getApplicationContext(),null,null, non_duplicated_station_list,recyclerView, alarm);
-        recyclerView.setAdapter(trainTimes_adapter_frag);
-        cta_dataBase.close();
+        if (alarm.getIsRepeating()==1){
+            isrepeating.setChecked(true);
+        }else{
+            isrepeating.setChecked(false);
+        }
+
+
+
+
+        int day = getDayNumberNew(now);
+        if (alarm.getAlarm_id() == null) {
+            if (day == 1) {
+                mon.setChecked(true);
+                addDay("mon", alarm, false);
+
+
+            } else if (day == 2) {
+                tues.setChecked(true);
+                addDay("tue", alarm, false);
+
+
+            } else if (day == 3) {
+                wen.setChecked(true);
+                addDay("wen", alarm, false);
+
+            } else if (day == 4) {
+                thur.setChecked(true);
+                addDay("thu", alarm, false);
+
+            } else if (day == 5) {
+                fri.setChecked(true);
+                addDay("fri", alarm, false);
+
+            } else if (day == 6) {
+                sat.setChecked(true);
+                addDay("sat", alarm, false);
+
+
+            } else if (day == 7) {
+                sun.setChecked(true);
+                addDay("sun", alarm, false);
+
+
+            }
+        }
+        PopulateCardBuilder(tracking_station, alarm.getTime());
+
+
 
     }
+
+
+
+
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void PopulateCardBuilder(HashMap<String, String> tracking_station, String time ) {
+
+
+        TextView main_title, train_eta, isSch, train_line, status_label;
+        ImageView imageView;
+        Switch alarm_switch;
+        CardView item;
+        Chicago_Transits chicago_transits = new Chicago_Transits();
+        final float scale = getResources().getDisplayMetrics().density;
+        train_line = (TextView) findViewById(R.id.train_line_subtitle);
+        isSch = (TextView) findViewById(R.id.isSch);
+        status_label = (TextView) findViewById(R.id.status_label);
+        alarm_switch = (Switch) findViewById(R.id.switch1);
+
+
+        item = (CardView) findViewById(R.id.list_item);
+        main_title = (TextView) findViewById(R.id.title_item);
+        imageView = (ImageView) findViewById(R.id.train_image);
+        main_title.setWidth((int) (100 * scale + 0.5f));
+        if (tracking_station!= null){
+            main_title.setText(tracking_station.get("target_station_name")); // Set its main title
+            train_line.setText(tracking_station.get("train_line") + " line");
+            imageView.setImageResource(chicago_transits.getTrainImage(tracking_station.get("train_line")));
+            train_line.setTextColor(Color.parseColor(getColor(tracking_station.get("train_line"))));
+            isSch.setTextColor(Color.parseColor(getColor(tracking_station.get("train_line"))));
+        }else{
+            main_title.setText(alarm.getStationName()); // Set its main title
+            train_line.setText(alarm.getStationType() + " line");
+            imageView.setImageResource(chicago_transits.getTrainImage(alarm.getStationType()));
+            train_line.setTextColor(Color.parseColor(getColor(alarm.getStationType())));
+            isSch.setTextColor(Color.parseColor(getColor(alarm.getStationType())));
+        }
+        isSch.setText(time);
+
+
+        if (alarm.getIsOn().equals("1")){
+            alarm_switch.setChecked(true);
+            alarm_switch.setText("On");
+
+
+
+        }else{
+            alarm_switch.setChecked(false);
+            alarm_switch.setText("Off");
+
+        }
+
+
+        if (alarm.getWeekLabel() != null){
+            String[] week = alarm.getWeekLabel().split(",");
+            for (String day : week){
+                day = day.toLowerCase().trim();
+                if (day.equals("mon")){
+                    alarm.getWeek_label_list().add(1);
+                    mon.setChecked(true);
+                }else if (day.equals("tue")){
+                    alarm.getWeek_label_list().add(2);
+                    tues.setChecked(true);
+                }else if (day.equals("wen")){
+                    alarm.getWeek_label_list().add(3);
+                    wen.setChecked(true);
+                }else if (day.equals("thu")){
+                    alarm.getWeek_label_list().add(4);
+                    thur.setChecked(true);
+                }else if (day.equals("fri")){
+                    alarm.getWeek_label_list().add(5);
+                    fri.setChecked(true);
+                }else if (day.equals("sat")){
+                    alarm.getWeek_label_list().add(6);
+                    sat.setChecked(true);
+                }else if (day.equals("sun")){
+                    alarm.getWeek_label_list().add(0);
+                    sun.setChecked(true);
+                }
+            }
+        }
+
+
+
+
+        isrepeating.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked){
+                alarm.setIsRepeating(1);
+            }else{
+                alarm.setIsRepeating(0);
+            }
+        });
+        sun.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked){
+                addDay("sun", alarm, false);
+            }else{
+                addDay("sun", alarm, true);
+            }
+        });
+        mon.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked){
+                addDay("mon", alarm, false);
+            }else{
+                addDay("mon", alarm,true);
+
+            }
+        });
+        tues.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked){
+                addDay("tue", alarm, false);
+            }else{
+                addDay("tue", alarm,true);
+
+            }
+        });
+        alarm_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                CTA_DataBase  cta_dataBase = new CTA_DataBase(getApplicationContext());
+                if (isChecked){
+                    alarm_switch.setText("On");
+                    alarm.setIsOn("1");
+                    cta_dataBase.update(CTA_DataBase.ALARMS,  CTA_DataBase.WILL_REPEAT, "1", "ALARM_ID = '"+alarm.getAlarm_id()+"'");
+                    cta_dataBase.update(CTA_DataBase.ALARMS, CTA_DataBase.ALARM_IS_ON, "1", "ALARM_ID = '"+alarm.getAlarm_id()+"'");
+                }else{
+                    alarm_switch.setText("Off");
+                    alarm.setIsOn("0");
+                    cta_dataBase.update(CTA_DataBase.ALARMS,  CTA_DataBase.WILL_REPEAT, "0", "ALARM_ID = '"+alarm.getAlarm_id()+"'");
+                    cta_dataBase.update(CTA_DataBase.ALARMS, CTA_DataBase.ALARM_IS_ON, "0", "ALARM_ID = '"+alarm.getAlarm_id()+"'");
+
+
+                }
+                cta_dataBase.close();
+            }
+        });
+
+
+        wen.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked){
+                addDay("wen", alarm,false);
+            }else{
+                addDay("wen", alarm,true);
+
+            }
+        });
+        thur.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked){
+                addDay("thu", alarm,false);
+            }else{
+                addDay("thu", alarm,true);
+
+            }
+        });
+        fri.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked){
+                addDay("fri", alarm,false);
+            }else{
+                addDay("fri", alarm,true);
+
+            }
+        });
+        sat.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked){
+                addDay("sat", alarm,false);
+            }else{
+                addDay("sat", alarm,true);
+            }
+        });
+
+
+        Button save_button = findViewById(R.id.main_save_button);
+        Button delete_button = findViewById(R.id.delete_button);
+        delete_button.setOnClickListener(new View.OnClickListener() {
+            CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
+            @Override
+            public void onClick(View v) {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(NewAlarmSetUp.this);
+
+                builder.setCancelable(true);
+                builder.setTitle("Remove Alarm");
+                builder.setMessage("Are you sure?");
+                builder.setPositiveButton("Confirm",
+                        (dialog, which) -> {
+                            ArrayList<Object> alarm_record1 = cta_dataBase.excecuteQuery("*", CTA_DataBase.ALARMS, "ALARM_ID = '"+alarm.getAlarm_id()+"'", null,null);
+                            if (alarm_record1 !=null){
+                                String[] values = new String[]{alarm.getAlarm_id()};
+                                cta_dataBase.delete_record(CTA_DataBase.ALARMS, "ALARM_ID = ?", values );
+                                cancelAlarm(alarm);
+                            }
+                            startActivity(new Intent(NewAlarmSetUp.this, MainActivity.class));
+
+                        });
+                builder.setNegativeButton(android.R.string.cancel, (dialog, which) -> {
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                cta_dataBase.close();
+            }
+        });
+
+
+
+        save_button.setOnClickListener(v -> {
+            if (alarm.getWeekLabel() == null || alarm.getWeekLabel().replaceAll(",","").trim().equals("")){
+                Toast.makeText(getApplicationContext(), "A day of the week MUST be selected", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
+            if (alarm.getAlarm_id() == null){ // if it is a new alarm
+                cta_dataBase.commit(alarm, CTA_DataBase.ALARMS);
+                Toast.makeText(getApplicationContext(), "Alarm was saved!", Toast.LENGTH_LONG).show();
+                startActivity(new Intent(NewAlarmSetUp.this, MainActivity.class));
+            }else{
+                cta_dataBase.update("ALARMS", "HOUR", alarm.getHour(), "ALARM_ID = '" + alarm.getAlarm_id() + "'");
+                cta_dataBase.update("ALARMS", "MIN", alarm.getMin(), "ALARM_ID = '" + alarm.getAlarm_id() + "'");
+                cta_dataBase.update("ALARMS", "TIME", alarm.getTime(), "ALARM_ID = '" + alarm.getAlarm_id() + "'");
+                cta_dataBase.update("ALARMS", "MAP_ID", alarm.getMap_id(), "ALARM_ID = '" + alarm.getAlarm_id() + "'");
+                cta_dataBase.update("ALARMS", CTA_DataBase.WILL_REPEAT, alarm.getIsRepeating()+"", "ALARM_ID = '" + alarm.getAlarm_id() + "'");
+                cta_dataBase.update("ALARMS", CTA_DataBase.WEEK_LABEL, getWeeklyLabel(alarm)+"", "ALARM_ID = '" + alarm.getAlarm_id() + "'");
+                Toast.makeText(getApplicationContext(), "Alarm to "+alarm.getStationName() +" for "+ alarm.getTime() + " was updated!", Toast.LENGTH_LONG).show();
+                startActivity(new Intent(NewAlarmSetUp.this, MainActivity.class));
+
+
+            }
+
+            cta_dataBase.close();
+
+
+
+
+
+
+        });
+
+
+
+
+
+
+    }
+
+    private void cancelAlarm(Alarm alarm_record){
+        String[] weekLabels = Objects.requireNonNull(alarm_record.getWeekLabel()).split(",");
+        int count = 0;
+        for (String day_of_week : weekLabels) {
+            count += 1;
+            Intent intent = new Intent(getApplicationContext(), MyBroadCastReciever.class);
+            int pending_intent_id = Integer.parseInt(Objects.requireNonNull(alarm_record.getAlarm_id())+count);
+            Log.e("ALARMS", "Cancelled: "+ pending_intent_id);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),
+                    pending_intent_id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+            alarmManager.cancel(pendingIntent);
+            pendingIntent.cancel();
+
+        }
+
+    }
+
+
+
+    public static String getColor(String train_line) {
+        HashMap<String, String> TrainLineKeyCodes = new HashMap<>();
+        TrainLineKeyCodes.put("red", "#F44336");
+        TrainLineKeyCodes.put("blue", "#384cff");
+        TrainLineKeyCodes.put("brown", "#a34700");
+        TrainLineKeyCodes.put("green", "#0B8043");
+        TrainLineKeyCodes.put("orange", "#ffad33");
+        TrainLineKeyCodes.put("yellow", "#b4ba0b");
+
+        TrainLineKeyCodes.put("pink", "#ff66ed");
+        TrainLineKeyCodes.put("purple", "#673AB7");
+        return TrainLineKeyCodes.get(train_line.toLowerCase().trim());
+    }
+
+
+        @RequiresApi(api = Build.VERSION_CODES.O)
+    public static Integer getDayNumberNew(LocalDateTime date) {
+        DayOfWeek day = date.getDayOfWeek();
+        return day.getValue();
+    }
+
+//        mon = findViewById(R.id.monday);
+//        tues = findViewById(R.id.tuesday);
+//        wen = findViewById(R.id.wensday);
+//        thur = findViewById(R.id.thursday);
+//        fri = findViewById(R.id.friday);
+//        sat = findViewById(R.id.saterday);
+//        sun = findViewById(R.id.sunday);
+//        alarm = (Alarm) getIntent().getSerializableExtra("alarm");
+//        TextView currentTime = findViewById(R.id.currentTime);
+//        bar = getSupportActionBar();
+//        bar.setDisplayHomeAsUpEnabled(true);
+////        main_save_btn = findViewById(R.id.main_save_button);
+//
+//        if (alarm != null && alarm.getAlarm_id() ==null){
+//            setTitle("New Alarm");
+//            buildView(alarm);
+////            main_save_btn.setVisibility(View.GONE);
+//
+//        } else if (alarm != null && alarm.getAlarm_id() !=null){
+//            bar.setTitle(alarm.getStationName());
+//            buildView(alarm);
+////            main_save_btn.setVisibility(View.VISIBLE);
+//
+//        } else{
+//            // sets our text view
+//            setTitle("New Alarm");
+//            alarm = new Alarm();
+//            alarm.setWeek_label_list(new ArrayList<>());
+//            Calendar rightNow = Calendar.getInstance();
+//            int hour = rightNow.get(Calendar.HOUR_OF_DAY);
+//            int min = rightNow.get(Calendar.MINUTE);
+//            String time_format = getTimeFormat(hour, min); // Formats our current time
+//            currentTime.setText(time_format);
+//            bar.setBackgroundDrawable(new ColorDrawable(new Chicago_Transits().GetBackgroundColor("Blue",getApplicationContext())));
+////            main_save_btn.setVisibility(View.GONE);
+//
+//        }
+//        initializeView(); // Sets up out intractable views
+//        CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
+//        ArrayList<Object> record = cta_dataBase.excecuteQuery("*", CTA_DataBase.CTA_STOPS, "BLUE = '1'",null,null);
+//        ArrayList<Station> non_duplicated_station_list = new Chicago_Transits().removeDuplicates(record);
+//        trainTimes_adapter_frag = new TrainTimes_Adapter_frag(getApplicationContext(),null,null, non_duplicated_station_list,recyclerView, alarm);
+//        recyclerView.setAdapter(trainTimes_adapter_frag);
+//        cta_dataBase.close();
+//
 
     public static String getTimeFormat(int hour, int min) {
 
@@ -293,6 +702,8 @@ public class NewAlarmSetUp extends AppCompatActivity {
     }
 
     private void addDay(String day_of_week, Alarm alarm, boolean remove) {
+        TextView status_label = (TextView) findViewById(R.id.status_label);
+
         HashMap<String, Integer> day_to_int = new HashMap<>();
         day_to_int.put("sun", 0);
         day_to_int.put("mon", 1);
@@ -302,7 +713,6 @@ public class NewAlarmSetUp extends AppCompatActivity {
         day_to_int.put("fri", 5);
         day_to_int.put("sat", 6);
 
-        if (alarm.getWeek_label_list() !=null){
             ArrayList<Integer> week_label = alarm.getWeek_label_list();
             if (!remove) {
                 week_label.add(day_to_int.get(day_of_week));
@@ -314,11 +724,24 @@ public class NewAlarmSetUp extends AppCompatActivity {
             week_label.clear();
             week_label.addAll(set);
 
-            Collections.sort(week_label);
-            alarm.setWeek_label_list(week_label);
-            String label = getWeeklyLabel(alarm);
-            alarm.setWeekLabel(label);
+        Collections.sort(week_label);
+        alarm.setWeek_label_list(week_label);
+        String label = getWeeklyLabel(alarm);
+        status_label.setText(label.replaceFirst(",", ""));
+        String[] l = status_label.getText().toString().split(",");
+        if (l[l.length-1].equals(",")){
+            l[l.length-1] = "";
+
         }
+
+        StringBuilder formatted_label = new StringBuilder();
+        for (String day : l){
+            formatted_label.append(day);
+
+        }
+
+        status_label.setText(formatted_label);
+        alarm.setWeekLabel(label);
     }
 
 
@@ -417,161 +840,151 @@ public class NewAlarmSetUp extends AppCompatActivity {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        this.menu = menu;
-        getMenuInflater().inflate(R.menu.alarm_menu, menu);
-        MenuItem searchView_item =  menu.findItem(R.id.app_bar_search);
-        SearchView searchView = (SearchView) searchView_item.getActionView();
-        MenuItem item = menu.findItem(R.id.spinner);
-        Spinner spinner = (Spinner) item.getActionView();
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.line_names, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
-        ArrayList<Object> main_station_record = cta_dataBase.excecuteQuery("*", CTA_DataBase.MAIN_STATIONS, CTA_DataBase.MAIN_STATION_TYPE +" = '"+main_train_line.toUpperCase()+"'", null,null);
-        if (main_station_record!=null) {
-            // Changes our main destinations
-            main_dest_spinner = findViewById(R.id.spinner2);
-            HashMap<String, String> main_station = (HashMap<String, String>) main_station_record.get(0);
-            List<String> spinnerArray = new ArrayList<>();
-            spinnerArray.add(main_station.get(CTA_DataBase.NORTHBOUND));
-            spinnerArray.add(main_station.get(CTA_DataBase.SOUTHBOUND));
-            adapter1 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, spinnerArray);
-            adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            main_dest_spinner.setAdapter(adapter1);
-        }
-        cta_dataBase.close();
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
-                Chicago_Transits chicago_transits = new Chicago_Transits();
-                ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS",
-                        chicago_transits.TrainLineKeys(main_train_line) + " = '1' AND STATION_NAME",
-                        newText,
-                        null);
-                ArrayList<Station> non_duplicated_station_list = chicago_transits.removeDuplicates(record);
-                cta_dataBase.close();
-                trainTimes_adapter_frag = new TrainTimes_Adapter_frag(getApplicationContext(),MainActivity.message,null, non_duplicated_station_list,recyclerView, alarm);
-                recyclerView.setAdapter(trainTimes_adapter_frag);
-
-
-
-                cta_dataBase.close();
-                return false;
-            }
-        });
-
-
-        main_dest_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 0){
-                    alarm.setDirection("1");
-                }else{
-                    alarm.setDirection("5");
-
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-
-
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-
-                recyclerView.setAdapter(null);
-                String train_line  = parent.getSelectedItem().toString();
-                main_train_line = train_line;
-                CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
-                Chicago_Transits chicago_transits = new Chicago_Transits();
-                ArrayList<Object> record = cta_dataBase.excecuteQuery("*", CTA_DataBase.CTA_STOPS, chicago_transits.TrainLineKeys(train_line).toUpperCase()+" = '1'",null,null);
-                ArrayList<Station> stationArrayList = new ArrayList<>();
-                ArrayList<Station> non_duplicated_station_list = new ArrayList<>();
-                alarm.setStationType(main_train_line);
-                for (Object r : record){
-                    Station station = (Station) r;
-                    station.setStation_type(train_line);
-                    stationArrayList.add(station);
-                }
-                for (Station station : stationArrayList){
-                    Station found_station = find(non_duplicated_station_list, station);
-                    if (found_station!=null){
-                        continue;
-                    }else{
-                        non_duplicated_station_list.add(station);
-                    }
-                }
-
-                cta_dataBase.close();
-                ActionBar bar = getSupportActionBar();
-                bar.setBackgroundDrawable(new ColorDrawable(new Chicago_Transits().GetBackgroundColor(main_train_line,getApplicationContext())));
-                trainTimes_adapter_frag = new TrainTimes_Adapter_frag(getApplicationContext(),MainActivity.message,null, non_duplicated_station_list,recyclerView, alarm);
-                recyclerView.setAdapter(trainTimes_adapter_frag);
-                // Changes our main destinations
-                ArrayList<Object> main_station_record = cta_dataBase.excecuteQuery("*", CTA_DataBase.MAIN_STATIONS, CTA_DataBase.MAIN_STATION_TYPE +" = '"+main_train_line.toUpperCase()+"'", null,null);
-                if (main_station_record!=null) {
-                    HashMap<String, String> main_station = (HashMap<String, String>) main_station_record.get(0);
-                    List<String> spinnerArray = new ArrayList<>();
-                    spinnerArray.add(main_station.get(CTA_DataBase.NORTHBOUND));
-                    spinnerArray.add(main_station.get(CTA_DataBase.SOUTHBOUND));
-                    adapter1.clear();
-                    adapter1.addAll(spinnerArray);
-                    adapter1.notifyDataSetChanged(); // optional, as the dataset change should trigger this by default
-                    adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    main_dest_spinner.setAdapter(adapter1);
-                }
+//    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        this.menu = menu;
+//        getMenuInflater().inflate(R.menu.alarm_menu, menu);
+//        MenuItem searchView_item =  menu.findItem(R.id.app_bar_search);
+//        SearchView searchView = (SearchView) searchView_item.getActionView();
+//        MenuItem item = menu.findItem(R.id.spinner);
+//        Spinner spinner = (Spinner) item.getActionView();
+//        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+//                R.array.line_names, android.R.layout.simple_spinner_item);
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        spinner.setAdapter(adapter);
+//        CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
+//        ArrayList<Object> main_station_record = cta_dataBase.excecuteQuery("*", CTA_DataBase.MAIN_STATIONS, CTA_DataBase.MAIN_STATION_TYPE +" = '"+main_train_line.toUpperCase()+"'", null,null);
+//        if (main_station_record!=null) {
+//            // Changes our main destinations
+//            main_dest_spinner = findViewById(R.id.spinner2);
+//            HashMap<String, String> main_station = (HashMap<String, String>) main_station_record.get(0);
+//            List<String> spinnerArray = new ArrayList<>();
+//            spinnerArray.add(main_station.get(CTA_DataBase.NORTHBOUND));
+//            spinnerArray.add(main_station.get(CTA_DataBase.SOUTHBOUND));
+//            adapter1 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, spinnerArray);
+//            adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//            main_dest_spinner.setAdapter(adapter1);
+//        }
+//        cta_dataBase.close();
 //
-
-
-
-
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-
-
-
-
-        return true;
-    }
+//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String query) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String newText) {
+//                CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
+//                Chicago_Transits chicago_transits = new Chicago_Transits();
+//                ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS",
+//                        chicago_transits.TrainLineKeys(main_train_line) + " = '1' AND STATION_NAME",
+//                        newText,
+//                        null);
+//                ArrayList<Station> non_duplicated_station_list = chicago_transits.removeDuplicates(record);
+//                cta_dataBase.close();
+//                trainTimes_adapter_frag = new TrainTimes_Adapter_frag(getApplicationContext(),MainActivity.message,null, non_duplicated_station_list,recyclerView, alarm);
+//                recyclerView.setAdapter(trainTimes_adapter_frag);
+//
+//
+//
+//                cta_dataBase.close();
+//                return false;
+//            }
+//        });
+//
+//
+//        main_dest_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                if (position == 0){
+//                    alarm.setDirection("1");
+//                }else{
+//                    alarm.setDirection("5");
+//
+//                }
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//
+//            }
+//        });
+//
+//
+//
+//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//
+//
+//                recyclerView.setAdapter(null);
+//                String train_line  = parent.getSelectedItem().toString();
+//                main_train_line = train_line;
+//                CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
+//                Chicago_Transits chicago_transits = new Chicago_Transits();
+//                ArrayList<Object> record = cta_dataBase.excecuteQuery("*", CTA_DataBase.CTA_STOPS, chicago_transits.TrainLineKeys(train_line).toUpperCase()+" = '1'",null,null);
+//                ArrayList<Station> stationArrayList = new ArrayList<>();
+//                ArrayList<Station> non_duplicated_station_list = new ArrayList<>();
+//                alarm.setStationType(main_train_line);
+//                for (Object r : record){
+//                    Station station = (Station) r;
+//                    station.setStation_type(train_line);
+//                    stationArrayList.add(station);
+//                }
+//                for (Station station : stationArrayList){
+//                    Station found_station = find(non_duplicated_station_list, station);
+//                    if (found_station!=null){
+//                        continue;
+//                    }else{
+//                        non_duplicated_station_list.add(station);
+//                    }
+//                }
+//
+//                cta_dataBase.close();
+//                ActionBar bar = getSupportActionBar();
+//                bar.setBackgroundDrawable(new ColorDrawable(new Chicago_Transits().GetBackgroundColor(main_train_line,getApplicationContext())));
+//                trainTimes_adapter_frag = new TrainTimes_Adapter_frag(getApplicationContext(),MainActivity.message,null, non_duplicated_station_list,recyclerView, alarm);
+//                recyclerView.setAdapter(trainTimes_adapter_frag);
+//                // Changes our main destinations
+//                ArrayList<Object> main_station_record = cta_dataBase.excecuteQuery("*", CTA_DataBase.MAIN_STATIONS, CTA_DataBase.MAIN_STATION_TYPE +" = '"+main_train_line.toUpperCase()+"'", null,null);
+//                if (main_station_record!=null) {
+//                    HashMap<String, String> main_station = (HashMap<String, String>) main_station_record.get(0);
+//                    List<String> spinnerArray = new ArrayList<>();
+//                    spinnerArray.add(main_station.get(CTA_DataBase.NORTHBOUND));
+//                    spinnerArray.add(main_station.get(CTA_DataBase.SOUTHBOUND));
+//                    adapter1.clear();
+//                    adapter1.addAll(spinnerArray);
+//                    adapter1.notifyDataSetChanged(); // optional, as the dataset change should trigger this by default
+//                    adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//                    main_dest_spinner.setAdapter(adapter1);
+//                }
+////
+//
+//
+//
+//
+//
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//
+//            }
+//        });
+//
+//
+//
+//
+//
+//        return true;
+//    }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-
-
-                Station target_station = MainActivity.message.getTarget_station();
-                new Chicago_Transits().callThreads(getApplicationContext(),
-                                                    MainActivity.message.getHandler(),
-                                                    MainActivity.message,
-                                                    MainActivity.message.getDir(),
-                                                    MainActivity.message.getTarget_type(),
-                                                    target_station.getMap_id(),
-                                                    false);
                 finish();
                 return true;
         }

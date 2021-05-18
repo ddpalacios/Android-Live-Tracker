@@ -208,7 +208,7 @@ public class AllStationView_Fragment extends Fragment {
 
 
     private void createTrainCard(View view, Train train) {
-        TextView tracking_description = view.findViewById(R.id.tracking_description);
+//        TextView tracking_description = view.findViewById(R.id.tracking_description);
         CTA_DataBase cta_dataBase = new CTA_DataBase(context);
         ArrayList<Object> record = cta_dataBase.excecuteQuery("*", CTA_DataBase.TRAIN_TRACKER, null,null,null);
         cta_dataBase.close();
@@ -217,9 +217,9 @@ public class AllStationView_Fragment extends Fragment {
             nearestTrainCardView.setBackgroundColor(Color.parseColor(MainActivity.BACKGROUND_COLOR_STRING));
             train = message.getCurrentNotificationTrain();
 
-            tracking_description.setText("Currently Tracking");
+//            tracking_description.setText("Currently Tracking");
         }else{
-            tracking_description.setText("Nearest Train");
+//            tracking_description.setText("Nearest Train");
         }
 
         TextView main_title, isSch, train_line, train_eta, status_label;

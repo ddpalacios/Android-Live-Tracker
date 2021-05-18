@@ -20,15 +20,24 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class ChooseTrainLineActivity extends AppCompatActivity {
+    public static boolean isNewAlarm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        setTitle("Add New Route");
+         isNewAlarm = getIntent().getBooleanExtra("NewAlarm", false);
         setContentView(R.layout.activity_choose_line);
         TextView page_title = findViewById(R.id.title);
+        if (!isNewAlarm) {
+            setTitle("Add New Route");
+
+        }else{
+            setTitle("New Alarm");
+
+        }
         page_title.setText("Choose A Route");
+
         RecyclerView recyclerView = findViewById(R.id.list_of_train_lines);
         ArrayList<ListItem> arrayList = new ArrayList<>();
         int[] images = {

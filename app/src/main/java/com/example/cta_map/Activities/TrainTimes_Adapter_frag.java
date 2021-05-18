@@ -279,58 +279,7 @@ public class TrainTimes_Adapter_frag extends RecyclerView.Adapter<TrainTimes_Ada
         if (train.getIsDly().equals("1") || train.getIsApp().equals("1")) {
             holder.isSch.setTextColor(Color.parseColor("#FF0000"));
         }
-//
-//        holder.main_title.setText("To "+ train.getDestNm()); // Set its main title
-//        holder.train_line_subtitle.setText((train.getRt() !=null ? chicago_transits.train_line_code_to_regular(train.getRt()) +" line" : "N/A"));
-//
-//        if (train.getIsSch()){
-//            if (train.getIsDly().equals("1")) {
-//                holder.isSch.setText("Delayed");
-//            }else{
-//                holder.isSch.setText("Scheduled");
-//            }
-//        }
-//        else if (train.getIsDly().equals("1")){
-//            holder.isSch.setText("Delayed");
-//        }
-//        else{
-//            holder.isSch.setVisibility(View.INVISIBLE);
-//        }
-//
-//
-//
-//        if (train.getIsApp().equals("1")){
-//            holder.subtitle.setText("Due");
-//        }else{
-//            holder.subtitle.setText(train.getTarget_eta() +"m");
-//        }
-//
-//
-//        holder.subtitle.setTextSize(7 * scale + 0.5f);
-//        holder.isSch.setTextSize((int) (7 * scale + 0.5f));
-//        if (train.getIsDly().equals("1") || train.getIsApp().equals("1")) {
-//            holder.isSch.setTextColor(Color.parseColor("#FF0000"));
-//            holder.subtitle.setTextColor(Color.parseColor("#FF0000"));
-//
-//        }
-//
-//        else if (train.getIsDly().equals("1")&& train.getIsSch()) {
-//            holder.main_title.setWidth((int) (100 * scale + 0.5f));
-//            if (train.getIsSch()){
-//                holder.main_title.setWidth((int) (120 * scale + 0.5f));
-//                holder.subtitle.setTextColor(Color.parseColor("#FF0000"));
-//                holder.isSch.setTextColor(Color.parseColor("#FF0000"));
-//            }
-//        }
-//
-//        else if (train.getIsSch()) {
-//            holder.main_title.setWidth((int) (100 * scale + 0.5f));
-//            holder.subtitle.setTextColor(Color.parseColor("#3367D6"));
-//        }
-//
-//        holder.train_line_subtitle.setTextColor(Color.parseColor(getColor(train.getRt())));
-//
-//        holder.imageView.setImageResource(new Chicago_Transits().getTrainImage(train.getRt()));
+
 
     }
 

@@ -12,6 +12,16 @@ public class Alarm  implements Serializable {
     private String  map_id;
     private String hour;
 
+    public String getIsOn() {
+        return isOn;
+    }
+
+    public void setIsOn(String isOn) {
+        this.isOn = isOn;
+    }
+
+    private String isOn;
+
     public String getDirection() {
         return direction;
     }

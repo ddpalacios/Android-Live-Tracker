@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,6 +36,7 @@ public class Alarm_RecyclerView_Adapter_frag1 extends RecyclerView.Adapter<Alarm
     ArrayList<Alarm> alarm_list;
     Context context;
     Alarm alarm;
+    int position1;
     public Alarm_RecyclerView_Adapter_frag1(ArrayList<Alarm>alarm_list, Context myContext){
         this.alarm_list = alarm_list;
         this.context = myContext;
@@ -52,63 +54,67 @@ public class Alarm_RecyclerView_Adapter_frag1 extends RecyclerView.Adapter<Alarm
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onBindViewHolder(@NonNull ItemHolder holder, int position) {
+        position1 = position;
         alarm = this.alarm_list.get(position);
-//        CTA_DataBase cta_dataBase = new CTA_DataBase(context.getApplicationContext());
+        final float scale = context.getResources().getDisplayMetrics().density;
+
+
+
         Chicago_Transits chicago_transits = new Chicago_Transits();
-//        holder.t1.setText(alarm.getWeekLabel());
-        holder.subtitle.setText(alarm.getWeekLabel()+" | "+alarm.getTime());
+        holder.train_image.setImageResource(chicago_transits.getTrainImage(alarm.getStationType()));
         holder.main_title.setText(alarm.getStationName());
-        holder.imageView.setImageResource(chicago_transits.getTrainImage(alarm.getStationType()));
-        if (alarm.getIsRepeating() == 1){
-            holder.willRepeat.setChecked(true);
+        holder.main_title.setWidth((int) (100 * scale + 0.5f));
+        holder.isSch.setText(alarm.getTime());
+        if (alarm.getIsOn().equals("1")) {
+            holder.alarm_switch.setChecked(true);
+            holder.alarm_switch.setText("On");
         }else{
-            holder.willRepeat.setChecked(false);
+            holder.alarm_switch.setChecked(false);
+            holder.alarm_switch.setText("Off");
+        }
+        String[] l = alarm.getWeekLabel().split(",");
+        if (l[l.length-1].equals(",")){
+            l[l.length-1] = "";
+
         }
 
+        StringBuilder formatted_label = new StringBuilder();
+        for (String day : l){
+            formatted_label.append(day);
+        }
+        holder.status_label.setText(formatted_label);
+        holder.train_line.setText(alarm.getStationType()+" line");
+        holder.train_line.setTextColor(Color.parseColor(NewAlarmSetUp.getColor(alarm.getStationType())));
+        holder.isSch.setTextColor((Color.parseColor(NewAlarmSetUp.getColor(alarm.getStationType()))));
 
 
-        holder.record_item.setOnClickListener(v -> {
+
+
+
+
+        holder.item.setOnClickListener(v -> {
            alarm = alarm_list.get(position);
-
             Message message = MainActivity.message;
-            int res = new Chicago_Transits().cancelRunningThreads(message); // cancel current running threads
-            if (res > 0) {
-                if (message.getT1().isAlive()) {
-                    message.getT1().interrupt();
-                } else {
-                    MainActivity.LogMessage("Thread not alive.");
-                }
-                try {
-                    API_Caller_Thread.msg.getT1().join(MainActivity.TIMEOUT);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }}
-
-            if (new Chicago_Transits().isMyServiceRunning(context,new MainNotificationService().getClass())){
-                new Chicago_Transits().stopService(context);
-            }
-
+            chicago_transits.StopThreads(message, context);
             Intent intent1 = new Intent(context, NewAlarmSetUp.class);
             intent1.putExtra("alarm", alarm);
 
             context.startActivity(intent1);
 
         });
-//
-        holder.record_item.setOnLongClickListener(v -> {
+        holder.item.setOnLongClickListener(v -> {
             CTA_DataBase cta_dataBase = new CTA_DataBase(context);
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setCancelable(true);
             builder.setTitle("Remove Alarm");
             alarm = alarm_list.get(position);
-            builder.setMessage("Delete "+ alarm.getStationName()+" for "+alarm.getTime() +" - "+ alarm.getWeekLabel()+ "?");
+            builder.setMessage("Are you sure?");
             builder.setPositiveButton("Confirm",
                     (dialog, which) -> {
                         ArrayList<Object> alarm_record1 = cta_dataBase.excecuteQuery("*", CTA_DataBase.ALARMS, "ALARM_ID = '"+alarm.getAlarm_id()+"'", null,null);
                         if (alarm_record1 !=null){
                             String[] values = new String[]{alarm.getAlarm_id()};
-                            cta_dataBase.delete_record(CTA_DataBase.ALARMS,
-                                    "ALARM_ID = ?", values );
+                            cta_dataBase.delete_record(CTA_DataBase.ALARMS, "ALARM_ID = ?", values );
                             alarm_list.remove(position);
                             notifyItemRemoved(position);
                             notifyDataSetChanged();
@@ -124,15 +130,23 @@ public class Alarm_RecyclerView_Adapter_frag1 extends RecyclerView.Adapter<Alarm
             cta_dataBase.close();
             return false;
         });
-        holder.willRepeat.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        holder.alarm_switch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             CTA_DataBase cta_dataBase = new CTA_DataBase(context);
+            alarm = alarm_list.get(position);
+
+
             if (isChecked){
                 Log.e("RECORD ALARM", holder.main_title.getText().toString()+" is ON");
-                cta_dataBase.update("ALARMS", "WILL_REPEAT", "1", "ALARM_ID = '"+alarm.getAlarm_id()+"'");
+                cta_dataBase.update(CTA_DataBase.ALARMS,  CTA_DataBase.WILL_REPEAT, "1", "ALARM_ID = '"+alarm.getAlarm_id()+"'");
+                cta_dataBase.update(CTA_DataBase.ALARMS, CTA_DataBase.ALARM_IS_ON, "1", "ALARM_ID = '"+alarm.getAlarm_id()+"'");
+                holder.alarm_switch.setText("On");
                 startAlarm(alarm);
             }else{
                 Log.e("RECORD ALARM", holder.main_title.getText().toString()+" is OFF");
-                cta_dataBase.update("ALARMS", "WILL_REPEAT", "0", "ALARM_ID = '"+alarm.getAlarm_id()+"'");
+                cta_dataBase.update(CTA_DataBase.ALARMS, CTA_DataBase.WILL_REPEAT, "0", "ALARM_ID = '"+alarm.getAlarm_id()+"'");
+                cta_dataBase.update(CTA_DataBase.ALARMS, CTA_DataBase.ALARM_IS_ON, "0", "ALARM_ID = '"+alarm.getAlarm_id()+"'");
+                holder.alarm_switch.setText("Off");
+
                 cancelAlarm(alarm);
             }
         cta_dataBase.close();
@@ -202,19 +216,24 @@ public class Alarm_RecyclerView_Adapter_frag1 extends RecyclerView.Adapter<Alarm
     }
 
     public static class ItemHolder extends RecyclerView.ViewHolder {
-        TextView t1,subtitle, main_title;
-        ImageView imageView;
-        Switch willRepeat;
-        CardView record_item;
+        TextView main_title, train_eta, isSch, train_line, status_label;
+        ImageView train_image;
+        Switch alarm_switch;
+        CardView item;
+
 
         public ItemHolder(@NonNull View itemView) {
             super(itemView);
-            t1 = (TextView) itemView.findViewById(R.id.title_1);
-            subtitle = (TextView) itemView.findViewById(R.id.subtitle);
-            main_title = itemView.findViewById(R.id.main_title);
-            willRepeat = itemView.findViewById(R.id.activate_alarm_switch);
-            imageView = (ImageView) itemView.findViewById(R.id.train_image);
-            record_item = (CardView) itemView.findViewById(R.id.list_item);
+            item = (CardView) itemView.findViewById(R.id.list_item);
+
+            train_image = (ImageView) itemView.findViewById(R.id.train_image);
+            main_title = (TextView) itemView.findViewById(R.id.title_item);
+            train_line = (TextView) itemView.findViewById(R.id.train_line_subtitle);
+            status_label = (TextView) itemView.findViewById(R.id.status_label);
+            isSch = (TextView) itemView.findViewById(R.id.isSch);
+            alarm_switch = (Switch) itemView.findViewById(R.id.switch1);
+
+
         }
     }
 }

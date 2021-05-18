@@ -111,14 +111,12 @@ public class CTA_DataBase extends SQLiteOpenHelper {
     public static final String ALARM_STATION_TYPE = "STATION_TYPE";
     public static final String ALARM_STATION_NAME = "STATION_NAME";
     public  static final String ALARM_MAP_ID = "MAP_ID";
-
+    public  static final String ALARM_IS_ON = "IS_ON";
     public static final String WILL_REPEAT = "WILL_REPEAT";
     public static final String TIME = "TIME";
     public static final String ALARM_DIRECTION = "DIRECTION";
-
     public static final String HOUR = "HOUR";
     public static final String MIN = "MIN";
-
     public final String MON = "MON";
     public final String TUES = "TUES";
     public final String WENS = "WENS";
@@ -137,7 +135,7 @@ public class CTA_DataBase extends SQLiteOpenHelper {
 
 
     public CTA_DataBase(@Nullable Context context) {
-        super(context, "CTA_DATABASE", null, 90);
+        super(context, "CTA_DATABASE", null, 95);
         SQLiteDatabase db = this.getWritableDatabase();
         createTrainTrackingTable(db);
         createUserSettingsTable(db);
@@ -219,6 +217,7 @@ public class CTA_DataBase extends SQLiteOpenHelper {
                 + ALARM_STATION_TYPE + " TEXT, "
                 + ALARM_STATION_NAME + " TEXT, "
                 + ALARM_DIRECTION + " TEXT, "
+                + ALARM_IS_ON + " TEXT, "
                 + TIME + " TEXT, "
                 + HOUR + " TEXT, "
                 + MIN + " TEXT, "
@@ -355,6 +354,7 @@ public class CTA_DataBase extends SQLiteOpenHelper {
         values.put(TIME, alarm.getTime());
         values.put(HOUR, alarm.getHour());
         values.put(MIN, alarm.getMin());
+        values.put(ALARM_IS_ON, alarm.getIsOn());
         values.put(ALARM_DIRECTION, alarm.getDirection());
         values.put(ALARM_MAP_ID, alarm.getMap_id());
         values.put(ALARM_STATION_TYPE, alarm.getStationType());

@@ -16,8 +16,10 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cta_map.Activities.ChooseStationActivity;
+import com.example.cta_map.Activities.ChooseTrainLineActivity;
 import com.example.cta_map.Activities.Classes.FavoriteStation;
 import com.example.cta_map.Activities.MainActivity;
+import com.example.cta_map.Activities.NewAlarmSetUp;
 import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.ListItem;
 import com.example.cta_map.R;
@@ -56,8 +58,20 @@ public class TrainStationAdapter extends RecyclerView.Adapter<TrainStationAdapte
         holder.t1.setText(listItem.getTitle());
         holder.imageView.setImageResource(listItem.getImage());
         holder.item.setOnClickListener(v -> {
-                    this.tracking_station.put("target_station_name", listItem.getTitle());
-                    this.tracking_station.put("target_map_id", listItem.getMapID());
+            this.tracking_station.put("target_station_name", listItem.getTitle());
+            this.tracking_station.put("target_map_id", listItem.getMapID());
+
+
+            if (ChooseTrainLineActivity.isNewAlarm){
+                        Intent intent = new Intent(this.context, NewAlarmSetUp.class);
+                        intent.putExtra("tracking_station", tracking_station);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        this.context.startActivity(intent);
+                        return;
+
+                    }
+
+
                     CTA_DataBase cta_dataBase = new CTA_DataBase(this.context);
                     FavoriteStation favoriteStation = new FavoriteStation(listItem.getMapID(), listItem.getTitle(), tracking_station.get("train_line").toLowerCase());
                     favoriteStation.setStation_dir_label(listItem.getTrain_dir_label());

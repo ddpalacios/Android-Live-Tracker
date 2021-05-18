@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,7 +31,7 @@ public class MapView_Fragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.map_view_frag1_layout, container, false);
+        return inflater.inflate(R.layout.train_times_frag_layout, container, false);
     }
     @SuppressLint("SetTextI18n")
     @Override
@@ -45,7 +46,8 @@ public class MapView_Fragment extends Fragment {
 
         current_incoming_trains = message.getOld_trains(); // Retrieves our most up-to-date trains
 
-
+        TextView main_title = view.findViewById(R.id.main_title);
+        main_title.setText("Train Status");
         recyclerView = view.findViewById(R.id.frag_rv);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));

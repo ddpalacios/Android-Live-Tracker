@@ -71,7 +71,8 @@ public class Alarms_Fragment extends Fragment {
             if (message.getT1()!=null) {
               new Chicago_Transits().cancelRunningThreads(message);
             }
-            Intent intent = new Intent(myContext, NewAlarmSetUp.class);
+            Intent intent = new Intent(myContext,ChooseTrainLineActivity.class);
+            intent.putExtra("NewAlarm", true);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         });
@@ -85,12 +86,11 @@ public class Alarms_Fragment extends Fragment {
                 HashMap<String,String> current_alarm = (HashMap<String, String>) record.get(i);
                 Alarm alarm = new Alarm();
                 alarm.setAlarm_id(current_alarm.get(CTA_DataBase.ALARM_ID));
-
                 alarm.setWeekLabel(current_alarm.get(CTA_DataBase.WEEK_LABEL));
                 alarm.setMap_id(current_alarm.get(CTA_DataBase.ALARM_MAP_ID));
+                alarm.setIsOn(current_alarm.get(CTA_DataBase.ALARM_IS_ON));
                 ArrayList<Object> station = cta_dataBase.excecuteQuery("*", CTA_DataBase.CTA_STOPS, "MAP_ID = '"+ alarm.getMap_id()+"'" , null, null);
                 Station record_station = (Station) station.get(0);
-
                 alarm.setMin(current_alarm.get(CTA_DataBase.MIN));
                 alarm.setHour(current_alarm.get(CTA_DataBase.HOUR));
                 alarm.setTime(current_alarm.get(CTA_DataBase.TIME));

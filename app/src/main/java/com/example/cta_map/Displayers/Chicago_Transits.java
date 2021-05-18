@@ -64,6 +64,7 @@ public class Chicago_Transits {
         TrainLineKeyCodes.put("org", R.color.orange);
         TrainLineKeyCodes.put("pink", R.color.pink);
         TrainLineKeyCodes.put("p", R.color.purple);
+        TrainLineKeyCodes.put("y", R.color.yellow);
         Integer code;
         return TrainLineKeyCodes.get(train_line.toLowerCase().trim());
 
