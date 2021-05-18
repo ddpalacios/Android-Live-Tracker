@@ -89,6 +89,7 @@ public class NewAlarmSetUp extends AppCompatActivity {
         fri = findViewById(R.id.friday);
         sat = findViewById(R.id.saterday);
         sun = findViewById(R.id.sunday);
+        Button delete = findViewById(R.id.delete_button);
         tracking_station = (HashMap<String, String>) getIntent().getSerializableExtra("tracking_station");
         LocalDateTime now = LocalDateTime.now();
         TextView currentTime = findViewById(R.id.currentTime);
@@ -125,12 +126,14 @@ public class NewAlarmSetUp extends AppCompatActivity {
             alarm.setHour(hour+"");
             alarm.setMin(min+"");
             alarm.setTime(time_format);
+            delete.setVisibility(View.GONE);
+
             alarm.setWeek_label_list(new ArrayList<Integer>());
         }else{
             setTitle("Edit Alarm");
             dest_name.setText("");
             bar.setBackgroundDrawable(new ColorDrawable(chicago_transits.GetBackgroundColor(alarm.getStationType(), getApplicationContext())));
-
+            delete.setVisibility(View.VISIBLE);
             currentTime.setText(alarm.getTime());
             alarm.setWeek_label_list(new ArrayList<Integer>());
 
@@ -230,14 +233,10 @@ public class NewAlarmSetUp extends AppCompatActivity {
             alarm_switch.setChecked(true);
             alarm_switch.setText("On");
 
-
-
         }else{
             alarm_switch.setChecked(false);
             alarm_switch.setText("Off");
-
         }
-
 
         if (alarm.getWeekLabel() != null){
             String[] week = alarm.getWeekLabel().split(",");
@@ -267,9 +266,6 @@ public class NewAlarmSetUp extends AppCompatActivity {
                 }
             }
         }
-
-
-
 
         isrepeating.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked){
@@ -301,27 +297,21 @@ public class NewAlarmSetUp extends AppCompatActivity {
 
             }
         });
-        alarm_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                CTA_DataBase  cta_dataBase = new CTA_DataBase(getApplicationContext());
-                if (isChecked){
-                    alarm_switch.setText("On");
-                    alarm.setIsOn("1");
-                    cta_dataBase.update(CTA_DataBase.ALARMS,  CTA_DataBase.WILL_REPEAT, "1", "ALARM_ID = '"+alarm.getAlarm_id()+"'");
-                    cta_dataBase.update(CTA_DataBase.ALARMS, CTA_DataBase.ALARM_IS_ON, "1", "ALARM_ID = '"+alarm.getAlarm_id()+"'");
-                }else{
-                    alarm_switch.setText("Off");
-                    alarm.setIsOn("0");
-                    cta_dataBase.update(CTA_DataBase.ALARMS,  CTA_DataBase.WILL_REPEAT, "0", "ALARM_ID = '"+alarm.getAlarm_id()+"'");
-                    cta_dataBase.update(CTA_DataBase.ALARMS, CTA_DataBase.ALARM_IS_ON, "0", "ALARM_ID = '"+alarm.getAlarm_id()+"'");
-
-
-                }
-                cta_dataBase.close();
+        alarm_switch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            CTA_DataBase  cta_dataBase = new CTA_DataBase(getApplicationContext());
+            if (isChecked){
+                alarm_switch.setText("On");
+                alarm.setIsOn("1");
+                cta_dataBase.update(CTA_DataBase.ALARMS,  CTA_DataBase.WILL_REPEAT, "1", "ALARM_ID = '"+alarm.getAlarm_id()+"'");
+                cta_dataBase.update(CTA_DataBase.ALARMS, CTA_DataBase.ALARM_IS_ON, "1", "ALARM_ID = '"+alarm.getAlarm_id()+"'");
+            }else{
+                alarm_switch.setText("Off");
+                alarm.setIsOn("0");
+                cta_dataBase.update(CTA_DataBase.ALARMS,  CTA_DataBase.WILL_REPEAT, "0", "ALARM_ID = '"+alarm.getAlarm_id()+"'");
+                cta_dataBase.update(CTA_DataBase.ALARMS, CTA_DataBase.ALARM_IS_ON, "0", "ALARM_ID = '"+alarm.getAlarm_id()+"'");
             }
+            cta_dataBase.close();
         });
-
 
         wen.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked){
@@ -355,7 +345,6 @@ public class NewAlarmSetUp extends AppCompatActivity {
             }
         });
 
-
         Button save_button = findViewById(R.id.main_save_button);
         Button delete_button = findViewById(R.id.delete_button);
         delete_button.setOnClickListener(new View.OnClickListener() {
@@ -386,8 +375,6 @@ public class NewAlarmSetUp extends AppCompatActivity {
                 cta_dataBase.close();
             }
         });
-
-
 
         save_button.setOnClickListener(v -> {
             if (alarm.getWeekLabel() == null || alarm.getWeekLabel().replaceAll(",","").trim().equals("")){

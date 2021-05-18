@@ -55,7 +55,7 @@ public class MainPlaceHolder_Fragment extends Fragment implements Serializable  
         ViewHolder_Adapter = new ViewHolder_Adapter(this);
         viewPager = view.findViewById(R.id.viewPager);
         viewPager.setAdapter(ViewHolder_Adapter);
-        viewPager.setCurrentItem(2);
+        viewPager.setCurrentItem(3);
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -77,14 +77,17 @@ public class MainPlaceHolder_Fragment extends Fragment implements Serializable  
 
 
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
-            if(position == 0)
+            if (position == 0){
+                tab.setText("User");
+            }
+            else if(position == 1)
                 tab.setText("Map");
-            else if (position ==1) {
+            else if (position ==2) {
                 tab.setText("ETA");
-            }else if (position == 2){
-                tab.setText("Stations");
+            }else if (position == 3){
+                tab.setText("Add");
             }else{
-                tab.setText("Alarms");
+                tab.setText("Alarm");
             }
 
         }).attach();
