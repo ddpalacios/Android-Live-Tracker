@@ -6,6 +6,16 @@ public class UserSettings {
         return AsStations;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    String status;
+
     public void setAsStations(String asStations) {
         AsStations = asStations;
     }

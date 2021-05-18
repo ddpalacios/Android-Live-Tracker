@@ -1596,7 +1596,7 @@ public class Chicago_Transits {
         HashMap<String, String> messages = new HashMap<>();
         messages.put("green", "Have Time");
         messages.put("yellow", "Get Ready");
-        messages.put("red", "Leave now!!");
+        messages.put("red", "Leave now");
         if (color == null){
             return messages.get("red");
         }

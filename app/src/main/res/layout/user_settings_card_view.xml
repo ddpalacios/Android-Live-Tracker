@@ -50,23 +50,28 @@
 <!--                app:layout_constraintVertical_bias="0.305"-->
 <!--                />-->
 
-
             <SeekBar
                 android:id="@+id/seekBar_green"
                 style="@style/Widget.AppCompat.SeekBar.Discrete"
                 android:layout_width="200dp"
+
                 android:layout_height="34dp"
                 android:max="20"
 
                 android:padding="20dp"
                 android:progress="10"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:visibility="visible"
 
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/StatusImage"
                 app:layout_constraintHorizontal_bias="0.644"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.289" />
+
+
+
+
 
             <ImageView
                 android:id="@+id/StatusImage"
@@ -77,38 +82,54 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/green_color" />
 
-            <TextView
-                android:id="@+id/title_eta"
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                android:layout_marginRight="4dp"
-                android:ellipsize="end"
-                android:lines="1"
-                android:scrollHorizontally="true"
-                android:singleLine="true"
-                android:text="13m"
-                android:visibility="gone"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="15sp"
-                android:textStyle="bold"
+                android:layout_height="match_parent"
+                android:gravity="right"
+                android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.958"
-                app:layout_constraintStart_toEndOf="@+id/train_image"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="RtlHardcoded">
+
+                <TextView
+                    android:id="@+id/title_eta"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:ellipsize="end"
+                    android:lines="1"
+                    android:scrollHorizontally="true"
+                    android:singleLine="true"
+                    android:text="13"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/min_txt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Minutes"
+                    android:layout_marginRight="5dp"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/isSch"
                 android:layout_width="wrap_content"
-                android:visibility="gone"
-
                 android:layout_height="wrap_content"
+
+                android:layout_marginRight="80dp"
                 android:padding="10dp"
-                android:text="Scheduled"
-                android:textColor="@color/blue_700"
+                android:text="Anything less than 'Yellow' status"
+                android:textColor="@color/red_100"
                 android:textSize="15sp"
                 android:textStyle="bold"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.635"

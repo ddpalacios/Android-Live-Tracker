@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cta_map.Activities.Classes.Station;
+import com.example.cta_map.Activities.Classes.UserSettings;
 import com.example.cta_map.Backend.Threading.Message;
 import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.Displayers.Chicago_Transits;
@@ -29,12 +30,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class SettingsView_Adapter_frag extends RecyclerView.Adapter<SettingsView_Adapter_frag.ItemHolder>  {
-    ArrayList<Train> setting_cards;
+    ArrayList<UserSettings> setting_cards;
     GoogleMap mMap;
     Context context;
     Fragment fragment;
     Message message;
-    public SettingsView_Adapter_frag(Message message, Context context, ArrayList<Train> contactsList, Fragment fragment){
+    public SettingsView_Adapter_frag(Message message, Context context, ArrayList<UserSettings> contactsList, Fragment fragment){
         this.setting_cards = contactsList;
         this.fragment = fragment;
         this.context = context;
@@ -55,7 +56,7 @@ public class SettingsView_Adapter_frag extends RecyclerView.Adapter<SettingsView
     public void onBindViewHolder(@NonNull SettingsView_Adapter_frag.ItemHolder holder, int position) {
             CTA_DataBase cta_dataBase = new CTA_DataBase(context);
             Chicago_Transits chicago_transits = new Chicago_Transits();
-            Train user_settings = this.setting_cards.get(position);
+            UserSettings user_settings = this.setting_cards.get(position);
 
             createTrainCard(holder, user_settings); // Creates our main title, image, and subtitle
 
@@ -152,7 +153,7 @@ public class SettingsView_Adapter_frag extends RecyclerView.Adapter<SettingsView
 
 
     @SuppressLint("SetTextI18n")
-    private void createTrainCard(ItemHolder holder, Train train) {
+    private void createTrainCard(ItemHolder holder, UserSettings train) {
         Chicago_Transits chicago_transits = new Chicago_Transits();
         holder.train_line.setText(train.getStatus());
         holder.train_line.setTextColor(Color.parseColor(getColor(chicago_transits.TrainLineKeys(train.getStatus()))));
@@ -160,10 +161,100 @@ public class SettingsView_Adapter_frag extends RecyclerView.Adapter<SettingsView
         holder.status_label.setText(chicago_transits.getStatusMessage(train.getStatus()));
         holder.status_label.setTextColor(Color.parseColor(getColor(chicago_transits.TrainLineKeys(train.getStatus()))));
         holder.imageView.setImageResource(chicago_transits.getTrainImage(train.getStatus()));
+        CTA_DataBase cta_dataBase = new CTA_DataBase(context);
+        ArrayList<Object> record = cta_dataBase.excecuteQuery("*", CTA_DataBase.USER_SETTINGS, CTA_DataBase.USER_SETTINGS_ID +" = '1'",null,null);
+        UserSettings userSettings;
+        if (record!= null) {
+            userSettings = (UserSettings) record.get(0);
+        }else{
+            userSettings = new UserSettings();
+            cta_dataBase.commit(userSettings, CTA_DataBase.USER_SETTINGS);
+        }
+
+        if (userSettings.getGreen_limit()!=null){
+            if (train.getStatus().toLowerCase().equals("green")) {
+                holder.status_bar.setProgress(Integer.parseInt(userSettings.getGreen_limit()));
+                holder.train_eta.setText("> "+userSettings.getGreen_limit());
+            }
+        }
+
+        if (userSettings.getYellow_limit()!=null){
+            if (train.getStatus().toLowerCase().equals("green")) {
+                cta_dataBase.update(CTA_DataBase.USER_SETTINGS, CTA_DataBase.GREEN_LIMIT, userSettings.getGreen_limit(), CTA_DataBase.USER_SETTINGS_ID + " = '1'");
+            }else if (train.getStatus().toLowerCase().equals("yellow")) {
+                holder.status_bar.setProgress(Integer.parseInt(userSettings.getYellow_limit()));
+                cta_dataBase.update(CTA_DataBase.USER_SETTINGS, CTA_DataBase.YELLOW_LIMIT, userSettings.getYellow_limit(), CTA_DataBase.USER_SETTINGS_ID + " = '1'");
+                holder.train_eta.setText("> "+userSettings.getYellow_limit());
+
+            }
+
+
+        }
 
 
 
 
+        if (train.getStatus().toLowerCase().equals("red")){
+            holder.status_bar.setVisibility(View.INVISIBLE);
+            holder.isSch.setVisibility(View.VISIBLE);
+            holder.isSch.setText("Anything less than 'Yellow'");
+            holder.train_eta.setText("");
+            holder.min_txt.setText("");
+
+        }
+
+
+        holder.status_bar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (train.getStatus().toLowerCase().equals("green")) {
+                    cta_dataBase.update(CTA_DataBase.USER_SETTINGS, CTA_DataBase.GREEN_LIMIT, progress+"", CTA_DataBase.USER_SETTINGS_ID + " = '1'");
+                    holder.train_eta.setText("> "+progress);
+
+                }else if (train.getStatus().toLowerCase().equals("yellow")) {
+                    cta_dataBase.update(CTA_DataBase.USER_SETTINGS, CTA_DataBase.YELLOW_LIMIT, progress+"", CTA_DataBase.USER_SETTINGS_ID + " = '1'");
+                    holder.train_eta.setText("> "+progress);
+
+                }
+
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                int progress = seekBar.getProgress();
+                if (train.getStatus().toLowerCase().equals("green")) {
+                    cta_dataBase.update(CTA_DataBase.USER_SETTINGS, CTA_DataBase.GREEN_LIMIT, progress+"", CTA_DataBase.USER_SETTINGS_ID + " = '1'");
+                    holder.train_eta.setText("> "+progress);
+
+                }else if (train.getStatus().toLowerCase().equals("yellow")) {
+                    cta_dataBase.update(CTA_DataBase.USER_SETTINGS, CTA_DataBase.YELLOW_LIMIT, progress+"", CTA_DataBase.USER_SETTINGS_ID + " = '1'");
+                    holder.train_eta.setText("> "+progress);
+                }
+
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                int progress = seekBar.getProgress();
+                if (train.getStatus().toLowerCase().equals("green")) {
+                    cta_dataBase.update(CTA_DataBase.USER_SETTINGS, CTA_DataBase.GREEN_LIMIT, progress+"", CTA_DataBase.USER_SETTINGS_ID + " = '1'");
+                    holder.train_eta.setText("> "+progress);
+
+                }else if (train.getStatus().toLowerCase().equals("yellow")) {
+                    cta_dataBase.update(CTA_DataBase.USER_SETTINGS, CTA_DataBase.YELLOW_LIMIT, progress+"", CTA_DataBase.USER_SETTINGS_ID + " = '1'");
+                    holder.train_eta.setText("> "+progress);
+
+                }
+                if (MainActivity.message.getT1() !=null){
+                    MainActivity.message.getT1().interrupt();
+                }
+
+            }
+        });
+
+    cta_dataBase.close();
 
     }
 //        Chicago_Transits chicago_transits = new Chicago_Transits();
@@ -228,12 +319,15 @@ public class SettingsView_Adapter_frag extends RecyclerView.Adapter<SettingsView
         return this.setting_cards.size();
     }
     public static class ItemHolder extends RecyclerView.ViewHolder {
-        TextView main_title, isSch, train_line, train_eta, status_label;
+        TextView main_title, isSch, train_line, train_eta, status_label, min_txt;
         SeekBar status_bar;
         ImageView imageView, status_image;
-        CardView cardViewitem;
+        CardView cardViewitem, loc_settings;
         public ItemHolder(@NonNull View itemView) {
             super(itemView);
+            min_txt = (TextView) itemView.findViewById(R.id.min_txt);
+            isSch = (TextView) itemView.findViewById(R.id.isSch);
+            train_eta = (TextView) itemView.findViewById(R.id.title_eta);
             imageView = (ImageView) itemView.findViewById(R.id.train_image);
             status_bar = (SeekBar) itemView.findViewById(R.id.seekBar_green);
             train_line = (TextView) itemView.findViewById(R.id.train_line_subtitle);

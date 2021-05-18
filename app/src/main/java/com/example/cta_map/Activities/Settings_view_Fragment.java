@@ -17,7 +17,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.cta_map.Activities.Classes.UserSettings;
 import com.example.cta_map.Backend.Threading.Message;
+import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.Displayers.Train;
 import com.example.cta_map.R;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,7 +29,7 @@ import java.util.ArrayList;
 
 public class Settings_view_Fragment extends Fragment {
     RecyclerView recyclerView;
-    ArrayList<Train> current_incoming_trains;
+    ArrayList< UserSettings> current_incoming_trains;
     SettingsView_Adapter_frag mapViewAdapter;
     public  static String STATIONS_ITEM = "Stations";
     public static String MINUTES_ITEM = "Minutes";
@@ -40,10 +42,7 @@ public class Settings_view_Fragment extends Fragment {
     @SuppressLint("SetTextI18n")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-         /*
-        MapView Status tab.
-         */
-        // We can grab these variables staticly because we can assume that the user is within the UI, meaning MainActivty static variables would not be null
+
         Message message = ((MainActivity)getActivity()).message; //get message object from running MainActivity()
         Context context = ((MainActivity)getActivity()).context;
         Fragment fragment = ((MainActivity)getActivity()).frg;
@@ -51,16 +50,34 @@ public class Settings_view_Fragment extends Fragment {
         main_title.setText("Settings");
         CardView settings_card = view.findViewById(R.id.settings);
         settings_card.setVisibility(View.VISIBLE);
+        CardView loc_settings = (CardView) view.findViewById(R.id.loc_settings);
+        loc_settings.setVisibility(View.VISIBLE);
+        TextView info = (TextView) view.findViewById(R.id.status_info);
+        info.setVisibility(View.VISIBLE);
+
+
+        CTA_DataBase cta_dataBase = new CTA_DataBase(context);
+        ArrayList<Object> record = cta_dataBase.excecuteQuery("*", CTA_DataBase.USER_SETTINGS, null,null,null);
+        UserSettings userSettings;
+        if (record!= null) {
+            userSettings = (UserSettings) record.get(0);
+        }else{
+            userSettings = new UserSettings();
+        }
+        cta_dataBase.close();
         current_incoming_trains = new ArrayList<>();
         recyclerView = view.findViewById(R.id.frag_rv);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        Train green_status = new Train();
+        UserSettings green_status = new UserSettings();
         green_status.setStatus("Green");
-        Train yellow_status = new Train();
+        UserSettings yellow_status = new  UserSettings();
         yellow_status.setStatus("Yellow");
+        UserSettings red_status = new  UserSettings();
+        red_status.setStatus("Red");
         current_incoming_trains.add(green_status);
         current_incoming_trains.add(yellow_status);
+        current_incoming_trains.add(red_status);
 
 
         Spinner min_or_stations = view.findViewById(R.id.stations_or_min_spinner);
