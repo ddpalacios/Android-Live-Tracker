@@ -209,6 +209,12 @@ public class SettingsView_Adapter_frag extends RecyclerView.Adapter<SettingsView
             holder.train_eta.setText("");
             holder.min_txt.setText("");
 
+        }else if (train.getStatus().toLowerCase().equals("gray")){
+
+            holder.status_bar.setVisibility(View.INVISIBLE);
+            holder.train_eta.setText("");
+            holder.min_txt.setText("");
+
         }
 
 
@@ -371,7 +377,7 @@ public class SettingsView_Adapter_frag extends RecyclerView.Adapter<SettingsView
         TrainLineKeyCodes.put("g", "#0B8043");
         TrainLineKeyCodes.put("org", "#ffad33");
         TrainLineKeyCodes.put("y", "#b4ba0b");
-
+        TrainLineKeyCodes.put("gray", "#808080");
         TrainLineKeyCodes.put("pink","#ff66ed");
         TrainLineKeyCodes.put("p","#673AB7");
         return TrainLineKeyCodes.get(train_line.toLowerCase().trim());

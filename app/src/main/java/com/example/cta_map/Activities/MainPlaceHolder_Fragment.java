@@ -78,14 +78,14 @@ public class MainPlaceHolder_Fragment extends Fragment implements Serializable  
 
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
             if (position == 0){
-                tab.setText("User");
+                tab.setText("Info");
             }
             else if(position == 1)
-                tab.setText("Map");
+                tab.setText("Status");
             else if (position ==2) {
                 tab.setText("ETA");
             }else if (position == 3){
-                tab.setText("Add");
+                tab.setText("Home");
             }else{
                 tab.setText("Alarm");
             }

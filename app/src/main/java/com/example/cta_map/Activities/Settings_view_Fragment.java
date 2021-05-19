@@ -259,10 +259,12 @@ public class Settings_view_Fragment extends Fragment {
         yellow_status.setStatus("Yellow");
         UserSettings red_status = new  UserSettings();
         red_status.setStatus("Red");
+        UserSettings grey_status = new  UserSettings();
+        grey_status.setStatus("Gray");
         current_incoming_trains.add(green_status);
         current_incoming_trains.add(yellow_status);
         current_incoming_trains.add(red_status);
-
+        current_incoming_trains.add(grey_status);
 
 //        Spinner min_or_stations = view.findViewById(R.id.stations_or_min_spinner);
 //        ArrayList<String> arrayList = new ArrayList<>();

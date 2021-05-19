@@ -449,22 +449,22 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
             }
         });
-        userSettings.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                Chicago_Transits chicago_transits = new Chicago_Transits();
-                if (!chicago_transits.isMyServiceRunning(context, new MainNotificationService().getClass()) && message.getT1().isAlive()) {
-                    new Chicago_Transits().cancelRunningThreads(message);
-                    message.getT1().interrupt();
-                    try {
-                        message.getT1().join(TIMEOUT);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                startActivity(new Intent(MainActivity.this, UserSettings_Form.class));
-                return false;
-            }
+        userSettings.setOnMenuItemClickListener(item -> {
+            Chicago_Transits chicago_transits = new Chicago_Transits();
+            chicago_transits.StopThreads(message, getApplicationContext());
+            chicago_transits.callThreads(context,handler, message, message.getDir(), message.getTarget_type(),message.getTARGET_MAP_ID(), false);
+            ToastMessage(getApplicationContext(), "App Refreshed!");
+//                if (!chicago_transits.isMyServiceRunning(context, new MainNotificationService().getClass()) && message.getT1().isAlive()) {
+//                    new Chicago_Transits().cancelRunningThreads(message);
+//                    message.getT1().interrupt();
+//                    try {
+//                        message.getT1().join(TIMEOUT);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//                startActivity(new Intent(MainActivity.this, UserSettings_Form.class));
+            return false;
         });
 
 

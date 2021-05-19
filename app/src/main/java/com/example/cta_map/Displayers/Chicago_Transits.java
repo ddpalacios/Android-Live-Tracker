@@ -97,6 +97,7 @@ public class Chicago_Transits {
             TrainLineKeyCodes.put("pink", R.drawable.pink);
             TrainLineKeyCodes.put("p", R.drawable.purple);
              TrainLineKeyCodes.put("target", R.drawable.target);
+             TrainLineKeyCodes.put("gray", R.drawable.grey_train_image);
 
             TrainLineKeyCodes.put("y", R.drawable.yellow);
             return TrainLineKeyCodes.get(train_line.toLowerCase());
@@ -1416,6 +1417,8 @@ public class Chicago_Transits {
         TrainLineKeyCodes.put("pink", "pink");
         TrainLineKeyCodes.put("purple", "p");
         TrainLineKeyCodes.put("yellow", "y");
+        TrainLineKeyCodes.put("gray", "gray");
+
         return TrainLineKeyCodes.get(station_type.toLowerCase().trim());
 
 
@@ -1429,6 +1432,7 @@ public class Chicago_Transits {
             TrainLineKeyCodes.put("red", R.drawable.red_color);
             TrainLineKeyCodes.put("green", R.drawable.green_color);
             TrainLineKeyCodes.put("yellow", R.drawable.yellow_color);
+            TrainLineKeyCodes.put("gray", R.drawable.gray);
 
         return TrainLineKeyCodes.get(color.toLowerCase());
         }
@@ -1597,6 +1601,8 @@ public class Chicago_Transits {
         messages.put("green", "Have Time");
         messages.put("yellow", "Get Ready");
         messages.put("red", "Leave now");
+        messages.put("gray", "No Status");
+
         if (color == null){
             return messages.get("red");
         }

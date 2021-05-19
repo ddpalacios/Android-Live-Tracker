@@ -4,9 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".Activities.MainActivity">
 
-    <item android:title="Settings" android:id="@+id/user_settings" />
-    <item android:title="Get Data" android:id="@+id/getData" />
-    <item android:title="ClearData" android:id="@+id/clearData" />
+    <item android:title="Refresh" android:id="@+id/user_settings" />
+    <item
+        android:id="@+id/getData"
+        android:title="Get Data"
+        android:visibility="gone" />
+    <item
+        android:id="@+id/clearData"
+        android:title="ClearData"
+        android:visibility="gone" />
     <item
         android:id="@+id/spinner"
         android:title="ActionBar Spinner"
