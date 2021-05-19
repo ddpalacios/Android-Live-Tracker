@@ -94,28 +94,35 @@
 
                 <TextView
                     android:id="@+id/title_eta"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
+                    android:layout_marginEnd="20dp"
+                    android:text="text"
+                    android:layout_marginRight="4dp"
                     android:ellipsize="end"
                     android:lines="1"
                     android:scrollHorizontally="true"
                     android:singleLine="true"
-                    android:text="13"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="15sp"
+                    android:textSize="20sp"
                     android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.954"
+                    app:layout_constraintStart_toEndOf="@+id/train_image"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.489"
                     android:visibility="visible" />
 
                 <TextView
                     android:id="@+id/min_txt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Minutes"
                     android:layout_marginRight="5dp"
+                    android:text="Minutes"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="15sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <TextView

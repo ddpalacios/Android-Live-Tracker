@@ -161,6 +161,14 @@ public class SettingsView_Adapter_frag extends RecyclerView.Adapter<SettingsView
         holder.status_label.setText(chicago_transits.getStatusMessage(train.getStatus()));
         holder.status_label.setTextColor(Color.parseColor(getColor(chicago_transits.TrainLineKeys(train.getStatus()))));
         holder.imageView.setImageResource(chicago_transits.getTrainImage(train.getStatus()));
+//        if (train.getAsMinutes()!= null && train.getAsMinutes().equals("1")){
+//            holder.min_txt.setText("Minutes");
+//        }else{
+//            holder.min_txt.setText("Stops");
+//
+//        }
+
+
         CTA_DataBase cta_dataBase = new CTA_DataBase(context);
         ArrayList<Object> record = cta_dataBase.excecuteQuery("*", CTA_DataBase.USER_SETTINGS, CTA_DataBase.USER_SETTINGS_ID +" = '1'",null,null);
         UserSettings userSettings;

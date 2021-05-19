@@ -59,39 +59,22 @@
             android:layout_height="match_parent">
 
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="right"
-                android:orientation="horizontal">
+            <TextView
+                android:id="@+id/textView16"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Notification Preferences "
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-
-                <TextView
-                    android:id="@+id/textView16"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="15dp"
-                    android:padding="10dp"
-                    android:text="Notify Based On: "
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <Switch
-                    android:id="@+id/location_switch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:scaleX="1.1"
-                    android:scaleY="1.1"
-                    android:text="User Location"
-                    android:textStyle="bold" />
-            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
-
-
 
 
     <androidx.cardview.widget.CardView
@@ -105,20 +88,65 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:gravity="left"
                 android:orientation="horizontal">
 
 
-                <Spinner
-                    android:id="@+id/stations_or_min_spinner"
-                    android:layout_width="match_parent"
+                <!--                                <TextView-->
+                <!--                                    android:id="@+id/textView16"-->
+                <!--                                    android:layout_width="wrap_content"-->
+                <!--                                    android:layout_height="wrap_content"-->
+                <!--                                    android:layout_marginRight="50dp"-->
+                <!--                                    android:padding="10dp"-->
+                <!--                                    android:text="Notify Based On: "-->
+                <!--                                    android:textColor="@color/colorPrimaryDark"-->
+                <!--                                    android:textSize="15sp"-->
+                <!--                                    android:textStyle="bold"-->
+                <!--                                    android:layout_marginEnd="45dp" />-->
+
+                <Switch
+                    android:id="@+id/location_switch"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:tooltipText="Stations or minutes" />
+                    android:padding="10dp"
+                    android:scaleX="1.1"
+                    android:scaleY="1.1"
+                    android:text="User Location"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+
+                    <CheckBox
+                        android:id="@+id/asStations"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:layout_weight="1"
+                        android:text="Stations"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textStyle="bold" />
+
+                    <CheckBox
+                        android:id="@+id/asMinutes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Minutes"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+
             </LinearLayout>
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

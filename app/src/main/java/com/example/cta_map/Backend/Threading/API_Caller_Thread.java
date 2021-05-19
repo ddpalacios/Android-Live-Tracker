@@ -15,6 +15,7 @@ import androidx.annotation.RequiresApi;
 import com.example.cta_map.Activities.Classes.Station;
 import com.example.cta_map.Activities.Classes.UserSettings;
 import com.example.cta_map.Activities.MainActivity;
+import com.example.cta_map.Activities.Settings_view_Fragment;
 import com.example.cta_map.Activities.UserSettings_Form;
 import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.Displayers.Chicago_Transits;
@@ -338,6 +339,12 @@ public class API_Caller_Thread implements Runnable {
 
                     ArrayList<TrainStops> remaining_stations_till_target = get_RemainingStations_till_target(main_train, target_station_record);
                     Integer threshold = (specific_tracking_type.equals(UserSettings_Form.STATIONS_ITEM) ? remaining_stations_till_target.size() : main_train.getTarget_eta());
+                    if (specific_tracking_type.equals(Settings_view_Fragment.STATIONS_ITEM)){
+                        Log.e("Threshold", "Status as STATIONS");
+                    }else {
+                        Log.e("Threshold", "Status as MINUTES");
+
+                    }
                     SetTrueStatusBasedOn(main_train, threshold, user_eta_from_station);
 
                 }
@@ -378,10 +385,10 @@ public class API_Caller_Thread implements Runnable {
         Integer default_green = Integer.parseInt(userSettings.getGreen_limit());
         Integer default_yellow = Integer.parseInt(userSettings.getYellow_limit());
         Integer main_train_eta = main_train.getTarget_eta();
-        if (selected_threshold > default_green) {
+        if (selected_threshold >= default_green) {
             // status green
             if (user_eta_from_station != null){
-                if (main_train_eta > user_eta_from_station ){
+                if (main_train_eta >= user_eta_from_station ){
                     main_train.setStatus("GREEN");
                 }else if (main_train_eta < user_eta_from_station){
                     main_train.setStatus("RED");
@@ -391,10 +398,10 @@ public class API_Caller_Thread implements Runnable {
             }
 
 
-        }else if (selected_threshold >= default_yellow && selected_threshold <= default_green){
+        }else if (selected_threshold >= default_yellow && selected_threshold < default_green){
             // status yellow
             if (user_eta_from_station != null){
-                if (main_train_eta > user_eta_from_station ){
+                if (main_train_eta >= user_eta_from_station ){
                     main_train.setStatus("YELLOW");
                 }else if (main_train_eta < user_eta_from_station){
                     main_train.setStatus("RED");
@@ -407,8 +414,8 @@ public class API_Caller_Thread implements Runnable {
         }else if (selected_threshold < default_yellow){
             // status red
             if (user_eta_from_station != null){
-                if (main_train_eta > user_eta_from_station ){
-                    main_train.setStatus("YELLOW");
+                if (main_train_eta >= user_eta_from_station ){
+                    main_train.setStatus("RED");
                 }else if (main_train_eta < user_eta_from_station){
                     main_train.setStatus("RED");
                 }
@@ -443,9 +450,9 @@ public class API_Caller_Thread implements Runnable {
         if (settings_record != null) {
             UserSettings userSettings = (UserSettings) settings_record.get(0);
             if (userSettings.getAsMinutes().equals("1")) {
-                tracking_type = "min";
+                tracking_type = Settings_view_Fragment.MINUTES_ITEM;
             } else {
-                tracking_type = "station";
+                tracking_type =Settings_view_Fragment.STATIONS_ITEM;
 
             }
         }

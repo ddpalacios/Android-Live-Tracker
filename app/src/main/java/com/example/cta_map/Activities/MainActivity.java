@@ -35,11 +35,13 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -66,20 +68,22 @@ import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback {
     public static GoogleMap mMap;
-    public  static  API_Caller_Thread api_caller;
-    Context context;
+    public static API_Caller_Thread api_caller;
+    public static Context context;
+    public static Context context1;
+
     Cursor cursor;
     ExampleAdapter todoAdapter;
     public static Spinner spinner;
     private String main_train_line;
-    public  boolean destroyed = false;
-    public  static int TIMEOUT = 2000;
+    public boolean destroyed = false;
+    public static int TIMEOUT = 2000;
     public static String BACKGROUND_COLOR_STRING = "#fffea8";
-    public  boolean isActive;
-    public static int check =0;
+    public boolean isActive;
+    public static int check = 0;
     Content_Parser_Thread content_parser;
-    public static  ActionBar bar;
-    public  static Fragment frg;
+    public static ActionBar bar;
+    public static Fragment frg;
     public static Message message;
     MainPlaceHolder_Fragment mainPlaceHolder_fragment;
     int IsSharingLocation;
@@ -107,23 +111,24 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         if (current_incoming_trains != null && current_incoming_trains.size() > 0) {
             ActionBar bar = getSupportActionBar();
             assert bar != null;
-            boolean isBeingNotified = new Chicago_Transits().StartNotificationServices(getApplicationContext(), message,current_incoming_trains);
+            boolean isBeingNotified = new Chicago_Transits().StartNotificationServices(getApplicationContext(), message, current_incoming_trains);
             UpdateFragments(current_incoming_trains);
-        }else{
+        } else {
             // if there are no incoming trains
-            new Chicago_Transits().plot_all_markers(getApplicationContext(), message,mMap, current_incoming_trains);
+            new Chicago_Transits().plot_all_markers(getApplicationContext(), message, mMap, current_incoming_trains);
             UpdateFragments(current_incoming_trains);
 
         }
+        updatetUserLocation();
 
-     }
+    }
 
 
-     @RequiresApi(api = Build.VERSION_CODES.N)
-     private void UpdateFragments(ArrayList<Train> current_incoming_trains){
-         Chicago_Transits chicago_transits = new Chicago_Transits();
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void UpdateFragments(ArrayList<Train> current_incoming_trains) {
+        Chicago_Transits chicago_transits = new Chicago_Transits();
 
-         if (current_incoming_trains.size() > 0) {
+        if (current_incoming_trains.size() > 0) {
             // Update UI
             chicago_transits.plot_all_markers(getApplicationContext(), message, mMap, current_incoming_trains);
             if (current_incoming_trains.get(0) != null) {
@@ -135,16 +140,16 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             IsSharingLocation = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
             CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
             ArrayList<Object> UserLocation = cta_dataBase.excecuteQuery("*", "USER_LOCATION", "HAS_LOCATION = '1'", null, null);
-             if (UserLocation!=null){
+            if (UserLocation != null) {
                 ToastMessage(getApplicationContext(), "Fully Sharing Location.");
-            }else{
+            } else {
                 ToastMessage(getApplicationContext(), "Not Sharing Location.");
 
             }
             cta_dataBase.close();
 
-        }else{
-             message.setStatus(null);
+        } else {
+            message.setStatus(null);
             message.setNearestTrain(null);
             message.setOld_trains(null);
             frg = getSupportFragmentManager().findFragmentByTag("main_place_holder_frag");
@@ -152,8 +157,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         }
 
 
-
-     }
+    }
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -162,6 +166,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_layout);
         context = getApplicationContext();
+        context1 = MainActivity.this;
 
         frg = getSupportFragmentManager().findFragmentByTag("main_place_holder_frag");
         message = new Message();
@@ -197,10 +202,10 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     private void Start() {
         IsSharingLocation = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
         CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
-        ArrayList<Object> sett = cta_dataBase.excecuteQuery("*", CTA_DataBase.USER_SETTINGS, null,null,null);
-        ArrayList<Object> loc = cta_dataBase.excecuteQuery("*", CTA_DataBase.USER_LOCATION, null,null,null);
-        if (IsSharingLocation < 0 ){
-            if (sett!=null && loc!= null){
+        ArrayList<Object> sett = cta_dataBase.excecuteQuery("*", CTA_DataBase.USER_SETTINGS, null, null, null);
+        ArrayList<Object> loc = cta_dataBase.excecuteQuery("*", CTA_DataBase.USER_LOCATION, null, null, null);
+        if (IsSharingLocation < 0) {
+            if (sett != null && loc != null) {
                 // always reset if not sharing location
                 cta_dataBase.update(CTA_DataBase.USER_SETTINGS, CTA_DataBase.IS_SHARING_LOC, "0", CTA_DataBase.IS_SHARING_LOC + " = '1'");
                 cta_dataBase.update(CTA_DataBase.USER_LOCATION, CTA_DataBase.HAS_LOCATION, "0", CTA_DataBase.HAS_LOCATION + " = '1'");
@@ -208,13 +213,13 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                 cta_dataBase.update(CTA_DataBase.USER_LOCATION, CTA_DataBase.USER_LON, " ", CTA_DataBase.HAS_LOCATION + " = '1'");
             }
             Toast.makeText(getApplicationContext(), "Location Permission NOT Granted.", Toast.LENGTH_SHORT).show();
-        }else {
+        } else {
             Toast.makeText(getApplicationContext(), "Location Permission Granted.", Toast.LENGTH_SHORT).show();
             // if user settings is set to ON - update user location
-            if (sett!=null && loc!= null) {
+            if (sett != null && loc != null) {
                 UserSettings userSettings = (UserSettings) sett.get(0);
                 HashMap<String, String> user_loc = (HashMap<String, String>) loc.get(0);
-                if (userSettings.getIs_sharing_loc().equals("1") && user_loc.get(CTA_DataBase.HAS_LOCATION).equals("1")){
+                if (userSettings.getIs_sharing_loc().equals("1") && user_loc.get(CTA_DataBase.HAS_LOCATION).equals("1")) {
                     updatetUserLocation();
                 }
             }
@@ -229,6 +234,8 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onRequestPermissionsResult(
+            // Excecutes when user replies to Permission message
+
             int requestCode,
             @NonNull String[] permissions,
             @NonNull int[] grantResults) {
@@ -236,67 +243,85 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(MainActivity.this, "Permission Granted!", Toast.LENGTH_SHORT).show();
-                cta_dataBase.update("USER_LOCATION", "HAS_LOCATION", "1", "STOP_ID = '1'");
+                ArrayList<Object> record = cta_dataBase.excecuteQuery("*", CTA_DataBase.USER_SETTINGS, null, null, null);
+                if (record != null) {
+                    cta_dataBase.update("USER_LOCATION", "HAS_LOCATION", "1", "STOP_ID = '1'");
+                    cta_dataBase.update("USER_LOCATION", "HAS_LOCATION", "1", "STOP_ID = '1'");
+                    cta_dataBase.update(CTA_DataBase.USER_SETTINGS, CTA_DataBase.IS_SHARING_LOC, "1", CTA_DataBase.USER_SETTINGS_ID + " = '1'");
+                    updatetUserLocation();
+                    Toast.makeText(MainActivity.this, "Permission Granted! Location Has been updated", Toast.LENGTH_SHORT).show();
+                }
+                if (message.getT1() != null) {
+                    message.getT1().interrupt();
+                }
                 cta_dataBase.close();
-                updatetUserLocation();
             } else {
                 Toast.makeText(MainActivity.this, "Permission Denied!", Toast.LENGTH_SHORT).show();
                 cta_dataBase.update("USER_LOCATION", "HAS_LOCATION", "0", "STOP_ID = '1'");
                 cta_dataBase.close();
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setCancelable(true);
-                builder.setTitle("Location");
-                builder.setMessage("It appears that your location is turned off.  Grant application access to use your " +
-                                        "location for a more precise train status.");
-                builder.setPositiveButton("Head to settings",
-                        (dialog, which) -> {
-                            final Intent i = new Intent();
-                            i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                            i.addCategory(Intent.CATEGORY_DEFAULT);
-                            i.setData(Uri.parse("package:" + context.getPackageName()));
-                            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                            i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-                            context.startActivity(i);
-
-                        });
-                builder.setNegativeButton(android.R.string.cancel, (dialog, which) -> {
-                    View inflatedView = getLayoutInflater().inflate(R.layout.alarms_layout, null);
-//                    Switch location_switch = (Switch) inflatedView.findViewById(R.id.switch1);
-//                    location_switch.isChecked();
-//                    location_switch.setChecked(false);
-
-                });
-                AlertDialog dialog = builder.create();
-                dialog.show();
+//                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+//                builder.setCancelable(true);
+//                builder.setTitle("Location");
+//                builder.setMessage("It appears that your location is turned off.  Grant application access to use your " +
+//                        "location for a more precise train status.");
+//                builder.setPositiveButton("Head to settings",
+//                        (dialog, which) -> {
+//                            final Intent i = new Intent();
+//                            i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+//                            i.addCategory(Intent.CATEGORY_DEFAULT);
+//                            i.setData(Uri.parse("package:" + context.getPackageName()));
+//                            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                            i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+//                            i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+//                            context.startActivity(i);
+//
+//                        });
+//                builder.setNegativeButton(android.R.string.cancel, (dialog, which) -> {
+//                    View inflatedView = getLayoutInflater().inflate(R.layout.alarms_layout, null);
+////                    Switch location_switch = (Switch) inflatedView.findViewById(R.id.switch1);
+////                    location_switch.isChecked();
+////                    location_switch.setChecked(false);
+////                    if (MainActivity.message.getT1()!=null) {
+////                        MainActivity.message.getT1().interrupt();
+////                    }
+//
+//                });
+//                AlertDialog dialog = builder.create();
+//                dialog.show();
             }
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @SuppressLint("MissingPermission")
-    public void updatetUserLocation(){
+    public void updatetUserLocation() {
         fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
             if (location != null) {
                 CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
-//                Toast.makeText(this.context,
-//                        "LAT: "+ location.getLatitude() + " LON: "+ location.getLongitude(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this.context,
+                        "LAT: " + location.getLatitude() + " LON: " + location.getLongitude(), Toast.LENGTH_SHORT).show();
                 ArrayList<Object> userLocationRecord = cta_dataBase.excecuteQuery("*", "USER_LOCATION", null, null, null);
-                if (userLocationRecord !=null){
+                if (userLocationRecord != null) {
                     ArrayList<Object> userLocationRecord1 = cta_dataBase.excecuteQuery("*", CTA_DataBase.USER_LOCATION, CTA_DataBase.HAS_LOCATION + "= '1'", null, null);
-                    if (userLocationRecord1!= null) {
+                    if (userLocationRecord1 != null) {
                         ToastMessage(getApplicationContext(), "Is FULLY Sharing Location");
+                        mMap.setMyLocationEnabled(true);
+                        mMap.setOnMyLocationButtonClickListener(this);
+                        mMap.setOnMyLocationClickListener(this);
                         message.setSharingFullConnection(true);
 
-                        Double test_lat = 41.88574 ;
+                        Double test_lat = 41.88574;
                         Double test_lon = -87.627835;
                         Double real_lat = location.getLatitude();
-                        Double real_lon = location. getLongitude();
+                        Double real_lon = location.getLongitude();
                         cta_dataBase.update("USER_LOCATION", CTA_DataBase.USER_LAT, test_lat + "", "HAS_LOCATION= '1'");
                         cta_dataBase.update("USER_LOCATION", CTA_DataBase.USER_LON, test_lon + "", "HAS_LOCATION = '1'");
-                    }else{
+
+                    } else {
                         message.setSharingFullConnection(false);
+                        mMap.setMyLocationEnabled(false);
+                        mMap.setOnMyLocationButtonClickListener(this);
+                        mMap.setOnMyLocationClickListener(this);
                         ToastMessage(getApplicationContext(), "NOT Sharing Location");
                     }
                 } else {
@@ -314,7 +339,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
     }
 
-    private void run(){
+    private void run() {
         if (isRunning()) {
             Toast.makeText(getApplicationContext(), "Threads Are Running!", Toast.LENGTH_SHORT).show();
         } else {
@@ -323,10 +348,10 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         }
     }
 
-    private void initializeView(){
+    private void initializeView() {
         FloatingActionButton floatingActionButton = findViewById(R.id.AddStationFloatingButton);
         floatingActionButton.setOnClickListener(v -> {
-            if (message.getT1()!=null) {
+            if (message.getT1() != null) {
                 message.getT1().interrupt();
                 message.getApi_caller_thread().cancel();
             }
@@ -335,61 +360,61 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         });
     }
 
-    private Boolean isRunning(){
+    private Boolean isRunning() {
         /*
         Running most recent train track based on user selection on startup
          */
-            CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
-            ArrayList<Object> user_tracking_record = cta_dataBase.excecuteQuery("*", CTA_DataBase.USER_FAVORITES, CTA_DataBase.ISTRACKING+" = '1'", null, null);
-            ArrayList<Object> current_tracking_train = cta_dataBase.excecuteQuery("*", CTA_DataBase.TRAIN_TRACKER, null,null,null);
+        CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
+        ArrayList<Object> user_tracking_record = cta_dataBase.excecuteQuery("*", CTA_DataBase.USER_FAVORITES, CTA_DataBase.ISTRACKING + " = '1'", null, null);
+        ArrayList<Object> current_tracking_train = cta_dataBase.excecuteQuery("*", CTA_DataBase.TRAIN_TRACKER, null, null, null);
 
-            // Tracking last default station or were we tracking a specific train?
-
-
-            if (current_tracking_train!=null){
-                // Currently Tracking Specific Train
-                 HashMap<String, String> tracking_station = (HashMap<String, String>) current_tracking_train.get(0);
-                ArrayList<Object> record = cta_dataBase.excecuteQuery("*", CTA_DataBase.CTA_STOPS, "MAP_ID = '"+tracking_station.get("MAP_ID")+"'", null,null);
-                Station target_station = (Station) record.get(0);
+        // Tracking last default station or were we tracking a specific train?
 
 
-                if (!new Chicago_Transits().isMyServiceRunning(getApplicationContext(),new MainNotificationService().getClass())) {
-                    // If NO services are running, Call threads.
-                    new Chicago_Transits().callThreads(getApplicationContext(), handler, message, tracking_station.get("TRAIN_DIR"), tracking_station.get("TRAIN_TYPE"), tracking_station.get("MAP_ID"),false);
-                }else{
-                        // Otherwise, we need to cancel our current threads then start new ones
-                    Chicago_Transits chicago_transits = new Chicago_Transits();
-                    chicago_transits.StopThreads(API_Caller_Thread.msg, context);
-                    chicago_transits.callThreads(getApplicationContext(), handler, message, tracking_station.get("TRAIN_DIR"), tracking_station.get("TRAIN_TYPE"), tracking_station.get("MAP_ID"),false);
-                }
+        if (current_tracking_train != null) {
+            // Currently Tracking Specific Train
+            HashMap<String, String> tracking_station = (HashMap<String, String>) current_tracking_train.get(0);
+            ArrayList<Object> record = cta_dataBase.excecuteQuery("*", CTA_DataBase.CTA_STOPS, "MAP_ID = '" + tracking_station.get("MAP_ID") + "'", null, null);
+            Station target_station = (Station) record.get(0);
 
-                // Set action bar title
-                setTitle("To "+target_station.getStop_name()+".");
-                 bar.setBackgroundDrawable(new ColorDrawable(new Chicago_Transits().GetBackgroundColor(tracking_station.get("TRAIN_TYPE"), getApplicationContext())));
-                cta_dataBase.close();
-                return true;
-            }
-            else if (user_tracking_record != null) {
-                // Tracking last selected
+
+            if (!new Chicago_Transits().isMyServiceRunning(getApplicationContext(), new MainNotificationService().getClass())) {
+                // If NO services are running, Call threads.
+                new Chicago_Transits().callThreads(getApplicationContext(), handler, message, tracking_station.get("TRAIN_DIR"), tracking_station.get("TRAIN_TYPE"), tracking_station.get("MAP_ID"), false);
+            } else {
+                // Otherwise, we need to cancel our current threads then start new ones
                 Chicago_Transits chicago_transits = new Chicago_Transits();
-                ToastMessage(getApplicationContext(), "Tracking last selected station");
-                HashMap<String, String> tracking_station = (HashMap<String, String>) user_tracking_record.get(0);
-                chicago_transits.callThreads(getApplicationContext(), handler, message, tracking_station.get("STATION_DIR"), tracking_station.get("STATION_TYPE"), tracking_station.get("FAVORITE_MAP_ID"), false);
-                cta_dataBase.close();
-                return true;
-            }else{
-                // No stations selected or being tracked
-                setTitle("Select a station.");
-                bar.setBackgroundDrawable(new ColorDrawable(new Chicago_Transits().GetBackgroundColor("red", getApplicationContext())));
-                API_Caller_Thread api_caller = new API_Caller_Thread(message, context, handler);
-                Thread t1 = new Thread(api_caller);
-                message.setT1(t1);
-                message.setApi_caller_thread(api_caller);
+                chicago_transits.StopThreads(API_Caller_Thread.msg, context);
+                chicago_transits.callThreads(getApplicationContext(), handler, message, tracking_station.get("TRAIN_DIR"), tracking_station.get("TRAIN_TYPE"), tracking_station.get("MAP_ID"), false);
             }
+
+            // Set action bar title
+            setTitle("To " + target_station.getStop_name() + ".");
+            bar.setBackgroundDrawable(new ColorDrawable(new Chicago_Transits().GetBackgroundColor(tracking_station.get("TRAIN_TYPE"), getApplicationContext())));
+            cta_dataBase.close();
+            return true;
+        } else if (user_tracking_record != null) {
+            // Tracking last selected
+            Chicago_Transits chicago_transits = new Chicago_Transits();
+            ToastMessage(getApplicationContext(), "Tracking last selected station");
+            HashMap<String, String> tracking_station = (HashMap<String, String>) user_tracking_record.get(0);
+            chicago_transits.callThreads(getApplicationContext(), handler, message, tracking_station.get("STATION_DIR"), tracking_station.get("STATION_TYPE"), tracking_station.get("FAVORITE_MAP_ID"), false);
+            cta_dataBase.close();
+            return true;
+        } else {
+            // No stations selected or being tracked
+            setTitle("Select a station.");
+            bar.setBackgroundDrawable(new ColorDrawable(new Chicago_Transits().GetBackgroundColor("red", getApplicationContext())));
+            API_Caller_Thread api_caller = new API_Caller_Thread(message, context, handler);
+            Thread t1 = new Thread(api_caller);
+            message.setT1(t1);
+            message.setApi_caller_thread(api_caller);
+        }
         cta_dataBase.close();
 
         return false;
     }
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -397,10 +422,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         MenuItem clearData = menu.findItem(R.id.clearData);
         MenuItem getData = menu.findItem(R.id.getData);
         MenuItem userSettings = menu.findItem(R.id.user_settings);
-        MenuItem searchView_item =  menu.findItem(R.id.app_bar_search);
-
-
-
+        MenuItem searchView_item = menu.findItem(R.id.app_bar_search);
 
         MenuItem item11 = menu.findItem(R.id.spinner);
         spinner = (Spinner) item11.getActionView();
@@ -414,12 +436,12 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String train_line  = parent.getSelectedItem().toString();
+                String train_line = parent.getSelectedItem().toString();
                 main_train_line = train_line;
-                    bar.setBackgroundDrawable(new ColorDrawable(new Chicago_Transits().GetBackgroundColor(train_line, getApplicationContext())));
-                    if (todoAdapter!=null && cursor !=null) {
-                        todoAdapter.changeCursor(cursor);
-                    }
+                bar.setBackgroundDrawable(new ColorDrawable(new Chicago_Transits().GetBackgroundColor(train_line, getApplicationContext())));
+                if (todoAdapter != null && cursor != null) {
+                    todoAdapter.changeCursor(cursor);
+                }
             }
 
             @Override
@@ -431,8 +453,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 Chicago_Transits chicago_transits = new Chicago_Transits();
-                if (!chicago_transits.isMyServiceRunning(context, new MainNotificationService().getClass()) && message.getT1().isAlive())
-                {
+                if (!chicago_transits.isMyServiceRunning(context, new MainNotificationService().getClass()) && message.getT1().isAlive()) {
                     new Chicago_Transits().cancelRunningThreads(message);
                     message.getT1().interrupt();
                     try {
@@ -448,7 +469,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
 
         getData.setOnMenuItemClickListener(item -> {
-            Toast.makeText(getApplicationContext(), "Clicked "+ item.getTitle(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Clicked " + item.getTitle(), Toast.LENGTH_SHORT).show();
             try {
                 createDB(R.raw.cta_stops, R.raw.main_stations, R.raw.line_stops);
             } catch (IOException e) {
@@ -459,7 +480,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 
 
         clearData.setOnMenuItemClickListener(item1 -> {
-            Toast.makeText(getApplicationContext(), "Clicked "+ item1.getTitle(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Clicked " + item1.getTitle(), Toast.LENGTH_SHORT).show();
             CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
             cta_dataBase.delete_all_records("L_STOPS");
             cta_dataBase.delete_all_records("MAIN_STATIONS");
@@ -490,9 +511,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             spinner.setSelection(new Chicago_Transits().getSpinnerPosition(message.getTarget_type()));
 
         });
-
-
-
 
 
         searchView.setOnCloseListener(() -> {
@@ -530,13 +548,13 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                 int autoCompleteTextViewID = getResources().getIdentifier("android:id/search_src_text", null, null);
                 AutoCompleteTextView searchAutoCompleteTextView = (AutoCompleteTextView) searchView.findViewById(autoCompleteTextViewID);
                 searchAutoCompleteTextView.setThreshold(0);
-                String query = "SELECT * FROM CTA_STOPS WHERE "+ chicago_transits.TrainLineKeys(main_train_line).toUpperCase()+" = '1' AND STATION_NAME LIKE '"+newText+"%'";
+                String query = "SELECT * FROM CTA_STOPS WHERE " + chicago_transits.TrainLineKeys(main_train_line).toUpperCase() + " = '1' AND STATION_NAME LIKE '" + newText + "%'";
                 cursor = db.rawQuery(query, null);
                 ArrayList<HashMap<String, String>> result = new ArrayList<>();
                 // Find ListView to populate
                 ListView lvItems = (ListView) findViewById(R.id.search_items_view);
                 // Setup cursor adapter using cursor from last step
-                todoAdapter = new ExampleAdapter(getApplicationContext(),cursor);
+                todoAdapter = new ExampleAdapter(getApplicationContext(), cursor);
                 // Attach cursor adapter to the ListView
                 lvItems.setAdapter(todoAdapter);
 
@@ -547,19 +565,14 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         });
 
 
-
-
-
-
-
     }
 
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public int createDB(int file1, int file2, int file3) throws IOException {
         Chicago_Transits chicago_transits = new Chicago_Transits();
-        BufferedReader file1Buffer  = chicago_transits.setup_file_reader(getApplicationContext(), file1);
-        BufferedReader file2Buffer  = chicago_transits.setup_file_reader(getApplicationContext(), file2);
+        BufferedReader file1Buffer = chicago_transits.setup_file_reader(getApplicationContext(), file1);
+        BufferedReader file2Buffer = chicago_transits.setup_file_reader(getApplicationContext(), file2);
         BufferedReader file3Buffer = chicago_transits.setup_file_reader(getApplicationContext(), file3);
         chicago_transits.create_line_stops_table(file3Buffer, getApplicationContext(), null);
         chicago_transits.Create_TrainInfo_table(file1Buffer, getApplicationContext());
@@ -568,11 +581,11 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     }
 
 
-    public static void ToastMessage(Context context, String message){
+    public static void ToastMessage(Context context, String message) {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
 
-    public static void LogMessage(String message){
+    public static void LogMessage(String message) {
         Log.e("MainActivity", message);
     }
 
@@ -590,9 +603,29 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        UiSettings uiSettings = mMap.getUiSettings();
+        uiSettings.setZoomControlsEnabled(true);
+
+        CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
+        ArrayList<Object> UserLocation = cta_dataBase.excecuteQuery("*", "USER_LOCATION", "HAS_LOCATION = '1'", null, null);
+
+        if (IsSharingLocation >= 0 && UserLocation != null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            mMap.setMyLocationEnabled(true);
+            mMap.setOnMyLocationButtonClickListener(this);
+            mMap.setOnMyLocationClickListener(this);
+        }
         mapListeners(mMap);
         Chicago_Transits chicago_transits = new Chicago_Transits();
-        CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
         Intent iin = getIntent();
         Bundle b = iin.getExtras();
         if (b != null) {
