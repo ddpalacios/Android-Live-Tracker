@@ -19,6 +19,7 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.cta_map.Activities.Adapters.CustomInfoWindowAdapter;
 import com.example.cta_map.Activities.Classes.Alarm;
 import com.example.cta_map.Activities.Classes.Station;
 import com.example.cta_map.Backend.Threading.Message;
@@ -88,46 +89,32 @@ public class TrainTimes_Adapter_frag extends RecyclerView.Adapter<TrainTimes_Ada
             }
 
             holder.item.setOnLongClickListener(v -> {
-                if (!train.getIsNotified()) { // if this train is not currently being notified - notify it!
+                if (train.getIsNotified()) { // Resets all trains + its notifications handler
+                    chicago_transits.reset(this.current_incoming_trains, message);
+                    chicago_transits.plot_all_markers(context, message, mMap, message.getOld_trains());
+                    chicago_transits.refresh(fragment);
+                    cta_dataBase.delete_all_records(CTA_DataBase.TRAIN_TRACKER);
+                    chicago_transits.stopService(context);
+                    chicago_transits.ZoomIn(mMap, 12f, train.getLat(), train.getLon());
+
+
+                }else{
                     chicago_transits.reset(this.current_incoming_trains, message); // Resets all trains + its notifications handler
                     holder.item.setCardBackgroundColor(Color.parseColor(MainActivity.BACKGROUND_COLOR_STRING));
                     // Setting selected train for notifications
                     train.setSelected(true);
                     train.setNotified(true);
-
-
-                    // TODO: Do we need to do this? ///
                     chicago_transits.plot_all_markers(context, message, mMap, message.getOld_trains());
                     chicago_transits.refresh(fragment);
-                    /////////////////////////////////
-
-
                     cta_dataBase.delete_all_records(CTA_DataBase.TRAIN_TRACKER); // resets all train tracking
                     cta_dataBase.commit(train, CTA_DataBase.TRAIN_TRACKER); // Commiting a new train to track
-                    cta_dataBase.close();
+                    chicago_transits.ZoomIn(mMap, 13f, train.getLat(), train.getLon());
 
-
-                } else {
-                    chicago_transits.reset(this.current_incoming_trains, message); // Resets all trains + its notifications handler
-                    // if we reselect our train tracking train then turn it off!
-                    train.setNotified(false);
-                    train.setSelected(false);
-//                chicago_transits.plot_all_markers(context, message, mMap, message.getOld_trains());
-
-                    chicago_transits.refresh(fragment);
-                    cta_dataBase.delete_all_records(CTA_DataBase.TRAIN_TRACKER);
-
-                    //TODO: Add condition to check if there is a service running before stopping a service
-                    chicago_transits.stopService(context);
-                    cta_dataBase.close();
 
                 }
 
-                if (!train.getIsSch()) {
-                    chicago_transits.ZoomIn(mMap, 12f, train.getLat(), train.getLon());
-                }
                 message.getT1().interrupt();
-
+                cta_dataBase.close();
                 return false;
 
             });
@@ -137,27 +124,51 @@ public class TrainTimes_Adapter_frag extends RecyclerView.Adapter<TrainTimes_Ada
                 if (train== null || train.getLat() ==null || train.getLon() == null){
                     return;
                 }
-                if (train.getIsApp().equals("1")){
-                    chicago_transits.ZoomIn(mMap, 20f, train.getLat(), train.getLon());
-                }
+                ArrayList<Train> all_trains = message.getOld_trains();
+
+                CustomInfoWindowAdapter adapter = new CustomInfoWindowAdapter(context, message,false);
+                mMap.setInfoWindowAdapter(adapter);
+                // set the chosen train as selected
                 if (!train.getSelected()) {
-                    // if the train is NOT selected - reset all trains
-                    for (Train train1 : this.current_incoming_trains) {
-                        if (train1.getIsNotified() && train1.getSelected()) {
+                    for (Train train1: all_trains){ // resets all trains
+                        if (train1.getIsNotified() && train1.getSelected()){
                             continue;
                         }
                         train1.setSelected(false);
                     }
-                    // set the chosen train as selected
                     train.setSelected(true);
-                } else {
-                    // if the train selected IS already selected, deselect train
+                }else{
                     train.setSelected(false);
+
                 }
                 chicago_transits.plot_all_markers(context, message, mMap, message.getOld_trains());
-                if (!train.getIsSch()) {
-                    chicago_transits.ZoomIn(mMap, 12f, train.getLat(), train.getLon());
-                }
+                chicago_transits.ZoomIn(mMap, 13f, train.getLat(), train.getLon());
+
+
+
+
+
+//                if (train.getIsApp().equals("1")){
+//                    chicago_transits.ZoomIn(mMap, 20f, train.getLat(), train.getLon());
+//                }
+//                if (!train.getSelected()) {
+//                    // if the train is NOT selected - reset all trains
+//                    for (Train train1 : this.current_incoming_trains) {
+//                        if (train1.getIsNotified() && train1.getSelected()) {
+//                            continue;
+//                        }
+//                        train1.setSelected(false);
+//                    }
+//                    // set the chosen train as selected
+//                    train.setSelected(true);
+//                } else {
+//                    // if the train selected IS already selected, deselect train
+//                    train.setSelected(false);
+//                }
+//                chicago_transits.plot_all_markers(context, message, mMap, message.getOld_trains());
+//                if (!train.getIsSch()) {
+//                    chicago_transits.ZoomIn(mMap, 12f, train.getLat(), train.getLon());
+//                }
             });
         }
         else if (this.stationList!=null){

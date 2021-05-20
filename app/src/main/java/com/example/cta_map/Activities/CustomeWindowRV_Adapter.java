@@ -2,6 +2,7 @@ package com.example.cta_map.Activities;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,11 +28,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class CustomeWindowRV_Adapter extends RecyclerView.Adapter<CustomeWindowRV_Adapter.ItemHolder>  {
-    ArrayList<TrainStops> TrainList;
+    ArrayList<TrainStops> StopsList;
     Message message;
     Context context;
-    public CustomeWindowRV_Adapter(Context context, Message message, ArrayList<TrainStops> contactsList){
-        this.TrainList= contactsList;
+    public CustomeWindowRV_Adapter(Context context, Message message, ArrayList<TrainStops> StopsList){
+        this.StopsList= StopsList;
         this.context = context;
         this.message = message;
     }
@@ -41,7 +42,6 @@ public class CustomeWindowRV_Adapter extends RecyclerView.Adapter<CustomeWindowR
     public CustomeWindowRV_Adapter.ItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.remaining_stops_card_view_layout, parent, false);
-
         return new ItemHolder(view);
     }
 
@@ -49,14 +49,17 @@ public class CustomeWindowRV_Adapter extends RecyclerView.Adapter<CustomeWindowR
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull CustomeWindowRV_Adapter.ItemHolder holder, int position) {
-        if (this.TrainList.size() == 0 || this.TrainList == null){
+        if (this.StopsList == null ){
             holder.main_title.setText("Unable to find predictions.");
-            holder.subtitle.setText("");
         }else {
-
-            TrainStops train = this.TrainList.get(position);
+            TrainStops train = this.StopsList.get(position);
             holder.main_title.setText("To " + train.getStaNm());
             holder.subtitle.setText(train.getNextStopEtA() + "m");
+            if (train.getNextStopEtA() < 2){
+                holder.subtitle.setTextColor(Color.parseColor("#F44336"));
+            }
+
+
         }
 
     }
@@ -64,7 +67,10 @@ public class CustomeWindowRV_Adapter extends RecyclerView.Adapter<CustomeWindowR
 
     @Override
     public int getItemCount() {
-        return this.TrainList.size();
+        if (this.StopsList==null){
+            return 0;
+        }
+        return this.StopsList.size();
     }
 
     public static class ItemHolder extends RecyclerView.ViewHolder {

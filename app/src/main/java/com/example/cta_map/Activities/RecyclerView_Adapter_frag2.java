@@ -3,6 +3,7 @@ package com.example.cta_map.Activities;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.SearchView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
@@ -64,6 +66,7 @@ public class RecyclerView_Adapter_frag2 extends RecyclerView.Adapter<RecyclerVie
 
         return new ItemHolder(view);
     }
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onBindViewHolder(@NonNull ItemHolder holder, int position) {
         t1 =  (Thread) threadHashMap.get("t1");
@@ -160,6 +163,11 @@ public class RecyclerView_Adapter_frag2 extends RecyclerView.Adapter<RecyclerVie
                 }
 
             }
+
+            chicago_transits.reset(message.getOld_trains(), message);
+            chicago_transits.plot_all_markers(Maincontext, message, mMap, message.getOld_trains());
+            cta_dataBase.delete_all_records(CTA_DataBase.TRAIN_TRACKER);
+            chicago_transits.stopService(Maincontext);
             cta_dataBase.close();
 
         });

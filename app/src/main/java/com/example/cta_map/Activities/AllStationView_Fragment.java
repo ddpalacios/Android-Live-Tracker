@@ -152,45 +152,84 @@ public class AllStationView_Fragment extends Fragment {
             thread_handling.put("handler", handler);
             thread_handling.put("message", message);
             CardView nearestTrainCardView = (CardView) view.findViewById(R.id.list_item);
-            createTrainCard(view, message.getNearestTrain());
-            nearestTrainCardView.setOnLongClickListener(v -> {
-                if (message.getNearestTrain() !=null) {
-                    Train train = message.getNearestTrain();
 
-                    message.getT1().interrupt();
-                    if (!train.getIsNotified()){ // if this train is not currently being notified - notify it!
-                        chicago_transits.reset(message.getOld_trains(),message); // Resets all trains + its notifications handler
+
+
+            createTrainCard(view, message.getNearestTrain());
+
+            nearestTrainCardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ArrayList<Object> record = cta_dataBase.excecuteQuery("*", CTA_DataBase.TRAIN_TRACKER, null,null,null);
+                    Train train = null;
+                    if (record == null) {
+                        train = message.getNearestTrain();
+                    }else{
+                        HashMap<String, String> tracking_record = (HashMap<String, String>) record.get(0);
+                        String tracking_id = tracking_record.get(CTA_DataBase.TRAIN_ID);
+                        for (Train train1 : message.getOld_trains()){
+                            if (train1.getRn().equals(tracking_id)){
+                                train = train1;
+                                break;
+                            }
+                        }
+                    }
+                    if (train != null) {
+                        chicago_transits.ZoomIn(mMap, 13f, train.getLat(), train.getLon());
+                    }
+
+
+
+                }
+            });
+
+
+
+            nearestTrainCardView.setOnLongClickListener(v -> {
+                ArrayList<Object> record = cta_dataBase.excecuteQuery("*", CTA_DataBase.TRAIN_TRACKER, null,null,null);
+                Train train = null;
+                if (record == null) {
+                    train = message.getNearestTrain();
+                }else{
+                    HashMap<String, String> tracking_record = (HashMap<String, String>) record.get(0);
+                    String tracking_id = tracking_record.get(CTA_DataBase.TRAIN_ID);
+                    for (Train train1 : message.getOld_trains()){
+                        if (train1.getRn().equals(tracking_id)){
+                            train = train1;
+                            break;
+                        }
+                    }
+                }
+                if (train != null) {
+                    if (train.getIsNotified()) { // Resets all trains + its notifications handler
+                        chicago_transits.reset(message.getOld_trains(), message);
+                        chicago_transits.plot_all_markers(context, message, mMap, message.getOld_trains());
+                        chicago_transits.refresh(fragment);
+                        cta_dataBase.delete_all_records(CTA_DataBase.TRAIN_TRACKER);
+                        chicago_transits.stopService(context);
+                        chicago_transits.ZoomIn(mMap, 12f, train.getLat(), train.getLon());
+
+
+                    } else {
+                        chicago_transits.reset(message.getOld_trains(), message); // Resets all trains + its notifications handler
+                        nearestTrainCardView.setCardBackgroundColor(Color.parseColor(MainActivity.BACKGROUND_COLOR_STRING));
                         // Setting selected train for notifications
                         train.setSelected(true);
                         train.setNotified(true);
-
-                        // TODO: Do we need to do this? ///
                         chicago_transits.plot_all_markers(context, message, mMap, message.getOld_trains());
                         chicago_transits.refresh(fragment);
-                        /////////////////////////////////
-
-
                         cta_dataBase.delete_all_records(CTA_DataBase.TRAIN_TRACKER); // resets all train tracking
                         cta_dataBase.commit(train, CTA_DataBase.TRAIN_TRACKER); // Commiting a new train to track
-                        cta_dataBase.close();
+                        chicago_transits.ZoomIn(mMap, 13f, train.getLat(), train.getLon());
 
 
-
-                    }else{
-                        // if we reselect our train tracking train then turn it off!
-                        train.setNotified(false);
-                        train.setSelected(false);
-
-                        chicago_transits.refresh(fragment);
-                        cta_dataBase.delete_all_records(CTA_DataBase.TRAIN_TRACKER);
-
-                        //TODO: Add condition to check if there is a service running before stopping a service
-                        chicago_transits.stopService(context);
-                        cta_dataBase.close();
                     }
                 }
+
+                message.getT1().interrupt();
                 cta_dataBase.close();
                 return false;
+
             });
 
             recyclerView.setAdapter(new RecyclerView_Adapter_frag2( thread_handling, main_context, arrayList, fusedLocationClient, actionBar, mMap));
@@ -218,8 +257,6 @@ public class AllStationView_Fragment extends Fragment {
             train = message.getCurrentNotificationTrain();
 
 //            tracking_description.setText("Currently Tracking");
-        }else{
-//            tracking_description.setText("Nearest Train");
         }
 
         TextView main_title, isSch, train_line, train_eta, status_label;

@@ -124,6 +124,7 @@ public class Chicago_Transits {
         populateMarkers(context, YellowLine, "yellow");
         populateMarkers(context, PinkLine, "pink");
         populateMarkers(context, OrangeLine, "orange");
+        cta_dataBase.close();
 
 
 
@@ -194,6 +195,8 @@ public class Chicago_Transits {
         for (Markers marker : list_of_markers) {
             cta_dataBase.commit(marker, "MARKERS");
         }
+
+        cta_dataBase.close();
     }
 
 
@@ -339,6 +342,17 @@ public class Chicago_Transits {
 //            }
 //        }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public void plotTargetStation(Context context, Message message, GoogleMap mMap){
+        mMap.clear();
+        CTA_DataBase cta_dataBase = new CTA_DataBase(context);
+        ArrayList<Object> target_station_record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "MAP_ID = '" + message.getTARGET_MAP_ID() + "'", null, null);
+        Station target_station = (Station) target_station_record.get(0);
+        plot_marker(context,message,mMap,null, target_station); // Plot Target Station
+        cta_dataBase.close();
+
+    }
+
 
 
   @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -347,21 +361,19 @@ public class Chicago_Transits {
         Plots target station and all trains on maps
          */
         mMap.clear();
-        CTA_DataBase cta_dataBase = new CTA_DataBase(context);
-         ArrayList<Object> target_station_record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "MAP_ID = '" + message.getTARGET_MAP_ID() + "'", null, null);
-        Station target_station = (Station) target_station_record.get(0);
-        Chicago_Transits chicago_transits = new Chicago_Transits();
-        target_station.setIsTarget(true);
-        chicago_transits.plot_marker(context,message,mMap,null, target_station); // Plot Target Station
-
+        plotTargetStation(context, message, mMap);
       if (all_trains != null && all_trains.size() > 0) {
           for (Train train : all_trains) {
               Log.e("INCOMING", train.getRn() + "# | " + train.getRt() + " | " + train.getTarget_eta() + "m Selected? " + train.getSelected() + "| Notfifed?: " + train.getIsNotified() + " | Status?: "+ train.getStatus()+ " | Scheduled?:  "+ train.getIsSch());
               plot_marker(context, message, mMap, train, null);
           }
       }
-        cta_dataBase.close();
   }
+
+
+
+
+
     private Station find(ArrayList<Station> stationArrayList,Station station) {
         for (Station station1 : stationArrayList){
             if (station1.getMap_id().equals(station.getMap_id())){
@@ -536,6 +548,7 @@ public class Chicago_Transits {
 
 
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void callThreads(Context context, Handler handler, Message message, String dir, String station_type, String map_id, boolean fromAlarm){
         API_Caller_Thread api_caller = new API_Caller_Thread(message, context, handler);
         message.setHandler(handler);
@@ -594,6 +607,7 @@ public class Chicago_Transits {
 
             if (MainActivity.mMap!=null) {
                 MainActivity.check = 0;
+                chicago_transits.plotTargetStation(context, message, MainActivity.mMap);
                 chicago_transits.ZoomIn(MainActivity.mMap, 12f, tracking_record.getLat(), tracking_record.getLon());
             }
         }
@@ -606,6 +620,7 @@ public class Chicago_Transits {
         if (stop_id !=null) {
                 CTA_DataBase cta_dataBase = new CTA_DataBase(context);
                 ArrayList<Object> record = cta_dataBase.excecuteQuery("*", CTA_DataBase.CTA_STOPS, "STOP_ID = '" + stop_id + "'", null, null);
+                cta_dataBase.close();
                 if (record != null) {
                     Station new_station = (Station) record.get(0);
                     if (MainActivity.bar != null) {
@@ -1222,9 +1237,9 @@ public class Chicago_Transits {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void plot_marker(Context context, Message message, GoogleMap mMap, Train train, Station target_station){
         MapMarker mapMarker = new MapMarker(mMap, context, message);
-        CustomInfoWindowAdapter adapter = new CustomInfoWindowAdapter(context, message,"Test");
-        mMap.setInfoWindowAdapter(adapter);
         if (train!=null) {
+            CustomInfoWindowAdapter adapter = new CustomInfoWindowAdapter(context, message,false);
+            mMap.setInfoWindowAdapter(adapter);
             if (train.getSelected() && train.getIsNotified()) {
                 Marker marker = mapMarker.addMarker(train, target_station, "Train# " + train.getRn(), 1f, train.getRn());
                 if (marker!=null){
@@ -1239,9 +1254,18 @@ public class Chicago_Transits {
                 mapMarker.addMarker(train, target_station, "Train# " + train.getRn(), 1f, train.getRn());
 
             }
-            }else if (target_station != null){
-            mapMarker.addMarker(train, target_station,   "Station# "+target_station.getMap_id(), 1f, target_station.getStation_name());
 
+            }
+
+
+
+
+
+        else if (target_station != null){
+            // Normal info window
+            mMap.setInfoWindowAdapter(null);
+            Marker marker = mapMarker.addMarker(train, target_station,   "Station# "+target_station.getMap_id(), 1f, target_station.getStation_name());
+            marker.showInfoWindow();
         }
     }
 

@@ -1,30 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:id="@+id/main_notification_window"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/white_border"
     >
 
-        <TextView
-            android:id="@+id/textView12"
-            android:layout_width="wrap_content"
-            android:textStyle="bold"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="20dp"
-            android:layout_height="wrap_content"
-            android:text="Next stops" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:background="#fffea8"
+            android:layout_height="match_parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/remaining_stops_rv"
-            android:layout_width="250dp"
-            android:layout_below="@+id/textView12"
-            android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/train_rn"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Run# 1234" />
 
-</RelativeLayout>
+        </FrameLayout>
+
+
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/remaining_stops_rv"
+                    android:layout_width="250dp"
+                    android:layout_below="@+id/title"
+                    android:layout_height="wrap_content" />
+
+        </FrameLayout>
+
+</LinearLayout>
 
 
 

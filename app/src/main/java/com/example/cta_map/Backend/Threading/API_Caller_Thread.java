@@ -350,30 +350,6 @@ public class API_Caller_Thread implements Runnable {
                 }
             }
         }
-//                main_train.setTarget_station_name(target_station_record.getStation_name());
-//                if (settings_record !=null) {
-//                    Integer main_train_eta = main_train.getTarget_eta();
-//                    String specific_tracking_type = getSpecificTrackingType();
-//                    UserSettings userSettings = (UserSettings) settings_record.get(0);
-//                    if (specific_tracking_type != null && !main_train.getIsSch()){
-//                        if (specific_tracking_type.equals(UserSettings_Form.STATIONS_ITEM)){
-//                            ArrayList<TrainStops> remaining_stations_till_target = get_RemainingStations_till_target(main_train, target_station_record);
-//                            // if tracking based off stations
-//                            SetTrueStatusBasedOn(userSettings, main_train, remaining_stations_till_target.size(), user_eta_from_station);
-//
-//                        }else {
-//                            // if tracking based off minutes
-//                            SetTrueStatusBasedOn(userSettings, main_train, main_train_eta , user_eta_from_station);
-//                        }
-//                    }else{
-//                        main_train.setStatus(null);
-//                    }
-//                }
-//            }
-//            cta_dataBase.close();
-//        }else{
-//            MainActivity.ToastMessage(context, "ERROR. No station FOUND");
-//        }
         cta_dataBase.close();
     }
 

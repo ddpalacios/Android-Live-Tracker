@@ -62,9 +62,10 @@ public class MapMarker  {
 
 
     public Marker addMarker(Train train, Station station, String snippet, Float opacity, String main_title) {
-        if (train !=null && train.getIsSch()){
+        if (train !=null && train.getIsSch()){ // Trains that are SCHEDULED do not have Lat and Lon coordinates
             return null;
         }
+
         String station_line = ((train == null) ?null : train.getRt());
         Bitmap b;
         int height = 140;
@@ -73,14 +74,12 @@ public class MapMarker  {
             b = BitmapFactory.decodeResource(this.context.getResources(), new Chicago_Transits().getTrainImage(station_line));
         }else{
             b = BitmapFactory.decodeResource(this.context.getResources(), new Chicago_Transits().getTrainImage("target"));
-
         }
         Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
         BitmapDescriptor smallMarkerIcon = BitmapDescriptorFactory.fromBitmap(smallMarker);
 
         if (train!=null){
             String TRAIN_ID = snippet.replaceAll("Train#", "");
-
             LatLng train_marker = new LatLng(train.getLat(), train.getLon());
 
 
@@ -95,12 +94,13 @@ public class MapMarker  {
 
         }else if (station!=null){
             LatLng station_marker = new LatLng(station.getLat(), station.getLon());
-            String line = message.getTarget_type();
-            if (!station.getIsTarget()){
-            return this.mMap.addMarker(new MarkerOptions().position(station_marker).title(main_title).snippet(snippet).icon(BitmapDescriptorFactory.defaultMarker(getTrainMarkerColor(line))).alpha(opacity));
-            }else{
-                return this.mMap.addMarker(new MarkerOptions().position(station_marker).title(main_title).snippet(snippet).icon(smallMarkerIcon));
-            }
+            return this.mMap.addMarker(new MarkerOptions().position(station_marker).title(main_title).snippet(snippet).icon(smallMarkerIcon));
+
+//            if (!station.getIsTarget()){
+//            return this.mMap.addMarker(new MarkerOptions().position(station_marker).title(main_title).snippet(snippet).icon(BitmapDescriptorFactory.defaultMarker(getTrainMarkerColor(line))).alpha(opacity));
+//            }else{
+            //            }
+
         }else{
             return null;
         }

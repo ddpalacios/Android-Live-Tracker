@@ -32,12 +32,12 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter{
     private  final  View mWindow;
     private Context context;
     private Train train;
-    private String main_title;
+    private Boolean isTarget;
     private Message message;
 
-    public CustomInfoWindowAdapter(Context context, Message message, String main_title) {
+    public CustomInfoWindowAdapter(Context context, Message message,Boolean isTarget) {
         this.context = context;
-        this.main_title = main_title;
+        this.isTarget = isTarget;
         this.message = message;
         this.mWindow = LayoutInflater.from(this.context).inflate(R.layout.custom_info_window, null);
     }
@@ -47,6 +47,8 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter{
     private void renderWindowText(Marker marker, View view){
         RecyclerView recyclerView = view.findViewById(R.id.remaining_stops_rv);
         ArrayList<Train> all_trains = this.message.getOld_trains();
+        TextView rn_textView = view.findViewById(R.id.train_rn);
+
 
         String rn = marker.getTitle();
         Train found_train = null;
@@ -58,7 +60,11 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter{
                 }
             }
         }
+
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         if (found_train!=null){
+            rn_textView.setText("Run# "+ found_train.getRn());
             ArrayList<TrainStops> remaining_stops = found_train.getRemaining_stops();
             ArrayList<TrainStops> inDisplay = new ArrayList<>();
             int count =0;
@@ -74,16 +80,21 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter{
                     inDisplay.add(stop);
                     count+=1;
                 }
+                // populating our recycler view (CUSTOM WINDOW)
+                CustomeWindowRV_Adapter customeWindowRV_adapter = new CustomeWindowRV_Adapter(context, message, inDisplay);
+                recyclerView.setAdapter(customeWindowRV_adapter);
+
+
+            }else{
+                // populating our recycler view (CUSTOM WINDOW)
+                CustomeWindowRV_Adapter customeWindowRV_adapter = new CustomeWindowRV_Adapter(context, message, null);
+                recyclerView.setAdapter(customeWindowRV_adapter);
             }
-            recyclerView.setHasFixedSize(true);
-            recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-            CustomeWindowRV_Adapter customeWindowRV_adapter = new CustomeWindowRV_Adapter(context, message, inDisplay);
-            recyclerView.setAdapter(customeWindowRV_adapter);
+
 
 
 
         }
-
 
 //        TextView stop_title = view.findViewById(R.id.nextStop);
 //        stop_title.setText(next_stop);
