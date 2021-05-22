@@ -94,12 +94,12 @@ public class MapMarker  {
 
         }else if (station!=null){
             LatLng station_marker = new LatLng(station.getLat(), station.getLon());
-            return this.mMap.addMarker(new MarkerOptions().position(station_marker).title(main_title).snippet(snippet).icon(smallMarkerIcon));
+            if (!station.getIsTarget()){
+            return this.mMap.addMarker(new MarkerOptions().position(station_marker).title(main_title).snippet(snippet).icon(BitmapDescriptorFactory.defaultMarker(getTrainMarkerColor(message.getTarget_type()))).alpha(opacity));
+            }else{
+                return this.mMap.addMarker(new MarkerOptions().position(station_marker).title(main_title).snippet(snippet).icon(smallMarkerIcon));
 
-//            if (!station.getIsTarget()){
-//            return this.mMap.addMarker(new MarkerOptions().position(station_marker).title(main_title).snippet(snippet).icon(BitmapDescriptorFactory.defaultMarker(getTrainMarkerColor(line))).alpha(opacity));
-//            }else{
-            //            }
+            }
 
         }else{
             return null;

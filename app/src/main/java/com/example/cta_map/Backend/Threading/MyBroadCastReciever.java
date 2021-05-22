@@ -61,6 +61,7 @@ public class MyBroadCastReciever extends BroadcastReceiver {
             if (message == null) { // if NULL - App has not been started yet.
                 message = new Message();
                 message.setHandler(handler);
+                message.setTarget_type(station_type);
             }
 
             message.setAlarmTriggered(true);
@@ -79,21 +80,11 @@ public class MyBroadCastReciever extends BroadcastReceiver {
         int day_of_week = intent.getExtras().getInt("day_of_week");
         String map_id =intent.getStringExtra("map_id");
         String station_type =intent.getStringExtra("station_type");
+        Alarm alarm_record = new Alarm();
+
         if (day_of_week_alarm_id!=null){
-            Alarm alarm_record = new Alarm();
             ArrayList<Object>r =  cta_dataBase.excecuteQuery("*", CTA_DataBase.ALARMS, CTA_DataBase.ALARM_ID +" = '"+alarm_id+"'", null,null);
-            if (r.size() > 0) {
-                HashMap<String, String> rec = (HashMap<String, String>) r.get(0);
-                alarm_record.setMin(rec.get(CTA_DataBase.MIN));
-                alarm_record.setHour(rec.get(CTA_DataBase.HOUR));
-                alarm_record.setTime(rec.get(CTA_DataBase.TIME));
-                alarm_record.setWeekLabel(rec.get(CTA_DataBase.WEEK_LABEL));
-                alarm_record.setDirection(rec.get(CTA_DataBase.ALARM_DIRECTION));
-                alarm_record.setIsRepeating(Integer.parseInt(rec.get(CTA_DataBase.WILL_REPEAT)));
-                alarm_record.setMap_id(map_id);
-                alarm_record.setStationType(station_type);
-            }
-            alarm_record.setAlarm_id(alarm_id);
+            alarm_record = (Alarm) r.get(0);
             chicago_transits.scheduleAlarm(context, day_of_week, alarm_record, day_of_week_alarm_id, alarm_id); // Reschedule alarm
             Log.e("ALARM", "ALARM WAS RESCHEDULED");
         }else{

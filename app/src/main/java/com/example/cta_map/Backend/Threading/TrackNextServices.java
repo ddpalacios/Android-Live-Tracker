@@ -3,7 +3,10 @@ package com.example.cta_map.Backend.Threading;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 
 import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.Displayers.Chicago_Transits;
@@ -12,6 +15,7 @@ import com.example.cta_map.Displayers.Train;
 import java.util.ArrayList;
 
 public class TrackNextServices extends BroadcastReceiver {
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onReceive(Context context, Intent intent) {
         Message message = API_Caller_Thread.msg;

@@ -136,7 +136,7 @@ public class Chicago_Transits {
      int hours = Integer.parseInt(alarm_record.getHour());
      int minutes = Integer.parseInt(alarm_record.getMin());
      String hour_of_day = alarm_record.getTime().replace(":", "").replaceAll("[^A-Za-z]", "");
-     if (hour_of_day.toLowerCase().trim().equals("pm")) {
+     if (hour_of_day.toLowerCase().trim().equals("pm") && hours < 12) {
          hours = hours + 12; // 24 hour format
      }
 
@@ -347,8 +347,11 @@ public class Chicago_Transits {
         mMap.clear();
         CTA_DataBase cta_dataBase = new CTA_DataBase(context);
         ArrayList<Object> target_station_record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "MAP_ID = '" + message.getTARGET_MAP_ID() + "'", null, null);
-        Station target_station = (Station) target_station_record.get(0);
-        plot_marker(context,message,mMap,null, target_station); // Plot Target Station
+        if (target_station_record != null) {
+            Station target_station = (Station) target_station_record.get(0);
+            target_station.setIsTarget(true);
+            plot_marker(context, message, mMap, null, target_station); // Plot Target Station
+        }
         cta_dataBase.close();
 
     }
@@ -550,6 +553,8 @@ public class Chicago_Transits {
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void callThreads(Context context, Handler handler, Message message, String dir, String station_type, String map_id, boolean fromAlarm){
+        CTA_DataBase cta_dataBase = new CTA_DataBase(context);
+        cta_dataBase.delete_all_records(CTA_DataBase.MAP_TRACKER);
         API_Caller_Thread api_caller = new API_Caller_Thread(message, context, handler);
         message.setHandler(handler);
         Thread t1 = new Thread(api_caller);
@@ -565,11 +570,10 @@ public class Chicago_Transits {
         message.setScheduledNotified(false);
         message.setDelayedNotified(false);
         message.setApi_caller_thread(api_caller);
-        CTA_DataBase cta_dataBase = new CTA_DataBase(context);
         ArrayList<Object> usersettings_record = cta_dataBase.excecuteQuery("*", CTA_DataBase.USER_SETTINGS, null,null,null);
         if (usersettings_record!=null){
             UserSettings userSettings = (UserSettings) usersettings_record.get(0);
-            if (userSettings.getAsMinutes().equals("1")){
+            if (userSettings != null && userSettings.getAsMinutes()!=null && userSettings.getAsMinutes().equals("1")){
                 message.setInMinutes(true);
                 message.setInStations(false);
 
@@ -596,6 +600,7 @@ public class Chicago_Transits {
         message.keepSending(true);
         message.setTarget_station(tracking_record);
         message.getT1().start();
+        cta_dataBase.commit(message, CTA_DataBase.MAP_TRACKER); // Sets up our current tracking train
         Chicago_Transits chicago_transits = new Chicago_Transits();
 
 
@@ -610,30 +615,59 @@ public class Chicago_Transits {
                 chicago_transits.plotTargetStation(context, message, MainActivity.mMap);
                 chicago_transits.ZoomIn(MainActivity.mMap, 12f, tracking_record.getLat(), tracking_record.getLon());
             }
+        }else if (MainActivity.bar!=null){
+            MainActivity.bar.setTitle("Loading...");
+            MainActivity.bar.setBackgroundDrawable(new ColorDrawable(chicago_transits.GetBackgroundColor(message.getTarget_type(),context)));
         }
+
+
+
         cta_dataBase.close();
 
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void setBarTitle(Context context, String stop_id, String train_line) {
-        if (stop_id !=null) {
-                CTA_DataBase cta_dataBase = new CTA_DataBase(context);
+        CTA_DataBase cta_dataBase = new CTA_DataBase(context);
+
+        if (stop_id!=null) {
                 ArrayList<Object> record = cta_dataBase.excecuteQuery("*", CTA_DataBase.CTA_STOPS, "STOP_ID = '" + stop_id + "'", null, null);
-                cta_dataBase.close();
                 if (record != null) {
                     Station new_station = (Station) record.get(0);
                     if (MainActivity.bar != null) {
-                        MainActivity.bar.setTitle(new_station.getStation_name() + " " + getDirectionLabel(new_station.getDirection_id()) + " Bound");
+                        if (MainActivity.message.getOld_trains() != null && MainActivity.message.getOld_trains().size() > 0) {
+                            MainActivity.bar.setTitle(new_station.getStation_name() + " " + getDirectionLabel(new_station.getDirection_id()) + " Bound");
 //                        MainActivity.bar.setBackgroundDrawable(new ColorDrawable(GetBackgroundColor(train_line, context)));
+                        }else {
+                            Message message = MainActivity.message;
+                                if (message != null) {
+                                    ArrayList<Object> record1 = cta_dataBase.excecuteQuery("*", CTA_DataBase.USER_FAVORITES, CTA_DataBase.FAVORITE_MAP_ID + " = '" + message.getTARGET_MAP_ID() + "'", null, null);
+                                    if (record1!=null) {
+                                        HashMap<String, String> station = (HashMap<String, String>) record1.get(0);
+                                        MainActivity.bar.setTitle(station.get(CTA_DataBase.FAVORITE_STATION_NAME) + " " + getDirectionLabel(station.get(CTA_DataBase.FAVORITE_STATION_DIRECTION_LABEL)) + " Bound");
+//                                            MainActivity.bar.setBackgroundDrawable(new ColorDrawable(GetBackgroundColor(train_line, context)));
+                                    }
+                                    }else{
+                                    MainActivity.bar.setTitle("Select a station");
+
+                                }
+                        }
                     }
                 }
         }else{
             if (MainActivity.bar != null) {
-                MainActivity.bar.setTitle("No Trains.");
+                Message message = MainActivity.message;
+                ArrayList<Object> record1= cta_dataBase.excecuteQuery("*",CTA_DataBase.USER_FAVORITES, CTA_DataBase.FAVORITE_MAP_ID+" = '" +message.getTARGET_MAP_ID() + "'", null, null);
+                if (record1!=null) {
+                    HashMap<String, String> station = (HashMap<String, String>) record1.get(0);
+                    MainActivity.bar.setTitle(station.get(CTA_DataBase.FAVORITE_STATION_NAME) + " " + getDirectionLabel(station.get(CTA_DataBase.FAVORITE_STATION_DIRECTION_LABEL)) + " Bound");
 //                MainActivity.bar.setBackgroundDrawable(new ColorDrawable(GetBackgroundColor(train_line, context)));
+                }
             }
+
         }
+        cta_dataBase.close();
+
     }
 
     private Integer findTrainPosition(Train train, ArrayList<Train> list_of_trains){
@@ -657,6 +691,18 @@ public class Chicago_Transits {
         Chicago_Transits chicago_transits = new Chicago_Transits();
         ArrayList<Object> user_location_record = cta_dataBase.excecuteQuery("*", CTA_DataBase.USER_LOCATION, CTA_DataBase.HAS_LOCATION + " = '1'", null, null);
         ArrayList<Object> station_record = cta_dataBase.excecuteQuery("*", CTA_DataBase.CTA_STOPS, CTA_DataBase.TRAIN_MAP_ID + " = '"+message.getTARGET_MAP_ID()+"'", null,null);
+
+        if (current_incoming_trains!= null && current_incoming_trains.size() == 0){
+            // No trains available
+            subtitle = "N/A";
+            message.setNotification_message("No Trains available for "+ message.getTarget_name());
+            message.setNotification_subtitle(subtitle);
+            CallStatusUpdate(context,null, message);
+            cta_dataBase.close();
+            return true;
+
+
+        }
 
 
 
@@ -1427,7 +1473,7 @@ public class Chicago_Transits {
         if (code!=null){
             return code.toLowerCase().trim();
         }else{
-            return null;
+            return station_type;
         }
     }
 
@@ -1442,6 +1488,10 @@ public class Chicago_Transits {
         TrainLineKeyCodes.put("purple", "p");
         TrainLineKeyCodes.put("yellow", "y");
         TrainLineKeyCodes.put("gray", "gray");
+        String code = TrainLineKeyCodes.get(station_type.toLowerCase().trim());
+        if (code == null){
+            return TrainLineKeyCodes.get("gray");
+        }
 
         return TrainLineKeyCodes.get(station_type.toLowerCase().trim());
 
@@ -1465,6 +1515,7 @@ public class Chicago_Transits {
 
 
     public Integer GetBackgroundColor(String color, Context context) {
+        color = train_line_code_to_regular(color);
           if (color!=null) {
               if (color.toLowerCase().equals("p")) {
                   color = "purple";
@@ -1496,14 +1547,16 @@ public class Chicago_Transits {
 
 
         public void ZoomIn(GoogleMap mMap, Float zoomLevel, Double lat, Double lon){
-        LatLng target = new LatLng(lat, lon);
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(target)
-                .zoom(zoomLevel)                   // Sets the zoom
-                .bearing(90)                // Sets the orientation of the camera to east
-                .tilt(90)                  // Sets the tilt of the camera to 40 degrees
-                .build();                   // Creates a CameraPosition from the builder
-        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        if (lat != null || lon != null) {
+            LatLng target = new LatLng(lat, lon);
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(target)
+                    .zoom(zoomLevel)                   // Sets the zoom
+                    .bearing(90)                // Sets the orientation of the camera to east
+                    .tilt(90)                  // Sets the tilt of the camera to 40 degrees
+                    .build();                   // Creates a CameraPosition from the builder
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        }
     }
 
 //

@@ -131,14 +131,14 @@ public class TrainTimes_Adapter_frag extends RecyclerView.Adapter<TrainTimes_Ada
                 // set the chosen train as selected
                 if (!train.getSelected()) {
                     for (Train train1: all_trains){ // resets all trains
-                        if (train1.getIsNotified() && train1.getSelected()){
-                            continue;
-                        }
+
                         train1.setSelected(false);
                     }
                     train.setSelected(true);
                 }else{
-                    train.setSelected(false);
+                    if (!train.getIsNotified()) {
+                        train.setSelected(false);
+                    }
 
                 }
                 chicago_transits.plot_all_markers(context, message, mMap, message.getOld_trains());

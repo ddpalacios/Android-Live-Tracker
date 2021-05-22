@@ -83,21 +83,8 @@ public class Alarms_Fragment extends Fragment {
         if (record != null) {
             ArrayList<Alarm> alarm_list = new ArrayList<>();
             for (int i = 0; i < record.size(); i++) {
-                HashMap<String,String> current_alarm = (HashMap<String, String>) record.get(i);
-                Alarm alarm = new Alarm();
-                alarm.setAlarm_id(current_alarm.get(CTA_DataBase.ALARM_ID));
-                alarm.setWeekLabel(current_alarm.get(CTA_DataBase.WEEK_LABEL));
-                alarm.setMap_id(current_alarm.get(CTA_DataBase.ALARM_MAP_ID));
-                alarm.setIsOn(current_alarm.get(CTA_DataBase.ALARM_IS_ON));
-                ArrayList<Object> station = cta_dataBase.excecuteQuery("*", CTA_DataBase.CTA_STOPS, "MAP_ID = '"+ alarm.getMap_id()+"'" , null, null);
-                Station record_station = (Station) station.get(0);
-                alarm.setMin(current_alarm.get(CTA_DataBase.MIN));
-                alarm.setHour(current_alarm.get(CTA_DataBase.HOUR));
-                alarm.setTime(current_alarm.get(CTA_DataBase.TIME));
-                alarm.setStation_name(record_station.getStation_name());
-                alarm.setStationType(current_alarm.get(CTA_DataBase.ALARM_STATION_TYPE));
-                alarm.setIsRepeating(Integer.parseInt(current_alarm.get(CTA_DataBase.WILL_REPEAT)));
-                alarm_list.add(alarm);
+                Alarm current_alarm = (Alarm) record.get(i);
+                alarm_list.add(current_alarm);
 
             }
             recyclerView.setAdapter(new Alarm_RecyclerView_Adapter_frag1(alarm_list,myContext));

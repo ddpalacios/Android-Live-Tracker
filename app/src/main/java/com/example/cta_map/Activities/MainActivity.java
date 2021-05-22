@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
     public static API_Caller_Thread api_caller;
     public static Context context;
     public static Context context1;
-
+    SearchView searchView;
     Cursor cursor;
     ExampleAdapter todoAdapter;
     public static Spinner spinner;
@@ -145,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         } else {
             message.setNearestTrain(null);
             message.setOld_trains(null);
+            setTitle("No Trains");
             frg = getSupportFragmentManager().findFragmentByTag("main_place_holder_frag");
             chicago_transits.refresh(frg);
         }
@@ -161,6 +162,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         setContentView(R.layout.user_layout);
         context = getApplicationContext();
         context1 = MainActivity.this;
+
 
         frg = getSupportFragmentManager().findFragmentByTag("main_place_holder_frag");
         message = new Message();
@@ -309,8 +311,8 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                         Double test_lon = -87.627835;
                         Double real_lat = location.getLatitude();
                         Double real_lon = location.getLongitude();
-                        cta_dataBase.update("USER_LOCATION", CTA_DataBase.USER_LAT, test_lat + "", "HAS_LOCATION= '1'");
-                        cta_dataBase.update("USER_LOCATION", CTA_DataBase.USER_LON, test_lon + "", "HAS_LOCATION = '1'");
+                        cta_dataBase.update("USER_LOCATION", CTA_DataBase.USER_LAT, real_lat + "", "HAS_LOCATION= '1'");
+                        cta_dataBase.update("USER_LOCATION", CTA_DataBase.USER_LON, real_lon + "", "HAS_LOCATION = '1'");
 
                     } else {
                         message.setSharingFullConnection(false);
@@ -435,12 +437,42 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mMap.clear();
+                CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
                 String train_line = parent.getSelectedItem().toString();
+                Chicago_Transits chicago_transits = new Chicago_Transits();
                 main_train_line = train_line;
                 bar.setBackgroundDrawable(new ColorDrawable(new Chicago_Transits().GetBackgroundColor(train_line, getApplicationContext())));
-                if (todoAdapter != null && cursor != null) {
-                    todoAdapter.changeCursor(cursor);
+                ArrayList<Object> record1 = cta_dataBase.excecuteQuery("*", "CTA_STOPS",
+                        chicago_transits.TrainLineKeys(main_train_line) + " = '1' ",
+                        null,
+                        null);
+                LogMessage("Retrieved! query!!...");
+
+                ArrayList<String> check = new ArrayList<>();
+                if (record1!= null){
+                    Station s = (Station) record1.get(record1.size()-1);
+                    chicago_transits.ZoomIn(mMap, 12f,s.getLat(),s.getLon());
+
+                    for (Object r :  record1){
+                        Station station = (Station) r;
+                        if (check.contains(station.getMap_id())){
+                            continue;
+                        }else {
+                            check.add(station.getMap_id());
+//                            message.getT1().interrupt();
+                            station.setIsTarget(false);
+                            message.setTarget_type(main_train_line);
+                            chicago_transits.plot_marker(getApplicationContext(), message, mMap, null, station);
+                        }
+
+                    }
+
                 }
+
+
+                cta_dataBase.close();
+
             }
 
             @Override
@@ -500,22 +532,82 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         return true;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void initializeSearchView(MenuItem searchView_item, Menu menu) {
-        SearchView searchView = (SearchView) searchView_item.getActionView();
-        SearchManager manager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView.setSearchableInfo(manager.getSearchableInfo(getComponentName()));
+       searchView = (SearchView) searchView_item.getActionView();
+        CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
 
+        searchView.setQueryHint("Search for a station");
         searchView.setOnSearchClickListener(v -> {
-            menu.getItem(3).setVisible(true);
-            spinner.setSelection(new Chicago_Transits().getSpinnerPosition(message.getTarget_type()));
+            ArrayList<Object> record = cta_dataBase.excecuteQuery("*", CTA_DataBase.MAP_TRACKER, null,null,null);
+            if (record != null) {
+                HashMap<String, String> CURRENT_STATION = (HashMap<String, String>) record.get(0);
+                setTitle("Loading...");
+                menu.getItem(3).setVisible(true);
+                spinner.setSelection(new Chicago_Transits().getSpinnerPosition(CURRENT_STATION.get(CTA_DataBase.MAP_STATION_TYPE)));
+                mMap.clear();
+                Chicago_Transits chicago_transits = new Chicago_Transits();
+                chicago_transits.StopThreads(message, getApplicationContext());
+            }
+            try {
+//                ArrayList<Object> record1 = cta_dataBase.excecuteQuery("*", "CTA_STOPS",
+//                        chicago_transits.TrainLineKeys(message.getTarget_type()) + " = '1' ",
+//                        null,
+//                        null);
+//                LogMessage("Retrieved! query!!...");
+//
+//                ArrayList<String> check = new ArrayList<>();
+//                if (record1!= null){
+//                    Station s = (Station) record1.get(record1.size()-1);
+//                    chicago_transits.ZoomIn(mMap, 12f,s.getLat(),s.getLon());
+//
+//                    for (Object r :  record1){
+//                        Station station = (Station) r;
+//                        if (check.contains(station.getMap_id())){
+//                            continue;
+//                        }else {
+//                            check.add(station.getMap_id());
+////                            message.getT1().interrupt();
+//                            station.setIsTarget(false);
+//                            chicago_transits.plot_marker(getApplicationContext(), message, mMap, null, station);
+//                        }
+//
+//                    }
+//
+//                }
+            } catch(Exception e){
+                e.printStackTrace();
+            }
+
+
+            cta_dataBase.close();
 
         });
 
 
-        searchView.setOnCloseListener(() -> {
+
+                searchView.setOnCloseListener(() -> {
+                    mMap.clear();
+                    searchView.setQuery("", false);
+                    searchView.clearFocus();
             bar.setBackgroundDrawable(new ColorDrawable(new Chicago_Transits().GetBackgroundColor(message.getTarget_type(), getApplicationContext())));
             menu.getItem(3).setVisible(false);
-            return false;
+            if (!message.getT1().isAlive()) {
+                ArrayList<Object> record = cta_dataBase.excecuteQuery("*", CTA_DataBase.MAP_TRACKER, null,null,null);
+                if (record != null) {
+                    HashMap<String, String> CURRENT_STATION = (HashMap<String, String>) record.get(0);
+
+                    new Chicago_Transits().callThreads(context,
+                            message.getHandler(),
+                            message,
+                            CURRENT_STATION.get(CTA_DataBase.MAP_STATION_DIR),
+                            CURRENT_STATION.get(CTA_DataBase.MAP_STATION_TYPE),
+                            CURRENT_STATION.get(CTA_DataBase.MAP_MAP_ID),
+                            false);
+                }
+            }
+                    message.getT1().interrupt();
+                    return false;
         });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -527,38 +619,72 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             @Override
             public boolean onQueryTextChange(String newText) {
                 // SearchView
-//                mMap.clear();
-                CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
-                SQLiteDatabase db = cta_dataBase.getWritableDatabase();
                 Chicago_Transits chicago_transits = new Chicago_Transits();
-//                ArrayList<Object> record1 = cta_dataBase.excecuteQuery("*", "CTA_STOPS",
-//                        chicago_transits.TrainLineKeys(message.getTarget_type()) + " = '1' AND STATION_NAME",
-//                        newText,
-//                        null);
+//                if (message.getT1().isAlive()){
+//
+//                    chicago_transits.StopThreads(message, getApplicationContext());
+//                }
+
+                mMap.clear();
+                CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
+
+//                try {
+                LogMessage("Retrieving query..." + main_train_line);
+                ArrayList<Object> record1 = cta_dataBase.excecuteQuery("*", "CTA_STOPS",
+                            chicago_transits.TrainLineKeys(message.getTarget_type()) + " = '1' AND STATION_NAME",
+                            newText,
+                            null);
+                    ArrayList<String> check = new ArrayList<>();
+                    if (record1!= null){
+                        Station s = (Station) record1.get(record1.size()-1);
+                        chicago_transits.ZoomIn(mMap, 12f,s.getLat(),s.getLon());
+
+                        for (Object r :  record1){
+                            Station station = (Station) r;
+                            if (check.contains(station.getMap_id())){
+                                continue;
+                            }else {
+                                check.add(station.getMap_id());
+//                            message.getT1().interrupt();
+                                station.setIsTarget(false);
+                                chicago_transits.plot_marker(getApplicationContext(), message, mMap, null, station);
+                            }
+
+                        }
+
+                    }
+
+
+
+
+//                }catch (Exception e ){
+//                    e.printStackTrace();
+//                }
+
+
+
 //                ArrayList<Station> non_duplicated_station_list = chicago_transits.removeDuplicates(record1);
 //                for (Station station : non_duplicated_station_list){
-//                    chicago_transits.plot_marker(getApplicationContext(),message,mMap, null, station);
 //                }
 
 
 //                AutoCompleteTextView searchAutoCompleteTextView = (AutoCompleteTextView) searchView.findViewById(R.id.search_src_text);
 //                searchAutoCompleteTextView.setThreshold(0);
 
-                int autoCompleteTextViewID = getResources().getIdentifier("android:id/search_src_text", null, null);
-                AutoCompleteTextView searchAutoCompleteTextView = (AutoCompleteTextView) searchView.findViewById(autoCompleteTextViewID);
-                searchAutoCompleteTextView.setThreshold(0);
-                String query = "SELECT * FROM CTA_STOPS WHERE " + chicago_transits.TrainLineKeys(main_train_line).toUpperCase() + " = '1' AND STATION_NAME LIKE '" + newText + "%'";
-                cursor = db.rawQuery(query, null);
-                ArrayList<HashMap<String, String>> result = new ArrayList<>();
-                // Find ListView to populate
-                ListView lvItems = (ListView) findViewById(R.id.search_items_view);
-                // Setup cursor adapter using cursor from last step
-                todoAdapter = new ExampleAdapter(getApplicationContext(), cursor);
-                // Attach cursor adapter to the ListView
-                lvItems.setAdapter(todoAdapter);
-                cta_dataBase.close();
-
-                searchView.setSuggestionsAdapter(todoAdapter);
+//                int autoCompleteTextViewID = getResources().getIdentifier("android:id/search_src_text", null, null);
+//                AutoCompleteTextView searchAutoCompleteTextView = (AutoCompleteTextView) searchView.findViewById(autoCompleteTextViewID);
+//                searchAutoCompleteTextView.setThreshold(0);
+//                String query = "SELECT * FROM CTA_STOPS WHERE " + chicago_transits.TrainLineKeys(main_train_line).toUpperCase() + " = '1' AND STATION_NAME LIKE '" + newText + "%'";
+//                cursor = db.rawQuery(query, null);
+//                ArrayList<HashMap<String, String>> result = new ArrayList<>();
+//                // Find ListView to populate
+//                ListView lvItems = (ListView) findViewById(R.id.search_items_view);
+//                // Setup cursor adapter using cursor from last step
+//                todoAdapter = new ExampleAdapter(getApplicationContext(), cursor);
+//                // Attach cursor adapter to the ListView
+//                lvItems.setAdapter(todoAdapter);
+//                cta_dataBase.close();
+//                searchView.setSuggestionsAdapter(todoAdapter);
 //                cta_dataBase.close();
                 return false;
             }
@@ -653,31 +779,38 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
             Chicago_Transits chicago_transits = new Chicago_Transits();
             Train train = findTrainFromMap(marker);
-            Fragment fragment= getSupportFragmentManager().findFragmentByTag("main_place_holder_frag");
-            if (train.getIsNotified()) { // Resets all trains + its notifications handler
-                chicago_transits.reset(message.getOld_trains(), message);
-                chicago_transits.plot_all_markers(context, message, mMap, message.getOld_trains());
-                chicago_transits.refresh(fragment);
-                cta_dataBase.delete_all_records(CTA_DataBase.TRAIN_TRACKER);
-                chicago_transits.stopService(context);
-                chicago_transits.ZoomIn(mMap, 12f, train.getLat(), train.getLon());
+            if (train == null){
+                String target_station_name = marker.getTitle();
+                String map_id = marker.getSnippet().replaceAll("Station# ", "").trim();
+                new Chicago_Transits().callThreads(getApplicationContext(), handler, message, "1",message.getTarget_type(), map_id, false);
+            }else {
 
 
-            }else{
-                chicago_transits.reset(message.getOld_trains(), message); // Resets all trains + its notifications handler
-                // Setting selected train for notifications
-                train.setSelected(true);
-                train.setNotified(true);
-                chicago_transits.plot_all_markers(context, message, mMap, message.getOld_trains());
-                chicago_transits.refresh(fragment);
-                cta_dataBase.delete_all_records(CTA_DataBase.TRAIN_TRACKER); // resets all train tracking
-                cta_dataBase.commit(train, CTA_DataBase.TRAIN_TRACKER); // Commiting a new train to track
-                chicago_transits.ZoomIn(mMap, 13f, train.getLat(), train.getLon());
+                Fragment fragment = getSupportFragmentManager().findFragmentByTag("main_place_holder_frag");
+                if (train.getIsNotified()) { // Resets all trains + its notifications handler
+                    chicago_transits.reset(message.getOld_trains(), message);
+                    chicago_transits.plot_all_markers(context, message, mMap, message.getOld_trains());
+                    chicago_transits.refresh(fragment);
+                    cta_dataBase.delete_all_records(CTA_DataBase.TRAIN_TRACKER);
+                    chicago_transits.stopService(context);
+                    chicago_transits.ZoomIn(mMap, 12f, train.getLat(), train.getLon());
 
 
+                } else {
+                    chicago_transits.reset(message.getOld_trains(), message); // Resets all trains + its notifications handler
+                    // Setting selected train for notifications
+                    train.setSelected(true);
+                    train.setNotified(true);
+                    chicago_transits.plot_all_markers(context, message, mMap, message.getOld_trains());
+                    chicago_transits.refresh(fragment);
+                    cta_dataBase.delete_all_records(CTA_DataBase.TRAIN_TRACKER); // resets all train tracking
+                    cta_dataBase.commit(train, CTA_DataBase.TRAIN_TRACKER); // Commiting a new train to track
+                    chicago_transits.ZoomIn(mMap, 13f, train.getLat(), train.getLon());
+                    message.getT1().interrupt();
+
+
+                }
             }
-
-            message.getT1().interrupt();
             cta_dataBase.close();
 
 

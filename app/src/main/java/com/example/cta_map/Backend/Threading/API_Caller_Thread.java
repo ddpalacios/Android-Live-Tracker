@@ -81,12 +81,19 @@ public class API_Caller_Thread implements Runnable {
                 }
 
                 if (msg.getAlarmTriggered() != null && msg.getAlarmTriggered()){
-                    // we need to set the nearest train if we are calling from an alarm
-                    Log.e("API", "ALARM TRIGGERED FROM API - Tracking: "+ default_nearest_train.getStaNm() + " "+ default_nearest_train.getRt()+" line.");
                     cta_dataBase.delete_all_records(CTA_DataBase.TRAIN_TRACKER);
-                    cta_dataBase.commit(default_nearest_train, CTA_DataBase.TRAIN_TRACKER);
-                    msg.setAlarmTriggered(false);
-                    msg.getT1().interrupt();
+                    // we need to set the nearest train if we are calling from an alarm
+                    if (default_nearest_train == null){
+                        Chicago_Transits chicago_transits = new Chicago_Transits();
+                        chicago_transits.StartNotificationServices(context, this.msg ,new_incoming_trains);
+                        msg.setAlarmTriggered(false);
+                        msg.getT1().interrupt();
+                    }else {
+                        Log.e("API", "ALARM TRIGGERED FROM API - Tracking: " + default_nearest_train.getStaNm() + " " + default_nearest_train.getRt() + " line.");
+                        cta_dataBase.commit(default_nearest_train, CTA_DataBase.TRAIN_TRACKER);
+                        msg.setAlarmTriggered(false);
+                        msg.getT1().interrupt();
+                    }
                 }
 
                 msg.setIncoming_trains(new_incoming_trains);
@@ -197,7 +204,7 @@ public class API_Caller_Thread implements Runnable {
             e.printStackTrace();
         }
         all_incoming_trains = new ArrayList<>();
-        if (train_list == null || train_list.length == 0) {
+        if (train_list == null || train_list.length == 0 ) {
             msg.setStop_id(null);
         }
 
@@ -425,7 +432,7 @@ public class API_Caller_Thread implements Runnable {
         ArrayList<Object> settings_record = cta_dataBase.excecuteQuery("*", CTA_DataBase.USER_SETTINGS, null, null, null);
         if (settings_record != null) {
             UserSettings userSettings = (UserSettings) settings_record.get(0);
-            if (userSettings.getAsMinutes().equals("1")) {
+            if (userSettings!= null && userSettings.getAsMinutes()!= null && userSettings.getAsMinutes().equals("1")) {
                 tracking_type = Settings_view_Fragment.MINUTES_ITEM;
             } else {
                 tracking_type =Settings_view_Fragment.STATIONS_ITEM;

@@ -386,7 +386,9 @@ public class NewAlarmSetUp extends AppCompatActivity {
             if (alarm.getAlarm_id() == null){ // if it is a new alarm
                 cta_dataBase.commit(alarm, CTA_DataBase.ALARMS);
                 Toast.makeText(getApplicationContext(), "Alarm was saved!", Toast.LENGTH_LONG).show();
-                startActivity(new Intent(NewAlarmSetUp.this, MainActivity.class));
+                ArrayList<Object> record = cta_dataBase.excecuteQuery("*", CTA_DataBase.ALARMS, null,null,null);
+                alarm = (Alarm) record.get(record.size()-1);
+
             }else{
                 cta_dataBase.update("ALARMS", "HOUR", alarm.getHour(), "ALARM_ID = '" + alarm.getAlarm_id() + "'");
                 cta_dataBase.update("ALARMS", "MIN", alarm.getMin(), "ALARM_ID = '" + alarm.getAlarm_id() + "'");
@@ -395,10 +397,20 @@ public class NewAlarmSetUp extends AppCompatActivity {
                 cta_dataBase.update("ALARMS", CTA_DataBase.WILL_REPEAT, alarm.getIsRepeating()+"", "ALARM_ID = '" + alarm.getAlarm_id() + "'");
                 cta_dataBase.update("ALARMS", CTA_DataBase.WEEK_LABEL, getWeeklyLabel(alarm)+"", "ALARM_ID = '" + alarm.getAlarm_id() + "'");
                 Toast.makeText(getApplicationContext(), "Alarm to "+alarm.getStationName() +" for "+ alarm.getTime() + " was updated!", Toast.LENGTH_LONG).show();
-                startActivity(new Intent(NewAlarmSetUp.this, MainActivity.class));
 
 
             }
+
+            String[] days = alarm.getWeekLabel().split(",");
+                int count = 0;
+                for (String day_of_week : days){
+                    count+=1;
+                    Integer day_to_int = chicago_transits.getDayOfWeekNum(day_of_week);
+                    if(day_to_int!=null) {
+                        chicago_transits.scheduleAlarm(getApplicationContext(), day_to_int, alarm, alarm.getAlarm_id() + count, alarm.getAlarm_id());
+                    }
+                }
+            startActivity(new Intent(NewAlarmSetUp.this, MainActivity.class));
 
             cta_dataBase.close();
 

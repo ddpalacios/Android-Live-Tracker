@@ -16,6 +16,7 @@ import com.example.cta_map.Activities.Classes.Station;
 import com.example.cta_map.Activities.Classes.UserSettings;
 import com.example.cta_map.Activities.UserLocation;
 import com.example.cta_map.Activities.UserSettings_Form;
+import com.example.cta_map.Backend.Threading.Message;
 import com.example.cta_map.Displayers.Train;
 
 import java.util.ArrayList;
@@ -29,6 +30,18 @@ public class CTA_DataBase extends SQLiteOpenHelper {
     public static final String TRAIN_DIR = "TRAIN_DIR";
     public static final String TRAIN_TYPE = "TRAIN_TYPE";
     public static final String TRAIN_ETA = "TRAIN_ETA";
+
+
+    public static final String MAP_TRACKER = "MAP_TRACKER";
+    public static final String MAP_STOP_ID = "STOP_ID";
+    public static final String MAP_MAP_ID = "MAP_ID";
+    public static final String MAP_STATION_DIR = "STATION_DIR";
+    public static final String MAP_STATION_TYPE = "STATION_TYPE";
+    public static final String MAP_STATION_NAME = "STATION_NAME";
+
+
+
+
 
     public static final String TRAIN_NOTIFIED_BY_ALARM = "NOTIFIED_BY_ALARM";
 
@@ -135,10 +148,11 @@ public class CTA_DataBase extends SQLiteOpenHelper {
 
 
     public CTA_DataBase(@Nullable Context context) {
-        super(context, "CTA_DATABASE", null, 95);
+        super(context, "CTA_DATABASE", null, 100);
         SQLiteDatabase db = this.getWritableDatabase();
         createTrainTrackingTable(db);
         createUserSettingsTable(db);
+        createMapTrackingTable(db);
 
 
 
@@ -171,6 +185,17 @@ public class CTA_DataBase extends SQLiteOpenHelper {
                 + TRAIN_ETA + " TEXT, "
                 + TRAIN_NOTIFIED_BY_ALARM + " INTEGER, "
                 + TRAIN_TYPE + " TEXT)";
+        db.execSQL(tracker_table);
+    }
+
+
+    public void createMapTrackingTable(SQLiteDatabase db){
+        String tracker_table = "CREATE TABLE IF NOT EXISTS "+ MAP_TRACKER+ " ("
+                + MAP_STOP_ID+ " TEXT PRIMARY KEY, "
+                + MAP_MAP_ID + " TEXT, "
+                +MAP_STATION_DIR + " TEXT, "
+                + MAP_STATION_NAME + " TEXT, "
+                + MAP_STATION_TYPE + " TEXT)";
         db.execSQL(tracker_table);
     }
 
@@ -328,6 +353,10 @@ public class CTA_DataBase extends SQLiteOpenHelper {
         }else if (table_name.equals(USER_SETTINGS)){
             UserSettings new_user_settings = (UserSettings) item;
             addUserSettings(new_user_settings);
+        }else if (table_name.equals(MAP_TRACKER)){
+            Message message = (Message) item;
+            addMapTracker(message);
+
         }
 
     }
@@ -369,14 +398,8 @@ public class CTA_DataBase extends SQLiteOpenHelper {
         values.put(SUN, alarm.getSun());
         values.put(WEEK_LABEL, alarm.getWeekLabel());
 
-
         db.insert(ALARMS, null, values);
         db.close();
-
-
-
-
-
     }
 
 
@@ -406,6 +429,23 @@ public class CTA_DataBase extends SQLiteOpenHelper {
         db.close();
 
     }
+
+
+    private void addMapTracker(Message message){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        if (message!=null) {
+            values.put(MAP_STOP_ID,message.getTarget_station().getStop_id());
+            values.put(MAP_MAP_ID, message.getTARGET_MAP_ID());
+            values.put(MAP_STATION_TYPE, message.getTarget_type());
+            values.put(MAP_STATION_DIR, message.getDir());
+            values.put(MAP_STATION_NAME,message.getTarget_station().getStation_name());
+            db.insert(MAP_TRACKER, null, values);
+        }
+        db.close();
+
+    }
+
 
 
     public void add_main_station(MainStation main_station){
@@ -589,25 +629,76 @@ public class CTA_DataBase extends SQLiteOpenHelper {
                     new_record.add(new_station);
                 }
                 record = new_record;
-            }else{
-                Object r = record;
             }
         }else if (table_name.equals(USER_SETTINGS)){
             if (record!=null) {
                 for (Object r : record) {
                     HashMap<String, String> settings = (HashMap<String, String>) r;
                     UserSettings userSettings = new UserSettings();
-                    userSettings.setIs_sharing_loc(settings.get(IS_SHARING_LOC));
-                    userSettings.setGreen_limit(settings.get(GREEN_LIMIT));
-                    userSettings.setAsStations(settings.get(AS_STATIONS));
-                    userSettings.setAsMinutes(settings.get(AS_MINUTES));
-                    userSettings.setYellow_limit(settings.get(YELLOW_LIMIT));
+                    String green = null, yellow=null, HasLoc = null, as_min=null, as_stations=null;
+                    if (settings.get(GREEN_LIMIT) == null){
+                        green = "10";
+                    }else{
+                        green = settings.get(GREEN_LIMIT);
+                    }
+                    if (settings.get(IS_SHARING_LOC) == null){
+                        HasLoc = "0";
+                    }else{
+                        HasLoc = settings.get(IS_SHARING_LOC);
+                    }
+                    if (settings.get(AS_STATIONS) == null) {
+                        as_stations = "0";
+                    }else{
+                        as_stations = settings.get(AS_STATIONS);
+                    }
+                    if (settings.get(AS_MINUTES) == null){
+                        as_min = "1";
+                    }else{
+                     as_min =   settings.get(AS_MINUTES);
+                    }
+                    if (settings.get(YELLOW_LIMIT) == null){
+                        yellow = "5";
+                    }else{
+                        yellow = settings.get(YELLOW_LIMIT);
+                    }
+
+
+                    userSettings.setIs_sharing_loc(HasLoc);
+                    userSettings.setGreen_limit(green);
+                    userSettings.setAsStations(as_stations);
+                    userSettings.setAsMinutes(as_min);
+                    userSettings.setYellow_limit(yellow);
                     new_record.add(userSettings);
 
                 }
                 record = new_record;
             }
+
+        } else if (table_name.equals(ALARMS)){
+            if (record!=null) {
+                for (Object r : record) {
+                    Alarm alarm = new Alarm();
+                    HashMap<String, String> current_alarm = (HashMap<String, String>) r;
+                    alarm.setAlarm_id(current_alarm.get(CTA_DataBase.ALARM_ID));
+                    alarm.setWeekLabel(current_alarm.get(CTA_DataBase.WEEK_LABEL));
+                    alarm.setMap_id(current_alarm.get(CTA_DataBase.ALARM_MAP_ID));
+                    alarm.setDirection(current_alarm.get(CTA_DataBase.ALARM_DIRECTION));
+                    alarm.setIsOn(current_alarm.get(CTA_DataBase.ALARM_IS_ON));
+                    ArrayList<Object> station = excecuteQuery("*", CTA_DataBase.CTA_STOPS, "MAP_ID = '" + alarm.getMap_id() + "'", null, null);
+                    Station record_station = (Station) station.get(0);
+                    alarm.setMin(current_alarm.get(CTA_DataBase.MIN));
+                    alarm.setHour(current_alarm.get(CTA_DataBase.HOUR));
+                    alarm.setTime(current_alarm.get(CTA_DataBase.TIME));
+                    alarm.setStation_name(record_station.getStation_name());
+                    alarm.setStationType(current_alarm.get(CTA_DataBase.ALARM_STATION_TYPE));
+                    alarm.setIsRepeating(Integer.parseInt(current_alarm.get(CTA_DataBase.WILL_REPEAT)));
+                    new_record.add(alarm);
+                }
+
+            }
+            record = new_record;
         }
+
         return record;
     }
 

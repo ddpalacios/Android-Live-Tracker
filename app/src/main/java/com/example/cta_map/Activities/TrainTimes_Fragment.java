@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -55,12 +57,15 @@ public class TrainTimes_Fragment extends Fragment {
         // We can grab these variables staticly because we can assume that the user is within the UI, meaning MainActivty static variables would not be null
         Message message = ((MainActivity)getActivity()).message; //get message object from running MainActivity()
         Context context = ((MainActivity)getActivity()).context;
-        Fragment fragment = ((MainActivity)getActivity()).frg;
 
 
         current_incoming_trains = message.getOld_trains(); // Retrieves our most up-to-date trains
+        RecyclerView main_content = (RecyclerView) view.findViewById(R.id.frag_rv);
+        RelativeLayout no_arrivals = (RelativeLayout) view.findViewById(R.id.no_arrival_trains);
 
-        recyclerView = view.findViewById(R.id.frag_rv);
+        if (current_incoming_trains!=null && current_incoming_trains.size() >= 0){
+
+            recyclerView = view.findViewById(R.id.frag_rv);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
 //        recyclerView.setClickable(true);
@@ -92,6 +97,7 @@ public class TrainTimes_Fragment extends Fragment {
         }
 
 
+        }
 
 
 

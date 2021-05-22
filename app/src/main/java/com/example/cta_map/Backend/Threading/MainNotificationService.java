@@ -88,7 +88,12 @@ public class MainNotificationService extends Service {
             message.setIs_retrieving_first_nearest_train(true);
             TrackNextIntent.putExtra("isNew", is_current_notification_train_still_in_scope); // If not in scope - give option to track the nearest train
             tracknext_pendingIntent = PendingIntent.getBroadcast(this, 1, TrackNextIntent, 0);
-            notificationBuilder.addAction(default_image, "Track next nearest train", tracknext_pendingIntent);
+            if (message.getOld_trains()!= null && message.getOld_trains().size() > 0) {
+                message.setIs_retrieving_first_nearest_train(false);
+                notificationBuilder.addAction(default_image, "Track next nearest train", tracknext_pendingIntent);
+                notificationBuilder.addAction(default_image, "Switch Directions", switch_pendingIntent); // ADDING ACTION BUTTONS FOR NOTIFICATIONS
+
+            }
 
 
         }

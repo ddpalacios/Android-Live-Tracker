@@ -145,6 +145,10 @@ public class MapView_Adapter_frag extends RecyclerView.Adapter<MapView_Adapter_f
             }else{
                 holder.isSch.setText("Scheduled");
                 holder.train_eta.setTextColor(Color.parseColor("#3367D6"));
+                holder.status_image.setVisibility(View.VISIBLE);
+                holder.status_image.setImageResource(chicago_transits.getTrainImage("gray"));
+                holder.status_label.setTextColor(Color.parseColor(getColor("gray")));
+                holder.status_label.setVisibility(View.VISIBLE);
 
             }
         }
@@ -237,6 +241,7 @@ public class MapView_Adapter_frag extends RecyclerView.Adapter<MapView_Adapter_f
         TrainLineKeyCodes.put("g", "#0B8043");
         TrainLineKeyCodes.put("org", "#ffad33");
         TrainLineKeyCodes.put("y", "#b4ba0b");
+        TrainLineKeyCodes.put("gray", "#c7c7c7");
 
         TrainLineKeyCodes.put("pink","#ff66ed");
         TrainLineKeyCodes.put("p","#673AB7");
