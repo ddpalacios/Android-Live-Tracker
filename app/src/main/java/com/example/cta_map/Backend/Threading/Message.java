@@ -162,6 +162,16 @@ public class Message implements Serializable {
         return handler;
     }
 
+
+    public Boolean getRefreshed() {
+        return refreshed;
+    }
+
+    public void setRefreshed(Boolean refreshed) {
+        this.refreshed = refreshed;
+    }
+
+    private Boolean refreshed;
     public void setHandler(Handler handler) {
         this.handler = handler;
     }

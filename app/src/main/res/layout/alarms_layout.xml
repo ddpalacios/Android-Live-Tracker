@@ -20,6 +20,7 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/title"
+        app:cardBackgroundColor="@color/headerColor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
@@ -35,7 +36,7 @@
                 android:layout_marginLeft="4dp"
                 android:layout_marginTop="2dp"
                 android:padding="2dp"
-                android:text="Current Alarms"
+                android:text="My Alarms"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="30dp"
                 android:textStyle="bold"

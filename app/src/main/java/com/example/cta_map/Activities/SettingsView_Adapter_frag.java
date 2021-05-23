@@ -54,7 +54,6 @@ public class SettingsView_Adapter_frag extends RecyclerView.Adapter<SettingsView
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onBindViewHolder(@NonNull SettingsView_Adapter_frag.ItemHolder holder, int position) {
-            CTA_DataBase cta_dataBase = new CTA_DataBase(context);
             Chicago_Transits chicago_transits = new Chicago_Transits();
             UserSettings user_settings = this.setting_cards.get(position);
 
@@ -182,7 +181,7 @@ public class SettingsView_Adapter_frag extends RecyclerView.Adapter<SettingsView
         if (userSettings.getGreen_limit()!=null){
             if (train.getStatus().toLowerCase().equals("green")) {
                 holder.status_bar.setProgress(Integer.parseInt(userSettings.getGreen_limit()));
-                holder.train_eta.setText("> "+userSettings.getGreen_limit());
+                holder.train_eta.setText("> "+userSettings.getGreen_limit()+"m");
             }
         }
 
@@ -192,7 +191,7 @@ public class SettingsView_Adapter_frag extends RecyclerView.Adapter<SettingsView
             }else if (train.getStatus().toLowerCase().equals("yellow")) {
                 holder.status_bar.setProgress(Integer.parseInt(userSettings.getYellow_limit()));
                 cta_dataBase.update(CTA_DataBase.USER_SETTINGS, CTA_DataBase.YELLOW_LIMIT, userSettings.getYellow_limit(), CTA_DataBase.USER_SETTINGS_ID + " = '1'");
-                holder.train_eta.setText("> "+userSettings.getYellow_limit());
+                holder.train_eta.setText("> "+userSettings.getYellow_limit()+"m");
 
             }
 
@@ -204,13 +203,14 @@ public class SettingsView_Adapter_frag extends RecyclerView.Adapter<SettingsView
 
         if (train.getStatus().toLowerCase().equals("red")){
             holder.status_bar.setVisibility(View.INVISIBLE);
+            String yellow_limit = userSettings.getYellow_limit();
             holder.isSch.setVisibility(View.VISIBLE);
             holder.isSch.setText("Anything less than 'Yellow'");
-            holder.train_eta.setText("");
+
+            holder.train_eta.setText("< "+ yellow_limit+"m");
             holder.min_txt.setText("");
 
         }else if (train.getStatus().toLowerCase().equals("gray")){
-
             holder.status_bar.setVisibility(View.INVISIBLE);
             holder.train_eta.setText("");
             holder.min_txt.setText("");
@@ -223,11 +223,11 @@ public class SettingsView_Adapter_frag extends RecyclerView.Adapter<SettingsView
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (train.getStatus().toLowerCase().equals("green")) {
                     cta_dataBase.update(CTA_DataBase.USER_SETTINGS, CTA_DataBase.GREEN_LIMIT, progress+"", CTA_DataBase.USER_SETTINGS_ID + " = '1'");
-                    holder.train_eta.setText("> "+progress);
+                    holder.train_eta.setText("> "+progress+"m");
 
                 }else if (train.getStatus().toLowerCase().equals("yellow")) {
                     cta_dataBase.update(CTA_DataBase.USER_SETTINGS, CTA_DataBase.YELLOW_LIMIT, progress+"", CTA_DataBase.USER_SETTINGS_ID + " = '1'");
-                    holder.train_eta.setText("> "+progress);
+                    holder.train_eta.setText("> "+progress+"m");
 
                 }
 
@@ -239,11 +239,11 @@ public class SettingsView_Adapter_frag extends RecyclerView.Adapter<SettingsView
                 int progress = seekBar.getProgress();
                 if (train.getStatus().toLowerCase().equals("green")) {
                     cta_dataBase.update(CTA_DataBase.USER_SETTINGS, CTA_DataBase.GREEN_LIMIT, progress+"", CTA_DataBase.USER_SETTINGS_ID + " = '1'");
-                    holder.train_eta.setText("> "+progress);
+                    holder.train_eta.setText("> "+progress+"m");
 
                 }else if (train.getStatus().toLowerCase().equals("yellow")) {
                     cta_dataBase.update(CTA_DataBase.USER_SETTINGS, CTA_DataBase.YELLOW_LIMIT, progress+"", CTA_DataBase.USER_SETTINGS_ID + " = '1'");
-                    holder.train_eta.setText("> "+progress);
+                    holder.train_eta.setText("> "+progress+"m");
                 }
 
 

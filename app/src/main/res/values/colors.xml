@@ -21,6 +21,9 @@
     <color name="pink">#ff66ed</color>
     <color name="purple">#673AB7</color>
     <color name="yellow">#b4ba0b</color>
+    <color name="cardBackground"> #fffea8</color>
+    <color name="headerColor" >#fffff2</color>
+
 
 
 </resources>

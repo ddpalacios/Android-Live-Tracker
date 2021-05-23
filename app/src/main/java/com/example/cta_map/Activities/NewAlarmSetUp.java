@@ -36,6 +36,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cta_map.Activities.Classes.Alarm;
 import com.example.cta_map.Activities.Classes.Station;
+import com.example.cta_map.Backend.Threading.Message;
 import com.example.cta_map.Backend.Threading.MyBroadCastReciever;
 import com.example.cta_map.DataBase.CTA_DataBase;
 import com.example.cta_map.Displayers.Chicago_Transits;
@@ -88,6 +89,7 @@ public class NewAlarmSetUp extends AppCompatActivity {
         thur = findViewById(R.id.thursday);
         fri = findViewById(R.id.friday);
         sat = findViewById(R.id.saterday);
+        TextView status_label = findViewById(R.id.status_label);
         sun = findViewById(R.id.sunday);
         Button delete = findViewById(R.id.delete_button);
         tracking_station = (HashMap<String, String>) getIntent().getSerializableExtra("tracking_station");
@@ -136,6 +138,11 @@ public class NewAlarmSetUp extends AppCompatActivity {
             delete.setVisibility(View.VISIBLE);
             currentTime.setText(alarm.getTime());
             alarm.setWeek_label_list(new ArrayList<Integer>());
+            if (alarm.getWeekLabel() != null) {
+                status_label.setText(alarm.getWeekLabel().replaceAll(",", " "));
+            }
+
+
 
         }
         if (alarm.getIsRepeating()==1){
@@ -351,28 +358,14 @@ public class NewAlarmSetUp extends AppCompatActivity {
             CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
             @Override
             public void onClick(View v) {
+                finish();
+                ArrayList<Object> r = cta_dataBase.excecuteQuery("*", CTA_DataBase.MAP_TRACKER, null,null,null);
+                if (r!= null){
+                    HashMap<String, String> main_tracking = (HashMap<String, String>) r.get(0);
+                    Message message = MainActivity.message;
+                    chicago_transits.callThreads(getApplicationContext(), message.getHandler(),message, main_tracking.get(CTA_DataBase.MAP_STATION_DIR), main_tracking.get(CTA_DataBase.MAP_STATION_TYPE),main_tracking.get(CTA_DataBase.MAP_MAP_ID), false);
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(NewAlarmSetUp.this);
-
-                builder.setCancelable(true);
-                builder.setTitle("Remove Alarm");
-                builder.setMessage("Are you sure?");
-                builder.setPositiveButton("Confirm",
-                        (dialog, which) -> {
-                            ArrayList<Object> alarm_record1 = cta_dataBase.excecuteQuery("*", CTA_DataBase.ALARMS, "ALARM_ID = '"+alarm.getAlarm_id()+"'", null,null);
-                            if (alarm_record1 !=null){
-                                String[] values = new String[]{alarm.getAlarm_id()};
-                                cta_dataBase.delete_record(CTA_DataBase.ALARMS, "ALARM_ID = ?", values );
-                                cancelAlarm(alarm);
-                            }
-                            startActivity(new Intent(NewAlarmSetUp.this, MainActivity.class));
-
-                        });
-                builder.setNegativeButton(android.R.string.cancel, (dialog, which) -> {
-                });
-                AlertDialog dialog = builder.create();
-                dialog.show();
-                cta_dataBase.close();
+                }
             }
         });
 

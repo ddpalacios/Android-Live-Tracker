@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
@@ -38,7 +39,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -190,7 +194,16 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         mainPlaceHolder_fragment = new MainPlaceHolder_Fragment();
         ft.replace(R.id.place_holder, mainPlaceHolder_fragment, "main_place_holder_frag");
         ft.commit();
+
+
+
+
         Start();
+
+
+
+
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -236,16 +249,19 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             @NonNull int[] grantResults) {
         if (requestCode == REQUEST_PERMISSION_PHONE_STATE) {
             CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
+            Chicago_Transits chicago_transits = new Chicago_Transits();
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 ArrayList<Object> record = cta_dataBase.excecuteQuery("*", CTA_DataBase.USER_SETTINGS, null, null, null);
                 if (record != null) {
-                    cta_dataBase.update("USER_LOCATION", "HAS_LOCATION", "1", "STOP_ID = '1'");
-                    cta_dataBase.update("USER_LOCATION", "HAS_LOCATION", "1", "STOP_ID = '1'");
+                    cta_dataBase.update(CTA_DataBase.USER_LOCATION, CTA_DataBase.HAS_LOCATION, "1", "STOP_ID = '1'");
                     cta_dataBase.update(CTA_DataBase.USER_SETTINGS, CTA_DataBase.IS_SHARING_LOC, "1", CTA_DataBase.USER_SETTINGS_ID + " = '1'");
                     updatetUserLocation();
                     Toast.makeText(MainActivity.this, "Permission Granted! Location Has been updated", Toast.LENGTH_SHORT).show();
                 }
+
+//                frg = getSupportFragmentManager().findFragmentByTag("main_place_holder_frag");
+//                chicago_transits.refresh(frg);
                 if (message.getT1() != null) {
                     message.getT1().interrupt();
                 }
@@ -253,7 +269,10 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
             } else {
                 Toast.makeText(MainActivity.this, "Permission Denied!", Toast.LENGTH_SHORT).show();
                 cta_dataBase.update("USER_LOCATION", "HAS_LOCATION", "0", "STOP_ID = '1'");
+                cta_dataBase.update(CTA_DataBase.USER_SETTINGS, CTA_DataBase.IS_SHARING_LOC, "0", CTA_DataBase.USER_SETTINGS_ID + " = '1'");
                 cta_dataBase.close();
+//                frg = getSupportFragmentManager().findFragmentByTag("main_place_holder_frag");
+//                chicago_transits.refresh(frg);
 //                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 //                builder.setCancelable(true);
 //                builder.setTitle("Location");
@@ -311,8 +330,8 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                         Double test_lon = -87.627835;
                         Double real_lat = location.getLatitude();
                         Double real_lon = location.getLongitude();
-                        cta_dataBase.update("USER_LOCATION", CTA_DataBase.USER_LAT, real_lat + "", "HAS_LOCATION= '1'");
-                        cta_dataBase.update("USER_LOCATION", CTA_DataBase.USER_LON, real_lon + "", "HAS_LOCATION = '1'");
+                        cta_dataBase.update(CTA_DataBase.USER_LOCATION, CTA_DataBase.USER_LAT, real_lat + "", "HAS_LOCATION= '1'");
+                        cta_dataBase.update(CTA_DataBase.USER_LOCATION, CTA_DataBase.USER_LON, real_lon + "", "HAS_LOCATION = '1'");
 
                     } else {
                         message.setSharingFullConnection(false);
@@ -453,7 +472,8 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
                 if (record1!= null){
                     Station s = (Station) record1.get(record1.size()-1);
                     chicago_transits.ZoomIn(mMap, 12f,s.getLat(),s.getLon());
-
+                    PolylineOptions options = null;
+                    ArrayList<PolylineOptions> l = new ArrayList<>();
                     for (Object r :  record1){
                         Station station = (Station) r;
                         if (check.contains(station.getMap_id())){
@@ -463,9 +483,30 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
 //                            message.getT1().interrupt();
                             station.setIsTarget(false);
                             message.setTarget_type(main_train_line);
-                            chicago_transits.plot_marker(getApplicationContext(), message, mMap, null, station);
+                            options = new PolylineOptions().width(15).color(Color.RED);
+                                        double station_lat = station.getLat();
+                                        double station_lon = station.getLon();
+                                        LatLng lt = new LatLng(station_lat, station_lon);
+                                        options.add(lt);
+                                        l.add(options);
+//
+//                                }
+
+
+//                            Polyline line = mMap.addPolyline(new PolylineOptions()
+//                                    .add(new LatLng(51.5, -0.1), new LatLng(40.7, -74.0))
+//                                    .width(5)
+//                                    .color(Color.RED));
+//                            chicago_transits.plot_marker(getApplicationContext(), message, mMap, null, station);
                         }
 
+
+                    }
+
+                    if (options != null) {
+                        for (PolylineOptions options1 : l) {
+                            mMap.addPolyline(options1);
+                        }
                     }
 
                 }
@@ -541,6 +582,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMyLoc
         searchView.setOnSearchClickListener(v -> {
             ArrayList<Object> record = cta_dataBase.excecuteQuery("*", CTA_DataBase.MAP_TRACKER, null,null,null);
             if (record != null) {
+
                 HashMap<String, String> CURRENT_STATION = (HashMap<String, String>) record.get(0);
                 setTitle("Loading...");
                 menu.getItem(3).setVisible(true);

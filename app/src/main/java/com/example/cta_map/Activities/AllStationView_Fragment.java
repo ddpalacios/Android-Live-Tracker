@@ -1,18 +1,23 @@
 package com.example.cta_map.Activities;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,6 +25,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -28,6 +35,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cta_map.Activities.Classes.Station;
+import com.example.cta_map.Activities.Classes.UserSettings;
 import com.example.cta_map.Backend.Threading.API_Caller_Thread;
 import com.example.cta_map.Backend.Threading.Content_Parser_Thread;
 import com.example.cta_map.Backend.Threading.Message;
@@ -87,6 +95,155 @@ public class AllStationView_Fragment extends Fragment {
         });
 
 
+        Switch location_switch = view.findViewById(R.id.location_switch);
+        CTA_DataBase cta_dataBase = new CTA_DataBase(MainActivity.context);
+        int IsSharingLocation = ContextCompat.checkSelfPermission(MainActivity.context, Manifest.permission.ACCESS_FINE_LOCATION);
+        ArrayList<Object> UserLocation = cta_dataBase.excecuteQuery("*", "USER_LOCATION", "HAS_LOCATION = '1'", null, null);
+        ArrayList<Object> record = cta_dataBase.excecuteQuery("*", CTA_DataBase.USER_SETTINGS, null,null,null);
+        UserSettings userSettings;
+
+        // Creating/Loading our user settings
+        if (record!= null) {
+            userSettings = (UserSettings) record.get(0);
+        }else{
+            userSettings = new UserSettings();
+
+
+
+        }
+
+
+
+
+        if (UserLocation != null && IsSharingLocation ==0){
+            userSettings.setIs_sharing_loc("1");
+            if (!location_switch.isChecked()){
+                location_switch.setChecked(true);
+
+            }
+        }else {
+            userSettings.setIs_sharing_loc("0");
+            if (location_switch.isChecked()){
+                location_switch.setChecked(false);
+
+            }
+
+        }
+        if (UserLocation != null && IsSharingLocation ==0 && userSettings.getIs_sharing_loc().equals("1")){
+            if (!location_switch.isChecked()){
+
+            }
+            cta_dataBase.update("USER_LOCATION", "HAS_LOCATION", "1", "STOP_ID = '1'");
+        }else {
+            if (location_switch.isChecked()){
+
+            }
+            cta_dataBase.update("USER_LOCATION", "HAS_LOCATION", "0", "STOP_ID = '1'");
+        }
+
+
+
+
+        location_switch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked && location_switch.isPressed()){
+
+                if (ContextCompat.checkSelfPermission(MainActivity.context,
+                        Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+
+                    if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) MainActivity.context1, Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                        ActivityCompat.requestPermissions((Activity) MainActivity.context1,
+                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                    } else {
+                        ActivityCompat.requestPermissions((Activity) MainActivity.context1,
+                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
+                    }
+                }
+
+                    // without location pop-up permission
+                else if (userSettings.getIs_sharing_loc().equals("0")) {
+                    userSettings.setIs_sharing_loc("1");
+                    cta_dataBase.update(CTA_DataBase.USER_LOCATION, CTA_DataBase.HAS_LOCATION, "1", "STOP_ID = '1'");
+                    cta_dataBase.update(CTA_DataBase.USER_SETTINGS, CTA_DataBase.IS_SHARING_LOC, userSettings.getIs_sharing_loc(), CTA_DataBase.USER_SETTINGS_ID + " = '1'");
+                    MainActivity.message.getT1().interrupt(); // Reset train status
+                    Log.e("API", "RESET!");
+                }
+
+//                }
+            }else {
+                // if gets turned off.
+                if (location_switch.isPressed()) {
+                    if (userSettings.getIs_sharing_loc().equals("1")) {
+
+                        userSettings.setIs_sharing_loc("0");
+                        cta_dataBase.update(CTA_DataBase.USER_SETTINGS, CTA_DataBase.IS_SHARING_LOC, userSettings.getIs_sharing_loc(), CTA_DataBase.USER_SETTINGS_ID + " = '1'");
+                        cta_dataBase.update(CTA_DataBase.USER_LOCATION, CTA_DataBase.HAS_LOCATION, "0", "STOP_ID = '1'");
+
+                        MainActivity.message.getT1().interrupt(); // Reset train status
+                        Log.e("API", "Location turned off!");
+                    }
+                }
+            }
+        });
+
+
+cta_dataBase.close();
+
+
+
+
+
+
+
+
+
+
+
+
+
+//        location_switch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+//            if (isChecked){
+//                if (ContextCompat.checkSelfPermission(MainActivity.context,
+//                        Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+//
+//
+//                    if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) MainActivity.context1, Manifest.permission.ACCESS_FINE_LOCATION)){
+//
+//                        ActivityCompat.requestPermissions((Activity) MainActivity.context1,
+//                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+//                    }else{
+//                        ActivityCompat.requestPermissions((Activity) MainActivity.context1,
+//                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+//
+//                    }
+//
+//
+//                }
+//
+//
+//            }else{
+//                userSettings.setIs_sharing_loc("0");
+//                cta_dataBase.update(CTA_DataBase.USER_SETTINGS, CTA_DataBase.IS_SHARING_LOC, userSettings.getIs_sharing_loc(), CTA_DataBase.USER_SETTINGS_ID +" = '1'");
+//                cta_dataBase.update(CTA_DataBase.USER_LOCATION, CTA_DataBase.HAS_LOCATION, "0", "STOP_ID = '1'");
+//                MainActivity.message.getT1().interrupt();
+//                Log.e("API", "Location turned off!");
+//                return;
+//            }
+//            cta_dataBase.update(CTA_DataBase.USER_LOCATION, CTA_DataBase.HAS_LOCATION, "1", "STOP_ID = '1'");
+//            cta_dataBase.update(CTA_DataBase.USER_SETTINGS, CTA_DataBase.IS_SHARING_LOC, "1", CTA_DataBase.USER_SETTINGS_ID +" = '1'");
+//
+//            if (MainActivity.message !=null && MainActivity.message.getT1()!=null){
+//                MainActivity.message.getT1().interrupt();
+//            }
+//            Log.e("API", "Location turned ON!");
+//        });
+
+        cta_dataBase.close();
+
+
+
         switch_dir.setOnClickListener(v -> {
             MainActivity.bar.setTitle("Switching Directions...");
             message.getT1().interrupt();
@@ -110,12 +267,11 @@ public class AllStationView_Fragment extends Fragment {
 
         ArrayList<ListItem> arrayList = new ArrayList<>();
         Chicago_Transits chicago_transits = new Chicago_Transits();
-        CTA_DataBase cta_dataBase = new CTA_DataBase(main_context);
         ArrayList<Object> all_station_list  =  cta_dataBase.excecuteQuery("*", "USER_FAVORITES", null,null,null);
         view.findViewById(R.id.list_item).setOnClickListener(v -> {
-        ArrayList<Object> record = cta_dataBase.excecuteQuery("*", "CTA_STOPS", "MAP_ID = '"+message.getTARGET_MAP_ID()+"'", null,null);
+        ArrayList<Object> record1= cta_dataBase.excecuteQuery("*", "CTA_STOPS", "MAP_ID = '"+message.getTARGET_MAP_ID()+"'", null,null);
 
-            if (record!=null) {
+            if (record1!=null) {
                 Station target_station = (Station) record.get(0);
                 Chicago_Transits chicago_transits1 = new Chicago_Transits();
                 chicago_transits1.ZoomIn(mMap, 12f,
@@ -186,12 +342,12 @@ public class AllStationView_Fragment extends Fragment {
 
 
             nearestTrainCardView.setOnLongClickListener(v -> {
-                ArrayList<Object> record = cta_dataBase.excecuteQuery("*", CTA_DataBase.TRAIN_TRACKER, null,null,null);
+                ArrayList<Object> record2 = cta_dataBase.excecuteQuery("*", CTA_DataBase.TRAIN_TRACKER, null,null,null);
                 Train train = null;
-                if (record == null) {
+                if (record2 == null) {
                     train = message.getNearestTrain();
                 }else{
-                    HashMap<String, String> tracking_record = (HashMap<String, String>) record.get(0);
+                    HashMap<String, String> tracking_record = (HashMap<String, String>) record2.get(0);
                     String tracking_id = tracking_record.get(CTA_DataBase.TRAIN_ID);
                     for (Train train1 : message.getOld_trains()){
                         if (train1.getRn().equals(tracking_id)){

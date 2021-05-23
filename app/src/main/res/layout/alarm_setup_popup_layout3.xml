@@ -395,7 +395,6 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:layout_marginBottom="3dp"
-                android:text="sun, mon, tues, wen, thu, fri, sat"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="15sp"
                 android:textStyle="bold"
@@ -432,7 +431,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             android:background="@drawable/custom_ripple_close"
-            android:text="Delete"
+            android:text="Cancel"
             android:visibility="visible" />
 
 

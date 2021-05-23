@@ -36,7 +36,7 @@ import java.util.Objects;
 public class ChooseStationActivity extends AppCompatActivity {
     HashMap<String, String> tracking_station;
     TrainStationAdapter adapter;
-    ArrayList<ListItem> StationList;
+    ArrayList<Station> StationList;
     String TITLE_NAME = "STOP_NAME";
 
     @SuppressLint("ResourceAsColor")
@@ -109,13 +109,9 @@ public class ChooseStationActivity extends AppCompatActivity {
         if (all_station_list != null){
             StationList = new ArrayList<>();
             for (Object sta : all_station_list){
-                ListItem listItem = new ListItem();
                Station station = (Station) sta;
-                listItem.setImage(chicago_transits.getTrainImage(tracking_station.get("train_line")));
-                listItem.setTitle(station.getStation_name());
-                listItem.setTrain_dir_label(station.getDirection_id());
-                listItem.setMapID(station.getMap_id());
-                StationList.add(listItem);
+               station.setStation_type(train_line);
+                StationList.add(station);
             }
         }
         adapter = new TrainStationAdapter(getApplicationContext(),StationList, tracking_station);
@@ -147,17 +143,13 @@ public class ChooseStationActivity extends AppCompatActivity {
                 try {
                     ArrayList<Object> all_station_list = getStationList(tracking_station.get("train_line"), tracking_station.get("train_dir"), null);
                     Chicago_Transits chicago_transits = new Chicago_Transits();
-                    if (all_station_list !=null){
-                        StationList.clear();
-                        for (Object t : all_station_list){
-                            ListItem listItem = new ListItem();
-                            Station station = (Station) t;
-                            listItem.setImage(chicago_transits.getTrainImage(tracking_station.get("train_line")));
-                            listItem.setTitle(station.getStop_name());
-                            listItem.setTrain_dir_label(station.getDirection_id());
-                            listItem.setMapID(station.getMap_id());
-                            StationList.add(listItem);
+                    if (all_station_list != null){
+                        StationList = new ArrayList<>();
+                        for (Object sta : all_station_list){
+                            Station station = (Station) sta;
+                            StationList.add(station);
                         }
+
                         adapter.notifyDataSetChanged();
                     }
 
@@ -186,14 +178,12 @@ public class ChooseStationActivity extends AppCompatActivity {
                         cta_dataBase.close();
                         if (all_station_list !=null){
                             StationList.clear();
-                            for (Object t : all_station_list){
-                                ListItem listItem = new ListItem();
-                                Station station = (Station) t;
-                                listItem.setImage(chicago_transits.getTrainImage(tracking_station.get("train_line")));
-                                listItem.setTitle(station.getStop_name());
-                                listItem.setTrain_dir_label(station.getDirection_id());
-                                listItem.setMapID(station.getMap_id());
-                                StationList.add(listItem);
+                            if (all_station_list != null){
+                                StationList = new ArrayList<>();
+                                for (Object sta : all_station_list){
+                                    Station station = (Station) sta;
+                                    StationList.add(station);
+                                }
                             }
                             adapter.notifyDataSetChanged();
                         }
@@ -244,6 +234,10 @@ public class ChooseStationActivity extends AppCompatActivity {
     public ArrayList<Object> getStationList(String train_line, String train_direction, String contains) throws Exception{
         Chicago_Transits chicago_transits = new Chicago_Transits();
         CTA_DataBase cta_dataBase = new CTA_DataBase(getApplicationContext());
+        if (train_line.toLowerCase().equals("purple")){
+            train_line = "PEXP";
+        }
+
         String east_condition = chicago_transits.TrainLineKeys(train_line) + " = '1' AND DIRECTION_ID = 'E'" ;
         String north_condition = chicago_transits.TrainLineKeys(train_line) + " = '1' AND DIRECTION_ID = 'N'" ;
         String west_condition = chicago_transits.TrainLineKeys(train_line) + " = '1' AND DIRECTION_ID = 'W'" ;
@@ -260,7 +254,7 @@ public class ChooseStationActivity extends AppCompatActivity {
         ArrayList<Object> WestBound;
         ArrayList<Object> all_station_list = new ArrayList<>();
 
-        if (train_line.toLowerCase().equals("red") || train_line.toLowerCase().equals("yellow") || train_line.toLowerCase().equals("purple")){
+        if (train_line.toLowerCase().equals("red") || train_line.toLowerCase().equals("yellow") || train_line.toLowerCase().equals("pexp")){
             if (train_direction.equals("1")){
                 NorthBound = cta_dataBase.excecuteQuery("*", "CTA_STOPS", north_condition,contains,null);
                 all_station_list.addAll(NorthBound);

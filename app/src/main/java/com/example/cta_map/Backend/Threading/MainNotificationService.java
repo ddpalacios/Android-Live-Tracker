@@ -94,8 +94,6 @@ public class MainNotificationService extends Service {
                 notificationBuilder.addAction(default_image, "Switch Directions", switch_pendingIntent); // ADDING ACTION BUTTONS FOR NOTIFICATIONS
 
             }
-
-
         }
         return notificationBuilder;
     }

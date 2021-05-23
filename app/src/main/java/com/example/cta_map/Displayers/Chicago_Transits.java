@@ -220,7 +220,7 @@ public class Chicago_Transits {
           message.setDoneNotified(true);
           CallNotificationService(context, train, message, false);
 
-      } else if (train.getIsDly() != null || train.getIsSch()!=null || train.getIsApp()!=null){ // initial notifications that users should know
+      } else{ // initial notifications that users should know
           CallNotificationService(context, train, message, true);
 
           if (train.getIsDly().equals("1") && !message.isDelayedNotified()) {
@@ -258,89 +258,9 @@ public class Chicago_Transits {
                   }
               }
           }
-      }else{
-          Log.e("ERROR", "SOMETHING IS NULLL. CALLSTATUSUPDATE()");
       }
   }
 
-//      Station target_station = message.getTarget_station();
-//      if (message.getSharingFullConnection()) {
-//          Double lat = message.getUser_lat();
-//          Double lon = message.getUser_lon();
-//          Double user_distance_miles = calculate_coordinate_distance(lat, lon, target_station.getLat(), target_station.getLon());
-//          Time time = new Time();
-//          int user_eta = time.get_estimated_time_arrival(3, user_distance_miles);
-//          DecimalFormat df = new DecimalFormat("####0.0");
-//          subtitle = "You are " + user_eta + "m away (" + df.format(user_distance_miles) + " mi) from " + target_station.getStation_name() + "("+message.getTarget_type().toUpperCase() + " line)";
-//      }else{
-//          if (message.getInMinutes()){
-//              subtitle =  "Rt# "+train.getRn() + "is "+train.getTarget_eta()+"m away"  + " from " + target_station.getStation_name() + "("+message.getTarget_type().toUpperCase() + " line)";
-//
-//
-//          }else{
-//              subtitle =  "Rt# "+train.getRn() + "is "+train.getRemaining_stops().size()+" stops away"  + " from " + target_station.getStation_name() + "("+message.getTarget_type().toUpperCase() + " line)";
-//          }
-//      }
-//      message.setNotification_subtitle(subtitle);
-//
-//
-//
-//
-//
-//          if (train !=null && train.getStatus() == null){
-//            if (train.getTarget_eta() > 5 && !message.isScheduledGreenNotified()){
-//                CallNotificationService(context, train, "Status: GREEN | Train #" + train.getRn() + " is scheduled to depart in " + train.getTarget_eta() + "m", message, false);
-//                message.setScheduledGreenNotified(true);
-//            }
-//            else if (train.getTarget_eta() >=3 && train.getTarget_eta() <=5 && !message.isScheduledYellowNotified()){
-//                CallNotificationService(context,  train, "Status: YELLOW |Train #"+train.getRn() + " is scheduled to depart in "+ train.getTarget_eta()+"m", message, false);
-//                message.setScheduledYellowNotified(true);
-//            }else {
-//                if (!message.isScheduledRedNotified()) {
-//                    CallNotificationService(context, train, "Status: RED | Train #" + train.getRn() + " is scheduled to depart in " + train.getTarget_eta() + "m", message, false);
-//                    message.setScheduledRedNotified(true);
-//                }
-//            }
-//
-//
-//
-//        }else {
-//            if (train != null) {
-//                CallNotificationService(context, train, notification_message, message, true);
-//                if (train.getStatus().equals("GREEN") && !message.getGreenNotified()) {
-//                    message.setGreenNotified(true);
-//                    CallNotificationService(context, train, notification_message, message, false);
-//
-//                } else if (train.getStatus().equals("YELLOW") && !message.getYellowNotified()) {
-//                    message.setYellowNotified(true);
-//                    CallNotificationService(context, train, notification_message, message, false);
-//
-//                } else if (train.getStatus().equals("RED")) {
-//                    if (!message.getRedNotified()) {
-//                        message.setRedNotified(true);
-//                        CallNotificationService(context, train, notification_message, message, false);
-//
-//                    }
-//                    if (train.getIsApp().equals("1") && !message.getApproachingNotified()) {
-//                        Chicago_Transits chicago_transits = new Chicago_Transits();
-//                        message.setApproachingNotified(true);
-//                        if (MainActivity.mMap != null) {
-//                            chicago_transits.ZoomIn(MainActivity.mMap, 15f, train.getLat(), train.getLon());
-//                        }
-//                        CallNotificationService(context, train, notification_message, message, false);
-//
-//                    } else if (message.getDoneNotified()) {
-//                        CallNotificationService(context, train, notification_message, message, false);
-//
-//                    }
-//                }
-//            }else {
-//                if (message.getDoneNotified()) {
-//                        CallNotificationService(context, train, notification_message, message, false);
-//
-//                    }
-//            }
-//        }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void plotTargetStation(Context context, Message message, GoogleMap mMap){
@@ -558,6 +478,7 @@ public class Chicago_Transits {
         API_Caller_Thread api_caller = new API_Caller_Thread(message, context, handler);
         message.setHandler(handler);
         Thread t1 = new Thread(api_caller);
+        message.setRefreshed(false);
         message.setDoneNotified(false);
         message.setT1(t1);
         message.setScheduledRedNotified(false);
@@ -778,24 +699,15 @@ public class Chicago_Transits {
 
             } else if (NOTIFICATION_TRAIN == null) { // No longer visible train
 
-                if (current_notified_train.get(CTA_DataBase.TRAIN_DIR).equals(current_incoming_trains.get(0).getTrDr()) && current_notified_train.get(CTA_DataBase.TRAIN_TYPE).equals(message.getTarget_type())) {
                     // making sure its we are comparing the correct incoming trains before deleting our notification
                     cta_dataBase.delete_all_records(CTA_DataBase.TRAIN_TRACKER);
-
-
-
                     message.setDoneNotified(true);
                     Station target = message.getTarget_station();
                     message.setNotification_message(message.getTarget_type() + " line train to " + target.getStation_name() + " is no longer visible.");
                     message.setNotification_subtitle("Select 'Next Train' to get track new a train");
                     CallStatusUpdate(context, NOTIFICATION_TRAIN, message); // Notification train will be NULL
                     cta_dataBase.close();
-                }else{
-                    if (new Chicago_Transits().isMyServiceRunning(context, new MainNotificationService().getClass())){
-                        new Chicago_Transits().stopService(context);
-                    }
 
-                }
             }
         }
         cta_dataBase.close();
@@ -1486,6 +1398,7 @@ public class Chicago_Transits {
         TrainLineKeyCodes.put("orange", "org");
         TrainLineKeyCodes.put("pink", "pink");
         TrainLineKeyCodes.put("purple", "p");
+        TrainLineKeyCodes.put("pexp", "pexp");
         TrainLineKeyCodes.put("yellow", "y");
         TrainLineKeyCodes.put("gray", "gray");
         String code = TrainLineKeyCodes.get(station_type.toLowerCase().trim());
@@ -1547,7 +1460,7 @@ public class Chicago_Transits {
 
 
         public void ZoomIn(GoogleMap mMap, Float zoomLevel, Double lat, Double lon){
-        if (lat != null || lon != null) {
+        if (mMap !=null && lat != null && lon != null) {
             LatLng target = new LatLng(lat, lon);
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(target)

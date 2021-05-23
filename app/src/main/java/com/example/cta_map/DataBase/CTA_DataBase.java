@@ -614,8 +614,8 @@ public class CTA_DataBase extends SQLiteOpenHelper {
                     new_station.setMap_id(station.get("MAP_ID"));
                     new_station.setStop_id(station.get("STOP_ID"));
                     new_station.setDirection_id(station.get("DIRECTION_ID"));
-//                    ArrayList<String> list_of_station_types = findAllStationTypes(station);
-//                    new_station.setStation_type_list(list_of_station_types);
+                    ArrayList<String> list_of_station_types = findAllStationTypes(station);
+                    new_station.setStation_type_list(list_of_station_types);
 //                    if (list_of_station_types.size() > 1) {
 //                        new_station.setStation_type(null);
 //                    } else {
@@ -712,6 +712,8 @@ public class CTA_DataBase extends SQLiteOpenHelper {
         if (station.get(PINK).equals("1")){list_of_station_types.add("Pink");}
         if (station.get(ORG).equals("1")){list_of_station_types.add("Orange");}
         if (station.get(P).equals("1")){list_of_station_types.add("Purple");}
+        if (station.get(PEXP).equals("1")){list_of_station_types.add("Purple");}
+
 
         return  list_of_station_types;
     }

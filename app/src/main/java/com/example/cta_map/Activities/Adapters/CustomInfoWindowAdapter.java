@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cta_map.Activities.CustomeWindowRV_Adapter;
 import com.example.cta_map.Backend.Threading.Message;
+import com.example.cta_map.Displayers.Chicago_Transits;
 import com.example.cta_map.Displayers.Train;
 import com.example.cta_map.Displayers.TrainStops;
 import com.example.cta_map.R;
@@ -26,6 +27,7 @@ import com.google.android.gms.maps.model.Marker;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Optional;
 
 public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter{
@@ -47,7 +49,9 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter{
     private void renderWindowText(Marker marker, View view){
         RecyclerView recyclerView = view.findViewById(R.id.remaining_stops_rv);
         ArrayList<Train> all_trains = this.message.getOld_trains();
+        Chicago_Transits chicago_transits = new  Chicago_Transits();
         TextView rn_textView = view.findViewById(R.id.train_rn);
+        TextView train_status_info = view.findViewById(R.id.train_status_info);
 
 
         String rn = marker.getTitle();
@@ -65,6 +69,11 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter{
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         if (found_train!=null){
             rn_textView.setText("Run# "+ found_train.getRn());
+            train_status_info.setText(chicago_transits.getStatusMessage(found_train.getStatus()));
+            train_status_info.setTextColor(Color.parseColor(getColor(chicago_transits.TrainLineKeys(found_train.getStatus()))));
+
+
+
             ArrayList<TrainStops> remaining_stops = found_train.getRemaining_stops();
             ArrayList<TrainStops> inDisplay = new ArrayList<>();
             int count =0;
@@ -96,20 +105,7 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter{
 
         }
 
-//        TextView stop_title = view.findViewById(R.id.nextStop);
-//        stop_title.setText(next_stop);
-//        if (!stop_title.getText().toString().equals("Target")) {
-//            String snippet = marker.getSnippet();
-//            try {
-//                String MAP_ID = StringUtils.substringBetween(snippet, "StationID#", "Train").trim();
-//                String TRAIN_ID = StringUtils.substringBetween(snippet, "Train#", ".").trim();
-//                TextView subSinnet = view.findViewById(R.id.subtitle);
-//                subSinnet.setText("Train# " + TRAIN_ID);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//
-//        }
+
     }
 
 
@@ -126,5 +122,21 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter{
         renderWindowText(marker, this.mWindow);
 
         return mWindow;
+    }
+
+    private String getColor(String train_line){
+        HashMap<String, String> TrainLineKeyCodes = new HashMap<>();
+        TrainLineKeyCodes.put("red","#F44336");
+        TrainLineKeyCodes.put("blue","#384cff");
+        TrainLineKeyCodes.put("brn", "#a34700");
+        TrainLineKeyCodes.put("g", "#0B8043");
+        TrainLineKeyCodes.put("org", "#ffad33");
+        TrainLineKeyCodes.put("y", "#b4ba0b");
+        TrainLineKeyCodes.put("gray", "#c7c7c7");
+
+        TrainLineKeyCodes.put("pink","#ff66ed");
+        TrainLineKeyCodes.put("p","#673AB7");
+        return TrainLineKeyCodes.get(train_line.toLowerCase().trim());
+
     }
 }
